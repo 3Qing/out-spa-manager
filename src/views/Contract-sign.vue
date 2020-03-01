@@ -1,0 +1,449 @@
+<template>
+    <main-wrapper class="contract-sign">
+        <div class="content">
+            <el-form ref="form" :model="form" label-width="110px" :rules="rules">
+                <el-form-item label="注文名称" prop="Title">
+                    <el-input v-model="form.Title" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="内容" prop="Content">
+                    <el-input v-model="form.Content" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="作業担当" prop="empeeid">
+                    <el-select v-model="form['employee.ID']" size="small">
+                        <el-option v-for="item in workList" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="開始期間" prop="FromDate">
+                    <el-date-picker v-model="form.FromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="終了期間" prop="ToDate">
+                    <el-date-picker v-model="form.ToDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="支払サイト" prop="paymentterm">
+                    <el-select v-model="form['paymentterm.ID']" size="small">
+                        <el-option v-for="item in paymenttermsforselect" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="単価" prop="UnitPrice">
+                    <el-input v-model="form.UnitPrice" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="作業時間">
+                    <el-col :span="11">
+                        <el-form-item prop="HoursFrom">
+                            <el-input v-model="form.HoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col class="text-center" :span="2">-</el-col>
+                    <el-col :span="11">
+                        <el-form-item prop="HoursTo">
+                            <el-input v-model="form.HoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <div class="err">{{erroeMsg}}</div>
+                </el-form-item>
+                <el-form-item label="超過精算単価" prop="OverTimePrice">
+                    <el-input v-model="form.OverTimePrice" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="控除精算単価" prop="UnderTimePrice">
+                    <el-input v-model="form.UnderTimePrice" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="精算単位" prop="CalculateUnit">
+                    <el-select v-model="form.CalculateUnit" size="small">
+                        <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="営業担当" prop="salesperson">
+                    <el-select v-model="form['salesperson.ID']" size="small">
+                        <el-option v-for="item in salespersonforselect" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="顧客" prop="customer">
+                    <el-select v-model="form['customer.ID']" size="small">
+                        <el-option v-for="item in customerList" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="商流備考" prop="BusinessFlow">
+                    <el-input v-model="form.BusinessFlow" size="small" type="textarea"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('form')" size="small">提交</el-button>
+                    <el-button @click="resetForm('form')" size="small">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+        <el-dialog :visible.sync="dialogPresonMonth">
+            <el-table :data="personMonthArr" border size="small" v-loading="dialogLoading">
+                <el-table-column label="期间" width="220">
+                    <template slot-scope="scope">
+                        {{scope.row.fromdate}}
+                        ~
+                        {{scope.row.todate}}
+                    </template>
+                </el-table-column>
+                <el-table-column property="contractworkdays" label="合同工作日数" width="110"></el-table-column>
+                <el-table-column property="calendarworkdays" label="日历工作日数" width="110"></el-table-column>
+                <el-table-column label="人月">
+                    <template slot-scope="scope">
+                        <el-input size="mini" @blur="formatNingetsu(scope)" v-model="scope.row.ningetsu"></el-input>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div slot="footer">
+                <el-button size="small" type="primary" @click="confirmDialog">确定</el-button>
+            </div>
+        </el-dialog>
+    </main-wrapper>
+</template>
+
+<script>
+import { CHANGE_TAB_TITLE } from '@vuex/actions';
+import MainWrapper from '@components/main-wrapper';
+
+export default {
+    components: {
+        MainWrapper
+    },
+    data () {
+        return {
+            form: {
+                Title: '',
+                Content: '',
+                'employee.ID': '',
+                FromDate: '',
+                ToDate: '',
+                'paymentterm.ID': '',
+                UnitPrice: '',
+                HoursFrom: '',
+                HoursTo: '',
+                OverTimePrice: '',
+                UnderTimePrice: '',
+                CalculateUnit: '',
+                'salesperson.ID': '',
+                'customer.ID': '',
+                BusinessFlow: '',
+                ningetsu: ''
+            },
+            unit: [
+                {
+                    value: 1,
+                    label: '60分'
+                },
+                {
+                    value: 2,
+                    label: '30分'
+                },
+                {
+                    value: 3,
+                    label: '15分'
+                }
+            ],
+            rules: {
+                Title: [
+                    { required: true, message: '请输入注文名称', trigger: 'blur' }
+                ],
+                Content: [
+                    { required: true, message: '请输入内容', trigger: 'blur' }
+                ],
+                FromDate: [
+                    { required: true, validator: this.validFromDate, trigger: 'blur' }
+                ],
+                ToDate: [
+                    { required: true, validator: this.validToDate, trigger: 'blur' }
+                ],
+                UnitPrice: [
+                    { required: true, message: '请输入単価', trigger: 'blur' }
+                ],
+                OverTimePrice: [
+                    { required: true, message: '请输入超過精算単価', trigger: 'blur' }
+                ],
+                UnderTimePrice: [
+                    { required: true, message: '请输入控除精算単価', trigger: 'blur' }
+                ],
+            },
+            workList: [],
+            customerList: [],
+            paymenttermsforselect: [],
+            salespersonforselect: [],
+            erroeMsg: '',
+            dialogPresonMonth: false,
+            personMonthArr: [],
+            dialogLoading: false
+
+        };
+    },
+    beforeRouteEnter (to, from, next) {
+        next(vm => {
+            vm.$store.dispatch({
+                type: CHANGE_TAB_TITLE,
+                title: '合同签订'
+            });
+            if (to.params.id && to.params.id !== 'new') {
+                vm.getData();
+            }
+            vm.getWorkList() // 员工列表
+            vm.getCustomerList() // 客户列表
+            vm.getPaymenttermsforselect() // 支付条件清单
+            vm.getSalespersonforselect() // 销售人员
+        })
+    },
+    methods: {
+        validFromDate(rule, value, callback) {
+            const toDate = new Date(this.form.ToDate).getTime() || -1;
+            if (value) {
+                if (toDate > 0) {
+                    if (new Date(value).getTime() > toDate) {
+                        callback(new Error('开始时间不得大于结束时间'));
+                    } else {
+                        callback();
+                    }
+                } else {
+                    callback();
+                }
+            } else {
+                callback(new Error('请选择开始时间'));
+            }
+        },
+        validToDate(rule, value, callback) {
+            const fromDate = new Date(this.form.FromDate).getTime() || -1;
+            if (value) {
+                if (fromDate > 0) {
+                    if (new Date(value).getTime() < fromDate) {
+                        callback(new Error('结束时间不得小于开始时间'));
+                    } else {
+                        callback();
+                    }
+                } else {
+                    callback();
+                }
+            } else {
+                callback(new Error('请选择结束时间'));
+            }
+        },
+        // 作业时间校验
+        hoursChange (val, old) {
+            const reg = /^\d+$|^\d+[.]?\d+$/;
+            if (val !== old) {
+                if (!this.form.HoursFrom || !this.form.HoursTo) {
+                    this.erroeMsg = '请输入完整作業時間';
+                } else if (!reg.test(this.form.HoursFrom) || !reg.test(this.form.HoursTo)) {
+                    this.erroeMsg = '请输入数字';
+                } else if (parseInt(this.form.HoursFrom) > parseInt(this.form.HoursTo)) {
+                    this.erroeMsg = '结束作業時間需大于开始作業時間';
+                } else {
+                    this.erroeMsg = ''
+                }
+            }
+        },
+        getData() {
+            const loading = this.$loading({ lock: true, text: '正在获取合同资料中...' });
+            this.$axios({
+                url: '/api/getcontractforupdate',
+                params: {
+                    id: this.$route.params.id
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    const data = res.data || {};
+                    const form = {
+                        Title: data.Title || '',
+                        Content: data.Content || '',
+                        'employee.ID': (data.employee && data.employee.ID) || '',
+                        FromDate: data.FromDate || '',
+                        ToDate: data.ToDate || '',
+                        'paymentterm.ID': (data.paymentterm && data.paymentterm.ID) || '',
+                        UnitPrice: data.UnitPrice || '',
+                        HoursFrom: data.HoursFrom || '',
+                        HoursTo: data.HoursTo || '',
+                        OverTimePrice: data.OverTimePrice || '',
+                        UnderTimePrice: data.UnderTimePrice || '',
+                        CalculateUnit: data.CalculateUnit || '',
+                        'salesperson.ID': (data.salesperson && data.salesperson.ID) || '',
+                        'customer.ID': (data.customer && data.customer.ID) || '',
+                        BusinessFlow: data.BusinessFlow || ''
+                    }
+                    this.form = form;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        showClose: true,
+                        message: res.message ? res.message : '接口开小差了，没有返回'
+                    });
+                }
+            })
+        },
+        getWorkList () {
+            this.$axios({
+                url: '/api/employeesforselect'
+            }).then(res => {
+                this.workList = res.data
+            })
+        },
+        getCustomerList () {
+            this.$axios({
+                url: '/api/customersforselect'
+            }).then(res => {
+                this.customerList = res.data
+            })
+        },
+        getPaymenttermsforselect () {
+            this.$axios({
+                url: '/api/paymenttermsforselect'
+            }).then(res => {
+                this.paymenttermsforselect = res.data
+            })
+        },
+        getSalespersonforselect () {
+            this.$axios({
+                url: '/api/salespersonforselect'
+            }).then(res => {
+                this.salespersonforselect = res.data
+            })
+        },
+        submitForm (formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid && !this.erroeMsg) {
+                    if (this.completeMonth()) {
+                        this.getPersonMonth();
+                    } else {
+                        this.submit();
+                    }
+                } else {
+                    this.$message.warning('请正确输入表单数据');
+                    return false;
+                }
+            });
+        },
+        completeMonth() {
+            const [ ,, fromD = '' ] = this.form.FromDate.split('-');
+            const [ toY = '', toM = '', toD = '' ] = this.form.ToDate.split('-');
+            if (Number(fromD) === 1 && (new Date(toY, toM, '0').getDate() === Number(toD))) {
+                return false;
+            } else {
+                return true;
+            }
+        },
+        resetForm (formName) {
+            this.$refs[formName].resetFields();
+        },
+        submit () {
+            const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
+            const params = new FormData();
+            for (let key in this.form) {
+                if (key !== 'ningetsu') {
+                    params.append(key, this.form[key]);
+                }
+            }
+            if (this.form.ningetsu) {
+                this.form.ningetsu.forEach((item, index) => {
+                    params.append(`ningetsu[${index}]`, item);
+                })
+            } else {
+                params.append('ningetsu', '');
+            }
+            this.$axios({
+                method: 'POST',
+                url: '/api/submitcontract',
+                params,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    if (this.$route.params.id === 'new') {
+                        this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
+                    }
+                    this.$message.success('保存成功');
+                } else {
+                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+                }
+            })
+        },
+        getPersonMonth () {
+            this.personMonthArr = []
+            this.dialogPresonMonth = true
+            this.dialogLoading = true
+            this.$axios({
+                url: '/api/calculateningetsu',
+                params: {
+                    FromDate: this.form.FromDate,
+                    ToDate: this.form.ToDate
+                }
+            }).then(res => {
+                this.dialogLoading = false
+                const result = [...res.data]
+                result.forEach(item => {
+                    item.ningetsu = item.ningetsu / 100
+                })
+                this.personMonthArr = result
+            })
+        },
+        confirmDialog () {
+            const ningetsu = [];
+            this.personMonthArr.forEach(item => {
+                ningetsu.push(parseInt(item.ningetsu * 100))
+            })
+            this.form.ningetsu = ningetsu
+            this.submit()
+            this.dialogLoading = false
+            this.dialogPresonMonth = false
+        },
+        formatNingetsu(scope) {
+            const personMonthArr = [...this.personMonthArr];
+            let value = Number(scope.row.ningetsu);
+            if (value <= 1 && value > 0) {
+                value = value.toFixed(2);
+                personMonthArr[scope.$index].ningetsu = value;
+            } else {
+                personMonthArr[scope.$index].ningetsu = 0.01;
+            }
+            this.personMonthArr = personMonthArr;
+        }
+    }
+};
+</script>
+
+<style lang="less">
+.contract-sign {
+    .text-center{
+        text-align: center;
+    }
+    .content {
+        padding: 0 20px;
+        .el-select {
+            width: 100%;
+        }
+        .el-input {
+            width: 100%;
+        }
+    }
+    @media screen and (min-width: 750px) {
+        .content{
+            width: 500px;
+        }
+    }
+    .errborder{
+        .el-input__inner{
+            border-color: #DB414E;
+        }
+    }
+    .err{
+        color: #DB414E;
+        font-size: 12px;
+        line-height: 1;
+        padding-top: 4px;
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
+}
+</style>

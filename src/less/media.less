@@ -1,0 +1,77 @@
+@headHeight: 0.74rem;
+
+@media screen and (max-width: 750px) {
+    body {
+        font-size: 0.14rem;
+        .el-main {
+            padding: @headHeight 0 15px !important;
+        }
+        .main-header {
+            height: @headHeight !important;
+            line-height: @headHeight !important;
+            .el-form-item__label {
+                width: 1.2rem;
+                height: @headHeight !important;
+                line-height: @headHeight !important;
+            }
+            .el-form-item__content {
+                margin-left: 1.2rem;
+                height: @headHeight !important;
+                line-height: @headHeight !important;
+                .el-select {
+                    display: block;
+                }
+            }
+        }
+        .main-wrapper {
+            .content-wrapper {
+                padding: 0.4rem 0 0.8rem;
+            }
+        }
+        .login-wrapper {
+            padding: 0 0.4rem;
+            width: 100% !important;
+            .code-input {
+                width: calc(100% - 90px) !important;
+            }
+            .el-button {
+                margin-top: 0.2rem;
+                width: 100%;
+            }
+        }
+        .ess-list {
+            .el-card {
+                .card-header {
+                    padding: 0.1rem 0.15rem;
+                    li {
+                        font-size: 0.16rem;
+                        width: 100%;
+                        span:first-child {
+                            width: 1.2rem;
+                        }
+                    }
+                }
+            }
+        }
+        .ess-edit {
+            height: 100%;
+            .el-card {
+                height: 100%;
+                .el-card__body {
+                    padding: 0 0 0.2rem;
+                }
+            }
+            .summary {
+                padding-right: 0.15rem;
+            }
+            .footer {
+                margin-top: 0;
+                .el-button {
+                    margin-top: 0.2rem;
+                    width: 100%;
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
