@@ -42,7 +42,7 @@ export default {
     data() {
         return {
             showMenu: true
-        }
+        };
     },
     computed: {
         ...mapGetters(['TAB_TITLE'])
@@ -59,7 +59,7 @@ export default {
                 type: CHANGE_ISH5,
                 value: !this.showMenu
             });
-        }
+        };
     },
     methods: {
         logout() {

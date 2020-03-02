@@ -103,7 +103,7 @@ export default {
     components: {
         MainWrapper
     },
-    data () {
+    data() {
         return {
             form: {
                 Title: '',
@@ -171,7 +171,7 @@ export default {
 
         };
     },
-    beforeRouteEnter (to, from, next) {
+    beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.$store.dispatch({
                 type: CHANGE_TAB_TITLE,
@@ -180,11 +180,11 @@ export default {
             if (to.params.id && to.params.id !== 'new') {
                 vm.getData();
             }
-            vm.getWorkList() // 员工列表
-            vm.getCustomerList() // 客户列表
-            vm.getPaymenttermsforselect() // 支付条件清单
-            vm.getSalespersonforselect() // 销售人员
-        })
+            vm.getWorkList(); // 员工列表
+            vm.getCustomerList(); // 客户列表
+            vm.getPaymenttermsforselect(); // 支付条件清单
+            vm.getSalespersonforselect(); // 销售人员
+        });
     },
     methods: {
         validFromDate(rule, value, callback) {
@@ -220,7 +220,7 @@ export default {
             }
         },
         // 作业时间校验
-        hoursChange (val, old) {
+        hoursChange(val, old) {
             const reg = /^\d+$|^\d+[.]?\d+$/;
             if (val !== old) {
                 if (!this.form.HoursFrom || !this.form.HoursTo) {
@@ -230,7 +230,7 @@ export default {
                 } else if (parseInt(this.form.HoursFrom) > parseInt(this.form.HoursTo)) {
                     this.erroeMsg = '结束作業時間需大于开始作業時間';
                 } else {
-                    this.erroeMsg = ''
+                    this.erroeMsg = '';
                 }
             }
         },
@@ -265,7 +265,7 @@ export default {
                         'salesperson.ID': (data.salesperson && data.salesperson.ID) || '',
                         'customer.ID': (data.customer && data.customer.ID) || '',
                         BusinessFlow: data.BusinessFlow || ''
-                    }
+                    };
                     this.form = form;
                 } else {
                     this.$message({
@@ -274,37 +274,37 @@ export default {
                         message: res.message ? res.message : '接口开小差了，没有返回'
                     });
                 }
-            })
+            });
         },
-        getWorkList () {
+        getWorkList() {
             this.$axios({
                 url: '/api/employeesforselect'
             }).then(res => {
-                this.workList = res.data
-            })
+                this.workList = res.data;
+            });
         },
-        getCustomerList () {
+        getCustomerList() {
             this.$axios({
                 url: '/api/customersforselect'
             }).then(res => {
-                this.customerList = res.data
-            })
+                this.customerList = res.data;
+            });
         },
-        getPaymenttermsforselect () {
+        getPaymenttermsforselect() {
             this.$axios({
                 url: '/api/paymenttermsforselect'
             }).then(res => {
-                this.paymenttermsforselect = res.data
-            })
+                this.paymenttermsforselect = res.data;
+            });
         },
-        getSalespersonforselect () {
+        getSalespersonforselect() {
             this.$axios({
                 url: '/api/salespersonforselect'
             }).then(res => {
-                this.salespersonforselect = res.data
-            })
+                this.salespersonforselect = res.data;
+            });
         },
-        submitForm (formName) {
+        submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid && !this.erroeMsg) {
                     if (this.completeMonth()) {
@@ -327,10 +327,10 @@ export default {
                 return true;
             }
         },
-        resetForm (formName) {
+        resetForm(formName) {
             this.$refs[formName].resetFields();
         },
-        submit () {
+        submit() {
             const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
             const params = new FormData();
             for (let key in this.form) {
@@ -341,7 +341,7 @@ export default {
             if (this.form.ningetsu) {
                 this.form.ningetsu.forEach((item, index) => {
                     params.append(`ningetsu[${index}]`, item);
-                })
+                });
             } else {
                 params.append('ningetsu', '');
             }
@@ -366,12 +366,12 @@ export default {
                 } else {
                     this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
                 }
-            })
+            });
         },
-        getPersonMonth () {
-            this.personMonthArr = []
-            this.dialogPresonMonth = true
-            this.dialogLoading = true
+        getPersonMonth() {
+            this.personMonthArr = [];
+            this.dialogPresonMonth = true;
+            this.dialogLoading = true;
             this.$axios({
                 url: '/api/calculateningetsu',
                 params: {
@@ -379,23 +379,23 @@ export default {
                     ToDate: this.form.ToDate
                 }
             }).then(res => {
-                this.dialogLoading = false
-                const result = [...res.data]
+                this.dialogLoading = false;
+                const result = [...res.data];
                 result.forEach(item => {
-                    item.ningetsu = item.ningetsu / 100
-                })
-                this.personMonthArr = result
-            })
+                    item.ningetsu = item.ningetsu / 100;
+                });
+                this.personMonthArr = result;
+            });
         },
-        confirmDialog () {
+        confirmDialog() {
             const ningetsu = [];
             this.personMonthArr.forEach(item => {
-                ningetsu.push(parseInt(item.ningetsu * 100))
-            })
-            this.form.ningetsu = ningetsu
-            this.submit()
-            this.dialogLoading = false
-            this.dialogPresonMonth = false
+                ningetsu.push(parseInt(item.ningetsu * 100));
+            });
+            this.form.ningetsu = ningetsu;
+            this.submit();
+            this.dialogLoading = false;
+            this.dialogPresonMonth = false;
         },
         formatNingetsu(scope) {
             const personMonthArr = [...this.personMonthArr];

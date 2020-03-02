@@ -73,11 +73,11 @@ export default {
             allYears: []
         };
     },
-    beforeRouteEnter (to, from, next) {
+    beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.allYears = getFullYears();
             // vm.getData();
-        })
+        });
     },
     mounted() {
         this.allData = JSON.parse("[{\"ContractTitle\":\"SAPｸﾞﾛｰﾊﾞﾙﾛｰﾙｱｳﾄ展開コンサル支援\",\"ContractDuration\":\"2020/03/01∼2020/03/31\",\"ContractHours\":\"140∼180時間\",\"SalesPerson\":\"劉峰\",\"CashFlows\":[]},{\"ContractTitle\":\"SAPｸﾞﾛｰﾊﾞﾙﾛｰﾙｱｳﾄ展開コンサル支援\",\"ContractDuration\":\"2020/02/01∼2020/02/29\",\"ContractHours\":\"140∼180時間\",\"SalesPerson\":\"劉峰\",\"CashFlows\":[{\"Year\":\"2020\",\"Month\":\"02\",\"ActualHours\":\"0時間0分\",\"OverTimeHours\":\"140時間\",\"ProjectSalary\":605000,\"OverTimeSalary\":0,\"BaseSalary\":0,\"BenchDays\":\"0天\",\"TravelFare\":0,\"RecomdFee\":0,\"OtherFee\":0,\"PayedAmount\":0,\"SalaryPayDate\":\"2020/03/25\"}]},{\"ContractTitle\":\"SAPｸﾞﾛｰﾊﾞﾙﾛｰﾙｱｳﾄの展開コンサル支援\",\"ContractDuration\":\"2020/01/01∼2020/01/31\",\"ContractHours\":\"140∼180時間\",\"SalesPerson\":\"劉峰\",\"CashFlows\":[{\"Year\":\"2020\",\"Month\":\"01\",\"ActualHours\":\"175時間0分\",\"OverTimeHours\":\"\",\"ProjectSalary\":605000,\"OverTimeSalary\":0,\"BaseSalary\":0,\"BenchDays\":\"0天\",\"TravelFare\":0,\"RecomdFee\":0,\"OtherFee\":0,\"PayedAmount\":0,\"SalaryPayDate\":\"2020/02/25\"}]}]");
@@ -102,16 +102,16 @@ export default {
                         ContractHours: '',
                         SalesPerson: '',
                         CashFlows: []
-                    }]
+                    }];
                 }
-            })
+            });
         },
         changeYear(year) {
             this.fullYear = year;
             this.getData();
         }
     }
-}
+};
 </script>
 
 <style lang="less">

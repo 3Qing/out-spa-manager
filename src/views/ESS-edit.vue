@@ -65,7 +65,7 @@
                 </el-table-column>
                 <el-table-column label="作业内容">
                     <template slot-scope="scope">
-                        <el-input v-if="editable" size="mini" v-model="scope.row.Content" maxlength="100"></el-input>
+                        <el-input v-if="editable" size="mini" v-model="scope.row.Content" :maxlength="100"></el-input>
                         <p v-else>{{scope.row.Content || '-'}}</p>
                     </template>
                 </el-table-column>
@@ -90,7 +90,7 @@
                                 </el-select>
                             </el-col>
                             <el-col :offset="2" :span="10" v-if="scope.row.FareID === 99">
-                                <el-input v-model="scope.row.Title" maxlength="10" size="mini"></el-input>
+                                <el-input v-model="scope.row.Title" :maxlength="10" size="mini"></el-input>
                             </el-col>
                         </el-row>
                         <span v-else>{{formatFareID(scope.row)}}</span>
@@ -227,14 +227,14 @@ export default {
             editable: true
         };
     },
-    beforeRouteEnter (to, from, next) {
+    beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.$store.dispatch({
                 type: CHANGE_TAB_TITLE,
                 title: '编辑作业报告'
             });
             vm.getData(to.params.id);
-        })
+        });
     },
     methods: {
         getData(cfid) {
@@ -363,7 +363,7 @@ export default {
                         PMFromTime: scope.row.PMFromTime,
                         PMToTime: scope.row.PMToTime,
                         Content: scope.row.Content
-                    }
+                    };
                 }
             });
             this.worktimes = [...worktimes];
@@ -399,7 +399,7 @@ export default {
                     } else if ('Date,WeekDay,DateType,Content'.includes(key)) {
                         formData.append(`worktimes[${index}].${key}`, `${item[key] || ''}`);
                     }
-                })
+                });
             });
             this.fares.forEach((item, index) => {
                 if (this.files[index]) {
@@ -447,7 +447,7 @@ export default {
         watchInvoice(scope) {
             this.$root.$emit('SHOW_PICTURE_DIALOG', {
                 url: ` //www.your-partner.co.jp/api/getfareimage?fareid=${scope.row.ID}`
-            })
+            });
         }
     }
 };

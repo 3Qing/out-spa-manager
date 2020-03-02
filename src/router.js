@@ -7,6 +7,7 @@ import Home from '@views/Home';
 import EssList from '@views/ESS-list';
 import EssEdit from '@views/ESS-edit';
 import ContractSign from '@views/Contract-sign';
+import EmployeeBoard from '@views/Employee-board';
 
 Vue.use(Router);
 
@@ -59,6 +60,14 @@ const router = new Router({
             title: '合同签订'
         },
         component: ContractSign
+    }, {
+        path: '/employee/:id',
+        name: 'EmployeeEdit',
+        component: EmployeeBoard
+    }, {
+        path: '/employee/new',
+        name: 'EmployeeNew',
+        component: EmployeeBoard
     }
     // {
     //     path: '',
@@ -68,21 +77,21 @@ const router = new Router({
     ]
 });
 
-router.beforeEach((to, from, next) => {
-    const appInfo = sessionStorage.getItem('appInfo');
-    if (appInfo) {
-        if (to.path === '/login') {
-            next('/');
-        } else {
-            next();
-        }
-    } else {
-        if (to.path === '/login') {
-            next();
-        } else {
-            next('/login');
-        }
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     const appInfo = sessionStorage.getItem('appInfo');
+//     if (appInfo) {
+//         if (to.path === '/login') {
+//             next('/');
+//         } else {
+//             next();
+//         }
+//     } else {
+//         if (to.path === '/login') {
+//             next();
+//         } else {
+//             next('/login');
+//         }
+//     }
+// });
 
 export default router;

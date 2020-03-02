@@ -80,7 +80,7 @@ export default {
             allYears: []
         };
     },
-    beforeRouteEnter (to, from, next) {
+    beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.$store.dispatch({
                 type: CHANGE_TAB_TITLE,
@@ -88,7 +88,7 @@ export default {
             });
             vm.allYears = getFullYears();
             vm.getData();
-        })
+        });
     },
     methods: {
         getData() {
@@ -115,10 +115,10 @@ export default {
                             ContractHours: '',
                             SalesPerson: '',
                             CashFlows: []
-                        }]
+                        }];
                     }
                 }
-            })
+            });
         },
         changeYear(year) {
             this.fullYear = year;

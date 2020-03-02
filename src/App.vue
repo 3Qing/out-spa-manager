@@ -79,7 +79,7 @@ export default {
                 type: CHANGE_ISH5,
                 value: !this.showMenu
             });
-        }
+        };
     },
     methods: {
         logout() {
@@ -98,30 +98,30 @@ export default {
             const routeHistory = sessionStorage.getItem('routeHistory');
             const appInfo = sessionStorage.getItem('appInfo');
             
-            if (appInfo) {
-                let tmp = JSON.parse(appInfo);
-                this.$store.dispatch({
-                    type: FETCH_MENUS,
-                    res: tmp.menus || []
-                });
-                this.$store.dispatch({
-                    type: FETCH_TEAMS,
-                    res: tmp.teams || []
-                });
-                this.$store.dispatch({
-                    type: FETCH_ACTIONS,
-                    res: tmp.actions || []
-                });
-                if (routeHistory) {
-                    this.activeRouter = JSON.parse(routeHistory).name;
-                    this.$router.push(JSON.parse(routeHistory));
-                } else {
-                    this.$router.push({ name: 'ESSList' });
-                    sessionStorage.setItem('routeHistory', JSON.stringify({ name: 'ESSList' }));
-                }
+            let tmp = JSON.parse(appInfo);
+            this.$store.dispatch({
+                type: FETCH_MENUS,
+                res: tmp.menus || []
+            });
+            this.$store.dispatch({
+                type: FETCH_TEAMS,
+                res: tmp.teams || []
+            });
+            this.$store.dispatch({
+                type: FETCH_ACTIONS,
+                res: tmp.actions || []
+            });
+            if (routeHistory) {
+                this.activeRouter = JSON.parse(routeHistory).name;
+                this.$router.push(JSON.parse(routeHistory));
             } else {
-                this.$router.push({ name: 'Login' });
+                this.$router.push({ name: 'ESSList' });
+                sessionStorage.setItem('routeHistory', JSON.stringify({ name: 'ESSList' }));
             }
+            // if (appInfo) {
+            // } else {
+            //     // this.$router.push({ name: 'Login' });
+            // }
         },
         routerHandle(index) {
             this.activeRouter = index;

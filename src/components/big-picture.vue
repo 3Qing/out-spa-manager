@@ -29,7 +29,7 @@ export default {
             this.visible = false;
         }
     }
-}
+};
 </script>
 
 <style lang="less">
