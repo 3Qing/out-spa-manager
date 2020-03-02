@@ -25,6 +25,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
+import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import {
     FETCH_MENUS,
     FETCH_TEAMS,
@@ -45,6 +46,14 @@ export default {
             },
             validUrl: 'http://your-partner.co.jp/api/getvalidatebmp'
         };
+    },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.$store.dispatch({
+                type: CHANGE_TAB_TITLE,
+                title: '登入'
+            });
+        });
     },
     methods: {
         reloadValidCover() {

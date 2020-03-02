@@ -224,7 +224,6 @@ export default {
             this.$axios({
                 url: '/api/teamsforselect'
             }).then(res => {
-                console.log(res);
                 this.teams = res || [];
             });
         },
@@ -233,7 +232,6 @@ export default {
             this.$axios({
                 url: '/api/employeetypesforselect'
             }).then(res => {
-                console.log(res);
                 this.employeeTypes = res || [];
             });
         },
@@ -242,7 +240,6 @@ export default {
             this.$axios({
                 url: '/api/positionsforselect'
             }).then(res => {
-                console.log(res);
                 this.positions = res || [];
             });
         },
@@ -251,7 +248,6 @@ export default {
             this.$axios({
                 url: '/api/certificatesforselect'
             }).then(res => {
-                console.log(res);
                 this.certificates = res || [];
             });
         },

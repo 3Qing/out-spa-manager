@@ -1,10 +1,11 @@
 <template>
     <el-container id="app" class="public-container">
         <el-header v-if="!showMenu" class="h5-header">
-            <i class="el-icon-arrow-left" @click="goBack" v-if="$route.path !== 'index'"></i>
+            <i class="el-icon-arrow-left" @click="goBack" v-if="showArrow"></i>
             <p>{{TAB_TITLE}}</p>
+            <i class="el-icon-menu" @click="displayMenu"></i>
         </el-header>
-        <el-aside width="200px" v-if="showMenu">
+        <el-aside :class="[!showMenu && 'h5-nav']" width="200px" v-if="showMenu || showH5Nav">
             <el-menu
                 class="aside-menu"
                 background-color="#0b253c"
@@ -48,6 +49,7 @@ export default {
     data() {
         return {
             activeRouter: 'Login',
+            showH5Nav: false,
             showMenu: true
         };
     },
@@ -62,7 +64,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['TAB_TITLE', 'MENUS'])
+        ...mapGetters(['TAB_TITLE', 'MENUS']),
+        showArrow() {
+            return this.$route.name !== 'Login' && this.$route.name !== 'Home';
+        }
     },
     beforeMount() {
         this.getSessionInfo();
@@ -98,30 +103,30 @@ export default {
             const routeHistory = sessionStorage.getItem('routeHistory');
             const appInfo = sessionStorage.getItem('appInfo');
             
-            let tmp = JSON.parse(appInfo);
-            this.$store.dispatch({
-                type: FETCH_MENUS,
-                res: tmp.menus || []
-            });
-            this.$store.dispatch({
-                type: FETCH_TEAMS,
-                res: tmp.teams || []
-            });
-            this.$store.dispatch({
-                type: FETCH_ACTIONS,
-                res: tmp.actions || []
-            });
-            if (routeHistory) {
-                this.activeRouter = JSON.parse(routeHistory).name;
-                this.$router.push(JSON.parse(routeHistory));
+            if (appInfo) {
+                let tmp = JSON.parse(appInfo);
+                this.$store.dispatch({
+                    type: FETCH_MENUS,
+                    res: tmp.menus || []
+                });
+                this.$store.dispatch({
+                    type: FETCH_TEAMS,
+                    res: tmp.teams || []
+                });
+                this.$store.dispatch({
+                    type: FETCH_ACTIONS,
+                    res: tmp.actions || []
+                });
+                if (routeHistory) {
+                    this.activeRouter = JSON.parse(routeHistory).name;
+                    this.$router.push(JSON.parse(routeHistory));
+                } else {
+                    this.$router.push({ name: 'ESSList' });
+                    sessionStorage.setItem('routeHistory', JSON.stringify({ name: 'ESSList' }));
+                }
             } else {
-                this.$router.push({ name: 'ESSList' });
-                sessionStorage.setItem('routeHistory', JSON.stringify({ name: 'ESSList' }));
+                this.$router.push({ name: 'Login' });
             }
-            // if (appInfo) {
-            // } else {
-            //     // this.$router.push({ name: 'Login' });
-            // }
         },
         routerHandle(index) {
             this.activeRouter = index;
@@ -131,6 +136,9 @@ export default {
             if (menu.Href) {
                 window.open(menu.Href, '_blank');
             }
+        },
+        displayMenu() {
+            this.showH5Nav = !this.showH5Nav;
         }
     }
 };
@@ -170,12 +178,17 @@ export default {
         z-index: 9;
         border-bottom: 1px solid #C1D4E5;
         text-align: center;
-        .el-icon-arrow-left {
+        .el-icon-arrow-left, .el-icon-menu {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             font-size: .36rem;
+        }
+        .el-icon-arrow-left {
             left: 0.3rem;
+        }
+        .el-icon-menu {
+            right: 0.3rem;
         }
     }
     .aside-menu {
@@ -198,6 +211,14 @@ export default {
                 background-color: #071826 !important;
             }
         }
+    }
+    .h5-nav {
+        position: absolute;
+        top: 0.74rem;
+        left: 0;
+        bottom: 0;
+        width: 100% !important;
+        z-index: 99;
     }
     .el-main {
         overflow: auto;

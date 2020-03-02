@@ -77,21 +77,21 @@ const router = new Router({
     ]
 });
 
-// router.beforeEach((to, from, next) => {
-//     const appInfo = sessionStorage.getItem('appInfo');
-//     if (appInfo) {
-//         if (to.path === '/login') {
-//             next('/');
-//         } else {
-//             next();
-//         }
-//     } else {
-//         if (to.path === '/login') {
-//             next();
-//         } else {
-//             next('/login');
-//         }
-//     }
-// });
+router.beforeEach((to, from, next) => {
+    const appInfo = sessionStorage.getItem('appInfo');
+    if (appInfo) {
+        if (to.path === '/login') {
+            next('/');
+        } else {
+            next();
+        }
+    } else {
+        if (to.path === '/login') {
+            next();
+        } else {
+            next('/login');
+        }
+    }
+});
 
 export default router;

@@ -5,6 +5,19 @@
         font-size: 0.14rem;
         .el-main {
             padding: @headHeight 0 15px !important;
+            .el-dialog {
+                width: 100%;
+            }
+        }
+        .el-form {
+            .el-button {
+                display: block;
+                width: 100%;
+                & + .el-button {
+                    margin-left: 0;
+                    margin-top: .3rem;
+                }
+            }
         }
         .main-header {
             height: @headHeight !important;
@@ -71,6 +84,12 @@
                     width: 100%;
                     margin-left: 0;
                 }
+            }
+        }
+        .employee-edit {
+            .el-form {
+                width: 100%;
+                padding-right: .4rem;
             }
         }
     }
