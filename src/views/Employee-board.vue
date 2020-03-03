@@ -83,11 +83,13 @@
                     <el-checkbox v-for="item in certificates" :key="item.CertID" :label="item.CertID">{{item.CertName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="绩效工资">
+            <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']">
                 <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')"></el-input>
+                <p color="danger" v-if="emptyTip">请填写绩效工资或基本工资</p>
             </el-form-item>
-            <el-form-item label="基本工资">
+            <el-form-item label="基本工资" :class="[emptyTip && 'error-input']">
                 <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')"></el-input>
+                <p color="danger" v-if="emptyTip">请填写基本工资或绩效工资</p>
             </el-form-item>
             <el-form-item label="工资的备注">
                 <el-input v-model="form.SComment" :maxlength="50"></el-input>
@@ -194,6 +196,7 @@ export default {
                     required: true, message: '请选择所属部门', trigger: 'blur'
                 }]
             },
+            emptyTip: false,
             errorTip: false,
             employeeTypes: [],
             sexs: [{
@@ -252,6 +255,7 @@ export default {
             });
         },
         validSalePrice() {
+            this.errorTip = false;
             if (this.form.salepricefrom && this.form.salepriceto) {
                 let priceFrom = this.form.salepricefrom.replace(/,/g, '');
                 let priceTo = this.form.salepriceto.replace(/,/g, '');
@@ -267,6 +271,9 @@ export default {
         formatPrice(key) {
             let value = this.form[key];
             if (!value) return false;
+            if (key === 'PJSalary' || key === 'BaseSalary') {
+                this.emptyTip = false;
+            }
             value = value.replace(/,/g, '');
             if (value.indexOf('.') > -1) {
                 this.form[key] = parseInt(value).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
@@ -281,6 +288,10 @@ export default {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     if (this.errorTip) return false;
+                    if (!this.form.PJSalary && !this.form.BaseSalary) {
+                        this.emptyTip = true;
+                        return false;
+                    }
                     let params = {
                         'type.ID': this.form.type,
                         name: this.form.name,
@@ -294,21 +305,21 @@ export default {
                         'position.ID': this.form.position,
                         arrivejpdate: this.form.arrivejpdate,
                         teammembers: [{
-                            FromData: this.form.onboarddate,
-                            ToData: '9999-12-31',
+                            FromDate: this.form.onboarddate,
+                            ToDate: '9999-12-31',
                             TeamID: this.form.team
                         }],
                         jplangcert: this.form.jplangcert || 0,
                         jplangcomt: this.form.jplangcomt,
                         enlangcomt: this.form.enlangcomt,
                         salaries: [{
-                            FromData: this.form.onboarddate,
-                            PJSalary: this.form.PJSalary,
-                            BaseSalary: this.form.BaseSalary,
+                            FromDate: this.form.onboarddate,
+                            PJSalary: Number(this.form.PJSalary.toString().replace(/,/g, '')),
+                            BaseSalary: Number(this.form.BaseSalary.toString().replace(/,/g, '')),
                             Comment: this.form.SComment,
                         }],
-                        salepricefrom: this.form.salepricefrom,
-                        salepriceto: this.form.salepriceto,
+                        salepricefrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
+                        salepriceto: Number(this.form.salepriceto.toString().replace(/,/g, '')),
                         travel: this.form.travel,
                         expectpj: this.form.expectpj,
                         comment: this.form.comment
