@@ -7,7 +7,8 @@ import Home from '@views/Home';
 import EssList from '@views/ESS-list';
 import EssEdit from '@views/ESS-edit';
 import ContractSign from '@views/Contract-sign';
-import EmployeeBoard from '@views/Employee-board';
+import EmployeeEdit from '@views/Employee-edit';
+import EmployeeList from '@views/Employee-list';
 
 Vue.use(Router);
 
@@ -63,11 +64,15 @@ const router = new Router({
     }, {
         path: '/employee/:id',
         name: 'EmployeeEdit',
-        component: EmployeeBoard
+        component: EmployeeEdit
     }, {
         path: '/employee/new',
         name: 'EmployeeNew',
-        component: EmployeeBoard
+        component: EmployeeEdit
+    }, {
+        path: '/employee',
+        name: 'EmployeeList',
+        component: EmployeeList
     }
     // {
     //     path: '',
