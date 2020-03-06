@@ -13,6 +13,7 @@
                 text-color="#fff"
                 :default-active="activeRouter"
                 @select="routerHandle">
+                <el-menu-item v-if="showH5Nav && $route.name !== 'Login'" @click="logout">登出</el-menu-item>
                 <el-menu-item-group v-for="(item, i) in MENUS" :key="i">
                     <template slot="title">{{item.menu.Title}}</template>
                     <el-menu-item
@@ -25,7 +26,7 @@
             </el-menu>
         </el-aside><el-container>
             <el-header class="clearfix web-header" height="48px" v-if="showMenu">
-                <span class="fl">{{$route.meta.title}}</span>
+                <span class="fl">{{TAB_TITLE}}</span>
                 <div class="head-right fr" v-if="activeRouter !== 'Login'">
                     <span class="link" @click="logout">登出</span>
                 </div>
@@ -93,6 +94,9 @@ export default {
                 type: FETCH_MENUS,
                 res: LOGIN_MENUS
             });
+            if (this.showH5Nav) {
+                this.showH5Nav = false;
+            }
             this.activeRouter = 'Login';
             this.$router.push({ name: 'Login' });
         },
@@ -135,6 +139,9 @@ export default {
         openLink(menu) {
             if (menu.Href) {
                 window.open(menu.Href, '_blank');
+            }
+            if (!this.showMenu) {
+                this.showH5Nav = false;
             }
         },
         displayMenu() {

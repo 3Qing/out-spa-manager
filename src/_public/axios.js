@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-// axios.defaults.timeout = 10000;
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
 export default (params = {}) => {
-    const url = '//www.your-partner.co.jp';
+    const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
+    // const url = '//www.your-partner.co.jp';
     let options = {
         method: 'GET'
     };
@@ -12,18 +12,19 @@ export default (params = {}) => {
     options.url = `${url}${options.url}`;
     if (options.method.toLocaleUpperCase() === 'POST') {
         options.data = params.params;
+        options.withCredentials = true;
         delete options.params;
     }
     const custom = options.custom;
     delete options.custom;
     return axios(options)
-            .then(res => res.data)
-            .catch(() => {
-                custom.loading && custom.loading.close();
-                custom.vm && custom.vm.$message({
-                    type: 'error',
-                    message: '服务器错误，请联系相关人员',
-                    showClose: true
-                });
+        .then(res => res.data)
+        .catch(() => {
+            custom.loading && custom.loading.close();
+            custom.vm && custom.vm.$message({
+                type: 'error',
+                message: '服务器错误，请联系相关人员',
+                showClose: true
             });
-}
+        });
+};

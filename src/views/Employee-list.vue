@@ -1,6 +1,6 @@
 <template>
     <main-wrapper class="employee-list">
-        <el-form class="main-header" slot="header" size="mini" inline>
+        <el-form class="main-header header-form" slot="header" size="mini" inline>
             <el-form-item>
                 <el-select v-model="form.teamid" placeholder="部门" @change="getData" clearable>
                     <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
@@ -208,30 +208,7 @@ export default {
 </script>
 
 <style lang="less">
-@media screen and (max-width: 1200px) and (min-width: 750px) {
-    .employee-list {
-        .el-form {
-            .el-form-item {
-                margin: 0 15px 0 0 !important;
-                width: 15% !important;
-            }
-        }
-    }
-}
 .employee-list {
-    .el-form {
-        width: 100%;
-        .el-form-item {
-            width: 180px;
-            margin-right: 20px;
-            .el-select {
-                width: 100%;
-                .el-select__tags>span {
-                    display: inline-flex;
-                }
-            }
-        }
-    }
     .table-wrapper {
         padding: 0 20px;
     }

@@ -102,8 +102,9 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
-                    const result = res.data || [];
+                let result = res;
+                if (typeof result === 'string') {
+                    result = JSON.parse(res);
                     if (result.length) {
                         this.allData = [...result];
                     } else {
@@ -114,6 +115,21 @@ export default {
                             SalesPerson: '',
                             CashFlows: []
                         }];
+                    }
+                } else {
+                    if (result.code === 0) {
+                        const data = result.data || [];
+                        if (data.length) {
+                            this.allData = [...data];
+                        } else {
+                            this.allData = [{
+                                ContractTitle: '',
+                                ContractDuration: '',
+                                ContractHours: '',
+                                SalesPerson: '',
+                                CashFlows: []
+                            }];
+                        }
                     }
                 }
             });

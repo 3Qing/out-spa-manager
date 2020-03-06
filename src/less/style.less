@@ -20,6 +20,15 @@ ul {
 [color~=primary] {
     color: #1473B7;
 }
+.col-info {
+    background-color: rgb(233, 233, 235) !important;
+}
+.col-success {
+    background-color: rgba(69, 190, 135, 1) !important;
+}
+.col-warning {
+    background-color: rgb(250, 236, 216) !important;
+}
 .link {
     cursor: pointer;
 }
@@ -54,5 +63,21 @@ ul {
     text-overflow: ellipsis !important;
     &.l3 {
         -webkit-line-clamp: 3;
+    }
+}
+.header-form.el-form {
+    width: 100%;
+    .el-form-item {
+        width: 180px;
+        margin-right: 20px;
+        .el-select {
+            width: 100%;
+            .el-select__tags>span {
+                display: inline-flex;
+            }
+        }
+        .el-date-editor {
+            width: 100%;
+        }
     }
 }

@@ -1,5 +1,24 @@
 @headHeight: 0.74rem;
 
+@media screen and (max-width: 1200px) and (min-width: 750px) {
+    .employee-list {
+        .el-form {
+            .el-form-item {
+                margin: 0 15px 0 0 !important;
+                width: 15% !important;
+            }
+        }
+    }
+    .sales-activity {
+        .main-header.el-form {
+            .el-form-item {
+                margin: 0 !important;
+                width: 25% !important;
+            }
+        }
+    }
+}
+
 @media screen and (max-width: 750px) {
     body {
         font-size: 0.14rem;
@@ -113,6 +132,38 @@
                 .el-button {
                     width: 30%;
                     display: inline-block;
+                }
+            }
+        }
+        .sales-activity {
+            .main-header.el-form {
+                height: auto !important;
+                line-height: auto !important;
+                .el-form-item__content {
+                    margin: 0;
+                }
+                .el-form-item {
+                    margin: 0;
+                    width: 48%;
+                    &:nth-child(2n - 1) {
+                        margin-right: 4%;
+                    }
+                    .el-input {
+                        width: 100%;
+                    }
+                }
+            }
+            .sales-dialog {
+                top: 50%;
+                margin-top: 0 !important;
+                transform: translateY(-50%);
+                .el-form {
+                    .el-form-item {
+                        width: 100% !important;
+                        .el-select, .el-input, .el-textarea, .el-date-editor {
+                            width: 100%;
+                        }
+                    }
                 }
             }
         }

@@ -3,12 +3,12 @@ import Router from 'vue-router';
 
 import Login from '@views/Login';
 import Home from '@views/Home';
-// import Public from '@components/public';
 import EssList from '@views/ESS-list';
 import EssEdit from '@views/ESS-edit';
 import ContractSign from '@views/Contract-sign';
 import EmployeeEdit from '@views/Employee-edit';
 import EmployeeList from '@views/Employee-list';
+import SalesActivity from '@views/Sales-activity';
 
 Vue.use(Router);
 
@@ -19,6 +19,7 @@ Router.prototype.push = function push(location) {
 };
 
 const router = new Router({
+    mode: 'hash',
     routes: [{
         path: '/login',
         name: 'Login',
@@ -73,12 +74,11 @@ const router = new Router({
         path: '/employee',
         name: 'EmployeeList',
         component: EmployeeList
+    }, {
+        path: '/salesactivity',
+        name: 'SalesActivity',
+        component: SalesActivity
     }
-    // {
-    //     path: '',
-    //     component: Public,
-    //     children: []
-    // }
     ]
 });
 

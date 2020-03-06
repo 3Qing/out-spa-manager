@@ -39,12 +39,12 @@ export default {
     data() {
         return {
             form: {
-                empeeid: 'YP002',
+                empeeid: 'YP009',
                 username: '陳 峰',
                 userpwd: 'chenfeng',
                 validatecode: ''
             },
-            validUrl: 'http://your-partner.co.jp/api/getvalidatebmp'
+            validUrl: `${process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy'}/api/getvalidatebmp`
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -109,9 +109,6 @@ export default {
                     });
                     this.$router.push({ name: 'ESSList' });
                 } else {
-                    if (res.code === 9) {
-                        this.reloadValidCover();
-                    }
                     this.$message({
                         type: 'error',
                         showClose: true,
