@@ -1,7 +1,16 @@
 <template>
     <el-dialog custom-class="intro-dialog" title="介绍文" :visible.sync="visible" @close="close">
-        <el-input v-model="content" type="textarea" :rows="3" :maxlength="250"></el-input>
-        <el-button type="primary" size="small" @click="submit">确认</el-button>
+        <div style="margin-bottom: 20px;" v-if="showDate">
+            <span>avaiableDate：</span>
+            <el-date-picker
+                v-model="tmpData.AvaiableDate"
+                type="date"
+                size="mini"
+                value-format="yyyy-MM-dd"
+                value="yyyy-MM-dd"></el-date-picker>
+        </div>
+        <el-input v-model="content" type="textarea" :rows="12" :maxlength="250"></el-input>
+        <el-button type="primary" size="small" :disabled="!content" @click="submit">确认</el-button>
     </el-dialog>
 </template>
 
@@ -10,15 +19,18 @@ export default {
     data() {
         return {
             tmpData: {},
+            date: '',
             content: '',
+            showDate: false,
             visible: false,
             callback: null
         };
     },
     mounted() {
         this.$root.$off('SHOW_INTRO_DIALOG');
-        this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null }) => {
+        this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false }) => {
             this.tmpData = data || {};
+            this.showDate = showDate;
             this.getProposeText(data);
             this.callback = callback;
             this.visible = true;

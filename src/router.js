@@ -10,7 +10,7 @@ import EmployeeEdit from '@views/Employee-edit';
 import EmployeeList from '@views/Employee-list';
 import SalesActivity from '@views/Sales-activity';
 import PreSales from '@views/Pre-Sales';
-import RoleManager from '@views/Role';
+import RoleManager from '@views/Role-manager';
 
 Vue.use(Router);
 

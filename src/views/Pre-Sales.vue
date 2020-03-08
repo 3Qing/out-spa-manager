@@ -2,15 +2,15 @@
     <main-wrapper class="pre-sales">
         <div class="left">
             <el-button size="mini" type="primary" @click="showEmpDialog">添加营业候选人</el-button>
-            <el-table size="small" :data="tableData">
+            <el-table size="small" :data="tableData" @cell-click="cellClick">
                 <el-table-column label="员工号" prop="EmployeeID" width="100px"></el-table-column>
                 <el-table-column label="姓名" prop="EmployeeName" show-overflow-tooltip></el-table-column>
                 <el-table-column label="Avaiable Date" prop="AvaiableDate" width="140px"></el-table-column>
                 <el-table-column label="营业状态" prop="Status"></el-table-column>
                 <el-table-column label="进行中Case数" prop="CaseCount" width="120px"></el-table-column>
                 <el-table-column label="操作" width="80px">
-                    <template>
-                        <el-button type="warning" size="mini">编辑</el-button>
+                    <template slot-scope="scope">
+                        <el-button type="warning" size="mini" @click="showIntroDialog(scope.row)">编辑</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -110,6 +110,21 @@ export default {
                     this.getListData();
                 }
             });
+        },
+        showIntroDialog(data) {
+            this.$root.$emit('SHOW_INTRO_DIALOG', {
+                data,
+                showDate: true,
+                callback: () => {
+                    this.getListData();
+                }
+            });
+        },
+        cellClick(row, column) {
+            if (column.label !== '操作') {
+                this.curItemID = row.ID;
+                this.getCaseListData();
+            }
         }
     }
 };

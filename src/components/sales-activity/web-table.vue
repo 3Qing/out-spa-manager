@@ -1,8 +1,8 @@
 <template>
     <div class="sales-web-table">
-        <el-table size="small" border stripe :data="data" :cell-class-name="cellClassName">
+        <el-table size="small" border stripe :data="data" :span-method="arraySpanMethod">
             <el-table-column label="姓名" prop="EmployeeName" width="100px"></el-table-column>
-            <el-table-column v-for="item in cols" :key="item.prop" :prop="item.prop">
+            <el-table-column v-for="item in cols" :key="item.Date" :prop="item.prop">
                 <p slot="header">{{item.label}}<i class="el-icon-plus" @click="addSales(item)"></i></p>
                 <template slot-scope="scope">
                     <el-popover
@@ -10,7 +10,13 @@
                         placement="top"
                         trigger="hover">
                         <edit-form v-if="scope.row[item.prop]" :data="scope.row[item.prop]" :opt="opt"></edit-form>
-                        <div slot="reference" @click="showDialog(scope.row, item.prop)">{{formatContext(scope.row, item.prop)}}</div>
+                        <div
+                            :class="[cellClassName(scope.row, item.prop)]"
+                            slot="reference"
+                            @click="showDialog(scope.row, item.prop)">
+                            {{formatContext(scope.row, item.prop)}}
+                            <i v-if="formatContext(scope.row, item.prop)" class="el-icon-edit-outline"></i>
+                        </div>
                     </el-popover>
                 </template>
             </el-table-column>
@@ -48,9 +54,14 @@ export default {
         top: 50%;
         color: #1473b7;
         transform: translateY(-50%);
-        &:hover {
-            color: #1473b7;
-        }
+    }
+    .el-icon-edit-outline {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        color: #1473b7;
+        cursor: pointer;
+        transform: translateY(-50%);
     }
     .cell-info {
         background-color: rgb(233, 233, 235) !important;

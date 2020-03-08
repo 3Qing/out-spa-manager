@@ -59,7 +59,14 @@ export default {
     },
     methods: {
         addCase() {
-            this.data.unshift({});
+            this.data.unshift({
+                CustomerID: '',
+                SalesPersonID: '',
+                SalesPersonName: '',
+                Content: '',
+                Status: '',
+                Items: []
+            });
         },
         getSalespersonforselect() {
             this.$axios({
@@ -91,6 +98,7 @@ export default {
         text-align: center;
         top: 0;
         left: 0;
+        z-index: 9;
         background-color: hsla(0, 0%, 100%, .9);
         .el-icon-loading {
             margin-top: 18%;

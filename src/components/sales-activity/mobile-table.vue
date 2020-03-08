@@ -1,11 +1,16 @@
 <template>
     <div class="sales-mobile-table">
-        <el-table size="small" border v-for="list in data" :key="list.Date" :data="list.Activities" :cell-class-name="mobileCellClassName">
+        <el-table size="small" border v-for="list in data" :key="list.Date" :data="list.Activities" :span-method="arraySpanMobileMethod">
             <el-table-column label="姓名" prop="EmployeeName" width="100px"></el-table-column>
             <el-table-column>
                 <p slot="header">{{list.Date}} {{list.WeekDay}}<i class="el-icon-plus" @click="addSales(list)"></i></p>
                 <template slot-scope="scope">
-                    <div @click="showDialog(scope, 'row')">{{formatContext(scope, 'row')}}</div>
+                    <div
+                        :class="[cellClassName(scope, 'row')]"
+                        @click="showDialog(scope, 'row')">
+                        {{formatContext(scope, 'row')}}
+                        <i v-if="formatContext(scope, 'row')" class="el-icon-edit-outline"></i>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
@@ -13,7 +18,6 @@
 </template>
 
 <script>
-// import moment from 'moment';
 import mixins from './mixins';
 export default {
     props: {
@@ -32,6 +36,14 @@ export default {
             font-size: 0.28rem;
             position: absolute;
             right: .2rem;
+            top: 50%;
+            color: #1473b7;
+            transform: translateY(-50%);
+        }
+        .el-icon-edit-outline {
+            position: absolute;
+            right: 0.1rem;
+            font-size: 0.32rem;
             top: 50%;
             color: #1473b7;
             transform: translateY(-50%);

@@ -28,7 +28,7 @@
             <el-form class="fl header-status" size="mini" label-width="50px" label-suffix=":">
                 <el-form-item label="状态">
                     <el-select v-if="edit" v-model="form.Status" size="mini">
-                        <el-option :value="1" label="进行中"></el-option>
+                        <el-option v-for="item in status" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                     <span v-else :class="[getStatusColor(form.Status)]">{{this.getStatusContent()}}</span>
                 </el-form-item>
@@ -65,7 +65,7 @@ export default {
         form: {
             type: Object,
             default: () => ({
-                custom: '',
+                CustomerID: '',
                 SalesPersonID: '',
                 SalesPersonName: '',
                 Content: '',
@@ -83,7 +83,7 @@ export default {
     },
     data() {
         return {
-            status: [{
+            allStatus: [{
                 label: '営業可能・平行なし', value: 1
             }, {
                 label: '並行面談中', value: 2
@@ -94,9 +94,19 @@ export default {
             }, {
                 label: '営業成功終了', value: 9
             }],
+            status: [],
             edit: false,
             isEdit: []
         };
+    },
+    watch: {
+        form() {
+            if (!this.form.ID) {
+                this.status = [this.allStatus[0]];
+            } else {
+                this.status = [...this.allStatus];
+            }
+        }
     },
     methods: {
         getOperText() {
@@ -106,10 +116,11 @@ export default {
             return '编辑';
         },
         setCustomTitle(keyword) {
-            this.form.custom = keyword;
+            this.form.CustomerID = keyword;
         },
         addNewItem() {
-            this.$set(this.form.Items, this.form.Items.length ? this.form.Items.length - 1 : 0, {
+            this.isEdit.push(this.form.Items.length);
+            this.$set(this.form.Items, this.form.Items.length ? this.form.Items.length : 0, {
                 UpdateDateTime: '',
                 Content: '无'
             });
@@ -137,7 +148,7 @@ export default {
             this.isEdit = this.isEdit.filter(item => item !== i);
         },
         getStatusContent() {
-            for (let item of this.status) {
+            for (let item of this.allStatus) {
                 if (item.value === this.form.Status) {
                     return item.label;
                 }
@@ -145,9 +156,31 @@ export default {
         },
         beforeSubmit() {
             if (this.edit) {
+                if (!this.form.SalesPersonID) {
+                    this.$message({
+                        type: 'warning',
+                        showClose: true,
+                        message: '请选择营业'
+                    });
+                    return false;
+                } else if (!this.form.CustomerID) {
+                    this.$message({
+                        type: 'warning',
+                        showClose: true,
+                        message: '请选择客户'
+                    });
+                    return false;
+                } else if (!this.form.Status) {
+                    this.$message({
+                        type: 'warning',
+                        showClose: true,
+                        message: '请选择状态'
+                    });
+                    return false;
+                }
                 const params = {
                     'presales.ID': this.opt.ID,
-                    Content: this.form.Content,
+                    Content: this.form.Content || '',
                     CustomerTitle: '',
                     'salesperson.ID': this.form.SalesPersonID,
                     Status: this.form.ID ? this.form.Status : 1
@@ -165,6 +198,11 @@ export default {
             } else {
                 if (!this.form.Items.length) {
                     this.addNewItem();
+                }
+                if (!this.form.ID) {
+                    this.status = [this.allStatus[0]];
+                } else {
+                    this.status = [...this.allStatus];
                 }
                 this.edit = !this.edit;
             }

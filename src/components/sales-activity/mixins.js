@@ -1,6 +1,13 @@
 import moment from 'moment';
 
 export default {
+    data() {
+        return {
+            recomIndex: -1,
+            mobileSameName: [],
+            sameName: ''
+        };
+    },
     methods: {
         addSales(item) {
             this.$root.$emit('SHOW_ATY_DIALOG', {
@@ -29,17 +36,21 @@ export default {
                 }
             });
         },
-        cellClassName({ row, columnIndex }) {
+        cellClassName(data, field) {
             // 1是黄色，7和8是灰色，9是绿色
-            const data = row[`date${columnIndex}`];
-            if (data) {
-                return data.Status === 1 ? 'cell-warning' : data.Status === 9 ? 'cell-success' : data.Status ? 'cell-info' : '';
+            if (data[field]) {
+                return data[field].Status === 1 ? 'cell-warning' : data[field].Status === 9 ? 'cell-success' : data[field].Status ? 'cell-info' : '';
             }
             return '';
         },
-        mobileCellClassName({ row, columnIndex }) {
-            if (columnIndex) {
-                return row.Status === 1 ? 'cell-warning' : row.Status === 9 ? 'cell-success' : row.Status ? 'cell-info' : '';
+        arraySpanMethod({ row, columnIndex }) {
+            if (columnIndex === 0) {
+                return [row.rowspan, 1];
+            }
+        },
+        arraySpanMobileMethod({ row, columnIndex }) {
+            if (columnIndex === 0) {
+                return [row.rowspan || 0, 1];
             }
         }
     }

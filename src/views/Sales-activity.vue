@@ -2,12 +2,12 @@
     <main-wrapper class="sales-activity">
         <el-form class="main-header header-form" slot="header" size="mini" inline label-width="40px">
             <el-form-item>
-                <el-select v-model="form.teamid" placeholder="部门" @change="getData">
+                <el-select v-model="form.teamid" clearable placeholder="部门" @change="getData">
                     <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="form.salespersonid" placeholder="营业" @change="getData">
+                <el-select v-model="form.salespersonid" clearable placeholder="营业" @change="getData">
                     <el-option v-for="item in sales" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
                 </el-select>
             </el-form-item>
@@ -53,8 +53,7 @@ export default {
                 teamid: '',
                 salespersonid: '',
                 name: '',
-                fromdate: '2020-03-02'
-                // fromdate: new Date()
+                fromdate: new Date()
             },
             teams: [],
             sales: [],
@@ -156,7 +155,23 @@ export default {
                     prop: `date${i + 1}`,
                     Date: item.Date
                 });
-                item.Activities.forEach(cell => {
+                let sameName = '';
+                let recomIndex = -1;
+                let count = 0;
+                item.Activities.forEach((cell, j) => {
+                    if (!sameName) {
+                        sameName = cell.EmployeeName;
+                        recomIndex = j;
+                    }
+                    if (sameName === cell.EmployeeName) {
+                        count++;
+                        item.Activities[recomIndex].rowspan = count;
+                    } else {
+                        recomIndex = j;
+                        item.Activities[recomIndex].rowspan = count;
+                        this.sameName = cell.EmployeeName;
+                        count = 0;
+                    }
                     if (!allEmployee[cell.EmployeeName]) {
                         allEmployee[cell.EmployeeName] = {
                             maxRows: 0
@@ -178,6 +193,7 @@ export default {
                 for (let i = 0; i < maxRows; i++) {
                     data.push({
                         EmployeeName: key,
+                        rowspan: i == 0 ? maxRows : 0,
                         date1: (allEmployee[key].date1 && allEmployee[key].date1[i]) || null,
                         date2: (allEmployee[key].date2 && allEmployee[key].date2[i]) || null,
                         date3: (allEmployee[key].date3 && allEmployee[key].date3[i]) || null,
@@ -186,7 +202,7 @@ export default {
                     });
                 }
             }
-            this.columns = columns;
+            this.columns = [...columns];
             this.listData = data;
             this.mobileListData = [...res];
         },
