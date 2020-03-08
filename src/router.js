@@ -9,6 +9,8 @@ import ContractSign from '@views/Contract-sign';
 import EmployeeEdit from '@views/Employee-edit';
 import EmployeeList from '@views/Employee-list';
 import SalesActivity from '@views/Sales-activity';
+import PreSales from '@views/Pre-Sales';
+import RoleManager from '@views/Role';
 
 Vue.use(Router);
 
@@ -78,6 +80,14 @@ const router = new Router({
         path: '/salesactivity',
         name: 'SalesActivity',
         component: SalesActivity
+    }, {
+        path: '/presales',
+        name: 'PreSales',
+        component: PreSales
+    }, {
+        path: '/rolemanager',
+        name: 'RoleManager',
+        component: RoleManager
     }
     ]
 });

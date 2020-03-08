@@ -1,11 +1,11 @@
 <template>
     <div class="sales-mobile-table">
-        <el-table size="small" border v-for="list in data" :key="list.column.label" :data="list.data" :cell-class-name="mobileCellClassName">
+        <el-table size="small" border v-for="list in data" :key="list.Date" :data="list.Activities" :cell-class-name="mobileCellClassName">
             <el-table-column label="姓名" prop="EmployeeName" width="100px"></el-table-column>
-            <el-table-column :label="list.column.label" :prop="list.column.prop">
-                <p slot="header">{{list.column.label}}<i class="el-icon-edit-outline" @click="addSales(list.column)"></i></p>
+            <el-table-column>
+                <p slot="header">{{list.Date}} {{list.WeekDay}}<i class="el-icon-plus" @click="addSales(list)"></i></p>
                 <template slot-scope="scope">
-                    <span @click="showDialog(scope, 'row')">{{formatContext(scope, 'row')}}</span>
+                    <div @click="showDialog(scope, 'row')">{{formatContext(scope, 'row')}}</div>
                 </template>
             </el-table-column>
         </el-table>
@@ -28,7 +28,7 @@ export default {
 .sales-mobile-table {
     .el-table {
         margin-bottom: 0.4rem;
-        .el-icon-edit-outline {
+        .el-icon-plus {
             font-size: 0.28rem;
             position: absolute;
             right: .2rem;

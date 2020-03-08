@@ -14,21 +14,27 @@ body, html {
 ul {
     list-style: none;
 }
-[color~=danger] {
+[color~=danger], .co-danger {
     color: #DB414E;
 }
-[color~=primary] {
+[color~=primary], .co-primary {
     color: #1473B7;
 }
-.col-info {
-    background-color: rgb(233, 233, 235) !important;
+[color~=warning], .co-warning {
+    color: #E6A23C;
 }
-.col-success {
-    background-color: rgba(69, 190, 135, 1) !important;
+[color~=success], .co-success {
+    color: #45BE87;
 }
-.col-warning {
-    background-color: rgb(250, 236, 216) !important;
-}
+// .col-info {
+//     background-color: rgb(233, 233, 235) !important;
+// }
+// .col-success {
+//     background-color: rgba(69, 190, 135, 1) !important;
+// }
+// .col-warning {
+//     background-color: rgb(250, 236, 216) !important;
+// }
 .link {
     cursor: pointer;
 }
@@ -79,5 +85,11 @@ ul {
         .el-date-editor {
             width: 100%;
         }
+    }
+}
+textarea {
+    resize: none;
+    &.el-textarea__inner {
+        resize: none;
     }
 }

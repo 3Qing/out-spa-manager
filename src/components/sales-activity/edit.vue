@@ -36,15 +36,15 @@
         </el-form-item>
         <el-form-item label="营业" prop="SalesPersonID">
             <el-select v-if="edit" v-model="form.SalesPersonID">
-                <el-option v-for="item in opt.sales" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
+                <el-option v-for="item in opt.sales" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
             </el-select>
             <span v-else>{{getContext(form.SalesPersonID, 'sales')}}</span>
         </el-form-item>
         <el-form-item label="社员" prop="EmployeeID">
             <el-select v-if="edit" v-model="form.EmployeeID">
-                <el-option v-for="item in opt.employeeTypes" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
+                <el-option v-for="item in opt.employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
             </el-select>
-            <span v-else>{{getContext(form.EmployeeID, 'employeeTypes')}}</span>
+            <span v-else>{{getContext(form.EmployeeID, 'employees')}}</span>
         </el-form-item>
         <el-form-item label="地点" prop="AtyLocation">
             <el-input v-if="edit" v-model="form.AtyLocation" :maxlength="50"></el-input>
@@ -76,7 +76,7 @@ export default {
         opt: {
             type: Object,
             default: () => ({
-                employeeTypes: [],
+                employees: [],
                 sales: []
             })
         }
@@ -142,7 +142,7 @@ export default {
             if (this.opt[type]) {
                 for (let i = 0; i < this.opt[type].length; i++) {
                     if (this.opt[type][i].ID === value) {
-                        return this.opt[type][i][`${type === 'sales' ? 'Name' : 'Title'}`];
+                        return this.opt[type][i].Name;
                     }
                 }
             } else {

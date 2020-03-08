@@ -53,10 +53,10 @@ export default {
                 teamid: '',
                 salespersonid: '',
                 name: '',
-                fromdate: new Date()
+                fromdate: '2020-03-02'
+                // fromdate: new Date()
             },
             teams: [],
-            employeeTypes: [],
             sales: [],
             columns: [],
             listData: [],
@@ -73,7 +73,7 @@ export default {
             });
             vm.getData();
             vm.getTeams();
-            vm.getEmployeeTypes();
+            vm.getEmployees();
             vm.getSalespersonforselect();
         });
     },
@@ -98,7 +98,7 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res.code === 0) {
-                    this.resultHandler(res.data);
+                    this.formatResult(res.data || []);
                 } else {
                     this.$message({
                         type: 'error',
@@ -115,12 +115,11 @@ export default {
                 this.teams = res || [];
             });
         },
-        getEmployeeTypes() {
+        getEmployees() {
             this.$axios({
-                url: '/api/employeetypesforselect'
+                url: '/api/employeesforselect'
             }).then(res => {
-                this.employeeTypes = res || [];
-                this.$set(this.opt, 'employeeTypes', this.employeeTypes);
+                this.$set(this.opt, 'employees', res.data || []);
             });
         },
         getSalespersonforselect() {
@@ -128,8 +127,68 @@ export default {
                 url: '/api/salespersonforselect'
             }).then(res => {
                 this.sales = res.data || [];
-                this.$set(this.opt, 'sales', this.sales);
+                this.$set(this.opt, 'sales', res.data || []);
             });
+        },
+        /**
+         * Web-Table
+         * [{
+         *  label: '日期 星期一'，prop: date1
+         * },{
+         *  label: '日期 星期二'，prop: date2
+         * }]
+         * 
+         * [{
+         *  EmployeeName: '', date1: {}, date2: {}, date3: {} ...
+         * }]
+         * 
+         * Mobile Table
+         * 
+         */
+        formatResult(res) {
+            const result = [...res];
+            const columns = [];
+            const allEmployee = {};
+            let data = [];
+            result.forEach((item, i) => {
+                columns.push({
+                    label: `${item.Date} ${item.WeekDay}`,
+                    prop: `date${i + 1}`,
+                    Date: item.Date
+                });
+                item.Activities.forEach(cell => {
+                    if (!allEmployee[cell.EmployeeName]) {
+                        allEmployee[cell.EmployeeName] = {
+                            maxRows: 0
+                        };
+                    }
+                    if (!allEmployee[cell.EmployeeName][`date${i + 1}`]) {
+                        allEmployee[cell.EmployeeName][`date${i + 1}`] = [];
+                    }
+                    allEmployee[cell.EmployeeName][`date${i + 1}`].push(cell);
+                    let length = allEmployee[cell.EmployeeName][`date${i + 1}`].length;
+                    
+                    if (allEmployee[cell.EmployeeName].maxRows < length) {
+                        allEmployee[cell.EmployeeName].maxRows = length;
+                    }
+                });
+            });
+            for (let key in allEmployee) {
+                const maxRows = allEmployee[key].maxRows;
+                for (let i = 0; i < maxRows; i++) {
+                    data.push({
+                        EmployeeName: key,
+                        date1: (allEmployee[key].date1 && allEmployee[key].date1[i]) || null,
+                        date2: (allEmployee[key].date2 && allEmployee[key].date2[i]) || null,
+                        date3: (allEmployee[key].date3 && allEmployee[key].date3[i]) || null,
+                        date4: (allEmployee[key].date4 && allEmployee[key].date4[i]) || null,
+                        date5: (allEmployee[key].date5 && allEmployee[key].date5[i]) || null,
+                    });
+                }
+            }
+            this.columns = columns;
+            this.listData = data;
+            this.mobileListData = [...res];
         },
         resultHandler(res) {
             const result = res || [];

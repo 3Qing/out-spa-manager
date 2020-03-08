@@ -20,8 +20,8 @@ export default (params = {}) => {
     return axios(options)
         .then(res => res.data)
         .catch(() => {
-            custom.loading && custom.loading.close();
-            custom.vm && custom.vm.$message({
+            custom && custom.loading && custom.loading.close();
+            custom && custom.vm && custom.vm.$message({
                 type: 'error',
                 message: '服务器错误，请联系相关人员',
                 showClose: true

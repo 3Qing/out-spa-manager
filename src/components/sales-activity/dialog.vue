@@ -64,9 +64,8 @@ export default {
                     AtyResult: ''
                 };
             }
-            if (opt.label) {
-                const date = opt.label.split(' ')[0];
-                this.$set(this.baseForm, 'AtyDate', moment(date).format('YYYY-MM-DD HH:mm'));
+            if (opt.Date) {
+                this.$set(this.baseForm, 'AtyDate', moment(opt.Date).format('YYYY-MM-DD HH:mm'));
             } else {
                 this.$set(this.baseForm, 'AtyDate', moment(new Date(this.baseForm.AtyDate).getTime()).format('YYYY-MM-DD HH:mm'));
             }

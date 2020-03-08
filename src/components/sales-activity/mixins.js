@@ -31,7 +31,7 @@ export default {
         },
         cellClassName({ row, columnIndex }) {
             // 1是黄色，7和8是灰色，9是绿色
-            const data = row[`AtyDate${columnIndex - 1}`];
+            const data = row[`date${columnIndex}`];
             if (data) {
                 return data.Status === 1 ? 'cell-warning' : data.Status === 9 ? 'cell-success' : data.Status ? 'cell-info' : '';
             }
