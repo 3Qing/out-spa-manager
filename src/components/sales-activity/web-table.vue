@@ -11,8 +11,8 @@
                         trigger="hover">
                         <edit-form v-if="scope.row[item.prop]" :data="scope.row[item.prop]" :opt="opt"></edit-form>
                         <div
-                            :class="[cellClassName(scope.row, item.prop)]"
                             slot="reference"
+                            :class="[cellClassName(scope.row, item.prop)]"
                             @click="showDialog(scope.row, item.prop)">
                             {{formatContext(scope.row, item.prop)}}
                             <i v-if="formatContext(scope.row, item.prop)" class="el-icon-edit-outline"></i>

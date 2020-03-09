@@ -9,26 +9,26 @@
                         filterable
                         clearable
                         :remote-method="setCustomTitle"
-                        v-if="edit">
+                        v-if="form.edit">
                         <el-option v-for="item in opt.customers" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
                     </el-select>
                     <span v-else>{{form.CustomerTitle}}</span>
                 </el-form-item>
                 <el-form-item label="营业">
-                    <el-select v-model="form.SalesPersonID" v-if="edit">
+                    <el-select v-model="form.SalesPersonID" v-if="form.edit">
                         <el-option v-for="item in opt.sales" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
                     </el-select>
                     <span v-else>{{form.SalesPersonName}}</span>
                 </el-form-item>
                 <el-form-item label="概要">
-                    <el-input v-if="edit" type="textarea" v-model="form.Content" :maxlength="200" :rows="2"></el-input>
+                    <el-input v-if="form.edit" type="textarea" v-model="form.Content" :maxlength="200" :rows="2"></el-input>
                     <span v-else>{{form.Content}}</span>
                 </el-form-item>
             </el-form>
             <el-form class="fl header-status" size="mini" label-width="50px" label-suffix=":">
                 <el-form-item label="状态">
-                    <el-select v-if="edit" v-model="form.Status" size="mini">
-                        <el-option v-for="item in status" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                    <el-select v-if="form.edit" v-model="form.Status" size="mini">
+                        <el-option v-for="item in displayStatus" :key="item.val" :value="item.val" :label="item.label"></el-option>
                     </el-select>
                     <span v-else :class="[getStatusColor(form.Status)]">{{this.getStatusContent()}}</span>
                 </el-form-item>
@@ -42,12 +42,12 @@
                     <el-date-picker
                         size="mini"
                         type="datetime"
-                        value-format="yyyy-MM-dd HH:mm"
                         format="yyyy-MM-dd HH:mm"
+                        value-format="yyyy-MM-dd HH:mm"
                         v-model="item.UpdateDateTime"></el-date-picker>
                     <el-input size="mini" v-model="item.Content"></el-input>
                 </div>
-                <p class="display-content" v-else>{{item.UpdateDateTime}} {{item.Content}}</p>
+                <p class="display-content" v-else>{{formatDate(item.UpdateDateTime)}} {{item.Content}}</p>
                 <div class="oper-area">
                     <i class="el-icon-circle-plus-outline" @click="addNewItem" v-if="!isEdit.includes(i) && i === form.Items.length - 1" color="primary"></i>
                     <i class="el-icon-edit-outline" v-if="!isEdit.includes(i)" @click="modifyItem(item, i)" color="warning"></i>
@@ -65,6 +65,7 @@ export default {
         form: {
             type: Object,
             default: () => ({
+                edit: false,
                 CustomerID: '',
                 SalesPersonID: '',
                 SalesPersonName: '',
@@ -81,36 +82,33 @@ export default {
             })
         }
     },
+    inject: [ 'status' ],
     data() {
         return {
-            allStatus: [{
-                label: '営業可能・平行なし', value: 1
-            }, {
-                label: '並行面談中', value: 2
-            }, {
-                label: '営業失敗終了', value: 7
-            }, {
-                label: '営業取消', value: 8
-            }, {
-                label: '営業成功終了', value: 9
-            }],
-            status: [],
-            edit: false,
+            displayStatus: [],
             isEdit: []
         };
     },
     watch: {
         form() {
             if (!this.form.ID) {
-                this.status = [this.allStatus[0]];
+                this.displayStatus = [this.status[0]];
             } else {
-                this.status = [...this.allStatus];
+                this.displayStatus = [...this.status];
             }
         }
     },
+    mounted() {
+        this.initNewCase();
+    },
     methods: {
+        initNewCase() {
+            if (!this.form.ID) {
+                this.displayStatus = [this.status[0]];
+            }
+        },
         getOperText() {
-            if (this.edit) {
+            if (this.form.edit) {
                 return this.form.ID ? '保存' : '新增';
             }
             return '编辑';
@@ -119,14 +117,17 @@ export default {
             this.form.CustomerID = keyword;
         },
         addNewItem() {
-            this.isEdit.push(this.form.Items.length);
             this.$set(this.form.Items, this.form.Items.length ? this.form.Items.length : 0, {
                 UpdateDateTime: '',
-                Content: '无'
+                Content: ''
             });
         },
         modifyItem(item, i) {
-            item.UpdateDateTime = moment(new Date(item.UpdateDateTime).getTime()).format('YYYY-MM-DD HH:mm');
+            console.log(item.UpdateDateTime);
+            if (item.UpdateDateTime) {
+                item.UpdateDateTime = moment(new Date(item.UpdateDateTime).getTime()).format('YYYY-MM-DD HH:mm');
+            }
+            console.log(item);
             this.$set(this.form.Items, i, item);
             this.isEdit.push(i);
         },
@@ -148,14 +149,21 @@ export default {
             this.isEdit = this.isEdit.filter(item => item !== i);
         },
         getStatusContent() {
-            for (let item of this.allStatus) {
-                if (item.value === this.form.Status) {
+            for (let item of this.status) {
+                if (item.val === this.form.Status) {
                     return item.label;
                 }
             }
         },
+        formatDate(time) {
+            if (time) {
+                return moment(new Date(time).getTime()).format('YYYY-MM-DD HH:mm');
+            }
+            return '';
+        },
         beforeSubmit() {
-            if (this.edit) {
+            if (this.form.edit) {
+                console.log(this.form);
                 if (!this.form.SalesPersonID) {
                     this.$message({
                         type: 'warning',
@@ -200,11 +208,11 @@ export default {
                     this.addNewItem();
                 }
                 if (!this.form.ID) {
-                    this.status = [this.allStatus[0]];
+                    this.displayStatus = [this.status[0]];
                 } else {
-                    this.status = [...this.allStatus];
+                    this.displayStatus = [...this.status];
                 }
-                this.edit = !this.edit;
+                this.$set(this.form, 'edit', !(this.form.edit || false));
             }
         },
         submit(params) {
@@ -220,7 +228,7 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res.code === 0) {
-                    this.edit = !this.edit;
+                    this.form.edit = !this.form.edit;
                     this.$emit('update');
                 } else {
                     this.$message({
@@ -232,6 +240,21 @@ export default {
             });
         },
         submitCaseItem(item, i) {
+            if (!item.Content || !item.UpdateDateTime) {
+                this.$message({
+                    type: 'warning',
+                    showClose: true,
+                    message: '请选择时间并填写内容'
+                });
+                return false;
+            } else if (!this.form.ID) {
+                this.$message({
+                    type: 'warning',
+                    showClose: true,
+                    message: '请先新增Case信息'
+                });
+                return false;
+            }
             const params = {
                 Content: item.Content,
                 UpdateDateTime: item.UpdateDateTime + ':00',
@@ -289,6 +312,7 @@ export default {
     }
     .case-content {
         li {
+            height: 24px;
             position: relative;
             margin-bottom: 10px;
         }

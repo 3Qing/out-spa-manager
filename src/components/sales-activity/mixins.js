@@ -21,7 +21,7 @@ export default {
         formatContext(row, field) {
             if (row[field]) {
                 const duration = moment(new Date(row[field].AtyDate).getTime()).add(row[field].AtyMinutes, 'm').format('HH:mm');
-                return `${moment(new Date(row[field].AtyDate).getTime()).format('HH:mm')}~${duration} ${row[field].AtyLocation}`;
+                return `${moment(new Date(row[field].AtyDate).getTime()).format('HH:mm')}~${duration} ${row[field].AtyPurpose}`;
             } else {
                 return '';
             }

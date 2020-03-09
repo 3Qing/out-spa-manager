@@ -72,7 +72,7 @@ export default {
             this.$root.$emit('SHOW_INTRO_DIALOG', {
                 data: row || {},
                 callback: () => {
-                    this.getEmployeeData();
+                    this.close();
                 }
             });
         }

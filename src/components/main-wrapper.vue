@@ -1,8 +1,5 @@
 <template>
     <div class="main-wrapper">
-        <el-breadcrumb separator-class="el-icon-arrow-right" v-if="!IS_H5 && opt.crumbs.length">
-            <el-breadcrumb-item v-for="(item, i) in opt.crumbs" :key="i" :to="item.to">{{item.label}}</el-breadcrumb-item>
-        </el-breadcrumb>
         <slot name="header"></slot>
         <div class="content-wrapper">
             <slot></slot>

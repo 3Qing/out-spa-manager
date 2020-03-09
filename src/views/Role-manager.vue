@@ -121,7 +121,6 @@ export default {
             this.$axios({
                 url: '/api/teamsforselect'
             }).then(res => {
-                console.log(res);
                 this.teams = res || [];
             });
         },

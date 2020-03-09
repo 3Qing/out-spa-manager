@@ -2,7 +2,6 @@
     <el-dialog :title="`${baseForm.ID ? '编辑' : '新增'}`" custom-class="sales-dialog" :visible.sync="visible" @close="close">
         <div class="oper-area">
             <el-button size="mini" type="primary" @click="beforeUpdate">{{baseForm.ID ? '更新' : '保存'}}</el-button>
-            <el-button size="mini" type="danger" @click="cancelAty" v-if="baseForm.ID">取消活动安排</el-button>
         </div>
         <edit-form v-if="showForm" ref="formWrapper" :data="baseForm" :edit="edit" :opt="opt"></edit-form>
     </el-dialog>
@@ -65,7 +64,7 @@ export default {
                 };
             }
             if (opt.Date) {
-                this.$set(this.baseForm, 'AtyDate', moment(opt.Date).format('YYYY-MM-DD HH:mm'));
+                this.$set(this.baseForm, 'AtyDate', moment(new Date(opt.Date).setHours(10)).format('YYYY-MM-DD HH:mm'));
             } else {
                 this.$set(this.baseForm, 'AtyDate', moment(new Date(this.baseForm.AtyDate).getTime()).format('YYYY-MM-DD HH:mm'));
             }

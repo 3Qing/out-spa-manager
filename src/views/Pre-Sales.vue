@@ -1,12 +1,21 @@
 <template>
     <main-wrapper class="pre-sales">
+        <div slot="header" class="main-header">
+            <el-select v-model="status" multiple collapse-tags @visible-change="visibelChange" size="mini">
+                <el-option v-for="item in empStatus" :key="item.val" :value="item.val" :label="item.label"></el-option>
+            </el-select>
+        </div>
         <div class="left">
             <el-button size="mini" type="primary" @click="showEmpDialog">添加营业候选人</el-button>
             <el-table size="small" :data="tableData" @cell-click="cellClick">
                 <el-table-column label="员工号" prop="EmployeeID" width="100px"></el-table-column>
                 <el-table-column label="姓名" prop="EmployeeName" show-overflow-tooltip></el-table-column>
                 <el-table-column label="Avaiable Date" prop="AvaiableDate" width="140px"></el-table-column>
-                <el-table-column label="营业状态" prop="Status"></el-table-column>
+                <el-table-column label="营业状态" prop="Status" width="140px">
+                    <template slot-scope="scope">
+                        <div>{{getStatusText(scope.row.Status)}}</div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="进行中Case数" prop="CaseCount" width="120px"></el-table-column>
                 <el-table-column label="操作" width="80px">
                     <template slot-scope="scope">
@@ -46,7 +55,26 @@ export default {
             tableData: [],
             caseListData: [],
             curItemID: -1,
-            caseLoading: false
+            caseLoading: false,
+            status: [1, 2, 3],
+            empStatus: [{
+                label: '開始', val: 1
+            }, {
+                label: '提案のみ', val: 2
+            }, {
+                label: '並行面談中', val: 3
+            }, {
+                label: '取消', val: 7
+            }, {
+                label: '失敗終了', val: 8
+            }, {
+                label: '成功終了', val: 9
+            }]
+        };
+    },
+    provide() {
+        return {
+            status: this.empStatus
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -60,12 +88,13 @@ export default {
     },
     methods: {
         getListData() {
+            const loading = this.$loading({ lock: true, text: '正在获取列表数据...' });
+            let url = '/api/getpresaleslist';
+            let params = this.status.map((item, i) => `statuses[${i}]=${item}`);
             this.$axios({
-                url: '/api/getpresaleslist',
-                params: {
-                    statuses: 1
-                }
+                url: `${url}?${params.join('&')}`
             }).then(res => {
+                loading.close();
                 if (res.code === 0) {
                     const result = res.data || [];
                     this.tableData = result;
@@ -125,6 +154,18 @@ export default {
                 this.curItemID = row.ID;
                 this.getCaseListData();
             }
+        },
+        getStatusText(val) {
+            for (let item of this.empStatus) {
+                if (item.val === val) {
+                    return item.label;
+                }
+            }
+        },
+        visibelChange(val) {
+            if (!val) {
+                this.getListData();
+            }
         }
     }
 };
@@ -132,6 +173,7 @@ export default {
 
 <style lang="less">
 .pre-sales {
+
     .content-wrapper {
         &:after {
             content: '';

@@ -112,7 +112,7 @@
                 <el-input v-model="form.expectpj" :maxlength="50"></el-input>
             </el-form-item>
             <el-form-item label="备注">
-                <el-input v-model="form.comment" :maxlength="200"></el-input>
+                <el-input v-model="form.comment" type="textarea" :rows="3" :maxlength="200"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" size="small" @click="beforeSubmit">保存</el-button>

@@ -2,11 +2,6 @@
     <main-wrapper class="sales-activity">
         <el-form class="main-header header-form" slot="header" size="mini" inline label-width="40px">
             <el-form-item>
-                <el-select v-model="form.teamid" clearable placeholder="部门" @change="getData">
-                    <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
                 <el-select v-model="form.salespersonid" clearable placeholder="营业" @change="getData">
                     <el-option v-for="item in sales" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
                 </el-select>
@@ -23,6 +18,9 @@
                     :clearable="false"
                     :editable="false"
                     format="yyyy-MM-dd"></el-date-picker>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-d-arrow-right" size="mini" @click="getNextFireDayData"></el-button>
             </el-form-item>
         </el-form>
         <web-table v-if="!IS_H5" :data="listData" :cols="columns" :opt="opt" @update="getData"></web-table>
@@ -50,10 +48,9 @@ export default {
     data() {
         return {
             form: {
-                teamid: '',
                 salespersonid: '',
                 name: '',
-                fromdate: new Date()
+                fromdate: ''
             },
             teams: [],
             sales: [],
@@ -70,6 +67,7 @@ export default {
                 type: CHANGE_TAB_TITLE,
                 title: '活动清单'
             });
+            vm.form.fromdate = moment(new Date()).format('YYYY-MM-DD');
             vm.getData();
             vm.getTeams();
             vm.getEmployees();
@@ -85,7 +83,6 @@ export default {
             this.$axios({
                 url: '/api/getsalesactivitylist',
                 params: {
-                    teamid: this.form.teamid || 0,
                     salespersonid: this.form.salespersonid || 0,
                     name: this.form.name,
                     fromdate: this.form.fromdate
@@ -106,6 +103,12 @@ export default {
                     });
                 }
             });
+        },
+        getNextFireDayData() {
+            let date = new Date(this.form.fromdate).getTime();
+            date = new Date().setTime(date + 3600 * 1000 * 24 * 5);
+            this.form.fromdate = moment(date).format('YYYY-MM-DD');
+            this.getData();
         },
         getTeams() {
             this.$axios({
@@ -203,7 +206,7 @@ export default {
                 }
             }
             this.columns = [...columns];
-            this.listData = data;
+            this.listData = [...data];
             this.mobileListData = [...res];
         },
         resultHandler(res) {

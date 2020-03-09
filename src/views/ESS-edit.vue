@@ -1,5 +1,5 @@
 <template>
-    <main-wrapper class="ess-edit" :opt="opt">
+    <main-wrapper class="ess-edit">
         <el-card>
             <div class="summary">合计作业时间:<span>{{total}}</span></div>
             <el-table
@@ -19,7 +19,7 @@
                         <span>{{formatDateType(scope.row)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="午前作业时间" min-width="180">
+                <el-table-column label="午前作业时间" width="260">
                     <template slot-scope="scope">
                         <el-time-picker
                             v-if="editable"
@@ -28,7 +28,7 @@
                             v-model="timePickers[`${scope.$index}_AM`]"
                             format="HH:mm"
                             value-format="HH:mm"
-                            range-separator="至"
+                            range-separator="~"
                             start-placeholder="开始时间"
                             end-placeholder="结束时间"
                             placeholder="选择时间范围"
@@ -41,7 +41,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="午后作业时间" min-width="180">
+                <el-table-column label="午后作业时间" width="260">
                     <template slot-scope="scope">
                         <el-time-picker
                             v-if="editable"
@@ -50,7 +50,7 @@
                             v-model="timePickers[`${scope.$index}_PM`]"
                             format="HH:mm"
                             value-format="HH:mm"
-                            range-separator="至"
+                            range-separator="~"
                             start-placeholder="开始时间"
                             end-placeholder="结束时间"
                             placeholder="选择时间范围"
@@ -70,7 +70,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="100">
-                    <template slot-scope="scope" v-if="scope.$index < 1">
+                    <template slot-scope="scope" v-if="scope.$index === workDayIndex">
                         <el-button type="primary" size="mini" @click="copyOneToAll(scope)">拷贝</el-button>
                     </template>
                 </el-table-column>
@@ -223,6 +223,7 @@ export default {
                 '31_AM': null,
                 '31_PM': null
             },
+            workDayIndex: -1,
             total: '',
             editable: true
         };
@@ -248,41 +249,40 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                const result = JSON.parse(res || {});
-                const worktimes = result.worktimes || [];
-                // let sumDuration = 0;
-                worktimes.forEach((item, index) => {
-                    this.timePickers[`${index}_AM`] = [
-                        this.formatTime(item, 'AMFromTime') || '',
-                        this.formatTime(item, 'AMToTime') || ''
-                    ];
-                    this.timePickers[`${index}_PM`] = [
-                        this.formatTime(item, 'PMFromTime') || '',
-                        this.formatTime(item, 'PMToTime') || ''
-                    ];
-                    item.Date = this.formatDate(item.Date);
-                    item.AMFromTime = this.formatTime(item, 'AMFromTime');
-                    item.AMToTime = this.formatTime(item, 'AMToTime');
-                    item.PMFromTime = this.formatTime(item, 'PMFromTime');
-                    item.PMToTime = this.formatTime(item, 'PMToTime');
-                    // item.Content = item.Content || '';
-                    // const AMduration = moment.duration(new moment(item.AMToTime).diff(new moment(item.AMFromTime)));
-                    // const PMduration = moment.duration(new moment(item.PMToTime).diff(new moment(item.PMFromTime)));
-                    // sumDuration += (AMduration + PMduration);
-                });
-                if (result.fares && result.fares.length) {
-                    this.fares = [...result.fares];
-                } else {
-                    this.fares = [{ FareID: 1, Title: '交通费', Amount: '' }];
+                if (typeof res === 'object') {
+                    const result = res || {};
+                    const worktimes = result.WorkTimes || [];
+                    // let sumDuration = 0;
+                    worktimes.forEach((item, index) => {
+                        if (item.DateType === 1 && this.workDayIndex === -1) {
+                            this.workDayIndex = index;
+                        }
+                        this.timePickers[`${index}_AM`] = [
+                            this.formatTime(item, 'AMFromTime') || '',
+                            this.formatTime(item, 'AMToTime') || ''
+                        ];
+                        this.timePickers[`${index}_PM`] = [
+                            this.formatTime(item, 'PMFromTime') || '',
+                            this.formatTime(item, 'PMToTime') || ''
+                        ];
+                        item.Date = this.formatDate(item.Date);
+                        item.AMFromTime = this.formatTime(item, 'AMFromTime');
+                        item.AMToTime = this.formatTime(item, 'AMToTime');
+                        item.PMFromTime = this.formatTime(item, 'PMFromTime');
+                        item.PMToTime = this.formatTime(item, 'PMToTime');
+                    });
+                    if (result.Fares && result.Fares.length) {
+                        this.fares = [...result.Fares];
+                    } else {
+                        this.fares = [{ FareID: 1, Title: '交通费', Amount: '' }];
+                    }
+                    this.worktimes = [...worktimes];
+                    this.essId = result.ID;
+                    this.files = {};
+                    this.$root.$emit('UPLOAD', { type: 'clear' });
+                    this.total = `${result.TotalHours}小时${result.TotalMinutes}分钟`;
+                    this.editable = result.Editable || false;
                 }
-                this.worktimes = [...worktimes];
-                this.essId = result.ID;
-                this.files = {};
-                this.$root.$emit('UPLOAD', { type: 'clear' });
-                this.total = `${result.TotalHours}小时${result.TotalMinutes}分钟`;
-                // const secondTimeStamp = sumDuration / 1000;
-                // this.total = `${parseInt(secondTimeStamp / 3600).toString().padStart(2, '0')}小时${parseInt((secondTimeStamp % 3600) / 60).toString().padStart(2, '0')}分钟`;
-                this.editable = result.Editable || false;
             });
         },
         upload({ file, opt }) {
@@ -310,10 +310,16 @@ export default {
             }
         },
         formatDate(value) {
-            return moment(value).format('YYYY-MM-DD');
+            if (value) {
+                return moment(value).format('YYYY-MM-DD');
+            }
+            return '';
         },
         formatTime(row, field) {
-            return moment(row[field]).format('HH:mm');
+            if (row[field]) {
+                return moment(row[field]).format('HH:mm');
+            }
+            return '';
         },
         formatFareID(row) {
             if (row.FareID === 1) {
@@ -349,7 +355,7 @@ export default {
         copyOneToAll(scope) {
             const timePickers = {};
             const worktimes = this.worktimes.map((item, index) => {
-                if (item.DateType !== 1 && index) {
+                if (item.DateType !== 1 && this.workDayIndex !== index) {
                     return item;
                 } else {
                     timePickers[`${index}_AM`] = [scope.row.AMFromTime, scope.row.AMToTime];
@@ -402,17 +408,16 @@ export default {
                 });
             });
             this.fares.forEach((item, index) => {
-                if (this.files[index]) {
-                    formData.append(`file${index}`, this.files[index]);
-                }
-                if (item.ID) {
-                    formData.append(`fares[${index}].ID`, item.ID);
-                }
-                formData.append(`fares[${index}].FareID`, item.FareID);
-                formData.append(`fares[${index}].Title`, item.Title);
-                formData.append(`fares[${index}].Amount`, item.Amount);
-                if (!item.FareID || !item.Title || !item.Amount) {
-                    message = '费用项与未填写的';
+                if (item.Amount) {
+                    if (this.files[index]) {
+                        formData.append(`file${index}`, this.files[index]);
+                    }
+                    if (item.ID) {
+                        formData.append(`fares[${index}].ID`, item.ID);
+                    }
+                    formData.append(`fares[${index}].FareID`, item.FareID);
+                    formData.append(`fares[${index}].Title`, item.Title);
+                    formData.append(`fares[${index}].Amount`, item.Amount);
                 }
             });
 
@@ -446,7 +451,7 @@ export default {
         },
         watchInvoice(scope) {
             this.$root.$emit('SHOW_PICTURE_DIALOG', {
-                url: ` //www.your-partner.co.jp/api/getfareimage?fareid=${scope.row.ID}`
+                url: `http://www.your-partner.co.jp/api/getfareimage?fareid=${scope.row.ID}`
             });
         }
     }
@@ -479,7 +484,9 @@ export default {
             }
         }
         .footer {
-            margin-top: 20px;
+            height: auto;
+            padding: 20px 0 10px;
+            border-top: none;
         }
     }
 }

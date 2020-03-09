@@ -4,7 +4,6 @@ axios.defaults.withCredentials = true;
 
 export default (params = {}) => {
     const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
-    // const url = '//www.your-partner.co.jp';
     let options = {
         method: 'GET'
     };

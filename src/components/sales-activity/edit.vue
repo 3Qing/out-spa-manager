@@ -25,7 +25,8 @@
                 v-model="form.AtyDate"
                 type="datetime"
                 value-format="yyyy-MM-dd HH:mm"
-                format="yyyy-MM-dd HH:mm"></el-date-picker>
+                format="yyyy-MM-dd HH:mm"
+                default-time="10:00"></el-date-picker>
             <span v-else>{{form.AtyDate}}</span>
         </el-form-item>
         <el-form-item label="面试时长" prop="AtyMinutes">
@@ -131,6 +132,11 @@ export default {
                 label: '取消', value: 8
             }]
         };
+    },
+    watch: {
+        data(data) {
+            this.form = { ...data };
+        }
     },
     mounted() {
         if (this.data) {

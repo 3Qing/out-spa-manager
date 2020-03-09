@@ -10,7 +10,7 @@
             <case-item
                 v-for="(item, i) in data"
                 :form="item"
-                :key="i"
+                :key="item.ID || i"
                 @update="$emit('update')"
                 :opt="opt"></case-item>
         </div>
@@ -60,12 +60,16 @@ export default {
     methods: {
         addCase() {
             this.data.unshift({
+                edit: true,
                 CustomerID: '',
                 SalesPersonID: '',
                 SalesPersonName: '',
                 Content: '',
                 Status: '',
-                Items: []
+                Items: [{
+                    UpdateDateTime: '',
+                    Content: ''
+                }]
             });
         },
         getSalespersonforselect() {
