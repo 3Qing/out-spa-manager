@@ -7,7 +7,7 @@
                 <template slot-scope="scope">
                     <el-popover
                         width="350"
-                        placement="top"
+                        placement="left"
                         trigger="hover">
                         <edit-form v-if="scope.row[item.prop]" :data="scope.row[item.prop]" :opt="opt"></edit-form>
                         <div

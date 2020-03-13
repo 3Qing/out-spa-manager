@@ -17,18 +17,27 @@
                     <el-checkbox
                         v-for="item in teams"
                         :key="item.TeamID"
-                        :value="item.TeamID"
-                        :label="item.TeamName"></el-checkbox>
+                        :label="item.TeamID">{{item.TeamName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
             <el-form-item label="角色权限" v-if="isNew || form.ID">
                 <el-checkbox-group v-model="form.action">
-                    <el-checkbox v-for="item in actions" :key="item.value" :label="item.label" :value="item.value"></el-checkbox>
+                    <el-checkbox v-for="item in actions" :key="item.Action" :label="item.Action">{{item.Title}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="角色菜单" v-if="isNew || form.ID"></el-form-item>
-            <el-form-item>
-                <el-button type="primary" size="mini">保存</el-button>
+            <el-form-item label="角色菜单" v-if="isNew || form.ID">
+                <role-menu-tree
+                    v-for="(item, i) in menus"
+                    :data="item"
+                    :total="menus.length"
+                    :key="i"
+                    :index="i"
+                    :deep="deep"
+                    @addMenu="addMenuHandler"
+                    @delete="deleteMenu"></role-menu-tree>
+            </el-form-item>
+            <el-form-item v-if="isNew || form.ID">
+                <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新增' : '保存'}}</el-button>
             </el-form-item>
         </el-form>
     </main-wrapper>
@@ -37,73 +46,39 @@
 <script>
 import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
-// import RoleList from '@components/role-manager/role-list';
+import RoleMenuTree from '@components/role-manager/menu-tree';
 
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        RoleMenuTree
     },
     data() {
         return {
             isNew: false,
             allRole: [],
             curRole: '',
+            cacheFormID: '',
             form: {
                 ID: '',
                 Title: '',
                 TeamID: [],
                 action: []
             },
+            menus: [],
+            deep: 0,
             teams: [],
-            actions: [{
-                label: '查看员工清单',
-                value: 'act_disempeelist'
-            }, {
-                label: '入职员工',
-                value: 'act_empeeonboard'
-            }, {
-                label: '编辑员工信息',
-                value: 'act_editempee'
-            }, {
-                label: '员工异动',
-                value: 'act_transempee'
-            }, {
-                label: '员工调薪',
-                value: 'act_revisesalary'
-            }, {
-                label: '员工离职',
-                value: 'act_leaveempee'
-            }, {
-                label: '查看合同清单',
-                value: 'act_discontractlist'
-            }, {
-                label: '入力实际作业时间',
-                value: 'act_inputactualhours'
-            }, {
-                label: '更新简历',
-                value: 'act_updateresume'
-            }, {
-                label: '生成（取消）请求书',
-                value: 'act_createinvoice'
-            }, {
-                label: '查看请求书清单',
-                value: 'act_disinvoicelist'
-            }, {
-                label: '资金回收',
-                value: 'act_collectsales'
-            }, {
-                label: '查看现金流清单',
-                value: 'act_discashflowlist'
-            }, {
-                label: '查看现金流图形报表',
-                value: 'act_discfchart'
-            }, {
-                label: 'ESS查看现金流清单',
-                value: 'act_disesscashflow'
-            }],
+            actions: [],
             routeName: [{
-                label: '', name: ''
+                label: '首页', name: 'Home'
+            }, {
+                label: 'ESS查看现金流清单', name: 'ESSList'
             }]
+        };
+    },
+    provide() {
+        return {
+            routeName: this.routeName
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -113,17 +88,12 @@ export default {
                 title: '角色管理'
             });
             vm.getRoleList();
-            vm.getTeams();
+            vm.getAllTeams();
+            vm.getAllActions();
         });
     },
     methods: {
-        getTeams() {
-            this.$axios({
-                url: '/api/teamsforselect'
-            }).then(res => {
-                this.teams = res || [];
-            });
-        },
+        // 获取角色列表
         getRoleList() {
             this.$axios({
                 url: '/api/getrolelist',
@@ -139,15 +109,52 @@ export default {
                 }
             });
         },
+        // 获取全部Team
+        getAllTeams() {
+            this.$axios({
+                url: '/api/teamsforselect'
+            }).then(res => {
+                this.teams = res || [];
+            });
+        },
+        // 获取全部权限
+        getAllActions() {
+            this.$axios({
+                url: '/api/actionsforselect'
+            }).then(res => {
+                if (res.code === 0) {
+                    this.actions = res.data || [];
+                } else {
+                    this.actions = [];
+                }
+            });
+        },
+        // 获取角色权限信息
         getRoleAllInfo() {
+            const loading = this.$loading({ lock: true, text: '正在获取角色权限信息' });
             this.$axios({
                 url: '/api/getroleinfobyid',
                 params: {
                     ID: this.form.ID
+                },
+                custom: {
+                    loading,
+                    vm: this
                 }
             }).then(res => {
+                loading.close();
                 if (res.code === 0) {
-                    this.form.Title = res.data.Title;
+                    const data = res.data || {};
+                    this.cacheFormID = res.data.ID;
+                    this.form.Title = data.Title;
+                    this.form.TeamID = (data.Teams && data.Teams).map(item => item.ID);
+                    this.form.action = (data.Actions && data.Actions).map(item => item.action);
+                    this.menus = this.formatArrToJson(data.Menus);
+                } else {
+                    this.form.Title = '';
+                    this.form.TeamID = [];
+                    this.form.action = [];
+                    this.form.menus = [];
                 }
             });
         },
@@ -158,7 +165,135 @@ export default {
             this.isNew = !this.isNew;
             if (this.isNew) {
                 this.form.ID = '';
+                this.form.Title = '';
+                this.form.TeamID = [];
+                this.form.action = [];
+                this.menus = [{
+                    Title: '',
+                    Name: '',
+                    FatherID: 0,
+                    children: []
+                }];
+            } else {
+                this.form.ID = this.cacheFormID;
+                this.getRoleAllInfo();
             }
+        },
+        formatArrToJson(arr) {
+            arr = arr || [];
+            let tmp = {};
+            let obj = {};
+
+            arr.forEach(item => {
+                if (item.FatherID === 0) {
+                    tmp[item.ID] = item;
+                    if (!item['children']) {
+                        item['children'] = [];
+                    }
+                }
+                item.key = Math.random() * 1000;
+                obj[item.ID] = item;
+                if (item.FatherID) {
+                    if (!obj[item.FatherID]['children']) {
+                        obj[item.FatherID]['children'] = [];
+                    } else {
+                        obj[item.FatherID].children.push(item);
+                    }
+                }
+            });
+            const data = [];
+            for (let key in tmp) {
+                data.push(tmp[key]);
+            }
+            return data;
+        },
+        addMenuHandler() {
+            this.$set(this.menus, this.menus.length, {
+                Title: '',
+                Name: '',
+                FatherID: 0,
+                children: []
+            });
+        },
+        deleteMenu(index) {
+            this.menus.splice(index, 1);
+        },
+        beforeSubmit() {
+            if (!this.form.Title) {
+                this.$message({
+                    type: 'warning',
+                    message: '请填写角色名称'
+                });
+                return;
+            }
+            const params = {
+                Title: this.form.Title || '',
+                menus: []
+            };
+            this.$root.$off('FORM_VALID');
+            if (this.form.ID) {
+                params.ID = this.form.ID;
+            }
+
+            let fieldValueEmpty = false;
+            this.menus.forEach((item, i) => {
+                if (item.children && item.children.length) {
+                    item.children.forEach(cell => {
+                        if (!cell.Name || !cell.Title) {
+                            fieldValueEmpty = true;
+                        }
+                        params.menus.push({
+                            ID: cell.ID,
+                            Title: cell.Title,
+                            Name: cell.Name,
+                            FatherID: cell.FatherID || (i + 1)
+                        });
+                    });
+                }
+                params.menus.push({
+                    ID: item.ID,
+                    Title: item.Title,
+                    Name: item.Name,
+                    FatherID: item.FatherID
+                });
+            });
+            if (fieldValueEmpty) {
+                this.$message({
+                    type: 'warning',
+                    message: '二级菜单的名称和Name不得为空'
+                });
+                return;
+            }
+            this.actions.forEach(item => {
+                if (this.form.action.includes(item.Action)) {
+                    params[item.Action] = true;
+                } else {
+                    params[item.Action] = false;
+                }
+            });
+            this.submit(params);
+        },
+        submit(params) {
+            const loading = this.$loading({ lock: true, text: '正在提交角色权限信息' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/updaterole',
+                params,
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    this.getRoleAllInfo();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.message
+                    });
+                }
+            });
         }
     }
 };

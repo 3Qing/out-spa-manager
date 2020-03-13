@@ -20,7 +20,8 @@
                     format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-d-arrow-right" size="mini" @click="getNextFireDayData"></el-button>
+                <el-button type="primary" icon="el-icon-d-arrow-left" size="mini" @click="getNextFireDayData(0)"></el-button>
+                <el-button type="primary" icon="el-icon-d-arrow-right" size="mini" @click="getNextFireDayData(1)"></el-button>
             </el-form-item>
         </el-form>
         <web-table v-if="!IS_H5" :data="listData" :cols="columns" :opt="opt" @update="getData"></web-table>
@@ -104,9 +105,10 @@ export default {
                 }
             });
         },
-        getNextFireDayData() {
+        getNextFireDayData(type) {
             let date = new Date(this.form.fromdate).getTime();
-            date = new Date().setTime(date + 3600 * 1000 * 24 * 5);
+            let express = type ? date + 3600 * 1000 * 24 * 5 : date - 3600 * 1000 * 24 * 5;
+            date = new Date().setTime(express);
             this.form.fromdate = moment(date).format('YYYY-MM-DD');
             this.getData();
         },

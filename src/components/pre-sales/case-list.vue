@@ -66,10 +66,7 @@ export default {
                 SalesPersonName: '',
                 Content: '',
                 Status: '',
-                Items: [{
-                    UpdateDateTime: '',
-                    Content: ''
-                }]
+                Items: []
             });
         },
         getSalespersonforselect() {

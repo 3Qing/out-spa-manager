@@ -37,17 +37,17 @@
         </div>
         <ul class="case-content">
             <li v-for="(item, i) in form.Items" :key="i">
-                <span class="item-index">{{i + 1}}</span>
                 <div class="edit-area" v-if="isEdit.includes(i)">
                     <el-date-picker
                         size="mini"
                         type="datetime"
                         format="yyyy-MM-dd HH:mm"
                         value-format="yyyy-MM-dd HH:mm"
+                        default-time="10:00:00"
                         v-model="item.UpdateDateTime"></el-date-picker>
                     <el-input size="mini" v-model="item.Content"></el-input>
                 </div>
-                <p class="display-content" v-else>{{formatDate(item.UpdateDateTime)}} {{item.Content}}</p>
+                <p class="display-content" v-else><span class="item-index">{{i + 1}}.</span>{{formatDate(item.UpdateDateTime)}} {{item.Content}}</p>
                 <div class="oper-area">
                     <i class="el-icon-circle-plus-outline" @click="addNewItem" v-if="!isEdit.includes(i) && i === form.Items.length - 1" color="primary"></i>
                     <i class="el-icon-edit-outline" v-if="!isEdit.includes(i)" @click="modifyItem(item, i)" color="warning"></i>
@@ -91,11 +91,7 @@ export default {
     },
     watch: {
         form() {
-            if (!this.form.ID) {
-                this.displayStatus = [this.status[0]];
-            } else {
-                this.displayStatus = [...this.status];
-            }
+            this.initNewCase();
         }
     },
     mounted() {
@@ -105,6 +101,12 @@ export default {
         initNewCase() {
             if (!this.form.ID) {
                 this.displayStatus = [this.status[0]];
+            }
+            if (!this.form.Items.length && this.form.ID) {
+                this.addNewItem();
+                if (!this.form.ID) {
+                    this.isEdit.push(0);
+                }
             }
         },
         getOperText() {
@@ -117,17 +119,20 @@ export default {
             this.form.CustomerID = keyword;
         },
         addNewItem() {
+            if (this.form.Items.length) {
+                this.isEdit.push(this.form.Items.length);
+            }
             this.$set(this.form.Items, this.form.Items.length ? this.form.Items.length : 0, {
                 UpdateDateTime: '',
                 Content: ''
             });
         },
         modifyItem(item, i) {
-            console.log(item.UpdateDateTime);
             if (item.UpdateDateTime) {
                 item.UpdateDateTime = moment(new Date(item.UpdateDateTime).getTime()).format('YYYY-MM-DD HH:mm');
+            } else {
+                item.UpdateDateTime = '';
             }
-            console.log(item);
             this.$set(this.form.Items, i, item);
             this.isEdit.push(i);
         },
@@ -138,6 +143,7 @@ export default {
                 case 2:
                     return 'co-primary';
                 case 7:
+                case 8:
                     return 'co-danger';
                 case 9:
                     return 'co-success';
@@ -163,7 +169,6 @@ export default {
         },
         beforeSubmit() {
             if (this.form.edit) {
-                console.log(this.form);
                 if (!this.form.SalesPersonID) {
                     this.$message({
                         type: 'warning',
@@ -211,6 +216,9 @@ export default {
                     this.displayStatus = [this.status[0]];
                 } else {
                     this.displayStatus = [...this.status];
+                }
+                if (this.form.CustomerTitle) {
+                    this.form.CustomerID = this.form.CustomerTitle;
                 }
                 this.$set(this.form, 'edit', !(this.form.edit || false));
             }
@@ -315,19 +323,18 @@ export default {
             height: 24px;
             position: relative;
             margin-bottom: 10px;
+            padding-left: 7px;
         }
         .item-index {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-right: 5px;
         }
         .edit-area {
             .el-date-editor.el-input {
                 width: 40%;
+                margin-right: 5%;
             }
             .el-input {
-                width: 40%;
-                margin-left: 5%;
+                width: 45%;
             }
         }
         .oper-area {
@@ -344,7 +351,7 @@ export default {
             }
         }
         .display-content {
-            padding: 0 5%;
+            padding: 0 5% 0 0;
         }
         .save-btn {
             position: absolute;

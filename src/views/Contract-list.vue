@@ -1,0 +1,331 @@
+<template>
+    <main-wrapper class="contract-list">
+        <div slot="header" class="main-header">
+            <el-date-picker
+                v-model="form.periodfrom"
+                type="month"
+                size="mini"
+                placeholder="开始时间"
+                value-format="yyyyMM"
+                value="yyyyMM"
+                clearable
+                @change="changeStartTime">
+            </el-date-picker>
+            <el-date-picker
+                v-model="form.periodto"
+                type="month"
+                size="mini"
+                placeholder="结束时间"
+                value-format="yyyyMM"
+                value="yyyyMM"
+                clearable
+                @change="changeEndTime">
+            </el-date-picker>
+            <el-select v-model="form.customerid" placeholder="取引先" @change="getData" size="mini" clearable>
+                <el-option v-for="item in customers" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+            </el-select>
+            <el-select v-model="form.empeeid" placeholder="作業担当者" @change="getData" size="mini" clearable>
+                <el-option v-for="item in employees" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+            </el-select>
+            <el-select v-model="form.salespersonid" placeholder="営業担当" @change="getData" size="mini" clearable>
+                <el-option v-for="item in sales" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+            </el-select>
+            <el-select v-model="form.paperreceived" size="mini">
+                <el-option :value="0" label="全部"></el-option>
+                <el-option :value="1" label="入手済"></el-option>
+                <el-option :value="2" label="未入手"></el-option>
+            </el-select>
+        </div>
+        <el-table size="small" :data="tableData">
+            <el-table-column label="注文番号" width="120px">
+                <template slot-scope="scope">
+                    <div>{{scope.row.ContractID || '-'}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column label="名称" prop="ContractTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="取引先" prop="CustomerTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="開始日" prop="FromDate" show-overflow-tooltip></el-table-column>
+            <el-table-column label="終了日" prop="ToDate" show-overflow-tooltip></el-table-column>
+            <el-table-column label="契約単価・万円" prop="ContractPrice"></el-table-column>
+            <el-table-column label="支払条件" prop="PaymentTerm" width="120px"></el-table-column>
+            <el-table-column label="作業時間範囲" prop="HoursRange" show-overflow-tooltip></el-table-column>
+            <el-table-column label="超過精算・円/時間" prop="OverTimePrice"></el-table-column>
+            <el-table-column label="控除精算・円/時間" prop="UnderTimePrice"></el-table-column>
+            <el-table-column label="作業担当" prop="EmployeeName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="営業担当" prop="SalesName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="注文書原本" width="180px">
+                <template slot-scope="scope">
+                    <el-button
+                        v-if="scope.row.PaperReceived"
+                        size="mini"
+                        type="primary"
+                        @click="downloadPDF(scope.row)">照会</el-button>
+                    <upload
+                        class="info-btn"
+                        v-if="scope.row.PaperReceived"
+                        :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
+                        @upload="uploadFile"></upload>
+                    <upload
+                        class="danger-btn"
+                        v-if="!scope.row.PaperReceived"
+                        :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
+                        @upload="uploadFile"></upload>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="160px">
+                <template slot-scope="scope">
+                    <el-button v-if="scope.row.Editable" type="primary" size="mini">編集</el-button>
+                    <el-button v-if="scope.row.Extendable" size="mini" @click="visible = true">更新</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+            :current-page="form.page"
+            :page-size="form.pageSize"
+            @current-change="changePn"
+            :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
+            :total="total"></el-pagination>
+        <el-dialog custom-class="update-dialog" :visible.sync="visible" @close="close">
+            <div>新注文期間（文本）</div>
+            <el-date-picker
+                size="mini"
+                v-model="value1"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"></el-date-picker>
+            <div>
+                <el-button type="primary" size="mini">确认</el-button>
+            </div>
+        </el-dialog>
+    </main-wrapper>
+</template>
+
+<script>
+import { CHANGE_TAB_TITLE } from '@vuex/actions';
+import MainWrapper from '@components/main-wrapper';
+import Upload from '@components/upload';
+import { mapGetters } from 'vuex';
+export default {
+    components: {
+        MainWrapper,
+        Upload
+    },
+    data() {
+        return {
+            form: {
+                periodfrom: '',
+                periodto: '',
+                customerid: '',
+                empeeid: '',
+                salespersonid: '',
+                paperreceived: 0,
+                page: 1,
+                pagesize: 10
+            },
+            visible: false,
+            total: 0,
+            customers: [],
+            employees: [],
+            sales: [],
+            tableData: [],
+            value: '',
+            value1: null
+        };
+    },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.$store.dispatch({
+                type: CHANGE_TAB_TITLE,
+                title: '合同列表'
+            });
+            vm.getData();
+            vm.getCustomerList();
+            vm.getEmployees();
+            vm.getSalespersonforselect();
+        });
+    },
+    computed: {
+        ...mapGetters(['IS_H5'])
+    },
+    methods: {
+        getCustomerList() {
+            this.$axios({
+                url: '/api/customersforselect'
+            }).then(res => {
+                this.customers = res.data || [];
+            });
+        },
+        getEmployees() {
+            this.$axios({
+                url: '/api/employeesforselect'
+            }).then(res => {
+                this.employees = res.data || [];
+            });
+        },
+        getSalespersonforselect() {
+            this.$axios({
+                url: '/api/salespersonforselect'
+            }).then(res => {
+                this.sales = res.data || [];
+            });
+        },
+        changeStartTime(val) {
+            if (!val) {
+                if (this.form.periodto) {
+                    this.$message({
+                        type: 'warning',
+                        message: '请先取消结束时间'
+                    });
+                } else {
+                    this.getData();
+                }
+            } else {
+                this.getData();
+            }
+        },
+        changeEndTime(val) {
+            if (this.form.periodfrom) {
+                const startTime = new Date(this.form.periodfrom).getTime();
+                if (val) {
+                    const endTime = new Date(val).getTime();
+                    if (startTime > endTime) {
+                        this.$message({
+                            type: 'warning',
+                            message: '开始时间不得小于结束时间'
+                        });
+                        this.form.periodto = '';
+                    } else {
+                        this.getData();
+                    }
+                } else {
+                    this.getData();
+                }
+            } else {
+                if (this.form.periodfrom) {
+                    this.$message({
+                        type: 'warning',
+                        message: '请先选择开始时间'
+                    });
+                }
+            }
+        },
+        getData() {
+            const loading = this.$loading({ lock: true, text: '正在获取合同列表' });
+            this.$axios({
+                url: '/api/getcontractlist',
+                params: this.form,
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    this.tableData = res.data || [];
+                    this.total = res.total;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.message
+                    });
+                }
+            });
+        },
+        changePn(page) {
+            this.form.page = page;
+            this.getData();
+        },
+        downloadPDF(row) {
+            const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
+            window.open(`${url}/api/downloadcontractpdf?conid=${row.ID}`, '_blank');
+        },
+        uploadFile({ file, opt }) {
+            const loading = this.$loading({ lock: true, text: '正在上传文件' });
+            const params = new FormData();
+            params.append('file', file);
+            params.append('conid', opt.scope.row.ID);
+            this.$axios({
+                method: 'POST',
+                url: '/api/uploadcontractpdf',
+                params,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: res.message
+                    });
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.message
+                    });
+                }
+            });
+        },
+        close() {
+            this.visible = false;
+        }
+    }
+};
+</script>
+
+<style lang="less">
+.contract-list {
+    .main-header {
+        .el-date-editor, .el-select {
+            & + .el-date-editor {
+                margin-left: 2%;
+            }
+            width: 15%;
+            max-width: 140px;
+        }
+        .el-select {
+            margin-left: 2%;
+        }
+    }
+    .danger-btn {
+        .upload {
+            background-color: #DB414E;
+            &:hover {
+                background-color: rgba(219, 65, 78, 0.8);
+            }
+        }
+    }
+    .info-btn {
+        margin-top: 0;
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 10px;
+        .upload {
+            background-color: #909399;
+            &:hover {
+                background-color: rgba(144, 147, 153, 0.8);
+            }
+        }
+    }
+    .el-pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .update-dialog {
+        width: 600px;
+        text-align: center;
+        .el-dialog__header {
+            display: none;
+        }
+        .el-date-editor {
+            margin: 20px 0;
+        }
+    }
+}
+</style>

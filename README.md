@@ -1,24 +1,7 @@
-# manager-demo
+下载Visual studio code, NodeJS
 
-## Project setup
-```
-npm install
-```
+1. 安装依赖包
+    终端进入当前项目目录，执行 npm install
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+2. 启动项目
+    终端进入当前项目目录，执行 npm run serve

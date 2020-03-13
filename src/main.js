@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import App from './App'
+import Vue from 'vue';
+import App from './App';
 import ElemenetUi from 'element-ui';
 import axios from '@_public/axios';
 import router from './router';
@@ -22,7 +22,7 @@ Vue.use(ElemenetUi);
 Vue.prototype.$axios = axios;
 
 new Vue({
-  store,
-  router,
-  render: h => h(App),
-}).$mount('#app')
+    store,
+    router,
+    render: h => h(App),
+}).$mount('#app');

@@ -203,5 +203,75 @@
                 padding: 0.12rem 0.24rem;
             }
         }
+        .pre-sales-list {
+            .main-header {
+                height: auto !important;
+                .el-form-item {
+                    width: 35%;
+                    margin-right: 0.4rem;
+                }
+                .el-form-item__content {
+                    margin-left: 0;
+                }
+                .el-button {
+                    width: auto;
+                    margin-left: 0;
+                    display: inline-block;
+                }
+            }
+            .download-dialog {
+                width: 100% !important;
+            }
+        }
+        .contract-list {
+            .main-header {
+                height: auto !important;
+                .el-date-editor {
+                    width: 48%;
+                    max-width: initial;
+                    & + .el-date-editor {
+                        margin-left: 4%;
+                    }
+                }
+                .el-select {
+                    width: 48%;
+                    max-width: initial;
+                    margin-left: 0;
+                    &:nth-child(2n) {
+                        margin-left: 4%;
+                    }
+                }
+            }
+        }
+        .role-manager {
+            .role-menu-tree {
+                width: 100%;
+                &:nth-child(1) {
+                    margin-top: .8rem;
+                    .add-btn {
+                        width: auto;
+                        right: 0;
+                        top: -.8rem;
+                    }
+                }
+                .left {
+                    width: 50%;
+                    .el-input {
+                        width: 100%;
+                    }
+                }
+                .tree-item {
+                    .el-input {
+                        width: 40%;
+                    }
+                    .el-select {
+                        width: 40%;
+                        .el-input {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

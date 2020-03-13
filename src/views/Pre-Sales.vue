@@ -9,14 +9,14 @@
             <el-button size="mini" type="primary" @click="showEmpDialog">添加营业候选人</el-button>
             <el-table size="small" :data="tableData" @cell-click="cellClick">
                 <el-table-column label="员工号" prop="EmployeeID" width="100px"></el-table-column>
-                <el-table-column label="姓名" prop="EmployeeName" show-overflow-tooltip></el-table-column>
-                <el-table-column label="Avaiable Date" prop="AvaiableDate" width="140px"></el-table-column>
+                <el-table-column label="姓名" prop="EmployeeName" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="Avaiable Date" prop="AvaiableDate" min-width="140px"></el-table-column>
                 <el-table-column label="营业状态" prop="Status" width="140px">
                     <template slot-scope="scope">
                         <div>{{getStatusText(scope.row.Status)}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="进行中Case数" prop="CaseCount" width="120px"></el-table-column>
+                <el-table-column label="进行中Case数" prop="CaseCount" min-width="120px"></el-table-column>
                 <el-table-column label="操作" width="80px">
                     <template slot-scope="scope">
                         <el-button type="warning" size="mini" @click="showIntroDialog(scope.row)">编辑</el-button>

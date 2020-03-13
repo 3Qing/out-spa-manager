@@ -18,7 +18,7 @@ const generatorGetters = state => {
         }
     }
     return getters;
-}
+};
 
 const state = {
     isH5: false,

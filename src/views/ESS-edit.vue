@@ -80,19 +80,12 @@
                 size="small"
                 :data="fares"
                 class="table-wrapper">
-                <el-table-column label="费用项" prop="FareID" width="300">
+                <el-table-column label="费用项" prop="FareID" width="120">
                     <template slot-scope="scope">
-                        <el-row v-if="editable">
-                            <el-col :span="scope.row.FareID === 1 ? 12 : 12">
-                                <el-select size="mini" v-model="scope.row.FareID" @change="changeFareID(scope)">
-                                    <el-option :value="1" label="交通费"></el-option>
-                                    <el-option :value="99" label="其他"></el-option>
-                                </el-select>
-                            </el-col>
-                            <el-col :offset="2" :span="10" v-if="scope.row.FareID === 99">
-                                <el-input v-model="scope.row.Title" :maxlength="10" size="mini"></el-input>
-                            </el-col>
-                        </el-row>
+                        <el-select v-if="editable" size="mini" v-model="scope.row.FareID" @change="changeFareID(scope)">
+                            <el-option :value="1" label="交通费"></el-option>
+                            <el-option :value="99" label="其他"></el-option>
+                        </el-select>
                         <span v-else>{{formatFareID(scope.row)}}</span>
                     </template>
                 </el-table-column>
@@ -102,6 +95,12 @@
                         <span v-else color="danger">{{scope.row.Amount}}</span>
                     </template>
                 </el-table-column>
+                <el-table-column label="备注">
+                    <template slot-scope="scope">
+                        <el-input v-if="editable" v-model="scope.row.Comment" size="mini" clearable></el-input>
+                        <span v-else>{{scope.row.Comment || '-'}}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="发票" min-width="300">
                     <template slot-scope="scope">
                         <el-row>
@@ -109,7 +108,7 @@
                                 <el-button @click="watchInvoice(scope)" type="primary" size="mini">查看发票</el-button>
                             </el-col>
                             <el-col :span="scope.row.FileID ? 17 : 24">
-                                <upload :opt="{ btnText: '上传发票', scope: scope }" @upload="upload"></upload>
+                                <upload :opt="{ btnText: '上传发票', scope: scope, show: true }" @upload="upload"></upload>
                             </el-col>
                         </el-row>
                     </template>
@@ -407,6 +406,8 @@ export default {
                     }
                 });
             });
+            let noFile = false;
+            let commentEmpty = false;
             this.fares.forEach((item, index) => {
                 if (item.Amount) {
                     if (this.files[index]) {
@@ -415,11 +416,36 @@ export default {
                     if (item.ID) {
                         formData.append(`fares[${index}].ID`, item.ID);
                     }
+                    if (item.FileID) {
+                        formData.append(`fares[${index}].FileID`, item.FileID);
+                    }
+                    if (Number(item.Amount) > 3000 && !item.FileID && !this.files[index]) {
+                        noFile = true;
+                    }
+                    if (item.FareID >= 99 && !item.Comment) {
+                        commentEmpty = true;
+                    }
                     formData.append(`fares[${index}].FareID`, item.FareID);
                     formData.append(`fares[${index}].Title`, item.Title);
+                    formData.append(`fares[${index}].Comment`, item.Comment);
                     formData.append(`fares[${index}].Amount`, item.Amount);
                 }
             });
+            if (noFile) {
+                this.$message({
+                    type: 'warning',
+                    message: '费用金额超过3000请上传发票'
+                });
+                return;
+            }
+            if (commentEmpty) {
+                this.$message({
+                    type: 'warning',
+                    message: '请填写费用项备注'
+                });
+                return;
+            }
+
 
             if (message) {
                 this.$message({

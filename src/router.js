@@ -9,8 +9,10 @@ import ContractSign from '@views/Contract-sign';
 import EmployeeEdit from '@views/Employee-edit';
 import EmployeeList from '@views/Employee-list';
 import SalesActivity from '@views/Sales-activity';
-import PreSales from '@views/Pre-Sales';
+import PreSales from '@views/Pre-sales';
 import RoleManager from '@views/Role-manager';
+import PreSalesList from '@views/Pre-sales-list';
+import ContractList from '@views/Contract-list';
 
 Vue.use(Router);
 
@@ -84,6 +86,14 @@ const router = new Router({
         path: '/presales',
         name: 'PreSales',
         component: PreSales
+    }, {
+        path: '/presaleslist',
+        name: 'PreSalesList',
+        component: PreSalesList
+    }, {
+        path: '/contractlist',
+        name: 'ContractList',
+        component: ContractList
     }, {
         path: '/rolemanager',
         name: 'RoleManager',

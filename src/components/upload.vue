@@ -4,11 +4,11 @@
             <input
                 type="file"
                 title=""
-                accept="image/jpg"
+                :accept="opt.accept"
                 @change="beforeUpload">
             <p>{{opt.btnText}}</p>
         </div>
-        <div class="upload-preview" v-if="filename">
+        <div class="upload-preview" v-if="filename && opt.show">
             <i class="el-icon-document"></i>
             <span class="txt-dash" :title="filename">{{filename || ''}}</span>
             <i class="el-icon-close" @click="clearUpload"></i>
@@ -22,7 +22,9 @@ export default {
         opt: {
             type: Object,
             default: () => ({
-                btnText: '上传文件'
+                btnText: '上传文件',
+                accept: 'image/*, application/pdf',
+                show: true
             })
         }
     },
@@ -70,9 +72,9 @@ export default {
         border-radius: 4px;
         text-align: center;
         color: #fff;
-        background-color: #409EFF;
+        background-color: #1473B7;
         &:hover {
-            background-color: #53A8FF;
+            background-color: rgba(20, 115, 183, .8);
         }
         input {
             position: absolute;
