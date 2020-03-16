@@ -56,7 +56,7 @@
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
-            <el-form-item label="所属部门" prop="team">
+            <el-form-item label="所属部门" prop="team" v-if="!isEdit">
                 <el-select v-model="form.team">
                     <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
                 </el-select>
@@ -83,15 +83,15 @@
                     <el-checkbox v-for="item in certificates" :key="item.CertID" :label="item.CertID">{{item.CertName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']">
+            <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
                 <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')"></el-input>
                 <p color="danger" v-if="emptyTip">请填写绩效工资或基本工资</p>
             </el-form-item>
-            <el-form-item label="基本工资" :class="[emptyTip && 'error-input']">
+            <el-form-item label="基本工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
                 <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')"></el-input>
                 <p color="danger" v-if="emptyTip">请填写基本工资或绩效工资</p>
             </el-form-item>
-            <el-form-item label="工资的备注">
+            <el-form-item label="工资的备注" v-if="!isEdit">
                 <el-input v-model="form.SComment" :maxlength="50"></el-input>
             </el-form-item>
             <el-form-item label="销售价格" :class="[errorTip && 'error-input']">
@@ -124,7 +124,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 
 export default {
     components: {
@@ -196,6 +196,7 @@ export default {
                     required: true, message: '请选择所属部门', trigger: 'blur'
                 }]
             },
+            isEdit: false,
             emptyTip: false,
             errorTip: false,
             employeeTypes: [],
@@ -211,10 +212,14 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '员工入职'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '员工入职'
+            // });
+            console.log(to.params.id);
+            if (Number(to.params.id)) {
+                vm.getData();
+            }
             vm.getTeams();
             vm.getEmployeeTypes();
             vm.getPositions();
@@ -222,12 +227,68 @@ export default {
         });
     },
     methods: {
+        getData() {
+            const loading = this.$loading({ lock: true, text: '正在获取数据中' });
+            this.$axios({
+                url: '/api/getemployeeinfo',
+                params: {
+                    ID: this.$route.params.id
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                this.isEdit = true;
+                if (res && res.code === 0) {
+                    // this.form = { ...res.data };
+                    console.log(res.data);
+                    this.formatResultData(res.data || {});
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: (res && res.message) || '接口开小差了，没有返回信息'
+                    });
+                }
+            });
+        },
+        formatResultData(data) {
+            this.form = {
+                type: data.EmployeeType,
+                name: data.Name,
+                onboarddate: data.OnBoardDate,
+                sex: data.Sex,
+                birthday: data.Birthday,
+                nationality: data.Nationality,
+                station: data.Station,
+                module: data.Module,
+                startworkdate: data.StartWorkDate,
+                position: data.Position,
+                arrivejpdate: data.ArrivePJDate,
+                // team: '',
+                jplangcert: data.JPLangCert,
+                jplangcomt: data.JPLangComt,
+                enlangcomt: data.ENLangComt,
+                Certs: data.Certificates && data.Certificates.map(item => item.CertID),
+                // PJSalary: '',
+                // BaseSalary: '',
+                // SComment: '',
+                salepricefrom: data.SalePriceFrom,
+                salepriceto: data.SalePriceTo,
+                travel: data.Travel,
+                expectpj: data.ExpectPJ,
+                comment: data.Comment
+            };
+        },
         // 部门
         getTeams() {
             this.$axios({
                 url: '/api/teamsforselect'
             }).then(res => {
-                this.teams = res || [];
+                if (res) {
+                    this.teams = res || [];
+                }
             });
         },
         // 就职类型
@@ -235,7 +296,9 @@ export default {
             this.$axios({
                 url: '/api/employeetypesforselect'
             }).then(res => {
-                this.employeeTypes = res || [];
+                if (res) {
+                    this.employeeTypes = res || [];
+                }
             });
         },
         // 岗位
@@ -243,7 +306,9 @@ export default {
             this.$axios({
                 url: '/api/positionsforselect'
             }).then(res => {
-                this.positions = res || [];
+                if (res) {
+                    this.positions = res || [];
+                }
             });
         },
         // SAP认证资格
@@ -251,7 +316,9 @@ export default {
             this.$axios({
                 url: '/api/certificatesforselect'
             }).then(res => {
-                this.certificates = res || [];
+                if (res) {
+                    this.certificates = res || [];
+                }
             });
         },
         validSalePrice() {
@@ -288,48 +355,18 @@ export default {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     if (this.errorTip) return false;
-                    if (!this.form.PJSalary && !this.form.BaseSalary) {
+                    if (!this.isEdit && !this.form.PJSalary && !this.form.BaseSalary) {
                         this.emptyTip = true;
                         return false;
                     }
-                    let params = {
-                        'type.ID': this.form.type,
-                        name: this.form.name,
-                        onboarddate: this.form.onboarddate,
-                        sex: this.form.sex,
-                        birthday: this.form.birthday,
-                        nationality: this.form.nationality,
-                        station: this.form.station,
-                        module: this.form.module,
-                        startworkdate: this.form.startworkdate,
-                        'position.ID': this.form.position,
-                        arrivejpdate: this.form.arrivejpdate,
-                        teammembers: [{
-                            FromDate: this.form.onboarddate,
-                            ToDate: '9999-12-31',
-                            TeamID: this.form.team
-                        }],
-                        jplangcert: this.form.jplangcert || 0,
-                        jplangcomt: this.form.jplangcomt,
-                        enlangcomt: this.form.enlangcomt,
-                        salaries: [{
-                            FromDate: this.form.onboarddate,
-                            PJSalary: Number(this.form.PJSalary.toString().replace(/,/g, '')),
-                            BaseSalary: Number(this.form.BaseSalary.toString().replace(/,/g, '')),
-                            Comment: this.form.SComment,
-                        }],
-                        salepricefrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
-                        salepriceto: Number(this.form.salepriceto.toString().replace(/,/g, '')),
-                        travel: this.form.travel,
-                        expectpj: this.form.expectpj,
-                        comment: this.form.comment
-                    };
-                    params.certificates = this.form.Certs.map(item => {
-                        return {
-                            CertID: item,
-                            Date: '2020-01-01'
-                        };
-                    });
+                    let params = {};
+                    let type = 'employeeonboard';
+                    if (this.isEdit) {
+                        params = this.editSubmitBefore();
+                        type = 'employeeupdate';
+                    } else {
+                        params = this.addSubmitBefore();
+                    }
                     const formData = new FormData();
                     for (let key in params) {
                         if (typeof params[key] === 'object') {
@@ -342,15 +379,83 @@ export default {
                             formData.append(key, params[key]);
                         }
                     }
-                    this.submit(formData);
+                    this.submit(formData, type);
                 }
             });
         },
-        submit(formData) {
+        addSubmitBefore() {
+            let params = {
+                'type.ID': this.form.type,
+                name: this.form.name,
+                onboarddate: this.form.onboarddate,
+                sex: this.form.sex,
+                birthday: this.form.birthday,
+                nationality: this.form.nationality,
+                station: this.form.station,
+                module: this.form.module,
+                startworkdate: this.form.startworkdate,
+                'position.ID': this.form.position,
+                arrivejpdate: this.form.arrivejpdate,
+                teammembers: [{
+                    FromDate: this.form.onboarddate,
+                    ToDate: '9999-12-31',
+                    TeamID: this.form.team
+                }],
+                jplangcert: this.form.jplangcert || 0,
+                jplangcomt: this.form.jplangcomt,
+                enlangcomt: this.form.enlangcomt,
+                salaries: [{
+                    FromDate: this.form.onboarddate,
+                    PJSalary: Number(this.form.PJSalary.toString().replace(/,/g, '')),
+                    BaseSalary: Number(this.form.BaseSalary.toString().replace(/,/g, '')),
+                    Comment: this.form.SComment,
+                }],
+                salepricefrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
+                salepriceto: Number(this.form.salepriceto.toString().replace(/,/g, '')),
+                travel: this.form.travel,
+                expectpj: this.form.expectpj,
+                comment: this.form.comment
+            };
+            params.certificates = this.form.Certs.map(item => {
+                return {
+                    CertID: item,
+                    Date: '2020-01-01'
+                };
+            });
+            return params;
+        },
+        editSubmitBefore() {
+            return {
+                ID: this.$route.params.id,
+                'type.ID': this.form.type,
+                OnBoardDate: this.form.onboarddate,
+                Name: this.form.name,
+                Sex: this.form.sex,
+                Birthday: this.form.birthday,
+                Nationality: this.form.nationality,
+                Station: this.form.station,
+                Module: this.form.module,
+                StartWorkDate: this.form.startworkdate,
+                certificates: this.form.Certs.map(item => ({
+                    CertID: item,
+                    Date: '2020-01-01'
+                })),
+                ArriveJPDate: this.form.arrivejpdate,
+                JPLangCert: this.form.jplangcert,
+                JPLangComt: this.form.jplangcomt,
+                ENLangComt: this.form.enlangcomt,
+                SalesPriceFrom: this.form.salepricefrom,
+                SalesPriceTo: this.form.salepriceto,
+                Travel: this.form.travel,
+                ExpectPJ: this.form.expectpj,
+                Comment: this.form.comment
+            };
+        },
+        submit(formData, api) {
             const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
             this.$axios({
                 method: 'POST',
-                url: '/api/employeeonboard',
+                url: `/api/${api}`,
                 params: formData,
                 custom: {
                     loading,
@@ -358,7 +463,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.$message({
                         type: 'success',
                         showClose: true,

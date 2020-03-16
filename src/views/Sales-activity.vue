@@ -37,7 +37,7 @@ import WebTable from '@components/sales-activity/web-table';
 import MobileTable from '@components/sales-activity/mobile-table';
 import FormDialog from '@components/sales-activity/dialog';
 import moment from 'moment';
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 
 export default {
     components: {
@@ -64,10 +64,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '活动清单'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '活动清单'
+            // });
             vm.form.fromdate = moment(new Date()).format('YYYY-MM-DD');
             vm.getData();
             vm.getTeams();
@@ -94,7 +94,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.formatResult(res.data || []);
                 } else {
                     this.$message({

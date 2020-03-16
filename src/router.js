@@ -13,6 +13,9 @@ import PreSales from '@views/Pre-sales';
 import RoleManager from '@views/Role-manager';
 import PreSalesList from '@views/Pre-sales-list';
 import ContractList from '@views/Contract-list';
+import CashflowList from '@views/Cashflow-list';
+import InvoiceList from '@views/Invoice-list';
+import SalaryCalculate from '@views/Salary-calculate';
 
 Vue.use(Router);
 
@@ -98,6 +101,18 @@ const router = new Router({
         path: '/rolemanager',
         name: 'RoleManager',
         component: RoleManager
+    }, {
+        path: '/cashflowlist',
+        name: 'CashflowList',
+        component: CashflowList
+    }, {
+        path: '/invoicelist',
+        name: 'InvoiceList',
+        component: InvoiceList
+    }, {
+        path: '/salarycalculate',
+        name: 'SalaryCalculate',
+        component: SalaryCalculate
     }
     ]
 });

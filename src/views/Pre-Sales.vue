@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import CaseList from '@components/pre-sales/case-list';
 import EmployeeDialog from '@components/pre-sales/employee-dialog';
@@ -79,10 +79,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '营业候选人'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '营业候选人'
+            // });
             vm.getListData();
         });
     },
@@ -92,10 +92,13 @@ export default {
             let url = '/api/getpresaleslist';
             let params = this.status.map((item, i) => `statuses[${i}]=${item}`);
             this.$axios({
-                url: `${url}?${params.join('&')}`
+                url: `${url}?${params.join('&')}`,
+                custom: {
+                    vm: this
+                }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     const result = res.data || [];
                     this.tableData = result;
                     if (result.length) {
@@ -120,7 +123,7 @@ export default {
                 }
             }).then(res => {
                 this.caseLoading = false;
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.caseListData = res.data || [];
                 } else {
                     this.$message({

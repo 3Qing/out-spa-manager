@@ -72,7 +72,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -101,10 +101,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '员工清单'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '员工清单'
+            // });
             vm.getTeams();
             vm.getEmployeeTypes();
             vm.getPositions();
@@ -134,7 +134,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     let actionLen = 0;
                     (res.data || []).forEach(item => {
                         if (item.Actions) {
@@ -159,21 +159,27 @@ export default {
             this.$axios({
                 url: '/api/teamsforselect'
             }).then(res => {
-                this.teams = res || [];
+                if (res) {
+                    this.teams = res || [];
+                }
             });
         },
         getEmployeeTypes() {
             this.$axios({
                 url: '/api/employeetypesforselect'
             }).then(res => {
-                this.employeeTypes = res || [];
+                if (res) {
+                    this.employeeTypes = res || [];
+                }
             });
         },
         getPositions() {
             this.$axios({
                 url: '/api/positionsforselect'
             }).then(res => {
-                this.positions = res || [];
+                if (res) {
+                    this.positions = res || [];
+                }
             });
         },
         changePn(pn) {

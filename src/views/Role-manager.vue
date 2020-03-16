@@ -26,15 +26,17 @@
                 </el-checkbox-group>
             </el-form-item>
             <el-form-item label="角色菜单" v-if="isNew || form.ID">
-                <role-menu-tree
-                    v-for="(item, i) in menus"
-                    :data="item"
-                    :total="menus.length"
-                    :key="i"
-                    :index="i"
-                    :deep="deep"
-                    @addMenu="addMenuHandler"
-                    @delete="deleteMenu"></role-menu-tree>
+                <div id="menuTree">
+                    <role-menu-tree
+                        v-for="(item, i) in menus"
+                        :data="item"
+                        :total="menus.length"
+                        :key="item.key"
+                        :index="i"
+                        :deep="deep"
+                        @addMenu="addMenuHandler"
+                        @delete="deleteMenu"></role-menu-tree>
+                </div>
             </el-form-item>
             <el-form-item v-if="isNew || form.ID">
                 <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新增' : '保存'}}</el-button>
@@ -44,9 +46,10 @@
 </template>
 
 <script>
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import RoleMenuTree from '@components/role-manager/menu-tree';
+import Sortable from 'sortablejs';
 
 export default {
     components: {
@@ -70,9 +73,31 @@ export default {
             teams: [],
             actions: [],
             routeName: [{
-                label: '首页', name: 'Home'
+                label: '作业报告/工资详细清单', name: 'ESSList'
             }, {
-                label: 'ESS查看现金流清单', name: 'ESSList'
+                label: '提交作业报告', name: 'ESSEdit'
+            }, {
+                label: '合同签订', name: 'ContractEdit'
+            }, {
+                label: '员工编辑', name: 'EmployeeEdit'
+            }, {
+                label: '员工列表', name: 'EmployeeList'
+            }, {
+                label: '活动清单', name: 'SalesActivity'
+            }, {
+                label: '营业候选人', name: 'PreSales'
+            }, {
+                label: '员工清单', name: 'PreSalesList'
+            }, {
+                label: '合同列表', name: 'ContractList'
+            }, {
+                label: '角色权限', name: 'RoleManager'
+            }, {
+                label: '现金流', name: 'CashflowList'
+            }, {
+                label: '发票列表', name: 'InvoiceList'
+            }, {
+                label: '薪资核算', name: 'SalaryCalculate'
             }]
         };
     },
@@ -83,22 +108,71 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '角色管理'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '角色管理'
+            // });
             vm.getRoleList();
             vm.getAllTeams();
             vm.getAllActions();
         });
     },
+    watch: {
+        menus: {
+            handler: function() {
+                this.initSort();
+            },
+            deep: true
+        }
+    },
     methods: {
+        initSort() {
+            this.$nextTick(() => {
+                const treeItem = this.$el.querySelectorAll('.role-tree-item');
+                if (treeItem) {
+                    const tmp = [];
+                    Sortable.create(this.$el.querySelector('#menuTree'), {
+                        handle: '.el-icon-rank',
+                        onEnd: ({ newIndex, oldIndex }) => {
+                            const tmp = [...this.menus];
+                            const curItem = tmp.splice(oldIndex, 1)[0];
+                            tmp.splice(newIndex, 0, curItem);
+                            this.menus = [...tmp];
+                        }
+                    });
+                    treeItem.forEach(item => {
+                        tmp.push(item);
+                        Sortable.create(item, {
+                            group: 'nested',
+                            handle: '.el-icon-rank',
+                            onEnd: ({ newIndex, oldIndex, to, from }) => {
+                                const treeDom = document.querySelectorAll('.role-menu-tree');
+                                let parentOldIndex = -1;
+                                let parentNewIndex = -1;
+                                const arr = JSON.parse(JSON.stringify(this.menus));
+                                for (let i = 0; i < treeDom.length; i++) {
+                                    if (treeDom[i].childNodes.length > 1 && treeDom[i].childNodes[1] === from) {
+                                        parentOldIndex = i;
+                                    }
+                                    if (treeDom[i].childNodes.length > 1 && treeDom[i].childNodes[1] === to) {
+                                        parentNewIndex = i;
+                                    }
+                                }
+                                const curItem = arr[parentOldIndex].children.splice(oldIndex, 1)[0];
+                                arr[parentNewIndex].children.splice(newIndex, 0, curItem);
+                                this.menus = [...arr];
+                            }
+                        });
+                    });
+                }
+            });
+        },
         // 获取角色列表
         getRoleList() {
             this.$axios({
                 url: '/api/getrolelist',
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.allRole = res.data || [];
                 } else {
                     this.$message({
@@ -114,7 +188,9 @@ export default {
             this.$axios({
                 url: '/api/teamsforselect'
             }).then(res => {
-                this.teams = res || [];
+                if (res) {
+                    this.teams = res || [];
+                }
             });
         },
         // 获取全部权限
@@ -122,7 +198,7 @@ export default {
             this.$axios({
                 url: '/api/actionsforselect'
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.actions = res.data || [];
                 } else {
                     this.actions = [];
@@ -143,11 +219,12 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     const data = res.data || {};
+                    this.menus = [];
                     this.cacheFormID = res.data.ID;
                     this.form.Title = data.Title;
-                    this.form.TeamID = (data.Teams && data.Teams).map(item => item.ID);
+                    this.form.TeamID = (data.Teams && data.Teams).map(item => item.TeamID);
                     this.form.action = (data.Actions && data.Actions).map(item => item.action);
                     this.menus = this.formatArrToJson(data.Menus);
                 } else {
@@ -185,25 +262,34 @@ export default {
             let obj = {};
 
             arr.forEach(item => {
-                if (item.FatherID === 0) {
-                    tmp[item.ID] = item;
+                item.key = parseInt(Math.random() * 10000);
+                if (item.Level === 1) {
                     if (!item['children']) {
-                        item['children'] = [];
+                        item.children = [];
                     }
+                    tmp[item.Group] = item;
                 }
-                item.key = Math.random() * 1000;
                 obj[item.ID] = item;
-                if (item.FatherID) {
-                    if (!obj[item.FatherID]['children']) {
-                        obj[item.FatherID]['children'] = [];
-                    } else {
-                        obj[item.FatherID].children.push(item);
+            });
+            arr.forEach(item => {
+                if (item.Level === 2) {
+                    if (tmp[item.Group] && !tmp[item.Group]['children']) {
+                        tmp[item.Group].children = [];
                     }
+                    tmp[item.Group] && (tmp[item.Group].children[item.Order - 1] = item);
                 }
             });
-            const data = [];
+            let data = [];
             for (let key in tmp) {
-                data.push(tmp[key]);
+                data[tmp[key].Order - 1] = tmp[key];
+            }
+            if (!data.length) {
+                data.push({
+                    Title: '',
+                    Name: '',
+                    key: parseInt(Math.random() * 10000),
+                    children: []
+                });
             }
             return data;
         },
@@ -211,7 +297,7 @@ export default {
             this.$set(this.menus, this.menus.length, {
                 Title: '',
                 Name: '',
-                FatherID: 0,
+                key: Math.random() * 1000,
                 children: []
             });
         },
@@ -228,34 +314,39 @@ export default {
             }
             const params = {
                 Title: this.form.Title || '',
+                teams: [],
                 menus: []
             };
             this.$root.$off('FORM_VALID');
             if (this.form.ID) {
                 params.ID = this.form.ID;
             }
-
+            params.teams = this.form.TeamID.map(item => ({TeamID: item}));
             let fieldValueEmpty = false;
             this.menus.forEach((item, i) => {
+                params.menus.push({
+                    ID: item.ID || '',
+                    Title: item.Title,
+                    Name: item.Name,
+                    Level: 1,
+                    Group: i + 1,
+                    Order: i + 1
+                });
                 if (item.children && item.children.length) {
-                    item.children.forEach(cell => {
+                    item.children.forEach((cell, j) => {
                         if (!cell.Name || !cell.Title) {
                             fieldValueEmpty = true;
                         }
                         params.menus.push({
-                            ID: cell.ID,
+                            ID: cell.ID || '',
                             Title: cell.Title,
                             Name: cell.Name,
-                            FatherID: cell.FatherID || (i + 1)
+                            Level: 2,
+                            Group: i + 1,
+                            Order: j + 1
                         });
                     });
                 }
-                params.menus.push({
-                    ID: item.ID,
-                    Title: item.Title,
-                    Name: item.Name,
-                    FatherID: item.FatherID
-                });
             });
             if (fieldValueEmpty) {
                 this.$message({
@@ -285,8 +376,13 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
-                    this.getRoleAllInfo();
+                if (res && res.code === 0) {
+                    if (params.ID) {
+                        this.getRoleAllInfo();
+                    } else {
+                        this.isNew = false;
+                        this.getRoleList();
+                    }
                 } else {
                     this.$message({
                         type: 'error',

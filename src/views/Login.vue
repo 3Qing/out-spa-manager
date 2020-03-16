@@ -25,11 +25,11 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import {
     FETCH_MENUS,
     FETCH_TEAMS,
-    FETCH_ACTIONS
+    FETCH_ACTIONS,
+    CHANGE_TAB_TITLE
 } from '@vuex/actions';
 
 export default {
@@ -39,9 +39,9 @@ export default {
     data() {
         return {
             form: {
-                empeeid: 'YP009',
-                username: '陳 峰',
-                userpwd: 'chenfeng',
+                empeeid: process.env.NODE_ENV === 'production' ? '' : 'YP009',
+                username: process.env.NODE_ENV === 'production' ? '' : '陳 峰',
+                userpwd: process.env.NODE_ENV === 'production' ? '' : 'chenfeng',
                 validatecode: ''
             },
             validUrl: `${process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy'}/api/getvalidatebmp`
@@ -92,12 +92,37 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
-                    const result = res.data || {};
+                if (res && res.code === 0) {
+                    let result = res.data || {};
+                    let arr = [];
+                    let tmp = {};
+                    result.menus.forEach(item => {
+                        if (item.Level === 1) {
+                            arr[Number(item.Order - 1)] = item;
+                            tmp[item.Group] = item;
+                        }
+                        if (item.Level === 2) {
+                            if (tmp[item.Group] && !tmp[item.Group]['children']) {
+                                tmp[item.Group]['children'] = [];
+                                tmp[item.Group]['children'][Number(item.Order) - 1] = item;
+                            } else if (tmp[item.Group] && tmp[item.Group]['children']) {
+                                tmp[item.Group]['children'][Number(item.Order) - 1] = item;
+                            }
+                        }
+                    });
+                    const menus = arr.filter(item => {
+                        if (item.children) {
+                            const tmp = item.children.filter(cell => !!cell);
+                            item.children = tmp;
+                        }
+                        return !!item;
+                    });
+                    delete result.menus;
+                    sessionStorage.setItem('menus', JSON.stringify(menus));
                     sessionStorage.setItem('appInfo', JSON.stringify(result));
                     this.$store.dispatch({
                         type: FETCH_MENUS,
-                        res: result.menus || []
+                        res: menus || []
                     });
                     this.$store.dispatch({
                         type: FETCH_TEAMS,
@@ -107,11 +132,27 @@ export default {
                         type: FETCH_ACTIONS,
                         res: result.actions || []
                     });
-                    this.$router.push({ name: 'ESSList' });
+                    let tabTitle = '';
+                    let routeName = '';
+                    for (let i = 0; i < menus.length; i++) {
+                        if (!routeName && menus[i].children && menus[i].children.length) {
+                            tabTitle = menus[i].children[0].Title;
+                            routeName = menus[i].children[0].Name;
+                            break;
+                        }
+                    }
+                    if (!routeName) {
+                        routeName = '/';
+                    }
+                    sessionStorage.setItem('tabTitle', tabTitle);
+                    this.$store.dispatch({
+                        type: CHANGE_TAB_TITLE,
+                        title: tabTitle
+                    });
+                    this.$router.push({ name: routeName });
                 } else {
                     this.$message({
                         type: 'error',
-                        showClose: true,
                         message: res.message
                     });
                 }

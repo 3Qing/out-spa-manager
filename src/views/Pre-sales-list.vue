@@ -77,7 +77,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -102,10 +102,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '员工清单'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '员工清单'
+            // });
             vm.getData();
         });
     },
@@ -124,7 +124,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.tableData = res.data || [];
                     this.total = res.total;
                 }
@@ -138,14 +138,14 @@ export default {
             const listRes = await this.$axios({
                 url: '/api/getexistproposelist'
             });
-            if (listRes.code === 0) {
+            if (listRes && listRes.code === 0) {
                 this.tip = listRes.message;
                 this.visible = true;
             } else if (listRes.code === 4) {
                 const creRes = await this.$axios({
                     url: '/api/createproposelistexcel'
                 });
-                if (creRes.code === 0) {
+                if (creRes && creRes.code === 0) {
                     this.downloadFile();
                 } else {
                     this.$message({

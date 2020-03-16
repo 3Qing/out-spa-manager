@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 
 export default {
@@ -173,10 +173,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '合同签订'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '合同签订'
+            // });
             if (to.params.id && to.params.id !== 'new') {
                 vm.getData();
             }
@@ -247,7 +247,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     const data = res.data || {};
                     const form = {
                         Title: data.Title || '',
@@ -280,28 +280,36 @@ export default {
             this.$axios({
                 url: '/api/employeesforselect'
             }).then(res => {
-                this.workList = res.data;
+                if (res) {
+                    this.workList = res.data || [];
+                }
             });
         },
         getCustomerList() {
             this.$axios({
                 url: '/api/customersforselect'
             }).then(res => {
-                this.customerList = res.data;
+                if (res) {
+                    this.customerList = res.data || [];
+                }
             });
         },
         getPaymenttermsforselect() {
             this.$axios({
                 url: '/api/paymenttermsforselect'
             }).then(res => {
-                this.paymenttermsforselect = res.data;
+                if (res) {
+                    this.paymenttermsforselect = res.data || [];
+                }
             });
         },
         getSalespersonforselect() {
             this.$axios({
                 url: '/api/salespersonforselect'
             }).then(res => {
-                this.salespersonforselect = res.data;
+                if (res) {
+                    this.salespersonforselect = res.data || [];
+                }
             });
         },
         submitForm(formName) {
@@ -358,7 +366,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     if (this.$route.params.id === 'new') {
                         this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
                     }
@@ -379,12 +387,14 @@ export default {
                     ToDate: this.form.ToDate
                 }
             }).then(res => {
-                this.dialogLoading = false;
-                const result = [...res.data];
-                result.forEach(item => {
-                    item.ningetsu = item.ningetsu / 100;
-                });
-                this.personMonthArr = result;
+                if (res) {
+                    this.dialogLoading = false;
+                    const result = [...res.data];
+                    result.forEach(item => {
+                        item.ningetsu = item.ningetsu / 100;
+                    });
+                    this.personMonthArr = result;
+                }
             });
         },
         confirmDialog() {

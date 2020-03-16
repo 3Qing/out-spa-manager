@@ -15,13 +15,13 @@
                 @select="routerHandle">
                 <el-menu-item v-if="showH5Nav && $route.name !== 'Login'" @click="logout">登出</el-menu-item>
                 <el-menu-item-group v-for="(item, i) in MENUS" :key="i">
-                    <template slot="title">{{item.menu.Title}}</template>
+                    <template slot="title">{{item.Title}}</template>
                     <el-menu-item
-                        v-for="(submenu, j) in item.submenu"
-                        :class="[submenu.Name === activeRouter && 'is-active']"
-                        @click="openLink(submenu)"
-                        :index="`${submenu.Name || j}`"
-                        :key="j">{{submenu.Title}}</el-menu-item>
+                        v-for="(cell, j) in item.children"
+                        :class="[cell.Name === activeRouter && 'is-active']"
+                        @click="openLink(cell)"
+                        :index="`${cell.Name || j}`"
+                        :key="j">{{cell.Title}}</el-menu-item>
                 </el-menu-item-group>
             </el-menu>
         </el-aside><el-container>
@@ -42,7 +42,8 @@ import {
     FETCH_MENUS,
     FETCH_TEAMS,
     FETCH_ACTIONS,
-    CHANGE_ISH5
+    CHANGE_ISH5,
+    CHANGE_TAB_TITLE
 } from '@vuex/actions';
 import { LOGIN_MENUS } from '@_public/router.config';
 
@@ -51,7 +52,8 @@ export default {
         return {
             activeRouter: 'Login',
             showH5Nav: false,
-            showMenu: true
+            showMenu: true,
+            tabTitle: ''
         };
     },
     watch: {
@@ -106,12 +108,14 @@ export default {
         getSessionInfo() {
             const routeHistory = sessionStorage.getItem('routeHistory');
             const appInfo = sessionStorage.getItem('appInfo');
+            const tabTitle = sessionStorage.getItem('tabTitle');
             
             if (appInfo) {
+                const menus = sessionStorage.getItem('menus') || [];
                 let tmp = JSON.parse(appInfo);
                 this.$store.dispatch({
                     type: FETCH_MENUS,
-                    res: tmp.menus || []
+                    res: JSON.parse(menus) || []
                 });
                 this.$store.dispatch({
                     type: FETCH_TEAMS,
@@ -120,6 +124,10 @@ export default {
                 this.$store.dispatch({
                     type: FETCH_ACTIONS,
                     res: tmp.actions || []
+                });
+                this.$store.dispatch({
+                    type: CHANGE_TAB_TITLE,
+                    title: tabTitle
                 });
                 if (routeHistory) {
                     this.activeRouter = JSON.parse(routeHistory).name;
@@ -132,13 +140,25 @@ export default {
                 this.$router.push({ name: 'Login' });
             }
         },
-        routerHandle(index) {
-            this.activeRouter = index;
-            this.$router.push({ name: index });
+        routerHandle(name) {
+            this.$nextTick(() => {
+                this.activeRouter = name;
+                this.$store.dispatch({
+                    type: CHANGE_TAB_TITLE,
+                    title: this.tabTitle
+                });
+                this.$router.push({ name });
+            });
         },
         openLink(menu) {
             if (menu.Href) {
                 window.open(menu.Href, '_blank');
+                this.activeRouter = '';
+                this.$nextTick(() => {
+                    this.activeRouter = 'Login';
+                });
+            } else {
+                this.tabTitle = menu.Title;
             }
             if (!this.showMenu) {
                 this.showH5Nav = false;

@@ -274,9 +274,12 @@ export default {
             this.$axios({
                 method: 'POST',
                 url: '/api/updatesalescaseitem',
-                params
+                params,
+                custom: {
+                    vm: this
+                }
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.isEdit.splice(this.isEdit.indexOf(i), 1);
                     this.$emit('update');
                 } else {

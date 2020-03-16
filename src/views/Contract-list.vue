@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
@@ -135,10 +135,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '合同列表'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '合同列表'
+            // });
             vm.getData();
             vm.getCustomerList();
             vm.getEmployees();
@@ -153,21 +153,27 @@ export default {
             this.$axios({
                 url: '/api/customersforselect'
             }).then(res => {
-                this.customers = res.data || [];
+                if (res) {
+                    this.customers = res.data || [];
+                }
             });
         },
         getEmployees() {
             this.$axios({
                 url: '/api/employeesforselect'
             }).then(res => {
-                this.employees = res.data || [];
+                if (res) {
+                    this.employees = res.data || [];
+                }
             });
         },
         getSalespersonforselect() {
             this.$axios({
                 url: '/api/salespersonforselect'
             }).then(res => {
-                this.sales = res.data || [];
+                if (res) {
+                    this.sales = res.data || [];
+                }
             });
         },
         changeStartTime(val) {
@@ -221,7 +227,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.tableData = res.data || [];
                     this.total = res.total;
                 } else {
@@ -258,7 +264,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.$message({
                         type: 'success',
                         message: res.message

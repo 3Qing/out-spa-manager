@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
+// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import BigPicture from '@components/big-picture';
@@ -229,10 +229,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '编辑作业报告'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '编辑作业报告'
+            // });
             vm.getData(to.params.id);
         });
     },

@@ -1,11 +1,12 @@
 <template>
-    <div class="role-menu-tree">
+    <div class="role-menu-tree sort-item">
         <div class="clearfix">
             <div class="left fl">
                 <el-input v-model="data.Title" placeholder="菜单名称" clearable></el-input>
             </div>
             <div class="oper-area fr">
                 <el-button type="warning" size="mini" @click="addSubmenu">新增子集</el-button>
+                <i v-if="total > 1" color="primary" class="el-icon-rank"></i>
             </div>
             <i v-if="total > 1" color="danger" class="el-icon-delete" @click="deleteMenu"></i>
         </div>
@@ -43,7 +44,7 @@ export default {
             this.data.children.push({
                 Title: '',
                 Name: '',
-                FatherID: this.data.ID || ''
+                key: Math.random() * 1000,
             });
         },
         deleteItem(i) {
@@ -74,7 +75,7 @@ export default {
         right: -70px;
         top: 0;
     }
-    .el-icon-delete {
+    .el-icon-delete, .el-icon-rank {
         cursor: pointer;
         margin-left: 10px;
     }

@@ -58,7 +58,6 @@
 
 <script>
 import { getFullYears } from '@_public/utils';
-import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 
 export default {
@@ -80,10 +79,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.$store.dispatch({
-                type: CHANGE_TAB_TITLE,
-                title: '作业报告/工资清单'
-            });
+            // vm.$store.dispatch({
+            //     type: CHANGE_TAB_TITLE,
+            //     title: '作业报告/工资清单'
+            // });
             vm.allYears = getFullYears();
             vm.getData();
         });
