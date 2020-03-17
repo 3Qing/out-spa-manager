@@ -9,9 +9,6 @@
                 value="yyyyMM"
                 :clearable="false"
                 @change="getData"></el-date-picker>
-            <!-- <el-select size="mini" v-model="employeeid" placeholder="従業員" clearable @change="getData">
-                <el-option v-for="item in employees" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
-            </el-select> -->
         </div>
         <el-table size="mini" :data="tableData">
             <el-table-column label="就職タイプ" prop="EmployeeType"></el-table-column>

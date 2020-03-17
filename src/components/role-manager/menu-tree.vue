@@ -15,12 +15,6 @@
             :data="data.children"
             :deep="deep + 1"
             @delete="deleteItem"></menu-item>
-        <el-button
-            v-if="index === 0"
-            class="add-btn"
-            type="primary"
-            size="mini"
-            @click="$emit('addMenu')">新增</el-button>
     </div>
 </template>
 
@@ -61,8 +55,6 @@ export default {
 .role-menu-tree {
     margin-bottom: 10px;
     position: relative;
-    max-width: 1000px;
-    width: 80%;
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #DCDFE6;

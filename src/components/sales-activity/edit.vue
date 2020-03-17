@@ -140,7 +140,7 @@ export default {
     },
     mounted() {
         if (this.data) {
-            this.form = this.data;
+            this.form = { ...this.data };
         }
     },
     methods: {

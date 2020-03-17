@@ -70,12 +70,15 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="100">
-                    <template slot-scope="scope" v-if="scope.$index === workDayIndex">
+                    <template slot-scope="scope" v-if="editable && scope.$index === workDayIndex">
                         <el-button type="primary" size="mini" @click="copyOneToAll(scope)">拷贝</el-button>
                     </template>
                 </el-table-column>
             </el-table>
+
+            <el-button v-if="editable" class="btn-add" type="primary" size="mini" @click="addFare">新增</el-button>
             <el-table
+                v-if="(fares.length !== 0 && !editable) || editable"
                 stripe
                 size="small"
                 :data="fares"
@@ -107,21 +110,20 @@
                             <el-col :span="7" v-if="scope.row.FileID">
                                 <el-button @click="watchInvoice(scope)" type="primary" size="mini">查看发票</el-button>
                             </el-col>
-                            <el-col :span="scope.row.FileID ? 17 : 24">
+                            <el-col v-if="editable" :span="scope.row.FileID ? 17 : 24">
                                 <upload :opt="{ btnText: '上传发票', scope: scope, show: true }" @upload="upload"></upload>
                             </el-col>
                         </el-row>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200">
+                <el-table-column label="操作" width="200" v-if="editable">
                     <template slot-scope="scope">
-                        <el-button type="primary" size="mini" @click="addFare(scope)">新增</el-button>
-                        <el-button type="danger" size="mini" v-if="fares.length > 1" @click="removeFare(scope)">删除</el-button>
+                        <el-button type="danger" size="mini" @click="removeFare(scope)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="footer">
-                <el-button type="primary" size="small" @click="beforeSubmit">提交</el-button>
+            <div class="footer" v-if="$route.name !== 'CashflowList'">
+                <el-button v-if="editable" type="primary" size="small" @click="beforeSubmit">提交</el-button>
                 <el-button size="small" @click="goBack">返回</el-button>
             </div>
         </el-card>
@@ -142,16 +144,14 @@ export default {
         BigPicture,
         Upload
     },
+    props: {
+        id: {
+            type: Number,
+            default: 0
+        }
+    },
     data() {
         return {
-            opt: {
-                crumbs: [{
-                    label: '作业报告/工资详情',
-                    to: { name: 'ESSList' }
-                }, {
-                    label: '编辑'
-                }]
-            },
             files: {},
             essId: '',
             worktimes: [],
@@ -224,7 +224,7 @@ export default {
             },
             workDayIndex: -1,
             total: '',
-            editable: true
+            editable: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -233,8 +233,15 @@ export default {
             //     type: CHANGE_TAB_TITLE,
             //     title: '编辑作业报告'
             // });
-            vm.getData(to.params.id);
+            if (to.params.id) {
+                vm.getData(to.params.id);
+            }
         });
+    },
+    mounted() {
+        if (this.id) {
+            this.getData(this.id);
+        }
     },
     methods: {
         getData(cfid) {
@@ -251,7 +258,6 @@ export default {
                 if (typeof res === 'object') {
                     const result = res || {};
                     const worktimes = result.WorkTimes || [];
-                    // let sumDuration = 0;
                     worktimes.forEach((item, index) => {
                         if (item.DateType === 1 && this.workDayIndex === -1) {
                             this.workDayIndex = index;
@@ -280,7 +286,7 @@ export default {
                     this.files = {};
                     this.$root.$emit('UPLOAD', { type: 'clear' });
                     this.total = `${result.TotalHours}小时${result.TotalMinutes}分钟`;
-                    this.editable = result.Editable || false;
+                    this.editable = !result.Approved || false;
                 }
             });
         },
@@ -310,13 +316,13 @@ export default {
         },
         formatDate(value) {
             if (value) {
-                return moment(value).format('YYYY-MM-DD');
+                return moment(new Date(value)).format('YYYY-MM-DD');
             }
             return '';
         },
         formatTime(row, field) {
             if (row[field]) {
-                return moment(row[field]).format('HH:mm');
+                return moment(new Date(row[field])).format('HH:mm');
             }
             return '';
         },
@@ -379,8 +385,8 @@ export default {
                 this.fares[scope.$index].Title = '交通费';
             }
         },
-        addFare(scope) {
-            this.fares.splice(scope.$index + 1, 0, {
+        addFare() {
+            this.fares.push({
                 FareID: 1,
                 Title: '交通费',
                 Amount: ''
@@ -446,7 +452,6 @@ export default {
                 return;
             }
 
-
             if (message) {
                 this.$message({
                     type: 'warning',
@@ -508,6 +513,9 @@ export default {
             .warning td {
                 background-color: rgba(260, 162, 60, 0.31) !important;
             }
+        }
+        .btn-add {
+            margin: 20px 0 10px;
         }
         .footer {
             height: auto;

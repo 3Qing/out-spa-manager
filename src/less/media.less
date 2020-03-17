@@ -244,10 +244,13 @@
             }
         }
         .role-manager {
+            #menuTree {
+                width: 100%;
+            }
             .role-menu-tree {
                 width: 100%;
                 &:nth-child(1) {
-                    margin-top: .8rem;
+                    margin-top: 0.2rem;
                     .add-btn {
                         width: auto;
                         right: 0;
@@ -270,6 +273,15 @@
                             width: 100%;
                         }
                     }
+                }
+                .oper-area {
+                    .el-button {
+                        width: auto;
+                        display: inline-block;
+                    }
+                }
+                .el-icon-rank, .el-icon-delete {
+                    margin-left: 0.1rem;
                 }
             }
         }

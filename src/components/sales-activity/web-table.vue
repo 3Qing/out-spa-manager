@@ -64,12 +64,15 @@ export default {
         transform: translateY(-50%);
     }
     .cell-info {
+        padding-right: 15px;
         background-color: rgb(233, 233, 235) !important;
     }
     .cell-success {
+        padding-right: 15px;
         background-color: rgba(69, 190, 135, 0.4) !important;
     }
     .cell-warning {
+        padding-right: 15px;
         background-color: rgb(250, 236, 216) !important;
     }
 }

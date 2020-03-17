@@ -22,7 +22,7 @@
             <el-form-item>
                 <el-input v-model="form.name" placeholder="姓名" :maxlength="30" @blur="getData" clearable></el-input>
             </el-form-item>
-            <el-button type="primary" icon="el-icon-download" size="mini">下载</el-button>
+            <!-- <el-button type="primary" icon="el-icon-download" size="mini">下载</el-button> -->
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData">
@@ -121,12 +121,16 @@ export default {
             this.form.positions.forEach((item, i) => {
                 positions.push(`positions[${i}]=${item}`);
             });
-            positions = positions.join('&');
+            let url = '/api/getemployeelist';
+            if (positions.length) {
+                positions = positions.join('&');
+                url += `?${positions}`;
+            }
             this.$axios({
-                url: `/api/getemployeelist?${positions}`,
+                url,
                 params: {
-                    teamid: this.form.teamid || 0,
-                    employeetype: this.form.employeetype || 0,
+                    teamid: this.form.teamid || '',
+                    employeetype: this.form.employeetype || '',
                     module: this.form.module,
                     name: this.form.name,
                     page: this.pn,
@@ -150,7 +154,7 @@ export default {
                     this.$message({
                         type: 'error',
                         showClose: true,
-                        message: res.message ? res.message : '接口开小差了，没有返回信息'
+                        message: res ? res.message : '接口开小差了，没有返回信息'
                     });
                 }
             });
@@ -195,19 +199,15 @@ export default {
                 this.getData();
             }
         },
-        clickHandle() {
-            this.$message({
-                type: 'warning',
-                message: '暂未开放功能'
-            });
-            // if (data.action === 'act_editempee') {
-            //     this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.ID } });
-            // } else {
-            //     this.$message({
-            //         type: 'warning',
-            //         message: '暂未开放功能'
-            //     });
-            // }
+        clickHandle(scope, item) {
+            if (item.action === 'act_employeeupdate') {
+                this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.ID } });
+            } else {
+                this.$message({
+                    type: 'warning',
+                    message: '暂未开放功能'
+                });
+            }
         }
     }
 };

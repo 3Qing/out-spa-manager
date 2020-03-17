@@ -44,7 +44,6 @@
             <el-table-column label="請求書番号" prop="InvoiceNo" show-overflow-tooltip></el-table-column>
             <el-table-column label="アクション" width="350px">
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="actionHandler(null, scope.row)">qwe</el-button>
                     <el-button
                         type="primary"
                         v-for="item in scope.row.Actions"
@@ -60,17 +59,20 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
+        <ess-dialog :visible="visible"></ess-dialog>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
 import MainHeaderDate from '@components/main-wrapper/header-date';
+import EssDialog from '@components/cashflow-list/dialog';
 import { mapGetters } from 'vuex';
 export default {
     components: {
         MainWrapper,
-        MainHeaderDate
+        MainHeaderDate,
+        EssDialog
     },
     data() {
         return {
@@ -86,7 +88,8 @@ export default {
             tableData: [],
             page: 1,
             pageSize: 10,
-            total: 0
+            total: 0,
+            visible: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -155,10 +158,25 @@ export default {
             this.getList();
         },
         actionHandler(item, row) {
-            console.log(item);
-            this.createInvoice(row);
-            // if (item.ID === 'act_createinvoice') {
-            // }
+            if (item.ID === 'act_createinvoice') {
+                this.createInvoice(row);
+            } else if (item.ID === 'act_confirmtimesheet') {
+                this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
+                    id: row.CFID,
+                    type: 'confirm',
+                    callback: () => {
+                        this.getList();
+                    }
+                });
+            } else if (item.ID === 'act_canceltimesheet') {
+                this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
+                    id: row.CFID,
+                    type: 'cancel',
+                    callback: () => {
+                        this.getList();
+                    }
+                });
+            }
         },
         createInvoice(row) {
             this.$axios({

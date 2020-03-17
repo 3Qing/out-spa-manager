@@ -266,14 +266,10 @@ export default {
                 startworkdate: data.StartWorkDate,
                 position: data.Position,
                 arrivejpdate: data.ArrivePJDate,
-                // team: '',
                 jplangcert: data.JPLangCert,
                 jplangcomt: data.JPLangComt,
                 enlangcomt: data.ENLangComt,
                 Certs: data.Certificates && data.Certificates.map(item => item.CertID),
-                // PJSalary: '',
-                // BaseSalary: '',
-                // SComment: '',
                 salepricefrom: data.SalePriceFrom,
                 salepriceto: data.SalePriceTo,
                 travel: data.Travel,
@@ -369,7 +365,7 @@ export default {
                     }
                     const formData = new FormData();
                     for (let key in params) {
-                        if (typeof params[key] === 'object') {
+                        if (params[key] && typeof params[key] === 'object') {
                             params[key].forEach((item, i) => {
                                 for (let k in item) {
                                     formData.append(`${key}[${i}].${k}`, item[k]);
@@ -469,6 +465,7 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
+                    this.$router.back();
                 } else {
                     this.$message({
                         type: 'error',

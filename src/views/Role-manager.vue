@@ -26,6 +26,12 @@
                 </el-checkbox-group>
             </el-form-item>
             <el-form-item label="角色菜单" v-if="isNew || form.ID">
+                <el-button
+                    v-if="IS_H5"
+                    class="add-btn"
+                    type="primary"
+                    size="mini"
+                    @click="addMenuHandler">新增</el-button>
                 <div id="menuTree">
                     <role-menu-tree
                         v-for="(item, i) in menus"
@@ -34,9 +40,14 @@
                         :key="item.key"
                         :index="i"
                         :deep="deep"
-                        @addMenu="addMenuHandler"
                         @delete="deleteMenu"></role-menu-tree>
                 </div>
+                <el-button
+                    v-if="!IS_H5"
+                    class="add-btn"
+                    type="primary"
+                    size="mini"
+                    @click="addMenuHandler">新增</el-button>
             </el-form-item>
             <el-form-item v-if="isNew || form.ID">
                 <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新增' : '保存'}}</el-button>
@@ -50,6 +61,7 @@
 import MainWrapper from '@components/main-wrapper';
 import RoleMenuTree from '@components/role-manager/menu-tree';
 import Sortable from 'sortablejs';
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -124,6 +136,9 @@ export default {
             },
             deep: true
         }
+    },
+    computed: {
+        ...mapGetters(['IS_H5'])
     },
     methods: {
         initSort() {
@@ -399,6 +414,13 @@ export default {
 .role-manager {
     .el-form-item {
         margin-bottom: 10px;
+    }
+    #menuTree {
+        max-width: 1000px;
+        width: 80%;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 20px;
     }
 }
 </style>
