@@ -2,12 +2,12 @@
     <main-wrapper class="employee-list">
         <el-form class="main-header header-form" slot="header" size="mini" inline>
             <el-form-item>
-                <el-select v-model="form.teamid" placeholder="部门" @change="getData" clearable>
+                <el-select v-model="form.teamid" placeholder="部门" @change="changeHandle" clearable>
                     <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="form.employeetype" placeholder="就职类型" @change="getData" clearable>
+                <el-select v-model="form.employeetype" placeholder="就职类型" @change="changeHandle" clearable>
                     <el-option v-for="item in employeeTypes" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
                 </el-select>
             </el-form-item>
@@ -17,10 +17,10 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="form.module" placeholder="模块" :maxlength="50" @blur="getData" clearable></el-input>
+                <el-input v-model="form.module" placeholder="模块" :maxlength="50" @blur="changeHandle" clearable></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="form.name" placeholder="姓名" :maxlength="30" @blur="getData" clearable></el-input>
+                <el-input v-model="form.name" placeholder="姓名" :maxlength="30" @blur="changeHandle" clearable></el-input>
             </el-form-item>
             <!-- <el-button type="primary" icon="el-icon-download" size="mini">下载</el-button> -->
         </el-form>
@@ -196,8 +196,13 @@ export default {
         },
         visibleChange(value) {
             if (!value) {
+                this.pn = 1;
                 this.getData();
             }
+        },
+        changeHandle() {
+            this.pn = 1;
+            this.getData();
         },
         clickHandle(scope, item) {
             if (item.action === 'act_employeeupdate') {

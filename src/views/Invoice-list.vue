@@ -10,13 +10,13 @@
                 range-separator="~"
                 start-placeholder="开始月份"
                 end-placeholder="结束月份"
-                @change="getData"></el-date-picker>
+                @change="changeDate"></el-date-picker>
             <el-select
                 size="mini"
                 clearable
                 placeholder="取引先"
                 v-model="customerid"
-                @change="getData">
+                @change="changeDate">
                 <el-option v-for="item in customers" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
             </el-select>
         </div>
@@ -47,6 +47,7 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
+        <gold-dialog></gold-dialog>
     </main-wrapper>
 </template>
 
@@ -54,9 +55,11 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import { formatApiUrl } from '@_public/utils';
+import GoldDialog from '@/components/invoice-list/gold-dialog';
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        GoldDialog
     },
     data() {
         return {
@@ -126,6 +129,13 @@ export default {
         actionHandler(item, row) {
             if (item.ID === 'act_downloadinvoice') {
                 this.downloadInvoice(row);
+            } else if (item.ID === 'act_collectsales') {
+                this.$root.$emit('SHOW_GOLD_DIALOG', {
+                    data: row,
+                    callback: () => {
+                        this.getData();
+                    }
+                });
             }
         },
         downloadInvoice(row) {
@@ -137,6 +147,10 @@ export default {
             } else if (row.Status === 1) {
                 return 'bg-success';
             }
+        },
+        changeDate() {
+            this.page = 1;
+            this.getData();
         }
     }
 };

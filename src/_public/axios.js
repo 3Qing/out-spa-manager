@@ -17,7 +17,17 @@ export default (params = {}) => {
     const custom = options.custom;
     delete options.custom;
     return axios(options)
-        .then(res => res.data)
+        .then(res => {
+            if (res.status === 200 && res.data) {
+                return res.data;
+            } else {
+                return {
+                    code: -1,
+                    data: null,
+                    message: '接口开小差了，没有返回信息'
+                };
+            }
+        })
         .catch(() => {
             custom && custom.loading && custom.loading.close();
             custom && custom.vm && custom.vm.$message({

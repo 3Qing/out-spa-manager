@@ -2,7 +2,7 @@
     <main-wrapper class="pre-sales-list">
         <el-form slot="header" class="main-header" size="mini" inline>
             <el-form-item>
-                <el-radio-group v-model="avaiable" @change="getData">
+                <el-radio-group v-model="avaiable" @change="changeHandle">
                     <el-radio :label="true">营业中</el-radio>
                     <el-radio :label="false">全部</el-radio>
                 </el-radio-group>
@@ -113,6 +113,10 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        changeHandle() {
+            this.page = 1;
+            this.getData();
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取清单数据' });
             this.$axios({

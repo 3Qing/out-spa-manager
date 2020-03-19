@@ -172,10 +172,6 @@ export default {
 </script>
 
 <style lang="less">
-// #app {
-//     width: 100%;
-//     height: 100%;
-// }
 .public-container {
     width: 100%;
     height: 100%;
@@ -237,6 +233,9 @@ export default {
             &:hover {
                 background-color: #071826 !important;
             }
+        }
+        .el-menu-item-group__title {
+            background-color: #0b253c;
         }
     }
     .h5-nav {

@@ -286,7 +286,11 @@ export default {
                     this.files = {};
                     this.$root.$emit('UPLOAD', { type: 'clear' });
                     this.total = `${result.TotalHours}小时${result.TotalMinutes}分钟`;
-                    this.editable = !result.Approved || false;
+                    if (this.$route.name === 'ESSEdit') {
+                        this.editable = !result.Approved || false;
+                    } else {
+                        this.editable = false;
+                    }
                 }
             });
         },

@@ -440,8 +440,8 @@ export default {
                 JPLangCert: this.form.jplangcert,
                 JPLangComt: this.form.jplangcomt,
                 ENLangComt: this.form.enlangcomt,
-                SalesPriceFrom: this.form.salepricefrom,
-                SalesPriceTo: this.form.salepriceto,
+                SalePriceFrom: this.form.salepricefrom,
+                SalePriceTo: this.form.salepriceto,
                 Travel: this.form.travel,
                 ExpectPJ: this.form.expectpj,
                 Comment: this.form.comment

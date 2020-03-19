@@ -27,27 +27,42 @@
                             <span>{{scope.row.Month}}月</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="作业时间" prop="ActualHours"></el-table-column>
+                    <el-table-column label="作业时间" prop="ActualHours" width="100px"></el-table-column>
                     <el-table-column label="精算时间" prop="OverTimeHours">
                         <template slot-scope="scope">
                             <span>{{scope.row.OverTimeHours || '-'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="项目工资" prop="ProjectSalary"></el-table-column>
-                    <el-table-column label="精算工资" prop="OverTimeSalary"></el-table-column>
-                    <el-table-column label="待机天数" prop="BenchDays"></el-table-column>
-                    <el-table-column label="待机费" prop="BaseSalary"></el-table-column>
-                    <el-table-column label="交通费" prop="TravelFare"></el-table-column>
-                    <el-table-column label="其他费用" prop="OtherFee"></el-table-column>
-                    <el-table-column label="实发工资" prop="PayedAmount">
+                    <el-table-column label="项目工资" prop="ProjectSalary" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            <span color="danger">{{scope.row.PayedAmount}}</span>
+                            <span>{{formatPrice(scope.row.ProjectSalary)}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="发放日期" prop="SalaryPayDate" width="120"></el-table-column>
-                    <el-table-column label="操作" width="130">
+                    <el-table-column label="精算工资" prop="OverTimeSalary" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            <el-button type="primary" size="mini" @click="toEdit(scope)">填写作业报告</el-button>
+                            <span>{{formatPrice(scope.row.OverTimeSalary)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="作業日数" prop="WorkDays"></el-table-column>
+                    <el-table-column label="交通费" prop="TravelFare" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span>{{formatPrice(scope.row.TravelFare)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="其他费用" prop="OtherFee" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span>{{formatPrice(scope.row.OtherFee)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="承認ステータス" width="120px">
+                        <template slot-scope="scope">
+                            <span :class="[scope.row.TimeSheetID && (scope.row.Approved ? 'audit' : 'unaudit')]">{{formatApproved(scope.row)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="360">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="toEdit(scope)">{{formatOperBtn(scope.row)}}</el-button>
+                            <el-button v-if="scope.row.TimeSheetID" type="primary" size="mini" @click="download(scope.row)">タイムシートダウンロード</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -59,6 +74,7 @@
 <script>
 import { getFullYears } from '@_public/utils';
 import MainWrapper from '@components/main-wrapper';
+import { formatApiUrl } from '@_public/utils';
 
 export default {
     components: {
@@ -91,7 +107,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取作业报告数据...' });
             this.$axios({
-                url: '/api/esscashflow',
+                url: '/api/getesscashflowlist',
                 params: {
                     year: this.fullYear
                 },
@@ -101,35 +117,11 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                let result = res;
-                if (typeof result === 'string') {
-                    result = JSON.parse(res);
-                    if (result.length) {
-                        this.allData = [...result];
-                    } else {
-                        this.allData = [{
-                            ContractTitle: '',
-                            ContractDuration: '',
-                            ContractHours: '',
-                            SalesPerson: '',
-                            CashFlows: []
-                        }];
-                    }
+                if (res && res.code === 0) {
+                    const result = res.data || [];
+                    this.allData = result;
                 } else {
-                    if (result.code === 0) {
-                        const data = result.data || [];
-                        if (data.length) {
-                            this.allData = [...data];
-                        } else {
-                            this.allData = [{
-                                ContractTitle: '',
-                                ContractDuration: '',
-                                ContractHours: '',
-                                SalesPerson: '',
-                                CashFlows: []
-                            }];
-                        }
-                    }
+                    this.allData = [];
                 }
             });
         },
@@ -137,11 +129,42 @@ export default {
             this.fullYear = year;
             this.getData();
         },
+        formatPrice(value) {
+            return Number(value).toFixed(2).toLocaleString();
+        },
+        formatApproved(row) {
+            if (row.TimeSheetID) {
+                if (row.Approved) {
+                    return '已审核';
+                } else {
+                    return '未审核';
+                }
+            } else {
+                return '未入力';
+            }
+        },
+        formatOperBtn(row) {
+            if (row.TimeSheetID) {
+                if (row.Approved) {
+                    return 'タイムシート照会';
+                } else {
+                    return 'タイムシート編集';
+                }
+            } else {
+                return 'タイムシート入力';
+            }
+        },
         toEdit(scope) {
-            this.$router.push({
-                name: 'ESSEdit',
-                params: { id: scope.row.CFID }
-            });
+            if (scope.row.CFID) {
+                this.$router.push({
+                    name: 'ESSEdit',
+                    params: { id: scope.row.CFID }
+                });
+            }
+        },
+        download(row) {
+            const href = formatApiUrl('/api/downloadtimesheet', `?cfid=${row.CFID}`);
+            window.open(href, '_blank');
         }
     }
 };
@@ -165,6 +188,12 @@ export default {
                 }
             }
         }
+    }
+    .audit {
+        color: #1473B7;
+    }
+    .unaudit {
+        color: #E6A23C;
     }
 }
 </style>

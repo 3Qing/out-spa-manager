@@ -21,20 +21,20 @@
                 clearable
                 @change="changeEndTime">
             </el-date-picker>
-            <el-select v-model="form.customerid" placeholder="取引先" @change="getData" size="mini" clearable>
+            <el-select v-model="form.customerid" placeholder="取引先" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in customers" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
             </el-select>
-            <el-select v-model="form.empeeid" placeholder="作業担当者" @change="getData" size="mini" clearable>
+            <el-select v-model="form.empeeid" placeholder="作業担当者" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in employees" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
             </el-select>
-            <el-select v-model="form.salespersonid" placeholder="営業担当" @change="getData" size="mini" clearable>
+            <el-select v-model="form.salespersonid" placeholder="営業担当" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in sales" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
             </el-select>
-            <el-select v-model="form.paperreceived" size="mini">
+            <!-- <el-select v-model="form.paperreceived" size="mini">
                 <el-option :value="0" label="全部"></el-option>
                 <el-option :value="1" label="入手済"></el-option>
                 <el-option :value="2" label="未入手"></el-option>
-            </el-select>
+            </el-select> -->
         </div>
         <el-table size="small" :data="tableData">
             <el-table-column label="注文番号" width="120px">
@@ -119,7 +119,7 @@ export default {
                 customerid: '',
                 empeeid: '',
                 salespersonid: '',
-                paperreceived: 0,
+                // paperreceived: 0,
                 page: 1,
                 pagesize: 10
             },
@@ -149,6 +149,10 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        changeHandler() {
+            this.form.page = 1;
+            this.getData();
+        },
         getCustomerList() {
             this.$axios({
                 url: '/api/customersforselect'
@@ -184,9 +188,11 @@ export default {
                         message: '请先取消结束时间'
                     });
                 } else {
+                    this.page = 1;
                     this.getData();
                 }
             } else {
+                this.page = 1;
                 this.getData();
             }
         },
@@ -202,9 +208,11 @@ export default {
                         });
                         this.form.periodto = '';
                     } else {
+                        this.page = 1;
                         this.getData();
                     }
                 } else {
+                    this.page = 1;
                     this.getData();
                 }
             } else {

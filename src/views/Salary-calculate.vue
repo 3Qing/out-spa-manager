@@ -8,7 +8,7 @@
                 value-format="yyyyMM"
                 value="yyyyMM"
                 :clearable="false"
-                @change="getData"></el-date-picker>
+                @change="changeDate"></el-date-picker>
         </div>
         <el-table size="mini" :data="tableData">
             <el-table-column label="就職タイプ" prop="EmployeeType"></el-table-column>
@@ -24,10 +24,10 @@
             <el-table-column label="交通代" prop="TravelFare"></el-table-column>
             <el-table-column label="その他費用" prop=""></el-table-column>
             <el-table-column label="所得税" prop="IncomeTax"></el-table-column>
-            <el-table-column label="支払予定日" prop="DueDate"></el-table-column>
+            <el-table-column label="支払予定日" prop="DueDate" width="120px"></el-table-column>
             <el-table-column label="支給額" prop="PayAmount"></el-table-column>
             <el-table-column label="実際支払日" prop="PayedDate"></el-table-column>
-            <el-table-column label="アクション">
+            <el-table-column label="アクション" min-width="140px">
                 <template slot-scope="scope">
                     <el-button
                         v-for="item in scope.row.Actions"
@@ -77,15 +77,6 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
-        // getEmployees() {
-        //     this.$axios({
-        //         url: '/api/employeesforselect'
-        //     }).then(res => {
-        //         if (res && res.code === 0) {
-        //             this.employees = res.data || [];
-        //         }
-        //     });
-        // },
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -117,7 +108,6 @@ export default {
         },
         actionHandler(item, row) {
             if (item.ID === 'act_calculatesalary') {
-                console.log(row);
                 this.getCalculateSalery(row);
             }
         },
@@ -129,8 +119,19 @@ export default {
                     period: this.fromperiod
                 }
             }).then(res => {
-                console.log(res);
+                if (res && res.code === 0) {
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回'
+                    });
+                }
             });
+        },
+        changeDate() {
+            this.page = 1;
+            this.getData();
         }
     }
 };

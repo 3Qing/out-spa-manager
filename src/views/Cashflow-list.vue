@@ -1,10 +1,10 @@
 <template>
     <main-wrapper class="cashflow-list">
-        <main-header-date slot="header" :form="form" :clearable="false" @update="getList">
-            <el-select placeholder="チーム" v-model="form.teamid" size="mini" clearable @change="getList">
+        <main-header-date slot="header" :form="form" :clearable="false" @update="changeHandle">
+            <el-select placeholder="チーム" v-model="form.teamid" size="mini" clearable @change="changeHandle">
                 <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
             </el-select>
-            <el-select placeholder="従業員" v-model="form.employeeid" size="mini" clearable @change="getList">
+            <el-select placeholder="従業員" v-model="form.employeeid" size="mini" clearable @change="changeHandle">
                 <el-option v-for="item in employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
             </el-select>
             <el-input
@@ -13,7 +13,7 @@
                 v-model="form.contractid"
                 size="mini"
                 clearable
-                @blur="getList"></el-input>
+                @blur="changeHandle"></el-input>
         </main-header-date>
         <el-table size="small" :data="tableData">
             <el-table-column label="注文書" prop="ContractID" show-overflow-tooltip></el-table-column>
@@ -54,8 +54,8 @@
             </el-table-column>
         </el-table>
         <el-pagination
-            :current-page="form.page"
-            :page-size="form.pageSize"
+            :current-page="page"
+            :page-size="pageSize"
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
@@ -195,6 +195,10 @@ export default {
                     });
                 }
             });
+        },
+        changeHandle() {
+            this.page = 1;
+            this.getList();
         }
     }
 };
