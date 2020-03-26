@@ -117,6 +117,7 @@
             <el-form-item>
                 <el-button type="primary" size="small" @click="beforeSubmit">保存</el-button>
                 <el-button size="small" @click="resetForm">重置</el-button>
+                <el-button size="small" @click="$router.back()">返回</el-button>
             </el-form-item>
         </el-form>
     </main-wrapper>
@@ -408,9 +409,9 @@ export default {
                 }],
                 salepricefrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
                 salepriceto: Number(this.form.salepriceto.toString().replace(/,/g, '')),
-                travel: this.form.travel,
-                expectpj: this.form.expectpj,
-                comment: this.form.comment
+                travel: this.form.travel || '',
+                expectpj: this.form.expectpj || '',
+                comment: this.form.comment || ''
             };
             params.certificates = this.form.Certs.map(item => {
                 return {
@@ -436,15 +437,16 @@ export default {
                     CertID: item,
                     Date: '2020-01-01'
                 })),
+                'position.ID': this.form.position,
                 ArriveJPDate: this.form.arrivejpdate,
                 JPLangCert: this.form.jplangcert,
                 JPLangComt: this.form.jplangcomt,
                 ENLangComt: this.form.enlangcomt,
-                SalePriceFrom: this.form.salepricefrom,
-                SalePriceTo: this.form.salepriceto,
-                Travel: this.form.travel,
-                ExpectPJ: this.form.expectpj,
-                Comment: this.form.comment
+                SalePriceFrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
+                SalePriceTo: Number(this.form.salepriceto.toString().replace(/,/g, '')),
+                Travel: this.form.travel || '',
+                ExpectPJ: this.form.expectpj || '',
+                Comment: this.form.comment || ''
             };
         },
         submit(formData, api) {

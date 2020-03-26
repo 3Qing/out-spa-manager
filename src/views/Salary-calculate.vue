@@ -14,19 +14,23 @@
             <el-table-column label="就職タイプ" prop="EmployeeType"></el-table-column>
             <el-table-column label="社員番号" prop="EmployeeNo"></el-table-column>
             <el-table-column label="名前" prop="EmployeeName"></el-table-column>
-            <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="TimesheetApproved"></el-table-column>
+            <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="TimesheetStatus">
+                <template slot-scope="scope">
+                    <span>{{transformTimesheet(scope.row.TimesheetStatus)}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="出勤日数" prop="ActualWorkDays"></el-table-column>
             <el-table-column label="作業時間" prop="ActualHours"></el-table-column>
             <el-table-column label="待機日数" prop="BenchDays"></el-table-column>
-            <el-table-column label="ﾌﾟﾛｼﾞｪｸﾄ賃金" prop="ProjectSalary"></el-table-column>
-            <el-table-column label="待機代" prop="BenchSalary"></el-table-column>
-            <el-table-column label="社会保険" prop="Insurance"></el-table-column>
-            <el-table-column label="交通代" prop="TravelFare"></el-table-column>
-            <el-table-column label="その他費用" prop=""></el-table-column>
-            <el-table-column label="所得税" prop="IncomeTax"></el-table-column>
+            <el-table-column label="ﾌﾟﾛｼﾞｪｸﾄ賃金" prop="ProjectSalary" width="120px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="待機代" prop="BenchSalary" show-overflow-tooltip></el-table-column>
+            <el-table-column label="社会保険" prop="Insurance" show-overflow-tooltip></el-table-column>
+            <el-table-column label="交通代" prop="TravelFare" show-overflow-tooltip></el-table-column>
+            <el-table-column label="その他費用" prop="" show-overflow-tooltip></el-table-column>
+            <el-table-column label="所得税" prop="IncomeTax" show-overflow-tooltip></el-table-column>
             <el-table-column label="支払予定日" prop="DueDate" width="120px"></el-table-column>
             <el-table-column label="支給額" prop="PayAmount"></el-table-column>
-            <el-table-column label="実際支払日" prop="PayedDate"></el-table-column>
+            <el-table-column label="実際支払日" prop="PayedDate" width="120px" show-overflow-tooltip></el-table-column>
             <el-table-column label="アクション" min-width="140px">
                 <template slot-scope="scope">
                     <el-button
@@ -112,13 +116,19 @@ export default {
             }
         },
         getCalculateSalery(row) {
+            const loading = this.$loading({ lock: true, text: '正在计算中...' });
             this.$axios({
                 url: '/api/calculatesalary',
                 params: {
                     empeeid: row.EmployeeID,
                     period: this.fromperiod
+                },
+                custom: {
+                    loading,
+                    vm: this
                 }
             }).then(res => {
+                loading.close();
                 if (res && res.code === 0) {
                     this.getData();
                 } else {
@@ -132,6 +142,18 @@ export default {
         changeDate() {
             this.page = 1;
             this.getData();
+        },
+        transformTimesheet(value) {
+            switch (Number(value)) {
+                case 0:
+                    return '未入力';
+                case 1:
+                    return '未承認';
+                case 2:
+                    return '承認済';
+                default:
+                    return '-';
+            }
         }
     }
 };

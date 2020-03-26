@@ -41,7 +41,7 @@
                 <el-table-column label="交通代・円" prop="TravelFare" show-overflow-tooltip></el-table-column>
             </el-table-column>
             <el-table-column label="粗利・円" prop="Profit" show-overflow-tooltip></el-table-column>
-            <el-table-column label="請求書番号" prop="InvoiceNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="請求書番号" width="120px" prop="InvoiceNo" show-overflow-tooltip></el-table-column>
             <el-table-column label="アクション" width="350px">
                 <template slot-scope="scope">
                     <el-button
@@ -179,14 +179,24 @@ export default {
             }
         },
         createInvoice(row) {
+            const loading = this.$loading({ lock: true, text: '正在创建请求书番号' });
             this.$axios({
                 method: 'POST',
                 url: `/api/createinvoice`,
                 params: {
                     cfids: [row.CFID]
+                },
+                custom: {
+                    loading,
+                    vm: this
                 }
             }).then(res => {
+                loading.close();
                 if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '创建成功'
+                    });
                     this.getList();
                 } else {
                     this.$message({

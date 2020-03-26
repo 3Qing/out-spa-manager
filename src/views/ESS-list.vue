@@ -16,40 +16,40 @@
                 <li class="fl">
                     <span>合同标题:</span><span color="primary">{{item.ContractTitle}}</span>
                 </li>
-                <li class="fl"><span>合同周期:</span><span>{{item.ContractDuration}}</span></li>
-                <li class="fl"><span>营业担当:</span><span>{{item.SalesPerson}}</span></li>
-                <li class="fl"><span>合同工时:</span><span>{{item.ContractHours}}</span></li>
+                <li class="fl"><span>契約期間:</span><span>{{item.ContractDuration}}</span></li>
+                <li class="fl"><span>営業担当:</span><span>{{item.SalesPerson}}</span></li>
+                <li class="fl"><span>契約作業時間:</span><span>{{item.ContractHours}}</span></li>
             </ul>
             <div class="table-wrapper">
                 <el-table size="small" :data="item.CashFlows">
-                    <el-table-column label="日期" prop="Month" width="60">
+                    <el-table-column label="年月" prop="Month" width="60">
                         <template slot-scope="scope">
                             <span>{{scope.row.Month}}月</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="作业时间" prop="ActualHours" width="100px"></el-table-column>
-                    <el-table-column label="精算时间" prop="OverTimeHours">
+                    <el-table-column label="作業時間" prop="ActualHours" width="100px"></el-table-column>
+                    <el-table-column label="精算時間" prop="OverTimeHours">
                         <template slot-scope="scope">
                             <span>{{scope.row.OverTimeHours || '-'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="项目工资" prop="ProjectSalary" show-overflow-tooltip>
+                    <el-table-column label="賃金" prop="ProjectSalary" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{formatPrice(scope.row.ProjectSalary)}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="精算工资" prop="OverTimeSalary" show-overflow-tooltip>
+                    <el-table-column label="精算額" prop="OverTimeSalary" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{formatPrice(scope.row.OverTimeSalary)}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="作業日数" prop="WorkDays"></el-table-column>
-                    <el-table-column label="交通费" prop="TravelFare" show-overflow-tooltip>
+                    <el-table-column label="交通代" prop="TravelFare" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{formatPrice(scope.row.TravelFare)}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="其他费用" prop="OtherFee" show-overflow-tooltip>
+                    <el-table-column label="その他費用" prop="OtherFee" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{formatPrice(scope.row.OtherFee)}}</span>
                         </template>
@@ -59,10 +59,10 @@
                             <span :class="[scope.row.TimeSheetID && (scope.row.Approved ? 'audit' : 'unaudit')]">{{formatApproved(scope.row)}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="360">
+                    <el-table-column label="アクション" width="360">
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="toEdit(scope)">{{formatOperBtn(scope.row)}}</el-button>
-                            <el-button v-if="scope.row.TimeSheetID" type="primary" size="mini" @click="download(scope.row)">タイムシートダウンロード</el-button>
+                            <el-button v-if="scope.row.TimeSheetID" type="primary" size="mini" @click="download(scope.row)">作業報告書ﾀﾞｳﾝﾛｰﾄﾞ</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -105,7 +105,7 @@ export default {
     },
     methods: {
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取作业报告数据...' });
+            const loading = this.$loading({ lock: true, text: '作業報告書データ取得中...' });
             this.$axios({
                 url: '/api/getesscashflowlist',
                 params: {
@@ -130,14 +130,14 @@ export default {
             this.getData();
         },
         formatPrice(value) {
-            return Number(value).toFixed(2).toLocaleString();
+            return parseInt(value).toLocaleString();
         },
         formatApproved(row) {
             if (row.TimeSheetID) {
                 if (row.Approved) {
-                    return '已审核';
+                    return '承認済';
                 } else {
-                    return '未审核';
+                    return '未承認';
                 }
             } else {
                 return '未入力';

@@ -2,23 +2,23 @@
     <main-wrapper class="login">
         <el-form size="small" class="login-wrapper">
             <el-form-item>
-                <p class="item-title">员工ID</p>
+                <p class="item-title">社員番号（YP始まり）</p>
                 <el-input v-model="form.empeeid" placeholder="YP001"></el-input>
             </el-form-item>
             <el-form-item>
-                <p class="item-title">员工姓名</p>
-                <el-input v-model="form.username" placeholder="姓名"></el-input>
+                <p class="item-title">氏名</p>
+                <el-input v-model="form.username" placeholder="氏名"></el-input>
             </el-form-item>
             <el-form-item>
-                <p class="item-title">密码</p>
-                <el-input v-model="form.userpwd" show-password placeholder="密码"></el-input>
+                <p class="item-title">パスワード</p>
+                <el-input v-model="form.userpwd" show-password placeholder="パスワード"></el-input>
             </el-form-item>
             <el-form-item>
-                <p class="item-title">验证码</p>
+                <p class="item-title">認証コード</p>
                 <el-input class="code-input" v-model="form.validatecode" style="width: 140px;"></el-input>
-                <img class="valid-cover" @click="reloadValidCover" :src="validUrl" alt="验证码">
+                <img class="valid-cover" @click="reloadValidCover" :src="validUrl" alt="認証コード">
             </el-form-item>
-            <el-button type="primary" size="small" @click="beforeSubmit">登入</el-button>
+            <el-button type="primary" size="small" @click="beforeSubmit">ログイン</el-button>
         </el-form>
     </main-wrapper>
 </template>
@@ -51,7 +51,7 @@ export default {
         next(vm => {
             vm.$store.dispatch({
                 type: CHANGE_TAB_TITLE,
-                title: '登入'
+                title: 'ログイン'
             });
         });
     },
@@ -62,13 +62,13 @@ export default {
         beforeSubmit() {
             let message = '';
             if (!this.form.empeeid) {
-                message = '请输入员工ID';
+                message = '社員番号を入力してください';
             } else if (!this.form.username) {
-                message = '请输入员工姓名';
+                message = '氏名を入力してください';
             } else if (!this.form.userpwd) {
-                message = '请输入密码';
+                message = 'パスワードを入力してください';
             } else if (!this.form.validatecode) {
-                message = '请输入验证码';
+                message = '認定コードを入力してください';
             }
             if (message) {
                 this.$message({
@@ -81,7 +81,7 @@ export default {
             }
         },
         submit() {
-            const loading = this.$loading({ lock: true, text: '登入中...' });
+            const loading = this.$loading({ lock: true, text: 'ログイン中...' });
             const params = Object.assign({}, this.form);
             this.$axios({
                 url: '/api/login',
@@ -151,6 +151,7 @@ export default {
                     });
                     this.$router.push({ name: routeName });
                 } else {
+                    this.reloadValidCover();
                     this.$message({
                         type: 'error',
                         message: res.message

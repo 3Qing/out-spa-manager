@@ -307,5 +307,26 @@
                 }
             }
         }
+        .qa-manager {
+            .main-header {
+                height: auto !important;
+                .el-form-item {
+                    width: 45%;
+                    & + .el-form-item {
+                        margin-left: 10%;
+                    }
+                    .el-form-item__content {
+                        margin-left: 0;
+                    }
+                    .el-select, .el-input {
+                        width: 100%
+                    }
+                }
+                .el-button {
+                    width: 100%;
+                    margin: 0.1rem 0 0;
+                }
+            }
+        }
     }
 }

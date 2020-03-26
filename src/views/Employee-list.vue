@@ -2,53 +2,53 @@
     <main-wrapper class="employee-list">
         <el-form class="main-header header-form" slot="header" size="mini" inline>
             <el-form-item>
-                <el-select v-model="form.teamid" placeholder="部门" @change="changeHandle" clearable>
+                <el-select v-model="form.teamid" placeholder="部門" @change="changeHandle" clearable>
                     <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="form.employeetype" placeholder="就职类型" @change="changeHandle" clearable>
+                <el-select v-model="form.employeetype" placeholder="就職タイプ" @change="changeHandle" clearable>
                     <el-option v-for="item in employeeTypes" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="form.positions" placeholder="岗位" multiple collapse-tags @visible-change="visibleChange" clearable>
+                <el-select v-model="form.positions" placeholder="ポジション" multiple collapse-tags @visible-change="visibleChange" clearable>
                     <el-option v-for="item in positions" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="form.module" placeholder="模块" :maxlength="50" @blur="changeHandle" clearable></el-input>
+                <el-input v-model="form.module" placeholder="モジュール" :maxlength="50" @blur="changeHandle" clearable></el-input>
             </el-form-item>
             <el-form-item>
-                <el-input v-model="form.name" placeholder="姓名" :maxlength="30" @blur="changeHandle" clearable></el-input>
+                <el-input v-model="form.name" placeholder="氏名" :maxlength="30" @blur="changeHandle" clearable></el-input>
             </el-form-item>
             <!-- <el-button type="primary" icon="el-icon-download" size="mini">下载</el-button> -->
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData">
-                <el-table-column label="所属部门" prop="Team" width="80px"></el-table-column>
-                <el-table-column label="员工号" prop="EmpeeID" width="100px"></el-table-column>
-                <el-table-column label="就职类型" prop="Type" width="100px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="姓名" prop="Name" show-overflow-tooltip></el-table-column>
-                <el-table-column label="年龄" prop="Age" width="60px"></el-table-column>
-                <el-table-column label="性别" prop="Sex" width="60px"></el-table-column>
+                <el-table-column label="所属部門" prop="Team" width="80px"></el-table-column>
+                <el-table-column label="社員番号" prop="EmpeeID" width="100px"></el-table-column>
+                <el-table-column label="就職タイプ" prop="Type" width="100px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="氏名" prop="Name" show-overflow-tooltip></el-table-column>
+                <el-table-column label="年齢" prop="Age" width="60px"></el-table-column>
+                <el-table-column label="性別" prop="Sex" width="60px"></el-table-column>
                 <el-table-column label="国籍" prop="Nationality" width="80px"></el-table-column>
-                <el-table-column label="最近车站" prop="Station" show-overflow-tooltip></el-table-column>
-                <el-table-column label="模块" prop="Module" show-overflow-tooltip></el-table-column>
-                <el-table-column label="认证资格" prop="Certificates"></el-table-column>
-                <el-table-column label="经验年数" prop="ExpYears" width="100px"></el-table-column>
-                <el-table-column label="岗位" prop="Position" show-overflow-tooltip></el-table-column>
+                <el-table-column label="最寄駅" prop="Station" show-overflow-tooltip></el-table-column>
+                <el-table-column label="モジュール" prop="Module" show-overflow-tooltip></el-table-column>
+                <el-table-column label="認定資格" prop="Certificates"></el-table-column>
+                <el-table-column label="経験年数" prop="ExpYears" width="100px"></el-table-column>
+                <el-table-column label="ポジション" prop="Position" show-overflow-tooltip></el-table-column>
                 <el-table-column label="来日年数" prop="JPYears" width="100px"></el-table-column>
-                <el-table-column label="日语能力" prop="JPLang" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="英语能力" prop="ENLang" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="状态" prop="Status" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="所在项目" prop="PJName" show-overflow-tooltip></el-table-column>
-                <el-table-column label="项目结束日期" prop="ContractEndDate" width="140px"></el-table-column>
-                <el-table-column label="提案价格" prop="SalesPrice" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="出差条件" prop="Travel" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="期望项目" prop="ExpectPJ" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="备注" prop="Comment" show-overflow-tooltip></el-table-column>
-                <el-table-column label="操作" :width="`${operWidth}px`">
+                <el-table-column label="日本語能力" prop="JPLang" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="英語能力" prop="ENLang" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="ｽﾃｰﾀｽ" prop="Status" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="所在案件" prop="PJName" show-overflow-tooltip></el-table-column>
+                <el-table-column label="案件終了日" prop="ContractEndDate" width="140px"></el-table-column>
+                <el-table-column label="提案単価" prop="SalesPrice" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="出張条件" prop="Travel" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="望む案件" prop="ExpectPJ" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="コメント" prop="Comment" show-overflow-tooltip></el-table-column>
+                <el-table-column label="アクション" :width="`${operWidth}px`">
                     <template slot-scope="scope">
                         <el-button
                             v-for="(item, i) in (scope.row.Actions || [])"
@@ -116,7 +116,7 @@ export default {
     },
     methods: {
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取员工清单...' });
+            const loading = this.$loading({ lock: true, text: '社員一覧データ取得中...' });
             let positions = [];
             this.form.positions.forEach((item, i) => {
                 positions.push(`positions[${i}]=${item}`);
@@ -154,7 +154,7 @@ export default {
                     this.$message({
                         type: 'error',
                         showClose: true,
-                        message: res ? res.message : '接口开小差了，没有返回信息'
+                        message: res ? res.message : 'インタフェース異常、データ取得できません！'
                     });
                 }
             });
@@ -210,7 +210,7 @@ export default {
             } else {
                 this.$message({
                     type: 'warning',
-                    message: '暂未开放功能'
+                    message: '該当機能は構築中'
                 });
             }
         }

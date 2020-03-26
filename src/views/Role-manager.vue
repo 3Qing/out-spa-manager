@@ -110,6 +110,10 @@ export default {
                 label: '发票列表', name: 'InvoiceList'
             }, {
                 label: '薪资核算', name: 'SalaryCalculate'
+            }, {
+                label: '用户管理', name: 'UserManager'
+            }, {
+                label: 'QA管理', name: 'QAManager'
             }]
         };
     },

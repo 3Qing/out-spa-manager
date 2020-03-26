@@ -147,6 +147,7 @@ export default {
                     type: CHANGE_TAB_TITLE,
                     title: this.tabTitle
                 });
+                sessionStorage.setItem('tabTitle', this.tabTitle);
                 this.$router.push({ name });
             });
         },

@@ -12,7 +12,7 @@ export default {
         addSales(item) {
             this.$root.$emit('SHOW_ATY_DIALOG', {
                 edit: true,
-                opt: Object.assign(this.opt, item),
+                opt: { ...this.opt, ...item },
                 callback: () => {
                     this.$emit('update');
                 }

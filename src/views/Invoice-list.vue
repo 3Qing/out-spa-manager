@@ -136,10 +136,39 @@ export default {
                         this.getData();
                     }
                 });
+            } else if (item.ID === 'act_cancelinvoice') {
+                this.cancelInvoice(row);
             }
         },
         downloadInvoice(row) {
             formatApiUrl('/api/downloadinvoice', `?invid=${row.ID}`);
+        },
+        cancelInvoice(row) {
+            const loading = this.$loading({ lock: true, text: '正在取消请求书' });
+            this.$axios({
+                url: '/api/cancelinvoice',
+                params: {
+                    invid: row.ID
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '已取消请求书'
+                    });
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
+                    });
+                }
+            });
         },
         rowClassName({ row }) {
             if (row.Status === 0 || row.Status === 2) {

@@ -1,7 +1,7 @@
 <template>
     <main-wrapper class="ess-edit">
         <el-card>
-            <div class="summary">合计作业时间:<span>{{total}}</span></div>
+            <div class="summary">合計作業時間：<span>{{total}}</span></div>
             <el-table
                 stripe
                 size="small"
@@ -13,15 +13,38 @@
                         <span>{{scope.row.Date}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="星期" prop="WeekDay" width="80"></el-table-column>
+                <el-table-column label="曜日" prop="WeekDay" width="80"></el-table-column>
                 <el-table-column label="平日/休日" width="80">
                     <template slot-scope="scope">
                         <span>{{formatDateType(scope.row)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="午前作业时间" width="260">
+                <el-table-column label="午前作業時間" width="260">
                     <template slot-scope="scope">
-                        <el-time-picker
+                        <el-time-select
+                            v-if="editable"
+                            size="mini"
+                            style="width: 100px"
+                            placeholder="開始"
+                            v-model="scope.row.AMFromTime"
+                            :picker-options="{
+                                start: '00:00',
+                                step: '00:15',
+                                end: '23:45'
+                            }"></el-time-select>
+                        <el-time-select
+                            v-if="editable"
+                            size="mini"
+                            style="width: 100px"
+                            placeholder="終了"
+                            v-model="scope.row.AMToTime"
+                            :picker-options="{
+                                start: '00:00',
+                                step: '00:15',
+                                end: '23:45',
+                                minTime: scope.row.AMFromTime
+                            }"></el-time-select>
+                        <!-- <el-time-picker
                             v-if="editable"
                             is-range
                             size="mini"
@@ -32,8 +55,13 @@
                             start-placeholder="开始时间"
                             end-placeholder="结束时间"
                             placeholder="选择时间范围"
+                            :picker-options="{
+                                start: '08:30',
+                                step: '00:15',
+                                end: '18:30'
+                            }"
                             @change="timePickerChange(scope, 'AM')">
-                        </el-time-picker>
+                        </el-time-picker> -->
                         <div v-else>
                             <span>{{scope.row.AMFromTime}}</span>
                             ~
@@ -41,9 +69,32 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="午后作业时间" width="260">
+                <el-table-column label="午後作業時間" width="260">
                     <template slot-scope="scope">
-                        <el-time-picker
+                        <el-time-select
+                            v-if="editable"
+                            size="mini"
+                            style="width: 100px"
+                            placeholder="開始"
+                            v-model="scope.row.PMFromTime"
+                            :picker-options="{
+                                start: '00:00',
+                                step: '00:15',
+                                end: '23:45'
+                            }"></el-time-select>
+                        <el-time-select
+                            v-if="editable"
+                            size="mini"
+                            style="width: 100px"
+                            placeholder="終了"
+                            v-model="scope.row.PMToTime"
+                            :picker-options="{
+                                start: '00:00',
+                                step: '00:15',
+                                end: '23:45',
+                                minTime: scope.row.PMFromTime
+                            }"></el-time-select>
+                        <!-- <el-time-picker
                             v-if="editable"
                             is-range
                             size="mini"
@@ -55,7 +106,7 @@
                             end-placeholder="结束时间"
                             placeholder="选择时间范围"
                             @change="timePickerChange(scope, 'PM')">
-                        </el-time-picker>
+                        </el-time-picker> -->
                         <div v-else>
                             <span>{{scope.row.PMFromTime}}</span>
                             ~
@@ -63,68 +114,68 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="作业内容">
+                <el-table-column label="作業内容">
                     <template slot-scope="scope">
                         <el-input v-if="editable" size="mini" v-model="scope.row.Content" :maxlength="100"></el-input>
                         <p v-else>{{scope.row.Content || '-'}}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="100">
+                <el-table-column label="ｱｸｼｮﾝ" width="100">
                     <template slot-scope="scope" v-if="editable && scope.$index === workDayIndex">
-                        <el-button type="primary" size="mini" @click="copyOneToAll(scope)">拷贝</el-button>
+                        <el-button type="primary" size="mini" @click="copyOneToAll(scope)">コピー</el-button>
                     </template>
                 </el-table-column>
             </el-table>
 
-            <el-button v-if="editable" class="btn-add" type="primary" size="mini" @click="addFare">新增</el-button>
+            <el-button v-if="editable" class="btn-add" type="primary" size="mini" @click="addFare">新規追加</el-button>
             <el-table
                 v-if="(fares.length !== 0 && !editable) || editable"
                 stripe
                 size="small"
                 :data="fares"
                 class="table-wrapper">
-                <el-table-column label="费用项" prop="FareID" width="120">
+                <el-table-column label="費用項目" prop="FareID" width="120">
                     <template slot-scope="scope">
                         <el-select v-if="editable" size="mini" v-model="scope.row.FareID" @change="changeFareID(scope)">
-                            <el-option :value="1" label="交通费"></el-option>
-                            <el-option :value="99" label="其他"></el-option>
+                            <el-option :value="1" label="交通代"></el-option>
+                            <el-option :value="99" label="その他"></el-option>
                         </el-select>
                         <span v-else>{{formatFareID(scope.row)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="费用金额" width="200">
+                <el-table-column label="費用金額" width="200">
                     <template slot-scope="scope">
                         <el-input v-if="editable" size="mini" type="number" v-model="scope.row.Amount"></el-input>
                         <span v-else color="danger">{{scope.row.Amount}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="备注">
+                <el-table-column label="コメント">
                     <template slot-scope="scope">
                         <el-input v-if="editable" v-model="scope.row.Comment" size="mini" clearable></el-input>
                         <span v-else>{{scope.row.Comment || '-'}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="发票" min-width="300">
+                <el-table-column label="領収書" min-width="300">
                     <template slot-scope="scope">
                         <el-row>
                             <el-col :span="7" v-if="scope.row.FileID">
-                                <el-button @click="watchInvoice(scope)" type="primary" size="mini">查看发票</el-button>
+                                <el-button @click="watchInvoice(scope)" type="primary" size="mini">領収書照会</el-button>
                             </el-col>
                             <el-col v-if="editable" :span="scope.row.FileID ? 17 : 24">
-                                <upload :opt="{ btnText: '上传发票', scope: scope, show: true }" @upload="upload"></upload>
+                                <upload :opt="{ btnText: '領収書写真ｱｯﾌﾟﾛｰﾄﾞ', scope: scope, show: true }" @upload="upload"></upload>
                             </el-col>
                         </el-row>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" v-if="editable">
+                <el-table-column label="アクション" width="200" v-if="editable">
                     <template slot-scope="scope">
-                        <el-button type="danger" size="mini" @click="removeFare(scope)">删除</el-button>
+                        <el-button type="danger" size="mini" @click="removeFare(scope)">削除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <div class="footer" v-if="$route.name !== 'CashflowList'">
-                <el-button v-if="editable" type="primary" size="small" @click="beforeSubmit">提交</el-button>
-                <el-button size="small" @click="goBack">返回</el-button>
+                <el-button v-if="editable" type="primary" size="small" @click="beforeSubmit">保存</el-button>
+                <el-button size="small" @click="goBack">リターン</el-button>
             </div>
         </el-card>
         <big-picture></big-picture>
@@ -245,7 +296,7 @@ export default {
     },
     methods: {
         getData(cfid) {
-            const loading = this.$loading({ lock: true, text: '正在获取作业报告数据...' });
+            const loading = this.$loading({ lock: true, text: '作業報告書データ取得中...' });
             this.$axios({
                 url: '/api/inittimesheet',
                 params: { cfid },
@@ -262,19 +313,20 @@ export default {
                         if (item.DateType === 1 && this.workDayIndex === -1) {
                             this.workDayIndex = index;
                         }
-                        this.timePickers[`${index}_AM`] = [
-                            this.formatTime(item, 'AMFromTime') || '',
-                            this.formatTime(item, 'AMToTime') || ''
-                        ];
-                        this.timePickers[`${index}_PM`] = [
-                            this.formatTime(item, 'PMFromTime') || '',
-                            this.formatTime(item, 'PMToTime') || ''
-                        ];
+                        // this.timePickers[`${index}_AM`] = [
+                        //     this.formatTime(item, 'AMFromTime') || '',
+                        //     this.formatTime(item, 'AMToTime') || ''
+                        // ];
+                        // this.timePickers[`${index}_PM`] = [
+                        //     this.formatTime(item, 'PMFromTime') || '',
+                        //     this.formatTime(item, 'PMToTime') || ''
+                        // ];
                         item.Date = this.formatDate(item.Date);
                         item.AMFromTime = this.formatTime(item, 'AMFromTime');
                         item.AMToTime = this.formatTime(item, 'AMToTime');
                         item.PMFromTime = this.formatTime(item, 'PMFromTime');
                         item.PMToTime = this.formatTime(item, 'PMToTime');
+                        item.Content = item.Content || '';
                     });
                     if (result.Fares && result.Fares.length) {
                         this.fares = [...result.Fares];
@@ -285,7 +337,7 @@ export default {
                     this.essId = result.ID;
                     this.files = {};
                     this.$root.$emit('UPLOAD', { type: 'clear' });
-                    this.total = `${result.TotalHours}小时${result.TotalMinutes}分钟`;
+                    this.total = `${result.TotalHours}時間${result.TotalMinutes}分`;
                     if (this.$route.name === 'ESSEdit') {
                         this.editable = !result.Approved || false;
                     } else {
@@ -337,38 +389,38 @@ export default {
                 return row.Title || '';
             }
         },
-        timePickerChange(scope, type) {
-            this.updateTotal().then(secondTimeStamp => {
-                this.total = `${parseInt(secondTimeStamp / 3600).toString().padStart(2, '0')}小时${parseInt((secondTimeStamp % 3600) / 60).toString().padStart(2, '0')}分钟`;
-            });
-            this.worktimes[scope.$index][`${type}FromTime`] = this.timePickers[`${scope.$index}_${type}`][0] || '';
-            this.worktimes[scope.$index][`${type}ToTime`] = this.timePickers[`${scope.$index}_${type}`][1] || '';
-        },
-        updateTotal() {
-            return new Promise(resolve => {
-                let sumDuration = 0;
-                Object.keys(this.timePickers).forEach(item => {
-                    if (this.timePickers[item]) {
-                        const [ fromTime, toTime ] = this.timePickers[item];
-                        let [ fromTimeHH, fromTimeMM ] = fromTime.split(':');
-                        let [ toTimeHH, toTimeMM ] = toTime.split(':');
-                        sumDuration += (
-                            (Number(toTimeHH) * 3600 + Number(toTimeMM) * 60) -
-                            (Number(fromTimeHH) * 3600 + Number(fromTimeMM) * 60)
-                        );
-                    }
-                });
-                resolve(sumDuration);
-            });
-        },
+        // timePickerChange(scope, type) {
+        //     this.updateTotal().then(secondTimeStamp => {
+        //         this.total = `${parseInt(secondTimeStamp / 3600).toString().padStart(2, '0')}小时${parseInt((secondTimeStamp % 3600) / 60).toString().padStart(2, '0')}分钟`;
+        //     });
+        //     this.worktimes[scope.$index][`${type}FromTime`] = (this.timePickers[`${scope.$index}_${type}`] && this.timePickers[`${scope.$index}_${type}`][0]) || '';
+        //     this.worktimes[scope.$index][`${type}ToTime`] = (this.timePickers[`${scope.$index}_${type}`] && this.timePickers[`${scope.$index}_${type}`][1]) || '';
+        // },
+        // updateTotal() {
+        //     return new Promise(resolve => {
+        //         let sumDuration = 0;
+        //         Object.keys(this.timePickers).forEach(item => {
+        //             if (this.timePickers[item]) {
+        //                 const [ fromTime, toTime ] = this.timePickers[item];
+        //                 let [ fromTimeHH, fromTimeMM ] = fromTime.split(':');
+        //                 let [ toTimeHH, toTimeMM ] = toTime.split(':');
+        //                 sumDuration += (
+        //                     (Number(toTimeHH) * 3600 + Number(toTimeMM) * 60) -
+        //                     (Number(fromTimeHH) * 3600 + Number(fromTimeMM) * 60)
+        //                 );
+        //             }
+        //         });
+        //         resolve(sumDuration);
+        //     });
+        // },
         copyOneToAll(scope) {
-            const timePickers = {};
+            // const timePickers = {};
             const worktimes = this.worktimes.map((item, index) => {
                 if (item.DateType !== 1 && this.workDayIndex !== index) {
                     return item;
                 } else {
-                    timePickers[`${index}_AM`] = [scope.row.AMFromTime, scope.row.AMToTime];
-                    timePickers[`${index}_PM`] = [scope.row.PMFromTime, scope.row.PMToTime];
+                    // timePickers[`${index}_AM`] = [scope.row.AMFromTime, scope.row.AMToTime];
+                    // timePickers[`${index}_PM`] = [scope.row.PMFromTime, scope.row.PMToTime];
                     return {
                         Date: item.Date,
                         WeekDay: item.WeekDay,
@@ -382,7 +434,7 @@ export default {
                 }
             });
             this.worktimes = [...worktimes];
-            this.timePickers = timePickers;
+            // this.timePickers = timePickers;
         },
         changeFareID(scope) {
             if (scope.row.FareID === 1) {
@@ -410,7 +462,7 @@ export default {
             this.worktimes.forEach((item, index) => {
                 Object.keys(item).forEach(key => {
                     if ('AMFromTime,AMToTime,PMFromTime,PMToTime'.includes(key)) {
-                        formData.append(`worktimes[${index}].${key}`, `${item.Date} ${item[key]}`);
+                        formData.append(`worktimes[${index}].${key}`, `${item.Date} ${item[key] || '00:00'}`);
                     } else if ('Date,WeekDay,DateType,Content'.includes(key)) {
                         formData.append(`worktimes[${index}].${key}`, `${item[key] || ''}`);
                     }
@@ -436,22 +488,22 @@ export default {
                         commentEmpty = true;
                     }
                     formData.append(`fares[${index}].FareID`, item.FareID);
-                    formData.append(`fares[${index}].Title`, item.Title);
-                    formData.append(`fares[${index}].Comment`, item.Comment);
-                    formData.append(`fares[${index}].Amount`, item.Amount);
+                    formData.append(`fares[${index}].Title`, item.Title || '');
+                    formData.append(`fares[${index}].Comment`, item.Comment || '');
+                    formData.append(`fares[${index}].Amount`, item.Amount || '');
                 }
             });
             if (noFile) {
                 this.$message({
                     type: 'warning',
-                    message: '费用金额超过3000请上传发票'
+                    message: '費用金額が3000円を超える場合、領収書写真をアップロードしてください！'
                 });
                 return;
             }
             if (commentEmpty) {
                 this.$message({
                     type: 'warning',
-                    message: '请填写费用项备注'
+                    message: '費用項目のコメントを入力してください！'
                 });
                 return;
             }
@@ -467,7 +519,7 @@ export default {
             }
         },
         save(formData) {
-            const loading = this.$loading({ lock: true, text: '正在提交作业报告中...' });
+            const loading = this.$loading({ lock: true, text: '作業報告書保存中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/submittimesheet',
@@ -510,6 +562,9 @@ export default {
         .table-wrapper {
             & + .table-wrapper {
                 margin-top: 20px;
+            }
+            .el-date-editor + .el-date-editor {
+                margin-left: 10px;
             }
             .el-date-editor--timerange.el-input__inner {
                 width: 100%;

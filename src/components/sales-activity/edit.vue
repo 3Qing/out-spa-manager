@@ -135,12 +135,12 @@ export default {
     },
     watch: {
         data(data) {
-            this.form = { ...data };
+            this.form = data;
         }
     },
     mounted() {
         if (this.data) {
-            this.form = { ...this.data };
+            this.form = this.data;
         }
     },
     methods: {
