@@ -40,6 +40,7 @@
                         :key="item.key"
                         :index="i"
                         :deep="deep"
+                        :opt="opt"
                         @delete="deleteMenu"></role-menu-tree>
                 </div>
                 <el-button
@@ -84,6 +85,7 @@ export default {
             deep: 0,
             teams: [],
             actions: [],
+            opt: {},
             routeName: [{
                 label: '作业报告/工资详细清单', name: 'ESSList'
             }, {
@@ -121,17 +123,13 @@ export default {
             }]
         };
     },
-    provide() {
-        return {
-            routeName: this.routeName
-        };
-    },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             // vm.$store.dispatch({
             //     type: CHANGE_TAB_TITLE,
             //     title: '角色管理'
             // });
+            vm.getRouteInfo();
             vm.getRoleList();
             vm.getAllTeams();
             vm.getAllActions();
@@ -186,6 +184,22 @@ export default {
                                 this.menus = [...arr];
                             }
                         });
+                    });
+                }
+            });
+        },
+        // 获取路由信息
+        getRouteInfo() {
+            this.$axios({
+                url: '/api/getroutelist'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.$set(this.opt, 'routeData', res.data || []);
+                    // this.routeData = res.data || [];
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
                     });
                 }
             });

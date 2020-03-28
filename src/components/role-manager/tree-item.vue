@@ -4,7 +4,7 @@
             <div>
                 <el-input v-model="item.Title" placeholder="菜单名称" clearable></el-input>
                 <el-select v-model="item.Name">
-                    <el-option v-for="route in routeName" :label="route.label" :value="route.name" :key="route.name"></el-option>
+                    <el-option v-for="route in opt.routeData" :label="route.RouteName" :value="route.RoutePath" :key="route.RoutePath"></el-option>
                 </el-select>
                 <i color="danger" class="el-icon-delete" @click="deleteItem(i)"></i>
                 <i color="primary" class="el-icon-rank"></i>
@@ -19,12 +19,13 @@ export default {
     name: 'RoleTreeItem',
     props: {
         deep: Number,
+        opt: Object,
         data: {
             type: Array,
             default: () => ([])
         }
     },
-    inject: [ 'routeName' ],
+    // inject: [ 'opt' ],
     computed: {
         ...mapGetters(['IS_H5']),
         style() {

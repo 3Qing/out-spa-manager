@@ -73,10 +73,10 @@
                 <el-input v-model="item.SystemInfo"></el-input>
             </el-form-item>
             <el-form-item label="プロジェクト概要">
-                <el-input v-model="item.ProjectDesc"></el-input>
+                <el-input type="textarea" v-model="item.ProjectDesc" :rows="3"></el-input>
             </el-form-item>
             <el-form-item label="作業内容">
-                <el-input type="textarea" v-model="item.WorkContent"></el-input>
+                <el-input type="textarea" v-model="item.WorkContent" :rows="5"></el-input>
             </el-form-item>
             <el-form-item label="参画フェーズ">
                 <el-checkbox v-model="item.RequirementDef">要件定義</el-checkbox>
@@ -88,8 +88,6 @@
                 <el-checkbox v-model="item.DataMigration">データ移行</el-checkbox>
                 <el-checkbox v-model="item.Maintenance">運用保守</el-checkbox>
             </el-form-item>
-            <!-- <div class="project-exp-wrapper" v-for="(item, i) in form.Projects" :key="i">
-            </div> -->
         </el-form>
         <div class="text-center">
             <el-button size="mini" type="primary" @click="newProject">新增项目经验</el-button>

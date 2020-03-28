@@ -14,6 +14,7 @@
             v-if="data.children && data.children.length"
             :data="data.children"
             :deep="deep + 1"
+            :opt="opt"
             @delete="deleteItem"></menu-item>
     </div>
 </template>
@@ -28,7 +29,8 @@ export default {
         },
         deep: Number,
         index: Number,
-        total: Number
+        total: Number,
+        opt: Object
     },
     components: {
         MenuItem
