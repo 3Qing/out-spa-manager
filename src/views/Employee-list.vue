@@ -3,7 +3,7 @@
         <el-form class="main-header header-form" slot="header" size="mini" inline>
             <el-form-item>
                 <el-select v-model="form.teamid" placeholder="部門" @change="changeHandle" clearable>
-                    <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
+                    <el-option v-for="item in TEAMS" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -112,7 +112,7 @@ export default {
         });
     },
     computed: {
-        ...mapGetters(['IS_H5'])
+        ...mapGetters(['IS_H5', 'TEAMS'])
     },
     methods: {
         getData() {

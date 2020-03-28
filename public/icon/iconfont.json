@@ -1,0 +1,23 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2191547",
+      "name": "excel",
+      "font_class": "web-icon-",
+      "unicode": "e6df",
+      "unicode_decimal": 59103
+    },
+    {
+      "icon_id": "11614540",
+      "name": "PDF",
+      "font_class": "PDF",
+      "unicode": "e6b6",
+      "unicode_decimal": 59062
+    }
+  ]
+}

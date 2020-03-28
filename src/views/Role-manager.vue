@@ -114,6 +114,10 @@ export default {
                 label: '用户管理', name: 'UserManager'
             }, {
                 label: 'QA管理', name: 'QAManager'
+            }, {
+                label: '简历列表', name: 'ResumeList'
+            }, {
+                label: '简历更新', name: 'ResumeUpdate'
             }]
         };
     },

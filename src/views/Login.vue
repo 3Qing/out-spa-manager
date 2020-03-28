@@ -39,9 +39,12 @@ export default {
     data() {
         return {
             form: {
-                empeeid: process.env.NODE_ENV === 'production' ? '' : 'YP009',
-                username: process.env.NODE_ENV === 'production' ? '' : '陳 峰',
-                userpwd: process.env.NODE_ENV === 'production' ? '' : 'chenfeng',
+                // YP032    YP008
+                // 劉 峰    李 テイテイ
+                // yz5m49d  tingting8
+                empeeid: process.env.NODE_ENV === 'production' ? '' : 'YP032',
+                username: process.env.NODE_ENV === 'production' ? '' : '劉 峰',
+                userpwd: process.env.NODE_ENV === 'production' ? '' : 'yz5m49d',
                 validatecode: ''
             },
             validUrl: `${process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy'}/api/getvalidatebmp`
@@ -49,6 +52,7 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            vm.reloadValidCover();
             vm.$store.dispatch({
                 type: CHANGE_TAB_TITLE,
                 title: 'ログイン'

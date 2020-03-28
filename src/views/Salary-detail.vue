@@ -10,7 +10,67 @@
                 :clearable="false"
                 @change="getData"></el-date-picker>
         </div>
-        <el-form size="small" label-width="90px" label-suffix=":">
+        <div class="salary-wrapper">
+            <p>株式会社ユアパートナー</p>
+            <el-row>
+                <el-col :span="6">{{form.Period || period}}給料明細書</el-col>
+                <el-col :span="3" class="label">部門-所属</el-col>
+                <el-col :span="3">{{form.Team || '-'}}</el-col>
+                <el-col :span="3" class="label">社員</el-col>
+                <el-col :span="3">{{form.EmpeeNo || '-'}}</el-col>
+                <el-col :span="3" class="label">氏名</el-col>
+                <el-col :span="3">{{form.Name || '-'}}</el-col>
+            </el-row>
+            <div class="row-wrapper multiple-row">
+                <el-row>
+                    <el-col :span="2" class="row-label label">支給</el-col>
+                    <el-col :span="4" :offset="2" class="label">基本給</el-col>
+                    <el-col :span="4" class="label">待機代</el-col>
+                    <el-col :span="4" class="label">時間外手当</el-col>
+                    <el-col :span="4" class="label">通勤手当</el-col>
+                    <el-col :span="6" class="label">総支給額</el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="4" :offset="2">{{formatPrice(form.ProjectSalary)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.BaseSalary)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.OverTimeSalary)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.TravelFare)}}</el-col>
+                    <el-col :span="6">{{formatPrice(allowance)}}</el-col>
+                </el-row>
+            </div>
+            <div class="row-wrapper multiple-row">
+                <el-row>
+                    <el-col :span="2" class="row-label label">控除</el-col>
+                    <el-col :span="4" :offset="2" class="label">雇用保険</el-col>
+                    <el-col :span="4" class="label">社会保険計</el-col>
+                    <el-col :span="4" class="label">所得税</el-col>
+                    <el-col :span="4" class="label"></el-col>
+                    <el-col :span="6" class="label">控除計</el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="4" :offset="2">{{formatPrice(form.HireInsurance)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.HireInsurance)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.IncomeTax)}}</el-col>
+                    <el-col :span="4"></el-col>
+                    <el-col :span="6">{{formatPrice(meter)}}</el-col>
+                </el-row>
+            </div>
+            <div class="row-wrapper total-row">
+                <el-row>
+                    <el-col :span="6" :offset="18" class="label">現金</el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="6" :offset="18">{{formatPrice(allowance - meter)}}</el-col>
+                </el-row>
+            </div>
+            <div class="row-wrapper">
+                <el-row>
+                    <el-col :span="2" class="label">出勤日数</el-col>
+                    <el-col :span="2">{{form.WorkDays}}天</el-col>
+                </el-row>
+            </div>
+        </div>
+        <!-- <el-form size="small" label-width="90px" label-suffix=":">
             <el-form-item label="部門-所属">
                 <p>{{form.Team}}</p>
             </el-form-item>
@@ -56,7 +116,7 @@
             <el-form-item label="出勤日数">
                 <p>{{form.WorkDays}}天</p>
             </el-form-item>
-        </el-form>
+        </el-form> -->
     </main-wrapper>
 </template>
 
@@ -71,6 +131,7 @@ export default {
         return {
             period: '',
             form: {
+                Period: '',
                 Team: '',
                 EmpeeNo: '',
                 Name: '',
@@ -143,27 +204,75 @@ export default {
 
 <style scoped lang="less">
 .salary-detail {
-    .th-row {
-        .el-col {
-            border: 1px solid #E4E7ED;
-            padding-left: 5px;
-            border-bottom: 0;
-            &:not(:last-child) {
-                border-right: 0;
+    .salary-wrapper {
+        .row-wrapper {
+            &:last-child {
+                .el-row {
+                    border-bottom: 1px solid rgb(108, 146, 190);
+                    border-right: 1px solid rgb(108, 146, 190);
+                }
             }
         }
-    }
-    .td-row {
+        .el-row {
+            border: 1px solid rgb(108, 146, 190);
+            border-bottom: none;
+            border-right: none;
+        }
         .el-col {
             padding-left: 5px;
-            border: 1px solid #E4E7ED;
-            &:not(:last-child) {
-                border-right: 0;
+            height: 36px;
+            line-height: 36px;
+            border-right: 1px solid rgb(108, 146, 190);
+        }
+        .multiple-row {
+            position: relative;
+            .row-label {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 72px;
+                line-height: 72px;
+                z-index: 1;
             }
-            // &:last-child {
-            //     border-top-color: transparent;
-            // }
+        }
+        .total-row {
+            .el-row:last-child {
+                border-top: none;
+                .el-col {
+                    border-top: 1px solid rgb(108, 146, 190);
+                }
+            }
+            .el-col {
+                border-left: 1px solid rgb(108, 146, 190);
+                // position: relative;
+                // left: -1px;
+            }
+        }
+        .label {
+            color: #1473B7;
+            overflow: hidden;
+            white-space: nowrap;
+            background-color: rgb(236, 254, 253);
         }
     }
+    // .th-row {
+    //     .el-col {
+    //         border: 1px solid #E4E7ED;
+    //         padding-left: 5px;
+    //         border-bottom: 0;
+    //         &:not(:last-child) {
+    //             border-right: 0;
+    //         }
+    //     }
+    // }
+    // .td-row {
+    //     .el-col {
+    //         padding-left: 5px;
+    //         border: 1px solid #E4E7ED;
+    //         &:not(:last-child) {
+    //             border-right: 0;
+    //         }
+    //     }
+    // }
 }
 </style>

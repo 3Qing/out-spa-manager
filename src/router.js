@@ -19,6 +19,9 @@ import SalaryCalculate from '@views/Salary-calculate';
 import QAManager from '@views/QA-manager';
 import UserManager from '@views/User-manager';
 import SalaryDetail from '@views/Salary-detail';
+import ResumeList from '@views/Resume-list';
+import ResumeUpdate from '@views/Resume-update';
+
 
 Vue.use(Router);
 
@@ -128,6 +131,14 @@ const router = new Router({
         path: '/salarydetail',
         name: 'SalaryDetail',
         component: SalaryDetail
+    }, {
+        path: '/resumelist',
+        name: 'ResumeList',
+        component: ResumeList
+    }, {
+        path: '/resumeupdate/:epId/:id',
+        name: 'ResumeUpdate',
+        component: ResumeUpdate
     }
     ]
 });

@@ -21,6 +21,9 @@
             <el-form-item label="回答" prop="Answer">
                 <el-input type="textarea" v-model="form.Answer" :rows="5"></el-input>
             </el-form-item>
+            <el-form-item label="重要度" prop="Importance">
+                <el-rate v-model="form.Importance" style="margin-top: 6px;"></el-rate>
+            </el-form-item>
             <el-form-item label="コメント" prop="Comment">
                 <el-input type="textarea" v-model="form.Comment" :rows="5"></el-input>
             </el-form-item>
@@ -44,20 +47,21 @@ export default {
                 Ask2: '',
                 Ask3: '',
                 Answer: '',
+                Importance: '',
                 Comment: ''
             },
             rules: {
                 Module: [{
-                    required: true
+                    required: true, message: '请填写モジュール'
                 }],
                 Ask1: [{
-                    required: true
+                    required: true, message: '请填写質問１'
                 }],
                 Answer: [{
-                    required: true
+                    required: true, message: '请填写回答'
                 }],
                 Comment: [{
-                    required: true
+                    required: true, message: '请填写コメント'
                 }],
             },
             callback: null

@@ -67,10 +67,10 @@
             :visible.sync="visible"
             custom-class="download-dialog"
             :show-close="false"
-            width="500px">
+            width="200px">
             <div class="tip-block">{{tip}}</div>
             <el-button type="primary" @click="downloadFile">下载既存リソース一覧</el-button>
-            <el-button type="primary" @click="createExcel">リソース一覧再作成してからダウンロード</el-button>
+            <!-- <el-button type="primary" @click="createExcel">リソース一覧再作成してからダウンロード</el-button> -->
         </el-dialog>
     </main-wrapper>
 </template>
