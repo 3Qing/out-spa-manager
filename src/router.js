@@ -21,6 +21,8 @@ import UserManager from '@views/User-manager';
 import SalaryDetail from '@views/Salary-detail';
 import ResumeList from '@views/Resume-list';
 import ResumeUpdate from '@views/Resume-update';
+import ADDocument from '@views/AD-document';
+import ADDocDetail from '@views/AD-doc-detail';
 
 
 Vue.use(Router);
@@ -36,44 +38,26 @@ const router = new Router({
     routes: [{
         path: '/login',
         name: 'Login',
-        meta: {
-            title: '登入'
-        },
         component: Login
     }, {
         path: '/',
         name: 'Home',
-        meta: {
-            title: '首页'
-        },
         component: Home
     }, {
         path: '/esslist',
         name: 'ESSList',
-        meta: {
-            title: '作业报告/工资详细清单'
-        },
         component: EssList
     }, {
         path: '/essedit/:id',
         name: 'ESSEdit',
-        meta: {
-            title: '提交作业报告'
-        },
         component: EssEdit
     }, {
         path: '/contract/:id',
         name: 'ContractEdit',
-        meta: {
-            title: '合同签订'
-        },
         component: ContractSign
     }, {
         path: '/contract/new',
         name: 'ContractNew',
-        meta: {
-            title: '合同签订'
-        },
         component: ContractSign
     }, {
         path: '/employee/:id',
@@ -143,6 +127,14 @@ const router = new Router({
         path: '/resumeedit',
         name: 'ResumeEdit',
         component: ResumeUpdate
+    }, {
+        path: '/addocument',
+        name: 'ADDocument',
+        component: ADDocument
+    }, {
+        path: '/addocdetail/:id',
+        name: 'ADDocDetail',
+        component: ADDocDetail
     }
     ]
 });
