@@ -1,5 +1,5 @@
 <template>
-    <main-wrapper class="ad-doc-wrapper">
+    <main-wrapper class="ac-doc-wrapper">
         <div slot="header" class="main-header">
             <el-button type="primary" size="mini" @click="beforeSubmit">保存</el-button>
         </div>
@@ -18,8 +18,8 @@
 
 <script>
 import MainWrapper  from '@components/main-wrapper';
-import CardItem from '@components/ad-document/card';
-import mixins from '@components/ad-document/mixins';
+import CardItem from '@components/ac-document/card';
+import mixins from '@components/ac-document/mixins';
 
 export default {
     components: {
@@ -159,7 +159,7 @@ export default {
                         message: '保存成功'
                     });
                     this.$router.push({
-                        name: 'ADDocDetail',
+                        name: 'ACDocDetail',
                         params: {
                             id: res.data
                         }

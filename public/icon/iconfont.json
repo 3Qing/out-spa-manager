@@ -6,14 +6,21 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "2191547",
+      "icon_id": "53256948",
       "name": "excel",
       "font_class": "web-icon-",
       "unicode": "e6df",
       "unicode_decimal": 59103
     },
     {
-      "icon_id": "11614540",
+      "icon_id": "53256949",
+      "name": "word",
+      "font_class": "word",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "53256950",
       "name": "PDF",
       "font_class": "PDF",
       "unicode": "e6b6",

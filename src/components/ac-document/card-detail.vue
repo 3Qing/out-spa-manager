@@ -1,5 +1,5 @@
 <template>
-    <el-card class="ad-box">
+    <el-card class="ac-box">
         <div slot="header" class="card-header">
             <el-row v-if="!IS_H5">
                 <el-col :span="10">
@@ -129,7 +129,7 @@ export default {
 </script>
 
 <style lang="less">
-.ad-box {
+.ac-box {
     .label {
         display: inline-block;
         width: 80px;

@@ -1,5 +1,5 @@
 <template>
-    <main-wrapper class="ad-doc-detail">
+    <main-wrapper class="ac-doc-detail">
         <div slot="header" class="main-header">
             <el-button type="primary" size="mini" @click="$router.back()">返回</el-button>
         </div>
@@ -17,8 +17,8 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import CardItem from '@components/ad-document/card-detail';
-import mixins from '@components/ad-document/mixins';
+import CardItem from '@components/ac-document/card-detail';
+import mixins from '@components/ac-document/mixins';
 export default {
     components: {
         MainWrapper,

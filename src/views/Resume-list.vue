@@ -24,6 +24,11 @@
                         <i class="icon-web-icon- iconfont" @click="download(scope.row, 'excel')" v-if="scope.row.ResumeID"></i>
                     </template>
                 </el-table-column>
+                <el-table-column label="Wrod" width="60px">
+                    <template slot-scope="scope">
+                        <i class="icon-word iconfont" @click="download(scope.row, 'word')" v-if="scope.row.ResumeID"></i>
+                    </template>
+                </el-table-column>
                 <el-table-column label="PDF" width="60px">
                     <template slot-scope="scope">
                         <i class="icon-PDF iconfont" v-if="scope.row.ResumeID"></i>
@@ -101,6 +106,8 @@ export default {
         download(row, type) {
             if (type === 'excel') {
                 formatApiUrl('/api/dlresumeexcel', `?id=${row.ResumeID}`);
+            } else if (type === 'word') {
+                formatApiUrl('/api/dlresumeword', `?id=${row.ResumeID}`);
             }
         }
     }

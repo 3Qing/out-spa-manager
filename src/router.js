@@ -21,8 +21,8 @@ import UserManager from '@views/User-manager';
 import SalaryDetail from '@views/Salary-detail';
 import ResumeList from '@views/Resume-list';
 import ResumeUpdate from '@views/Resume-update';
-import ADDocument from '@views/AD-document';
-import ADDocDetail from '@views/AD-doc-detail';
+import ACDocument from '@views/AC-document';
+import ACDocDetail from '@views/AC-doc-detail';
 
 
 Vue.use(Router);
@@ -128,13 +128,13 @@ const router = new Router({
         name: 'ResumeEdit',
         component: ResumeUpdate
     }, {
-        path: '/addocument',
-        name: 'ADDocument',
-        component: ADDocument
+        path: '/acdocument',
+        name: 'ACDocument',
+        component: ACDocument
     }, {
-        path: '/addocdetail/:id',
-        name: 'ADDocDetail',
-        component: ADDocDetail
+        path: '/acdocdetail/:id',
+        name: 'ACDocDetail',
+        component: ACDocDetail
     }
     ]
 });
