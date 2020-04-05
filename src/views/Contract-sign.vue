@@ -66,8 +66,9 @@
                     <el-input v-model="form.BusinessFlow" size="small" type="textarea"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="submitForm('form')" size="small">提交</el-button>
+                    <el-button type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
                     <el-button @click="resetForm('form')" size="small">重置</el-button>
+                    <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -88,8 +89,54 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-form class="preview-form" size="mini" label-width="110px" label-suffix=":" v-if="$route.params.id">
+                <el-form-item label="注文名称">
+                    <span>{{form.Title}}</span>
+                </el-form-item>
+                <el-form-item label="内容">
+                    <span>{{form.Content}}</span>
+                </el-form-item>
+                <el-form-item label="作業担当">
+                    <span>{{formatLabel(form['employee.ID'], 'employee')}}</span>
+                </el-form-item>
+                <el-form-item label="開始期間">
+                    <span>{{form.FromDate}}</span>
+                </el-form-item>
+                <el-form-item label="終了期間">
+                    <span>{{form.ToDate}}</span>
+                </el-form-item>
+                <el-form-item label="支払サイト">
+                    <span>{{formatLabel(form['paymentterm.ID'], 'payment')}}</span>
+                </el-form-item>
+                <el-form-item label="単価">
+                    <span>{{form.UnitPrice}}</span>
+                </el-form-item>
+                <el-form-item label="作業時間">
+                    <span>{{form.HoursFrom}}</span>
+                    <span>-</span>
+                    <span>{{form.HoursTo}}</span>
+                </el-form-item>
+                <el-form-item label="超過精算単価">
+                    <span>{{form.OverTimePrice}}</span>
+                </el-form-item>
+                <el-form-item label="控除精算単価">
+                    <span>{{form.UnderTimePrice}}</span>
+                </el-form-item>
+                <el-form-item label="精算単位">
+                    <span>{{formatLabel(form.CalculateUnit, 'unit')}}</span>
+                </el-form-item>
+                <el-form-item label="営業担当">
+                    <span>{{formatLabel(form['salesperson.ID'], 'sales')}}</span>
+                </el-form-item>
+                <el-form-item label="顧客">
+                    <span>{{formatLabel(form['customer.ID'], 'custom')}}</span>
+                </el-form-item>
+                <el-form-item label="商流備考">
+                    <span>{{form.BusinessFlow}}</span>
+                </el-form-item>
+            </el-form>
             <div slot="footer">
-                <el-button size="small" type="primary" @click="confirmDialog">确定</el-button>
+                <el-button size="small" type="primary" @click="confirmDialog" :disabled="dialogLoading">确定</el-button>
             </div>
         </el-dialog>
     </main-wrapper>
@@ -315,10 +362,14 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid && !this.erroeMsg) {
-                    if (this.completeMonth()) {
+                    if (this.$route.params.id) {
                         this.getPersonMonth();
                     } else {
-                        this.submit();
+                        if (this.completeMonth()) {
+                            this.getPersonMonth();
+                        } else {
+                            this.submit();
+                        }
                     }
                 } else {
                     this.$message.warning('请正确输入表单数据');
@@ -333,7 +384,7 @@ export default {
                 return false;
             } else {
                 return true;
-            }
+            }    
         },
         resetForm(formName) {
             this.$refs[formName].resetFields();
@@ -353,9 +404,14 @@ export default {
             } else {
                 params.append('ningetsu', '');
             }
+            let url = '/api/submitcontract';
+            if (this.$route.params.id) {
+                params.append('ID', this.$route.params.id);
+                url = '/api/updatecontract';
+            }
             this.$axios({
                 method: 'POST',
-                url: '/api/submitcontract',
+                url,
                 params,
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -369,6 +425,8 @@ export default {
                 if (res && res.code === 0) {
                     if (this.$route.params.id === 'new') {
                         this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
+                    } else {
+                        this.getData();
                     }
                     this.$message.success('保存成功');
                 } else {
@@ -417,6 +475,39 @@ export default {
                 personMonthArr[scope.$index].ningetsu = 0.01;
             }
             this.personMonthArr = personMonthArr;
+        },
+        formatLabel(val, type) {
+            if (type === 'employee') {
+                for (let item of this.workList) {
+                    if (item.ID === val) {
+                        return item.Name;
+                    }
+                }
+            } else if (type === 'payment') {
+                for (let item of this.paymenttermsforselect) {
+                    if (item.ID === val) {
+                        return item.Title;
+                    }
+                }
+            } else if (type === 'unit') {
+                for (let item of this.unit) {
+                    if (item.value === val) {
+                        return item.label;
+                    }
+                }
+            } else if (type === 'sales') {
+                for (let item of this.salespersonforselect) {
+                    if (item.ID === val) {
+                        return item.Name;
+                    }
+                }
+            } else if (type === 'custom') {
+                for (let item of this.customerList) {
+                    if (item.ID === val) {
+                        return item.Title;
+                    }
+                }
+            }
         }
     }
 };
@@ -454,6 +545,14 @@ export default {
         position: absolute;
         top: 100%;
         left: 0;
+    }
+}
+.preview-form {
+    .el-form-item {
+        &.el-form-item--mini {
+            margin-top: 5px;
+            margin-bottom: 0;
+        }
     }
 }
 </style>

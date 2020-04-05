@@ -41,9 +41,11 @@
                 <el-table-column label="来日年数" prop="JPYears" width="100px"></el-table-column>
                 <el-table-column label="日本語能力" prop="JPLang" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="英語能力" prop="ENLang" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="ｽﾃｰﾀｽ" prop="Status" min-width="140px" show-overflow-tooltip></el-table-column>
+                <!-- <el-table-column label="ｽﾃｰﾀｽ" prop="Status" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="所在案件" prop="PJName" show-overflow-tooltip></el-table-column>
-                <el-table-column label="案件終了日" prop="ContractEndDate" width="140px"></el-table-column>
+                <el-table-column label="案件終了日" prop="ContractEndDate" width="140px"></el-table-column> -->
+                <el-table-column label="稼働単価" prop="ProjectSalary" show-overflow-tooltip></el-table-column>
+                <el-table-column label="待機代" prop="BaseSalary" show-overflow-tooltip></el-table-column>
                 <el-table-column label="提案単価" prop="SalesPrice" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="出張条件" prop="Travel" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="望む案件" prop="ExpectPJ" min-width="140px" show-overflow-tooltip></el-table-column>
@@ -67,6 +69,20 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
             :total="total"></el-pagination>
+        <el-dialog :visible.sync="vislble" title="退職">
+            <el-form size="mini">
+                <el-form-item label="离职日期">
+                    <el-date-picker
+                        v-model="leavedate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmLeave">确定</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -96,7 +112,9 @@ export default {
             pn: 1,
             pageSizes: [10, 20, 30, 50],
             tableData: [],
-            operWidth: 140
+            operWidth: 140,
+            leavedate: '',
+            vislble: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -207,12 +225,47 @@ export default {
         clickHandle(scope, item) {
             if (item.action === 'act_employeeupdate') {
                 this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.ID } });
+            } else if (item.action === 'act_employeeleave') {
+                this.vislble = true;
+                this.curData = scope.row;
             } else {
                 this.$message({
                     type: 'warning',
                     message: '該当機能は構築中'
                 });
             }
+        },
+        confirmLeave() {
+            if (!this.leavedate) {
+                this.$message({
+                    type: 'warning',
+                    message: '请选择离职日期'
+                });
+                return;
+            }
+            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            this.$axios({
+                url: '/api/employeeleave',
+                params: {
+                    empeeid: this.curData.ID,
+                    leavedate: this.leavedate
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '提交成功'
+                    });
+                    this.vislble = false;
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
+                    });
+                }
+            });
         }
     }
 };

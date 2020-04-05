@@ -30,11 +30,6 @@
             <el-select v-model="form.salespersonid" placeholder="営業担当" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in sales" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
             </el-select>
-            <!-- <el-select v-model="form.paperreceived" size="mini">
-                <el-option :value="0" label="全部"></el-option>
-                <el-option :value="1" label="入手済"></el-option>
-                <el-option :value="2" label="未入手"></el-option>
-            </el-select> -->
         </div>
         <el-table size="small" :data="tableData">
             <el-table-column label="注文番号" width="120px">
@@ -74,8 +69,8 @@
             </el-table-column>
             <el-table-column label="操作" width="160px">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.row.Editable" type="primary" size="mini">編集</el-button>
-                    <el-button v-if="scope.row.Extendable" size="mini" @click="visible = true">更新</el-button>
+                    <el-button v-if="scope.row.Editable" type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
+                    <el-button v-if="scope.row.Extendable" size="mini" @click="showDialog(scope.row)">更新</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -86,16 +81,39 @@
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
         <el-dialog custom-class="update-dialog" :visible.sync="visible" @close="close">
-            <div>新注文期間（文本）</div>
+            <div>新注文期間</div>
             <el-date-picker
                 size="mini"
-                v-model="value1"
-                type="datetimerange"
+                v-model="datetime"
+                type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
-                end-placeholder="结束日期"></el-date-picker>
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"
+                value="yyyy-MM-dd"></el-date-picker>
             <div>
-                <el-button type="primary" size="mini">确认</el-button>
+                <el-button type="primary" size="mini" @click="getPersonMonth">确认</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog :visible.sync="dialogPresonMonth">
+            <el-table :data="personMonthArr" border size="small" v-loading="dialogLoading">
+                <el-table-column label="期间" width="220">
+                    <template slot-scope="scope">
+                        {{scope.row.fromdate}}
+                        ~
+                        {{scope.row.todate}}
+                    </template>
+                </el-table-column>
+                <el-table-column property="contractworkdays" label="合同工作日数" width="110"></el-table-column>
+                <el-table-column property="calendarworkdays" label="日历工作日数" width="110"></el-table-column>
+                <el-table-column label="人月">
+                    <template slot-scope="scope">
+                        <el-input size="mini" @blur="formatNingetsu(scope)" v-model="scope.row.ningetsu"></el-input>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div slot="footer">
+                <el-button size="small" type="primary" @click="confirmDialog" :disabled="dialogLoading">确定</el-button>
             </div>
         </el-dialog>
     </main-wrapper>
@@ -130,7 +148,11 @@ export default {
             sales: [],
             tableData: [],
             value: '',
-            value1: null
+            datetime: null,
+            dialogPresonMonth: false,
+            dialogLoading: false,
+            personMonthArr: [],
+            curRow: {}
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -288,6 +310,89 @@ export default {
         },
         close() {
             this.visible = false;
+        },
+        toEdit(row) {
+            this.$router.push({
+                name: 'ContractEdit',
+                params: {
+                    id: row.ID
+                }
+            });
+        },
+        formatNingetsu(scope) {
+            const personMonthArr = [...this.personMonthArr];
+            let value = Number(scope.row.ningetsu);
+            if (value <= 1 && value > 0) {
+                value = value.toFixed(2);
+                personMonthArr[scope.$index].ningetsu = value;
+            } else {
+                personMonthArr[scope.$index].ningetsu = 0.01;
+            }
+            this.personMonthArr = personMonthArr;
+        },
+        getPersonMonth() {
+            this.personMonthArr = [];
+            this.dialogPresonMonth = true;
+            this.dialogLoading = true;
+            const [ fromDate = '', toDate = '' ] = this.datetime;
+            this.$axios({
+                url: '/api/calculateningetsu',
+                params: {
+                    FromDate: fromDate,
+                    ToDate: toDate
+                }
+            }).then(res => {
+                if (res) {
+                    this.dialogLoading = false;
+                    const result = [...res.data];
+                    result.forEach(item => {
+                        item.ningetsu = item.ningetsu / 100;
+                    });
+                    this.personMonthArr = result;
+                }
+            });
+        },
+        confirmDialog() {
+            const ningetsu = [];
+            this.personMonthArr.forEach(item => {
+                ningetsu.push(parseInt(item.ningetsu * 100));
+            });
+            const params = new FormData();
+            params.append('fromdate', this.datetime[0]);
+            params.append('todate', this.datetime[1]);
+            params.append('ID', this.curRow.ID);
+            if (ningetsu) {
+                ningetsu.forEach((item, index) => {
+                    params.append(`ningetsu[${index}]`, item);
+                });
+            } else {
+                params.append('ningetsu', '');
+            }
+            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/renewcontract',
+                params,
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message.success('保存成功');
+                    this.close();
+                    this.getData();
+                } else {
+                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+                }
+            });
+            this.dialogLoading = false;
+            this.dialogPresonMonth = false;
+        },
+        showDialog(row) {
+            this.curRow = row;
+            this.visible = true;
         }
     }
 };

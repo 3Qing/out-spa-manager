@@ -59,6 +59,11 @@ export default {
             });
         });
     },
+    beforeMount() {
+        if (process.env.NODE_ENV === 'production') {
+            window.location.href = 'http://www.your-partner.co.jp/admin/#/login';
+        }
+    },
     methods: {
         reloadValidCover() {
             this.validUrl = `${this.validUrl}?t=${new Date().getSeconds()}`;

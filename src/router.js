@@ -139,6 +139,10 @@ const router = new Router({
         path: '/resumeupdate/:epId/:id',
         name: 'ResumeUpdate',
         component: ResumeUpdate
+    }, {
+        path: '/resumeedit',
+        name: 'ResumeEdit',
+        component: ResumeUpdate
     }
     ]
 });

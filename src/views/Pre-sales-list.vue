@@ -10,7 +10,7 @@
                     <el-option v-for="item in options" :key="item.val" :label="item.label" :value="item.val"></el-option>
                 </el-select> -->
             </el-form-item>
-            <el-button size="mini" type="primary" @click="beforeDownload">リソース一覧ダウンロード</el-button>
+            <el-button size="mini" type="primary" @click="downloadFile">リソース一覧ダウンロード</el-button>
         </el-form>
         <el-table :data="tableData" size="small" :cell-class-name="cellClassName">
             <el-table-column label="営業可否">
@@ -70,7 +70,7 @@
             width="200px">
             <div class="tip-block">{{tip}}</div>
             <el-button type="primary" @click="downloadFile">下载既存リソース一覧</el-button>
-            <!-- <el-button type="primary" @click="createExcel">リソース一覧再作成してからダウンロード</el-button> -->
+            <el-button type="primary" @click="createExcel">リソース一覧再作成してからダウンロード</el-button>
         </el-dialog>
     </main-wrapper>
 </template>
@@ -168,7 +168,7 @@ export default {
         },
         downloadFile() {
             const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
-            window.open(`${url}/api/dlproposelist`, '_blank');
+            window.open(`${url}/api/dlproposelistexcel`, '_blank');
             this.visible = false;
         },
         createExcel() {

@@ -21,7 +21,7 @@
             <el-table-column label="ダウンロード">
                 <el-table-column label="Excel" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-web-icon- iconfont" v-if="scope.row.ResumeID"></i>
+                        <i class="icon-web-icon- iconfont" @click="download(scope.row, 'excel')" v-if="scope.row.ResumeID"></i>
                     </template>
                 </el-table-column>
                 <el-table-column label="PDF" width="60px">
@@ -41,6 +41,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
+import { formatApiUrl } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -96,6 +97,11 @@ export default {
                     id: row.ResumeID || 0
                 }
             });
+        },
+        download(row, type) {
+            if (type === 'excel') {
+                formatApiUrl('/api/dlresumeexcel', `?id=${row.ResumeID}`);
+            }
         }
     }
 };
