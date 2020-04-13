@@ -23,6 +23,7 @@ import ResumeList from '@views/Resume-list';
 import ResumeUpdate from '@views/Resume-update';
 import ACDocument from '@views/AC-document';
 import ACDocDetail from '@views/AC-doc-detail';
+import AccountManager from '@views/Account-manager';
 
 
 Vue.use(Router);
@@ -135,6 +136,10 @@ const router = new Router({
         path: '/acdocdetail/:id',
         name: 'ACDocDetail',
         component: ACDocDetail
+    }, {
+        path: '/accountmanager',
+        name: 'AccountManager',
+        component: AccountManager
     }
     ]
 });
