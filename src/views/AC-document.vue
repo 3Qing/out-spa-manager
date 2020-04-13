@@ -98,8 +98,12 @@ export default {
                         }
                     }
                 }
+                if (tmp.Amount) {
+                    tmp.Amount = tmp.Amount.replace(/,/g, '');
+                }
                 tmp['employee.ID'] = item['employee.ID'] || 0;
                 tmp['customer.ID'] = item['customer.ID'] || 0;
+                tmp['team.TeamID'] = item['team.TeamID'] || 0;
                 if (!Object.keys(errors[i]).length) {
                     delete errors[i];
                 }
