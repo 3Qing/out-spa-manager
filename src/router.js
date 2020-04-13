@@ -9,7 +9,7 @@ import ContractSign from '@views/Contract-sign';
 import EmployeeEdit from '@views/Employee-edit';
 import EmployeeList from '@views/Employee-list';
 import SalesActivity from '@views/Sales-activity';
-import PreSales from '@views/Pre-sales';
+import PreSales from '@views/Pre-Sales';
 import RoleManager from '@views/Role-manager';
 import PreSalesList from '@views/Pre-sales-list';
 import ContractList from '@views/Contract-list';
@@ -23,6 +23,7 @@ import ResumeList from '@views/Resume-list';
 import ResumeUpdate from '@views/Resume-update';
 import ACDocument from '@views/AC-document';
 import ACDocDetail from '@views/AC-doc-detail';
+import ACDocList from '@views/AC-doc-list';
 
 
 Vue.use(Router);
@@ -135,6 +136,10 @@ const router = new Router({
         path: '/acdocdetail/:id',
         name: 'ACDocDetail',
         component: ACDocDetail
+    }, {
+        path: '/acdoclist',
+        name: 'ACDocList',
+        component: ACDocList
     }
     ]
 });
