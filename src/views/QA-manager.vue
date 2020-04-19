@@ -17,11 +17,15 @@
             >新規追加</el-button>
         </el-form>
         <el-table size="mini" :data="tableData" @row-click="rowClick">
-            <el-table-column label="番号" prop="No"></el-table-column>
+            <el-table-column label="番号" prop="No" width="100px"></el-table-column>
             <el-table-column label="質問" prop="Ask1" show-overflow-tooltip></el-table-column>
-            <el-table-column label="モジュール" prop="Module"></el-table-column>
-            <el-table-column label="重要度" prop="Importance"></el-table-column>
-            <el-table-column label="更新日" prop="UpdateDate"></el-table-column>
+            <el-table-column label="モジュール" prop="Module" show-overflow-tooltip></el-table-column>
+            <el-table-column label="重要度" prop="Importance" width="120px">
+                <template slot-scope="scope">
+                    <el-rate v-model="scope.row.Importance" disabled></el-rate>
+                </template>
+            </el-table-column>
+            <el-table-column label="更新日" prop="UpdateDate" width="120px"></el-table-column>
             <el-table-column label="操作" width="180px">
                 <template slot-scope="scope">
                     <el-button

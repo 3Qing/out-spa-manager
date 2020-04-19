@@ -25,6 +25,8 @@ import ACDocument from '@views/AC-document';
 import ACDocDetail from '@views/AC-doc-detail';
 import AccountManager from '@views/Account-manager';
 import ACDocList from '@views/AC-doc-list';
+import ProfitChart from '@views/Profit-chart';
+import BalanceSheet from '@views/Balance-sheet';
 
 
 Vue.use(Router);
@@ -145,6 +147,14 @@ const router = new Router({
         path: '/acdoclist',
         name: 'ACDocList',
         component: ACDocList
+    }, {
+        path: '/profitchart',
+        name: 'ProfitChart',
+        component: ProfitChart
+    }, {
+        path: '/balancesheet',
+        name: 'BalanceSheet',
+        component: BalanceSheet
     }
     ]
 });

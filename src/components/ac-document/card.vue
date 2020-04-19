@@ -13,8 +13,8 @@
                 </el-col>
                 <el-col :span="10">
                     <span class="label">伝票タイプ</span>
-                    <el-select size="mini" v-model="form['doctype.ID']">
-                        <el-option v-for="item in docTypes" :key="item.ID" :label="item.Text" :value="item.ID"></el-option>
+                    <el-select size="mini" v-model="form['doctype.Type']">
+                        <el-option v-for="item in docTypes" :key="item.Type" :label="item.Text" :value="item.Type"></el-option>
                     </el-select>
                 </el-col>
             </el-row>
@@ -29,8 +29,8 @@
             </el-row>
             <el-row v-if="IS_H5" class="row-wrapper">
                 <span class="label">伝票タイプ</span>
-                <el-select size="mini" v-model="form['doctype.ID']">
-                    <el-option v-for="item in docTypes" :key="item.ID" :label="item.Text" :value="item.ID"></el-option>
+                <el-select size="mini" v-model="form['doctype.Type']">
+                    <el-option v-for="item in docTypes" :key="item.Type" :label="item.Text" :value="item.Type"></el-option>
                 </el-select>
             </el-row>
             <el-row class="row-wrapper">
@@ -61,19 +61,19 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column label="勘定コード" :prop="'account.ID'">
+            <el-table-column label="勘定コード" :prop="'account.Account'">
                 <template slot-scope="scope">
                     <el-select
-                        :class="[errors[scope.$index] && errors[scope.$index]['account.ID'] && 'errors-tip']"
-                        @change="changeHandler(scope, 'account.ID')"
-                        value-key="ID"
-                        v-model="scope.row['account.ID']"
+                        :class="[errors[scope.$index] && errors[scope.$index]['account.Account'] && 'errors-tip']"
+                        @change="changeHandler(scope, 'account.Account')"
+                        value-key="Account"
+                        v-model="scope.row['account.Account']"
                         size="mini">
                         <el-option
-                            v-for="item in acCounts"
+                            v-for="(item, i) in acCounts"
                             :value="item"
                             :label="item.Text"
-                            :key="item.ID"></el-option>
+                            :key="i"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
@@ -171,7 +171,7 @@ export default {
         addRow() {
             this.items.push({
                 DRCR: '',
-                'account.ID': '',
+                'account.Account': '',
                 Amount: '',
                 'customer.ID': '',
                 'team.TeamID': '',

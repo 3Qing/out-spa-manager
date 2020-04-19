@@ -6,7 +6,7 @@
                     type="date"
                     v-model="form.IncomeDate"
                     value-format="yyyy-MM-dd"
-                    value="yyyy-MM-dd"></el-date-picker>
+                    format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item label="入金金额" prop="IncomeAmount">
                 <el-input v-model.number="form.IncomeAmount"></el-input>
@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 export default {
     data() {
         return {
@@ -71,20 +72,37 @@ export default {
         beforeSubmit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
-                    let params = {
-                        invoices: {
-                            ID: this.data.ID
+                    // let params = {
+                    //     invoices: [ Number(this.data.ID) ]
+                    // };
+                    const params = new FormData();
+                    params.append('invoiceids[0]', this.data.ID);
+                    for (let key in this.form) {
+                        if (key === 'IncomeDate') {
+                            params.append('date', moment(this.form[key]).format('YYYY-MM-DD'));
+                        } else if (key === 'IncomeAmount') {
+                            params.append('amount', this.form[key]);
+                        } else {
+                            params.append('payer', this.form[key]);
                         }
-                    };
-                    params = Object.assign(params, this.form);
+                    }
+                    // params = Object.assign(params, this.form);
                     this.submit(params);
                 }
             });
         },
         submit(params) {
+            // console.log(qs.stringify(params, {arrayFormat: 'indices', allowDots: true}));
             this.$axios({
-                url: '/api/collectsales',
-                params
+                method: 'POST',
+                url: `/api/collectsales`,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                params,
+                custom: {
+                    vm: this
+                }
             }).then(res => {
                 if (res && res.code === 0) {
                     this.$message({

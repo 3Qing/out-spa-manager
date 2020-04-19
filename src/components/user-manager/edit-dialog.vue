@@ -5,18 +5,26 @@
         v-if="visible"
         @close="close">
         <el-form size="small" label-width="100px" ref="form" :model="form" :rules="rules">
-            <el-form-item label="社員番号" prop="EmpeeID">
-                <el-select v-model="form.EmpeeID">
+            <el-form-item label="社員番号" prop="empeeid">
+                <el-select
+                    v-model="form.empeeid"
+                    filterable
+                    remote
+                    reserve-keyword
+                    :remote-method="remoteMethod"
+                    :loading="loading"
+                    placeholder="作業担当者"
+                    @change="changeHandler">
                     <el-option v-for="item in opt.employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="ロール" prop="RoleID">
-                <el-select v-model="form.RoleID">
+            <el-form-item label="ロール" prop="roleid">
+                <el-select v-model="form.roleid">
                     <el-option v-for="item in opt.allRole" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="パスワード" prop="UserPwd">
-                <el-input type="password" v-model="form.UserPwd"></el-input>
+            <el-form-item label="パスワード" prop="userpwd">
+                <el-input type="password" v-model="form.userpwd"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -41,19 +49,19 @@ export default {
         return {
             visible: false,
             form: {
-                UserID: 0,
-                RoleID: '',
-                EmpeeID: '',
-                UserPwd: ''
+                userid: 0,
+                roleid: '',
+                empeeid: '',
+                userpwd: ''
             },
             rules: {
-                RoleID: [{
+                roleid: [{
                     required: true, message: '请选择ロール'
                 }],
-                EmpeeID: [{
+                empeeid: [{
                     required: true, message: '请选择社員番号'
                 }],
-                UserPwd: [{
+                userpwd: [{
                     required: true, message: '请输入密码'
                 }]
             },
@@ -66,30 +74,32 @@ export default {
         this.$root.$off('SHOW_EDIT_DIALOG');
         this.$root.$on('SHOW_EDIT_DIALOG', ({ data = null, type = '', callback = null }) => {
             if (data) {
-                this.form.UserID = data.ID;
+                this.form.userid = data.ID;
             }
             this.rules = {
-                RoleID: [{
+                roleid: [{
                     required: true, message: '请选择ロール'
                 }],
-                EmpeeID: [{
+                empeeid: [{
                     required: true, message: '请选择社員番号'
                 }],
-                UserPwd: [{
+                userpwd: [{
                     required: true, message: '请输入密码'
                 }]
             };
             if (type === 'edit') {
-                for (let key in this.form) {
-                    if (key !== 'UserID') {
-                        this.form[key] = data[key];
-                    }
-                }
+                // for (let key in this.form) {
+                //     if (key !== 'userid') {
+                //         this.form[key] = data[key];
+                //     }
+                // }
+                this.form.roleid = data.RoleID;
+                this.form.empeeid = data.ID;
                 this.rules = {
-                    RoleID: [{
+                    roleid: [{
                         required: true, message: '请选择ロール'
                     }],
-                    EmpeeID: [{
+                    empeeid: [{
                         required: true, message: '请选择社員番号'
                     }]
                 };
@@ -133,13 +143,18 @@ export default {
         },
         close() {
             this.form = {
-                UserID: 0,
-                RoleID: '',
-                EmpeeID: '',
-                UserPwd: ''
+                userid: 0,
+                roleid: '',
+                empeeid: '',
+                userpwd: ''
             };
             this.$refs.form.resetFields();
             this.visible = false;
+        },
+        remoteMethod(keyword) {
+            if (keyword) {
+                this.$emit('filter', keyword);
+            }
         }
     }
 };

@@ -9,7 +9,14 @@
                     <el-input v-model="form.Content" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="作業担当" prop="empeeid">
-                    <el-select v-model="form['employee.ID']" size="small">
+                    <el-select
+                        v-model="form['employee.ID']"
+                        filterable
+                        remote
+                        reserve-keyword
+                        :remote-method="remoteMethod"
+                        :loading="loading"
+                        size="small">
                         <el-option v-for="item in workList" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
                     </el-select>
                 </el-form-item>
@@ -152,6 +159,7 @@ export default {
     },
     data() {
         return {
+            loading: false,
             form: {
                 Title: '',
                 Content: '',
@@ -323,14 +331,22 @@ export default {
                 }
             });
         },
-        getWorkList() {
+        getWorkList(keyword = '') {
+            this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect'
+                url: '/api/employeesforselect',
+                params: {
+                    keyword
+                }
             }).then(res => {
+                this.loading = false;
                 if (res) {
                     this.workList = res.data || [];
                 }
             });
+        },
+        remoteMethod(keyword) {
+            this.getWorkList(keyword);
         },
         getCustomerList() {
             this.$axios({

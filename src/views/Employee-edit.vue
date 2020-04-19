@@ -6,6 +6,9 @@
                     <el-option v-for="item in employeeTypes" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item label="英語氏名">
+                <el-input v-model="form.Furigana" :maxlength="20"></el-input>
+            </el-form-item>
             <el-form-item label="姓名" prop="name">
                 <el-input v-model="form.name" :maxlength="20"></el-input>
             </el-form-item>
@@ -136,6 +139,7 @@ export default {
             form: {
                 type: '',
                 name: '',
+                Furigana: '',
                 onboarddate: '',
                 sex: true,
                 birthday: '',
@@ -258,6 +262,7 @@ export default {
             this.form = {
                 type: data.EmployeeType,
                 name: data.Name,
+                Furigana: data.Furigana,
                 onboarddate: data.OnBoardDate,
                 sex: data.Sex,
                 birthday: data.Birthday,
@@ -267,9 +272,9 @@ export default {
                 startworkdate: data.StartWorkDate,
                 position: data.Position,
                 arrivejpdate: data.ArrivePJDate,
-                jplangcert: data.JPLangCert,
-                jplangcomt: data.JPLangComt,
-                enlangcomt: data.ENLangComt,
+                jplangcert: data.JPLangCert || '',
+                jplangcomt: data.JPLangComt || '',
+                enlangcomt: data.ENLangComt || '',
                 Certs: data.Certificates && data.Certificates.map(item => item.CertID),
                 salepricefrom: data.SalePriceFrom,
                 salepriceto: data.SalePriceTo,
@@ -384,6 +389,7 @@ export default {
             let params = {
                 'type.ID': this.form.type,
                 name: this.form.name,
+                Furigana: this.form.Furigana,
                 onboarddate: this.form.onboarddate,
                 sex: this.form.sex,
                 birthday: this.form.birthday,
@@ -427,6 +433,7 @@ export default {
                 'type.ID': this.form.type,
                 OnBoardDate: this.form.onboarddate,
                 Name: this.form.name,
+                Furigana: this.form.Furigana,
                 Sex: this.form.sex,
                 Birthday: this.form.birthday,
                 Nationality: this.form.nationality,

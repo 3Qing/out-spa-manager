@@ -9,11 +9,11 @@
             <el-form-item>
                 <el-date-picker
                     v-model="dateValue"
-                    type="date-range"
+                    type="daterange"
                     size="mini"
-                    value-format="yyyyMM"
-                    value="yyyyMM"
-                    :clearable="false"
+                    value-format="yyyy-MM-dd"
+                    value="yyyy-MM-dd"
+                    clearable
                     @change="changeData">
                 </el-date-picker>
             </el-form-item>
@@ -21,22 +21,47 @@
                 <el-input v-model="inputValue" placeholder="伝票番号" @blur="changeData" size="mini"></el-input>
             </el-form-item>
         </el-form>
-        <el-table size="mini" :data="tableData" @row-click="rowClick">
-            <el-table-column label="伝票番号" prop="DocNo"></el-table-column>
-            <el-table-column label="伝票タイプ" prop="DocType"></el-table-column>
-            <el-table-column label="転記日" prop="PostingDate"></el-table-column>
-            <el-table-column label="テキスト" prop="Comment"></el-table-column>
-        </el-table>
-        <el-pagination
-            :current-page="page"
-            :page-size="pageSize"
-            @current-change="changePn"
-            :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
-            :total="total"></el-pagination>
+        <el-row>
+            <el-col :span="IS_H5 ? 24 : 13">
+                <el-table size="mini" :data="tableData" @row-click="rowClick">
+                    <el-table-column label="伝票番号" prop="DocNo"></el-table-column>
+                    <el-table-column label="伝票タイプ" prop="DocType"></el-table-column>
+                    <el-table-column label="転記日" prop="PostingDate"></el-table-column>
+                    <el-table-column label="テキスト" prop="Comment"></el-table-column>
+                </el-table>
+                <el-pagination
+                    :current-page="page"
+                    :page-size="pageSize"
+                    @current-change="changePn"
+                    :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
+                    :total="total"></el-pagination>
+            </el-col>
+            <el-col :span="10" :offset="1" v-if="!IS_H5">
+                <card-item
+                    :form="form"
+                    :items="items"
+                    :doc-types="docTypes"
+                    :ac-counts="acCounts"
+                    :teams="teams"
+                    :employees="employees"
+                    :customs="customs"
+                    :drcr="drcr"></card-item>
+            </el-col>
+        </el-row>
         <el-dialog :visible.sync="visible" @close="close">
-            <div>凭证显示</div>
             <div>
-                <el-button type="primary" size="mini" @click="close">确认</el-button>
+                <card-item
+                    :form="form"
+                    :items="items"
+                    :doc-types="docTypes"
+                    :ac-counts="acCounts"
+                    :teams="teams"
+                    :employees="employees"
+                    :customs="customs"
+                    :drcr="drcr"></card-item>
+            </div>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="close">关闭</el-button>
             </div>
         </el-dialog>
     </main-wrapper>
@@ -44,11 +69,15 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
+import CardItem from '@components/ac-document/card-detail';
+import mixins from '@components/ac-document/mixins';
 import { mapGetters } from 'vuex';
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        CardItem
     },
+    mixins: [ mixins ],
     data() {
         return {
             selectList: [],
@@ -60,7 +89,8 @@ export default {
             total: 0,
             tableData: [],
             visible: false,
-            curRow: {}
+            curRow: {},
+            items: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -73,6 +103,25 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        getDetailData(id) {
+            const loading = this.$loading({ lock: true, text: '正在获取数据' });
+            this.$axios({
+                url: '/api/getdocumentbyno',
+                params: {
+                    docno: id
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.form = res.data || {};
+                    this.items = res.data.items || [];
+                }
+            });
+        },
         getSelectList() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -97,8 +146,8 @@ export default {
                 url: '/api/getdocumentlist',
                 params: {
                     doctype: this.selectValue,
-                    fromdate: this.dateValue.length > 1 ? this.dateValue[0] : '',
-                    todate: this.dateValue.length > 1 ? this.dateValue[1] : '',
+                    fromdate: this.dateValue ? this.dateValue[0] : '',
+                    todate: this.dateValue ? this.dateValue[1] : '',
                     docno: this.inputValue,
                     page: this.page,
                     pagesize: this.pageSize
@@ -112,6 +161,9 @@ export default {
                 if (res && res.code === 0) {
                     this.tableData = res.data || [];
                     this.total = res.total;
+                    if (this.tableData.length) {
+                        this.getDetailData(this.tableData[0].DocNo);
+                    }
                 } else {
                     this.tableData = [];
                     this.total = 0;
@@ -131,7 +183,10 @@ export default {
         },
         rowClick(row) {
             this.curRow = { ...row };
-            this.visible = true;
+            if (this.IS_H5) {
+                this.visible = true;
+            }
+            this.getDetailData(row.DocNo);
         }
     }
 };
@@ -140,10 +195,13 @@ export default {
 <style scoped lang="less">
 .ac-doc-list {
     .main-header {
-        .el-date-editor, .el-input{
+        .el-date-editor, .el-input {
             margin-left:40px;
         }
-        .el-input{
+        .el-date-editor {
+            width: 300px;
+        }
+        .el-input {
             width: 200px;
         }
     }

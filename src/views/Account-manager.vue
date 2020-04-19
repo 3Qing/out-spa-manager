@@ -16,6 +16,7 @@
                     <span>{{scope.row.ClearManagement ? '消込' : '未消込'}}</span>
                 </template>
             </el-table-column>
+            <el-table-column label="財務諸表項目" prop="GroupText"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button size="mini" type="primary" @click="dataChange('edit', scope.row)">变更</el-button>
@@ -30,21 +31,27 @@
             <div class="line-content">
                 <div class="item">
                     <span class="label">勘定コード</span>
-                    <el-input size="mini" class="content" v-model="curData.Account" :disabled="isEdit"></el-input>
+                    <el-input size="mini" class="content" v-model="curData['account.Account']" :disabled="isEdit"></el-input>
                 </div>
                 <div class="item">
                     <span class="label">テキスト</span>
-                    <el-input size="mini" class="content" v-model="curData.Text"></el-input>
+                    <el-input size="mini" class="content" v-model="curData['account.Text']"></el-input>
                 </div>
                 <div class="item">
                     <span class="label">BS/PL勘定</span>
-                    <el-select size="mini" class="content" v-model="curData.BSPL">
+                    <el-select size="mini" class="content" v-model="curData['account.BSPL']">
                         <el-option v-for="item in selects" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </div>
                 <div class="item">
                     <span class="label">消込管理</span>
-                    <el-checkbox v-model="curData.ClearManagement"></el-checkbox>
+                    <el-checkbox v-model="curData['account.ClearManagement']"></el-checkbox>
+                </div>
+                <div class="item">
+                    <span class="label">財務諸表項目</span>
+                    <el-select size="mini" class="content" v-model="curData['account.reportgroup.ID']">
+                        <el-option v-for="item in accounts" :key="item.ID" :value="item.ID" :label="item.Text"></el-option>
+                    </el-select>
                 </div>
             </div>
             <div slot="footer">
@@ -75,17 +82,20 @@ export default {
                     value: false
                 }
             ],
+            accounts: [],
             curData: {
-                Account: '',
-                Text: '',
-                BSPL: true,
-                ClearManagement: ''
+                'account.Account': '',
+                'account.Text': '',
+                'account.BSPL': true,
+                'account.ClearManagement': '',
+                'account.reportgroup.ID': '',
             }
 
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            vm.getAccount();
             vm.getData();
         });
     },
@@ -94,16 +104,33 @@ export default {
             if (type === 'add') {
                 this.isEdit = false;
                 this.curData = {
-                    Account: '',
-                    Text: '',
-                    BSPL: '',
-                    ClearManagement: ''
+                    'account.Account': '',
+                    'account.Text': '',
+                    'account.BSPL': true,
+                    'account.ClearManagement': '',
+                    'account.reportgroup.ID': ''
                 };
             } else {
                 this.isEdit = true;
-                this.curData = JSON.parse(JSON.stringify(data));
+                this.curData = {
+                    'account.Account': data.Account,
+                    'account.Text': data.Text,
+                    'account.BSPL': data.BSPL,
+                    'account.ClearManagement': data.ClearManagement,
+                    'account.reportgroup.ID': data.GroupID
+                };
+                console.log(this.curData);
             }
             this.visible = true;
+        },
+        getAccount() {
+            this.$axios({
+                url: '/api/accountgroupsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.accounts = res.data || [];
+                }
+            });
         },
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中...' });
@@ -129,7 +156,7 @@ export default {
             this.visible = false;
         },
         save() {
-            if (!this.curData.Account) {
+            if (!this.curData['account.Account']) {
                 this.$message.warning('');
                 return false;
             }

@@ -42,7 +42,14 @@
             <span v-else>{{getContext(form.SalesPersonID, 'sales')}}</span>
         </el-form-item>
         <el-form-item label="社员" prop="EmployeeID">
-            <el-select v-if="edit" v-model="form.EmployeeID">
+            <el-select
+                v-if="edit"
+                v-model="form.EmployeeID"
+                filterable
+                remote
+                reserve-keyword
+                clearable
+                :remote-method="remoteMethod">
                 <el-option v-for="item in opt.employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
             </el-select>
             <span v-else>{{getContext(form.EmployeeID, 'employees')}}</span>
@@ -174,6 +181,9 @@ export default {
                 this.rules.EmployeeID = [];
                 this.rules.AtyMinutes = [];
             }
+        },
+        remoteMethod(key) {
+            this.$root.$emit('UPDATE_EMPLOYEES', key);
         }
     }
 };

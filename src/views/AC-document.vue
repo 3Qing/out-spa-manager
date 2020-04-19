@@ -30,7 +30,7 @@ export default {
         return {
             items: [{
                 DRCR: '',
-                'account.ID': '',
+                'account.Account': '',
                 Amount: '',
                 'customer.ID': '',
                 'team.TeamID': '',
@@ -38,7 +38,7 @@ export default {
                 Comment: ''
             }, {
                 DRCR: '',
-                'account.ID': '',
+                'account.Account': '',
                 Amount: '',
                 'customer.ID': '',
                 'team.TeamID': '',
@@ -46,7 +46,7 @@ export default {
                 Comment: ''
             }, {
                 DRCR: '',
-                'account.ID': '',
+                'account.Account': '',
                 Amount: '',
                 'customer.ID': '',
                 'team.TeamID': '',
@@ -54,7 +54,7 @@ export default {
                 Comment: ''
             }, {
                 DRCR: '',
-                'account.ID': '',
+                'account.Account': '',
                 Amount: '',
                 'customer.ID': '',
                 'team.TeamID': '',
@@ -67,7 +67,7 @@ export default {
     mixins: [ mixins ],
     methods: {
         beforeSubmit() {
-            if (!(this.form.PostingDate && this.form['doctype.ID'])) {
+            if (!(this.form.PostingDate && this.form['doctype.Type'])) {
                 this.$message({
                     type: 'warning',
                     message: '请填写転記日或伝票タイプ'
@@ -86,13 +86,13 @@ export default {
                 } else {
                     provideTotal += (item.Amount && Number(item.Amount.replace(/,/g, ''))) || 0;
                 }
-                tmp['account.ID'] = item['account.ID'].ID;
+                tmp['account.Account'] = item['account.Account'].Account;
                 errors[i] = {};
                 for (let key in item) {
-                    if (['DRCR', 'account.ID', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {
+                    if (['DRCR', 'account.Account', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {
                         errors[i][key] = true;
                     }
-                    if (item['account.ID'].BSPL === false) {
+                    if (item['account.Account'].BSPL === false) {
                         if (['team.TeamID', 'employee.ID'].includes(key) && !(item['team.TeamID'] || item['employee.ID'])) {
                             errors[i][key]  = true;
                         }

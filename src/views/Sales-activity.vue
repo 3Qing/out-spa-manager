@@ -59,15 +59,12 @@ export default {
             listData: [],
             opt: {},
             mobileListData: [],
-            mobilieColumns: []
+            mobilieColumns: [],
+            loading: false
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '活动清单'
-            // });
             vm.form.fromdate = moment(new Date()).format('YYYY-MM-DD');
             vm.getData();
             vm.getTeams();
@@ -77,6 +74,12 @@ export default {
     },
     computed: {
         ...mapGetters(['IS_H5'])
+    },
+    mounted() {
+        this.$root.$off('UPDATE_EMPLOYEES');
+        this.$root.$on('UPDATE_EMPLOYEES', (key) => {
+            this.getEmployees(key);
+        });
     },
     methods: {
         getData() {
@@ -119,9 +122,12 @@ export default {
                 this.teams = res || [];
             });
         },
-        getEmployees() {
+        getEmployees(keyword = '') {
             this.$axios({
-                url: '/api/employeesforselect'
+                url: '/api/employeesforselect',
+                params: {
+                    keyword
+                }
             }).then(res => {
                 this.$set(this.opt, 'employees', res.data || []);
             });

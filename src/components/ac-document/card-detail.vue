@@ -8,7 +8,7 @@
                 </el-col>
                 <el-col :span="10">
                     <span class="label">伝票タイプ:</span>
-                    <span>{{form.DocType_Title}}</span>
+                    <span>{{form.DocType_Type}}</span>
                 </el-col>
             </el-row>
             <el-row v-if="IS_H5">
@@ -17,7 +17,7 @@
             </el-row>
             <el-row v-if="IS_H5">
                 <span class="label">伝票タイプ:</span>
-                <span>{{form.DocType_Title}}</span>
+                <span>{{form.DocType_Type}}</span>
             </el-row>
             <el-row :class="[!IS_H5 && 'row-wrapper']">
                 <el-col :span="24">
@@ -32,9 +32,9 @@
                     <span>{{formatContext(scope.row.DRCR, 'DRCR')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="勘定コード" prop="Account_Title" width="100px">
+            <el-table-column label="勘定コード" prop="Account_Text" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.Account_Title || '-'}}</span>
+                    <span>{{scope.row.Account_Text || '-'}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="金額" prop="Amount" width="100px">
@@ -86,7 +86,7 @@ export default {
         formatContext(value, type) {
             if (type === 'doctype') {
                 for (let item of this.docTypes) {
-                    if (value === item.ID) {
+                    if (value === item.Type) {
                         return item.Text;
                     }
                 }
@@ -98,7 +98,7 @@ export default {
                 }
             } else if (type === 'account') {
                 for (let item of this.acCounts) {
-                    if (value === item.ID) {
+                    if (value === item.Account) {
                         return item.Text;
                     }
                 }

@@ -39,9 +39,9 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据' });
             this.$axios({
-                url: '/api/getdocumentbyid',
+                url: '/api/getdocumentbyno',
                 params: {
-                    id: this.$route.params.id
+                    docno: this.$route.params.id
                 },
                 custom: {
                     loading,

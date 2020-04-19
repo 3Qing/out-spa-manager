@@ -29,7 +29,7 @@
             @current-change="changePage"
             :total="total"
             layout="total, prev, pager, next, jumper"></el-pagination>
-        <edit-dialog :opt="opt"></edit-dialog>
+        <edit-dialog :opt="opt" @filter="remoteMethod"></edit-dialog>
     </main-wrapper>
 </template>
 
@@ -49,7 +49,8 @@ export default {
             opt: {},
             allRole: [],
             employees: [],
-            tableData: []
+            tableData: [],
+            loading: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -66,16 +67,26 @@ export default {
     },
     methods: {
         // 従業員
-        getEmployees() {
+        getEmployees(keyword = '') {
+            this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect'
+                url: '/api/employeesforselect',
+                params: {
+                    keyword
+                }
             }).then(res => {
+                this.loading = false;
                 if (res && res.code === 0) {
                     this.$set(this.opt, 'employees', res.data || []);
                 } else {
                     this.$set(this.opt, 'employees', []);
                 }
             });
+        },
+        remoteMethod(keyword) {
+            if (keyword) {
+                this.getEmployees(keyword);
+            }
         },
         // 获取角色列表
         getRoleList() {
@@ -124,6 +135,7 @@ export default {
         },
         changePage(page) {
             this.page = page;
+            this.getData();
         },
         showDialog(row, type) {
             this.$root.$emit('SHOW_EDIT_DIALOG', {

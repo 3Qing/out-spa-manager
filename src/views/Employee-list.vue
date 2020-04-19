@@ -83,6 +83,29 @@
                 <el-button type="primary" size="mini" @click="confirmLeave">确定</el-button>
             </div>
         </el-dialog>
+        <el-dialog :visible.sync="visilble2" title="昇給">
+            <el-form size="mini" label-width="100px">
+                <el-form-item label="昇給開始日">
+                    <el-date-picker
+                        v-model="salary.FromDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="稼働賃金">
+                    <el-input v-model.number="salary.PJSalary"></el-input>
+                </el-form-item>
+                <el-form-item label="待機代">
+                    <el-input v-model.number="salary.BaseSalary"></el-input>
+                </el-form-item>
+                <el-form-item label="コメント">
+                    <el-input type="textarea" v-model="salary.Comment" :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmSalary">确定</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -114,15 +137,19 @@ export default {
             tableData: [],
             operWidth: 140,
             leavedate: '',
-            vislble: false
+            vislble: false,
+            visilble2: false,
+            salary: {
+                empeeid: '',
+                FromDate: '',
+                PJSalary: '',
+                BaseSalary: '',
+                Comment: ''
+            }
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '员工清单'
-            // });
             vm.getTeams();
             vm.getEmployeeTypes();
             vm.getPositions();
@@ -228,6 +255,15 @@ export default {
             } else if (item.action === 'act_employeeleave') {
                 this.vislble = true;
                 this.curData = scope.row;
+            } else if (item.action === 'act_revisesalary') {
+                this.salary = {
+                    empeeid: scope.row.ID,
+                    FromDate: '',
+                    PJSalary: Number(scope.row.ProjectSalary) || 0,
+                    BaseSalary: Number(scope.row.BaseSalary) || 0,
+                    Comment: scope.row.Comment
+                };
+                this.visilble2 = true;
             } else {
                 this.$message({
                     type: 'warning',
@@ -265,6 +301,46 @@ export default {
                         message: res ? res.message : '接口开小差了，没有返回信息'
                     });
                 }
+            });
+        },
+        confirmSalary() {
+            if (!this.salary.FromDate) {
+                this.$message({
+                    type: 'warning',
+                    message: '请选择昇給開始日'
+                });
+                return;
+            }
+            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/revisesalary',
+                params: {
+                    empeeid: this.salary.empeeid,
+                    FromDate: this.salary.FromDate,
+                    PJSalary: Number(this.salary.PJSalary) || 0,
+                    BaseSalary: Number(this.salary.BaseSalary) || 0,
+                    Comment: this.salary.Comment
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                if (res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '提交成功'
+                    });
+                    this.vislble2 = false;
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
+                    });
+                }
+                console.log(res);
             });
         }
     }

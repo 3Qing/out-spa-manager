@@ -4,7 +4,17 @@
             <el-select placeholder="チーム" v-model="form.teamid" size="mini" clearable @change="changeHandle">
                 <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
             </el-select>
-            <el-select placeholder="従業員" v-model="form.employeeid" size="mini" clearable @change="changeHandle">
+            <el-select
+                v-model="form.employeeid"
+                size="mini"
+                clearable
+                filterable
+                remote
+                reserve-keyword
+                placeholder="従業員"
+                :remote-method="remoteMethod"
+                :loading="loading"
+                @change="changeHandle">
                 <el-option v-for="item in employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
             </el-select>
             <el-input
@@ -60,6 +70,14 @@
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
         <ess-dialog :visible="visible"></ess-dialog>
+        <el-dialog :visible.sync="show" custom-class="ess-edit-dialog">
+            <div style="max-height: 500px;overflow-y: auto;">
+                <ess-edit :id="curRow.CFID" v-if="show"></ess-edit>
+            </div>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="show = false">确定</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -67,12 +85,14 @@
 import MainWrapper from '@components/main-wrapper';
 import MainHeaderDate from '@components/main-wrapper/header-date';
 import EssDialog from '@components/cashflow-list/dialog';
+import EssEdit from '@views/ESS-edit';
 import { mapGetters } from 'vuex';
 export default {
     components: {
         MainWrapper,
         MainHeaderDate,
-        EssDialog
+        EssDialog,
+        EssEdit
     },
     data() {
         return {
@@ -89,7 +109,10 @@ export default {
             page: 1,
             pageSize: 10,
             total: 0,
-            visible: false
+            visible: false,
+            show: false,
+            curRow: {},
+            loading: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -114,16 +137,24 @@ export default {
             });
         },
         // 従業員
-        getEmployees() {
+        getEmployees(keyword = '') {
+            this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect'
+                url: '/api/employeesforselect',
+                params: {
+                    keyword
+                }
             }).then(res => {
+                this.loading = false;
                 if (res && res.code === 0) {
                     this.employees = res.data || [];
                 } else {
                     this.employees = [];
                 }
             });
+        },
+        remoteMethod(keyword) {
+            this.getEmployees(keyword);
         },
         getList() {
             const loading = this.$loading({ lock: true, text: '正在获取现金流数据' });
@@ -176,6 +207,9 @@ export default {
                         this.getList();
                     }
                 });
+            } else if (item.ID === 'act_displaytimesheet') {
+                this.curRow = { ...row };
+                this.show = true;
             }
         },
         createInvoice(row) {
@@ -236,6 +270,11 @@ export default {
     .el-pagination {
         margin-top: 20px;
         text-align: center;
+    }
+}
+.ess-edit-dialog {
+    .el-dialog__body {
+        padding: 20px 0;
     }
 }
 </style>

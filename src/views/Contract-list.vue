@@ -24,7 +24,17 @@
             <el-select v-model="form.customerid" placeholder="取引先" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in customers" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
             </el-select>
-            <el-select v-model="form.empeeid" placeholder="作業担当者" @change="changeHandler" size="mini" clearable>
+            <el-select
+                v-model="form.empeeid"
+                filterable
+                remote
+                reserve-keyword
+                :remote-method="remoteMethod"
+                :loading="loading"
+                placeholder="作業担当者"
+                @change="changeHandler"
+                size="mini"
+                clearable>
                 <el-option v-for="item in employees" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
             </el-select>
             <el-select v-model="form.salespersonid" placeholder="営業担当" @change="changeHandler" size="mini" clearable>
@@ -152,7 +162,8 @@ export default {
             dialogPresonMonth: false,
             dialogLoading: false,
             personMonthArr: [],
-            curRow: {}
+            curRow: {},
+            loading: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -184,14 +195,25 @@ export default {
                 }
             });
         },
-        getEmployees() {
+        getEmployees(keyword = '') {
+            this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect'
+                url: '/api/employeesforselect',
+                params: {
+                    keyword
+                },
+                custom: {
+                    vm: this
+                }
             }).then(res => {
+                this.loading = false;
                 if (res) {
                     this.employees = res.data || [];
                 }
             });
+        },
+        remoteMethod(keyword) {
+            this.getEmployees(keyword);
         },
         getSalespersonforselect() {
             this.$axios({
