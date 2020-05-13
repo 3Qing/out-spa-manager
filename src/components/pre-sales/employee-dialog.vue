@@ -1,7 +1,6 @@
 <template>
     <el-dialog title="员工清单" custom-class="employee-dialog" :visible.sync="visible" @close="close">
-        <!-- <div><span>姓名：</span><el-input></el-input></div> -->
-        <el-table :data="tableData" size="small" @cell-click="rowClickHandler">
+        <!-- <el-table :data="tableData" size="small" @cell-click="rowClickHandler">
             <el-table-column label="员工号" prop="EmpeeID"></el-table-column>
             <el-table-column label="姓名" prop="EmpeeName"></el-table-column>
             <el-table-column label="岗位" prop="Position"></el-table-column>
@@ -14,7 +13,45 @@
             @current-change="changePage"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"
-            ></el-pagination>
+            ></el-pagination> -->
+        <el-form>
+            <el-form-item label="姓(拼音)">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="名(拼音)">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="姓(汉字)">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="名(汉字)">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="就职类型">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="生日">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="国籍">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="常住城市">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="开始营业日期">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="入场可能日">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="提案文">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+        </el-form>
     </el-dialog>
 </template>
 
@@ -51,7 +88,7 @@ export default {
                     pagesize: this.pageSize
                 }
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.tableData = res.data || [];
                     this.total = res.total;
                 } else {

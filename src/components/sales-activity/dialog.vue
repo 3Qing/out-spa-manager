@@ -123,7 +123,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.close();
                     this.callback && this.callback();
                 } else {

@@ -3,7 +3,7 @@
         <el-form class="main-header header-form" slot="header" size="mini" inline label-width="40px">
             <el-form-item>
                 <el-select v-model="form.salespersonid" clearable placeholder="营业" @change="getData">
-                    <el-option v-for="item in sales" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
+                    <el-option v-for="item in sales" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -85,7 +85,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取活动清单中...' });
             this.$axios({
-                url: '/api/getsalesactivitylist',
+                url: '/api/SalesActivity/api_getsalesactivitylist',
                 params: {
                     salespersonid: this.form.salespersonid || 0,
                     name: this.form.name,
@@ -117,14 +117,14 @@ export default {
         },
         getTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
                 this.teams = res || [];
             });
         },
         getEmployees(keyword = '') {
             this.$axios({
-                url: '/api/employeesforselect',
+                url: '/api/Employee/api_employeesforselect',
                 params: {
                     keyword
                 }
@@ -134,7 +134,7 @@ export default {
         },
         getSalespersonforselect() {
             this.$axios({
-                url: '/api/salespersonforselect'
+                url: '/api/Employee/api_salespersonforselect'
             }).then(res => {
                 this.sales = res.data || [];
                 this.$set(this.opt, 'sales', res.data || []);

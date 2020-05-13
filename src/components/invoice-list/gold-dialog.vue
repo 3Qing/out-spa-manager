@@ -72,11 +72,8 @@ export default {
         beforeSubmit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
-                    // let params = {
-                    //     invoices: [ Number(this.data.ID) ]
-                    // };
                     const params = new FormData();
-                    params.append('invoiceids[0]', this.data.ID);
+                    params.append('invoiceids[0]', this.data.id);
                     for (let key in this.form) {
                         if (key === 'IncomeDate') {
                             params.append('date', moment(this.form[key]).format('YYYY-MM-DD'));
@@ -86,16 +83,14 @@ export default {
                             params.append('payer', this.form[key]);
                         }
                     }
-                    // params = Object.assign(params, this.form);
                     this.submit(params);
                 }
             });
         },
         submit(params) {
-            // console.log(qs.stringify(params, {arrayFormat: 'indices', allowDots: true}));
             this.$axios({
                 method: 'POST',
-                url: `/api/collectsales`,
+                url: `/api/Invoice/api_collectsales`,
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },

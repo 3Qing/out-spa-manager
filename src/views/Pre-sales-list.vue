@@ -15,43 +15,43 @@
         <el-table :data="tableData" size="small" :cell-class-name="cellClassName">
             <el-table-column label="営業可否">
                 <template slot-scope="scope">
-                    <div>{{transformText(scope.row, 'Avaiable')}}</div>
+                    <div>{{transformText(scope.row, 'avaiable')}}</div>
                 </template>
             </el-table-column>
-            <el-table-column label="入場可能日" prop="AvaiableDate" width="120px"></el-table-column>
+            <el-table-column label="入場可能日" prop="avaiableDate" width="120px"></el-table-column>
             <el-table-column label="営業状態" show-overflow-tooltip>
                 <template slot-scope="scope">
-                    <div>{{transformText(scope.row, 'Status')}}</div>
+                    <div>{{transformText(scope.row, 'status')}}</div>
                 </template>
             </el-table-column>
-            <el-table-column label="氏名" prop="Name"></el-table-column>
-            <el-table-column label="国籍" prop="Nationality"></el-table-column>
-            <el-table-column label="性別" prop="Sex"></el-table-column>
-            <el-table-column label="所属" prop="EmployeeType" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="ポジション" prop="Position" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="モジュール" prop="Module" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="技術能力" prop="Comment" show-overflow-tooltip></el-table-column>
-            <el-table-column label="認定資格" prop="Certificates"></el-table-column>
-            <el-table-column label="SAP経験年数" prop="ExpYears"></el-table-column>
-            <el-table-column label="来日年数" prop="JPYears"></el-table-column>
-            <el-table-column label="日本語" prop="JPLang" show-overflow-tooltip></el-table-column>
-            <el-table-column label="英語" prop="ENLang" show-overflow-tooltip></el-table-column>
-            <el-table-column label="単価" prop="SalesPrice"></el-table-column>
-            <el-table-column label="最寄駅" prop="Station" show-overflow-tooltip></el-table-column>
-            <el-table-column label="出張条件" prop="Travel" show-overflow-tooltip></el-table-column>
+            <el-table-column label="氏名" prop="name"></el-table-column>
+            <el-table-column label="国籍" prop="nationality"></el-table-column>
+            <el-table-column label="性別" prop="sex"></el-table-column>
+            <el-table-column label="所属" prop="employeeType" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="ポジション" prop="position" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="モジュール" prop="mainSkill" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="技術能力" prop="comment" show-overflow-tooltip></el-table-column>
+            <el-table-column label="認定資格" prop="certificates"></el-table-column>
+            <el-table-column label="SAP経験年数" prop="expYears"></el-table-column>
+            <el-table-column label="来日年数" prop="jpYears"></el-table-column>
+            <el-table-column label="日本語" prop="jpLang" show-overflow-tooltip></el-table-column>
+            <el-table-column label="英語" prop="enLang" show-overflow-tooltip></el-table-column>
+            <el-table-column label="単価" prop="salesPrice"></el-table-column>
+            <el-table-column label="最寄駅" prop="station" show-overflow-tooltip></el-table-column>
+            <el-table-column label="出張条件" prop="travel" show-overflow-tooltip></el-table-column>
             <el-table-column label="アサイン中案件">
-                <el-table-column label="案件名" prop="CurPJ" show-overflow-tooltip></el-table-column>
-                <el-table-column label="顧客" prop="CurPJCustomer" show-overflow-tooltip></el-table-column>
-                <el-table-column label="契約終了日" prop="CurPJEndDate" width="120px"></el-table-column>
+                <el-table-column label="案件名" prop="curPJ" show-overflow-tooltip></el-table-column>
+                <el-table-column label="顧客" prop="curPJCustomer" show-overflow-tooltip></el-table-column>
+                <el-table-column label="契約終了日" prop="curPJEndDate" width="120px"></el-table-column>
             </el-table-column>
             <el-table-column label="提案文" width="70px">
                 <template slot-scope="scope">
                     <el-popover
-                        v-if="!!scope.row.ProposeText"
+                        v-if="!!scope.row.proposeText"
                         placement="left"
                         title="提案文"
                         trigger="hover">
-                        <pre>{{scope.row.ProposeText}}</pre>
+                        <pre>{{scope.row.proposeText}}</pre>
                         <i slot="reference" class="el-icon-document"></i>
                     </el-popover>
                 </template>
@@ -77,8 +77,8 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import { mapGetters } from 'vuex';
+import { apiDownloadFile } from '@_public/utils';
 
 export default {
     components: {
@@ -102,10 +102,6 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '员工清单'
-            // });
             vm.getData();
         });
     },
@@ -118,9 +114,9 @@ export default {
             this.getData();
         },
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取清单数据' });
+            const loading = this.$loading({ lock: true, text: '正在获取候选人清单数据' });
             this.$axios({
-                url: '/api/getproposelist',
+                url: '/api/Candidate/api_getcandidatelist',
                 params: {
                     avaiable: this.avaiable,
                     page: this.page,
@@ -129,8 +125,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                 }
             });
         },
@@ -167,15 +164,18 @@ export default {
             }
         },
         downloadFile() {
-            const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
-            window.open(`${url}/api/dlproposelistexcel`, '_blank');
+            apiDownloadFile({
+                vm: this,
+                url: `/api/Candidate/api_downloadcandidatelistexcel?insale=${this.avaiable}`,
+                filename: `${Date.now()}.xls`
+            });
             this.visible = false;
         },
         createExcel() {
             this.$axios({
                 url: '/api/createproposelistexcel'
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.downloadFile();
                 } else {
                     this.$message({
@@ -188,7 +188,7 @@ export default {
         },
         cellClassName({ row, columnIndex }) {
             if (columnIndex === 0) {
-                switch (Number(row.Avaiable)) {
+                switch (Number(row.avaiable)) {
                     case 1:
                         return 'bg-success';
                     case 2:
@@ -200,7 +200,7 @@ export default {
                 }
             } else if (columnIndex === 2) {
                 if (!this.avaiable) {
-                    switch (Number(row.Status)) {
+                    switch (Number(row.status)) {
                         case 1:
                             return 'bg-success';
                         case 2:
@@ -215,7 +215,7 @@ export default {
             }
         },
         transformText(row, field) {
-            if (field === 'Avaiable') {
+            if (field === 'avaiable') {
                 switch (Number(row[field])) {
                     case 1:
                         return '可能';

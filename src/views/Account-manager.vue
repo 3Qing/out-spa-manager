@@ -125,7 +125,7 @@ export default {
         },
         getAccount() {
             this.$axios({
-                url: '/api/accountgroupsforselect'
+                url: '/api/ACAccount/api_accountgroupsforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.accounts = res.data || [];
@@ -135,7 +135,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中...' });
             this.$axios({
-                url: '/api/getaccountlist',
+                url: '/api/ACAccount/api_getaccountlist',
                 custom: {
                     loading,
                     vm: this

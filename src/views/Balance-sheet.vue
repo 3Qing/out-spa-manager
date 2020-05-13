@@ -63,7 +63,7 @@ export default {
     methods: {
         getTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
                 const data = res || [];
                 this.teams = data;

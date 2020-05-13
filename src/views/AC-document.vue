@@ -30,35 +30,35 @@ export default {
         return {
             items: [{
                 DRCR: '',
-                'account.Account': '',
+                'AccountID': '',
                 Amount: '',
-                'customer.ID': '',
-                'team.TeamID': '',
-                'employee.ID': '',
+                'CustomerID': '',
+                'TeamID': '',
+                'EmployeeID': '',
                 Comment: ''
             }, {
                 DRCR: '',
-                'account.Account': '',
+                'AccountID': '',
                 Amount: '',
-                'customer.ID': '',
-                'team.TeamID': '',
-                'employee.ID': '',
+                'CustomerID': '',
+                'TeamID': '',
+                'EmployeeID': '',
                 Comment: ''
             }, {
                 DRCR: '',
-                'account.Account': '',
+                'AccountID': '',
                 Amount: '',
-                'customer.ID': '',
-                'team.TeamID': '',
-                'employee.ID': '',
+                'CustomerID': '',
+                'TeamID': '',
+                'EmployeeID': '',
                 Comment: ''
             }, {
                 DRCR: '',
-                'account.Account': '',
+                'AccountID': '',
                 Amount: '',
-                'customer.ID': '',
-                'team.TeamID': '',
-                'employee.ID': '',
+                'CustomerID': '',
+                'TeamID': '',
+                'EmployeeID': '',
                 Comment: ''
             }],
             errors: {}
@@ -67,7 +67,7 @@ export default {
     mixins: [ mixins ],
     methods: {
         beforeSubmit() {
-            if (!(this.form.PostingDate && this.form['doctype.Type'])) {
+            if (!(this.form.PostingDate && this.form['DocType'])) {
                 this.$message({
                     type: 'warning',
                     message: '请填写転記日或伝票タイプ'
@@ -86,14 +86,14 @@ export default {
                 } else {
                     provideTotal += (item.Amount && Number(item.Amount.replace(/,/g, ''))) || 0;
                 }
-                tmp['account.Account'] = item['account.Account'].Account;
+                tmp['AccountID'] = item['AccountID'].accountID;
                 errors[i] = {};
                 for (let key in item) {
-                    if (['DRCR', 'account.Account', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {
+                    if (['DRCR', 'AccountID', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {
                         errors[i][key] = true;
                     }
-                    if (item['account.Account'].BSPL === false) {
-                        if (['team.TeamID', 'employee.ID'].includes(key) && !(item['team.TeamID'] || item['employee.ID'])) {
+                    if (item['AccountID'].BSPL === false) {
+                        if (['TeamID', 'EmployeeID'].includes(key) && !(item['TeamID'] || item['EmployeeID'])) {
                             errors[i][key]  = true;
                         }
                     }
@@ -101,9 +101,9 @@ export default {
                 if (tmp.Amount) {
                     tmp.Amount = tmp.Amount.replace(/,/g, '');
                 }
-                tmp['employee.ID'] = item['employee.ID'] || 0;
-                tmp['customer.ID'] = item['customer.ID'] || 0;
-                tmp['team.TeamID'] = item['team.TeamID'] || 0;
+                tmp['EmployeeID'] = item['EmployeeID'] || 0;
+                tmp['CustomerID'] = item['CustomerID'] || 0;
+                tmp['TeamID'] = item['TeamID'] || 0;
                 if (!Object.keys(errors[i]).length) {
                     delete errors[i];
                 }
@@ -142,19 +142,20 @@ export default {
             });
             this.submit({
                 ...this.form,
-                items: items
+                DocItems: items
             });
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: '正在提交数据' });
             this.$axios({
                 method: 'POST',
-                url: '/api/postdocument',
+                url: '/api/ACDoc/api_postdocument',
                 params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
@@ -167,11 +168,6 @@ export default {
                         params: {
                             id: res.data
                         }
-                    });
-                } else {
-                    this.$message({
-                        type: 'error',
-                        message: res ? res.message : '接口开小差了，没有返回信息'
                     });
                 }
             });

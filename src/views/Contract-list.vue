@@ -22,7 +22,7 @@
                 @change="changeEndTime">
             </el-date-picker>
             <el-select v-model="form.customerid" placeholder="取引先" @change="changeHandler" size="mini" clearable>
-                <el-option v-for="item in customers" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+                <el-option v-for="item in customers" :key="item.id" :value="item.id" :label="item.title"></el-option>
             </el-select>
             <el-select
                 v-model="form.empeeid"
@@ -35,52 +35,60 @@
                 @change="changeHandler"
                 size="mini"
                 clearable>
-                <el-option v-for="item in employees" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                <el-option v-for="item in employees" :key="item.id" :value="item.id" :label="item.name"></el-option>
             </el-select>
             <el-select v-model="form.salespersonid" placeholder="営業担当" @change="changeHandler" size="mini" clearable>
-                <el-option v-for="item in sales" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                <el-option v-for="item in sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
             </el-select>
         </div>
         <el-table size="small" :data="tableData">
             <el-table-column label="注文番号" width="120px">
                 <template slot-scope="scope">
-                    <div>{{scope.row.ContractID || '-'}}</div>
+                    <div>{{scope.row.contractNo || '-'}}</div>
                 </template>
             </el-table-column>
-            <el-table-column label="名称" prop="ContractTitle" show-overflow-tooltip></el-table-column>
-            <el-table-column label="取引先" prop="CustomerTitle" show-overflow-tooltip></el-table-column>
-            <el-table-column label="開始日" prop="FromDate" show-overflow-tooltip></el-table-column>
-            <el-table-column label="終了日" prop="ToDate" show-overflow-tooltip></el-table-column>
-            <el-table-column label="契約単価・万円" prop="ContractPrice"></el-table-column>
-            <el-table-column label="支払条件" prop="PaymentTerm" width="120px"></el-table-column>
-            <el-table-column label="作業時間範囲" prop="HoursRange" show-overflow-tooltip></el-table-column>
-            <el-table-column label="超過精算・円/時間" prop="OverTimePrice"></el-table-column>
-            <el-table-column label="控除精算・円/時間" prop="UnderTimePrice"></el-table-column>
-            <el-table-column label="作業担当" prop="EmployeeName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="営業担当" prop="SalesName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="名称" prop="contractTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="取引先" prop="customerTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="開始日" prop="fromDate" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.fromDate)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="終了日" prop="toDate" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.toDate)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="契約単価・万円" prop="contractPrice"></el-table-column>
+            <el-table-column label="支払条件" prop="paymentTerm" width="120px"></el-table-column>
+            <el-table-column label="作業時間範囲" prop="hoursRange" show-overflow-tooltip></el-table-column>
+            <el-table-column label="超過精算・円/時間" prop="overTimePrice"></el-table-column>
+            <el-table-column label="控除精算・円/時間" prop="underTimePrice"></el-table-column>
+            <el-table-column label="作業担当" prop="employeeName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="営業担当" prop="salesName" show-overflow-tooltip></el-table-column>
             <el-table-column label="注文書原本" width="180px">
                 <template slot-scope="scope">
                     <el-button
-                        v-if="scope.row.PaperReceived"
+                        v-if="scope.row.paperReceived"
                         size="mini"
                         type="primary"
                         @click="downloadPDF(scope.row)">照会</el-button>
                     <upload
                         class="info-btn"
-                        v-if="scope.row.PaperReceived"
+                        v-if="scope.row.paperReceived"
                         :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
                         @upload="uploadFile"></upload>
                     <upload
                         class="danger-btn"
-                        v-if="!scope.row.PaperReceived"
+                        v-if="!scope.row.paperReceived"
                         :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
                         @upload="uploadFile"></upload>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="160px">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.row.Editable" type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
-                    <el-button v-if="scope.row.Extendable" size="mini" @click="showDialog(scope.row)">更新</el-button>
+                    <el-button v-if="scope.row.editable" type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
+                    <el-button v-if="scope.row.extendable" size="mini" @click="showDialog(scope.row)">更新</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -130,10 +138,10 @@
 </template>
 
 <script>
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
+import { formatTime } from '@_public/utils';
 export default {
     components: {
         MainWrapper,
@@ -168,10 +176,6 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '合同列表'
-            // });
             vm.getData();
             vm.getCustomerList();
             vm.getEmployees();
@@ -182,15 +186,16 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        formatTime: formatTime,
         changeHandler() {
             this.form.page = 1;
             this.getData();
         },
         getCustomerList() {
             this.$axios({
-                url: '/api/customersforselect'
+                url: '/api/Customer/api_customersforselect'
             }).then(res => {
-                if (res) {
+                if (res && res.code === 0) {
                     this.customers = res.data || [];
                 }
             });
@@ -198,7 +203,7 @@ export default {
         getEmployees(keyword = '') {
             this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect',
+                url: '/api/Employee/api_employeesforselect',
                 params: {
                     keyword
                 },
@@ -207,7 +212,7 @@ export default {
                 }
             }).then(res => {
                 this.loading = false;
-                if (res) {
+                if (res && res.code === 0) {
                     this.employees = res.data || [];
                 }
             });
@@ -217,9 +222,9 @@ export default {
         },
         getSalespersonforselect() {
             this.$axios({
-                url: '/api/salespersonforselect'
+                url: '/api/Employee/api_salespersonforselect'
             }).then(res => {
-                if (res) {
+                if (res && res.code === 0) {
                     this.sales = res.data || [];
                 }
             });
@@ -271,7 +276,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取合同列表' });
             this.$axios({
-                url: '/api/getcontractlist',
+                url: '/api/Contract/api_getcontractlist',
                 params: this.form,
                 custom: {
                     loading,
@@ -280,8 +285,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                 } else {
                     this.$message({
                         type: 'error',
@@ -295,7 +301,7 @@ export default {
             this.getData();
         },
         downloadPDF(row) {
-            const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
+            const url = process.env.NODE_ENV === 'production' ? 'http://erp.your-partner.co.jp' : '/proxy';
             window.open(`${url}/api/downloadcontractpdf?conid=${row.ID}`, '_blank');
         },
         uploadFile({ file, opt }) {
@@ -358,13 +364,13 @@ export default {
             this.dialogLoading = true;
             const [ fromDate = '', toDate = '' ] = this.datetime;
             this.$axios({
-                url: '/api/calculateningetsu',
+                url: '/api/Contract/api_calculateningetsu',
                 params: {
-                    FromDate: fromDate,
-                    ToDate: toDate
+                    fromDate: fromDate,
+                    todate: toDate
                 }
             }).then(res => {
-                if (res) {
+                if (res && res.code === 0) {
                     this.dialogLoading = false;
                     const result = [...res.data];
                     result.forEach(item => {

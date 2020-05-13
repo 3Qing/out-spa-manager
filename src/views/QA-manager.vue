@@ -17,15 +17,19 @@
             >新規追加</el-button>
         </el-form>
         <el-table size="mini" :data="tableData" @row-click="rowClick">
-            <el-table-column label="番号" prop="No" width="100px"></el-table-column>
-            <el-table-column label="質問" prop="Ask1" show-overflow-tooltip></el-table-column>
+            <el-table-column label="番号" prop="id" width="100px"></el-table-column>
+            <el-table-column label="質問" prop="ask1" show-overflow-tooltip></el-table-column>
             <el-table-column label="モジュール" prop="Module" show-overflow-tooltip></el-table-column>
-            <el-table-column label="重要度" prop="Importance" width="120px">
+            <el-table-column label="重要度" prop="importance" width="140px">
                 <template slot-scope="scope">
-                    <el-rate v-model="scope.row.Importance" disabled></el-rate>
+                    <el-rate v-model="scope.row.importance" :max="5" disabled></el-rate>
                 </template>
             </el-table-column>
-            <el-table-column label="更新日" prop="UpdateDate" width="120px"></el-table-column>
+            <el-table-column label="更新日" prop="updateTime" width="120px">
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.updateTime)}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="180px">
                 <template slot-scope="scope">
                     <el-button
@@ -52,6 +56,7 @@ import MainWrapper from '@components/main-wrapper';
 import EditDialog from '@components/qa-manager/edit-dialog';
 import RowDialog from '@components/qa-manager/row-dialog';
 import { mapGetters } from 'vuex';
+import { formatTime } from '@_public/utils';
 export default {
     components: {
         MainWrapper,
@@ -88,10 +93,15 @@ export default {
         };
     },
     methods: {
+        formatTime: formatTime,
         getData() {
             const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
-                url: '/api/getqalist',
+                method: 'POST',
+                url: '/api/QA/api_getqalist',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
                 params: {
                     module: this.module,
                     keyword: this.keyword,
@@ -105,8 +115,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.total = res.total || 0;
-                    this.tableData = res.data || [];
+                    const data = res.data || {};
+                    this.total = data.total || 0;
+                    this.tableData = data.data || [];
                 } else {
                     this.$message({
                         type: 'error',

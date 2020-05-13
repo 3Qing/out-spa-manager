@@ -2,7 +2,7 @@
     <main-wrapper class="cashflow-list">
         <main-header-date slot="header" :form="form" :clearable="false" @update="changeHandle">
             <el-select placeholder="チーム" v-model="form.teamid" size="mini" clearable @change="changeHandle">
-                <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
+                <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
             </el-select>
             <el-select
                 v-model="form.employeeid"
@@ -15,51 +15,63 @@
                 :remote-method="remoteMethod"
                 :loading="loading"
                 @change="changeHandle">
-                <el-option v-for="item in employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
+                <el-option v-for="item in employees" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
             <el-input
                 class="input-wrapper"
                 placeholder="注文書番号"
-                v-model="form.contractid"
+                v-model="form.contractno"
                 size="mini"
                 clearable
                 @blur="changeHandle"></el-input>
         </main-header-date>
         <el-table size="small" :data="tableData">
-            <el-table-column label="注文書" prop="ContractID" show-overflow-tooltip></el-table-column>
-            <el-table-column label="注文書タイトル" prop="ContractTitle" width="120px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="取引先" prop="CustomerName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="従業員番号" prop="EmployeeID" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="従業員名前" prop="EmployeeName" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="開始期間" prop="FromDate" width="100px"></el-table-column>
-            <el-table-column label="終了期間" prop="ToDate" width="100px"></el-table-column>
-            <el-table-column label="作業時間・承認状態">
-                <el-table-column label="契約時間・円" prop="ContractHours" show-overflow-tooltip></el-table-column>
-                <el-table-column label="実際時間" prop="ActualHours" show-overflow-tooltip></el-table-column>
+            <el-table-column label="注文書" prop="contractNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="注文書タイトル" prop="contractTitle" width="120px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="取引先" prop="customerName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="従業員番号" prop="employeeNo" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="従業員名前" prop="employeeName" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="開始期間" prop="fromDate" width="100px">
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.fromDate)}}</span>
+                </template>
             </el-table-column>
-            <el-table-column label="注文単価・円（税抜）" prop="ContractSales" show-overflow-tooltip></el-table-column>
+            <el-table-column label="終了期間" prop="toDate" width="100px">
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.toDate)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="作業時間・承認状態">
+                <el-table-column label="契約時間・円" prop="contractHours" show-overflow-tooltip></el-table-column>
+                <el-table-column label="実際時間" prop="actualHours" show-overflow-tooltip></el-table-column>
+            </el-table-column>
+            <el-table-column label="注文単価・円（税抜）" prop="contractSales" show-overflow-tooltip></el-table-column>
             <el-table-column label="見込売掛金">
-                <el-table-column label="売掛金額・円（税込）" prop="PlanCollectSales" show-overflow-tooltip></el-table-column>
-                <el-table-column label="予定回収日" prop="PlanCollectDate" width="100px"></el-table-column>
+                <el-table-column label="売掛金額・円（税込）" prop="planCollectSales" show-overflow-tooltip></el-table-column>
+                <el-table-column label="予定回収日" prop="planCollectDate" width="100px"></el-table-column>
             </el-table-column>
             <el-table-column label="実際売掛金">
-                <el-table-column label="実際回収額・円" prop="ActualCollectSales" show-overflow-tooltip></el-table-column>
-                <el-table-column label="実際回収日" prop="ActualCollectDate" show-overflow-tooltip></el-table-column>
+                <el-table-column label="実際回収額・円" prop="actualCollectSales" show-overflow-tooltip></el-table-column>
+                <el-table-column label="実際回収日" prop="actualCollectDate" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span>{{formatTime(scope.row.actualCollectDate)}}</span>
+                    </template>
+                </el-table-column>
             </el-table-column>
             <el-table-column label="コスト">
-                <el-table-column label="人件費・円" prop="ProjectSalary" show-overflow-tooltip></el-table-column>
-                <el-table-column label="交通代・円" prop="TravelFare" show-overflow-tooltip></el-table-column>
+                <el-table-column label="人件費・円" prop="projectSalary" show-overflow-tooltip></el-table-column>
+                <el-table-column label="交通代・円" prop="travelFare" show-overflow-tooltip></el-table-column>
             </el-table-column>
-            <el-table-column label="粗利・円" prop="Profit" show-overflow-tooltip></el-table-column>
-            <el-table-column label="請求書番号" width="120px" prop="InvoiceNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="粗利・円" prop="profit" show-overflow-tooltip></el-table-column>
+            <el-table-column label="請求書番号" width="120px" prop="invoiceNo" show-overflow-tooltip></el-table-column>
             <el-table-column label="アクション" width="350px">
                 <template slot-scope="scope">
                     <el-button
                         type="primary"
-                        v-for="item in scope.row.Actions"
+                        v-for="item in scope.row.actions"
                         size="mini"
                         @click="actionHandler(item, scope.row)"
-                        :key="item.ID">{{item.Title}}</el-button>
+                        :key="item.id">{{item.title}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -72,7 +84,7 @@
         <ess-dialog :visible="visible"></ess-dialog>
         <el-dialog :visible.sync="show" custom-class="ess-edit-dialog">
             <div style="max-height: 500px;overflow-y: auto;">
-                <ess-edit :id="curRow.CFID" v-if="show"></ess-edit>
+                <ess-edit :id="curRow.cfid" v-if="show"></ess-edit>
             </div>
             <div slot="footer">
                 <el-button type="primary" size="mini" @click="show = false">确定</el-button>
@@ -87,6 +99,7 @@ import MainHeaderDate from '@components/main-wrapper/header-date';
 import EssDialog from '@components/cashflow-list/dialog';
 import EssEdit from '@views/ESS-edit';
 import { mapGetters } from 'vuex';
+import { formatTime } from '@_public/utils';
 export default {
     components: {
         MainWrapper,
@@ -101,7 +114,7 @@ export default {
                 periodto: '',
                 teamid: '',
                 employeeid: '',
-                contractid: ''
+                contractno: ''
             },
             teams: [],
             employees: [],
@@ -128,19 +141,22 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        formatTime: formatTime,
         // チーム
         getTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                this.teams = res || [];
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
+                }
             });
         },
         // 従業員
         getEmployees(keyword = '') {
             this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect',
+                url: '/api/Employee/api_employeesforselect',
                 params: {
                     keyword
                 }
@@ -159,13 +175,13 @@ export default {
         getList() {
             const loading = this.$loading({ lock: true, text: '正在获取现金流数据' });
             this.$axios({
-                url: '/api/getcashflowlist',
+                url: '/api/Cashflow/api_getcashflowlist',
                 params: {
                     fromperiod: this.form.periodfrom,
                     toperiod: this.form.periodto,
-                    teamid: this.form.teamid,
-                    employeeid: this.form.employeeid,
-                    contractid: this.form.contractid,
+                    // teamid: this.form.teamid,
+                    // employeeid: this.form.employeeid,
+                    // contractno: this.form.contractno,
                     page: this.page,
                     pagesize: this.pageSize
                 },
@@ -176,8 +192,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                 } else {
                     this.total = 0;
                     this.tableData = [];
@@ -193,7 +210,7 @@ export default {
                 this.createInvoice(row);
             } else if (item.ID === 'act_confirmtimesheet') {
                 this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                    id: row.CFID,
+                    id: row.cfid,
                     type: 'confirm',
                     callback: () => {
                         this.getList();
@@ -201,7 +218,7 @@ export default {
                 });
             } else if (item.ID === 'act_canceltimesheet') {
                 this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                    id: row.CFID,
+                    id: row.cfid,
                     type: 'cancel',
                     callback: () => {
                         this.getList();
@@ -218,7 +235,7 @@ export default {
                 method: 'POST',
                 url: `/api/createinvoice`,
                 params: {
-                    cfids: [row.CFID]
+                    cfids: [row.cfid]
                 },
                 custom: {
                     loading,

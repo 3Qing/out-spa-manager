@@ -10,10 +10,10 @@
                 :row-class-name="rowClassName">
                 <el-table-column label="日期" width="120">
                     <template slot-scope="scope">
-                        <span>{{scope.row.Date}}</span>
+                        <span>{{scope.row.date}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="曜日" prop="WeekDay" width="80"></el-table-column>
+                <el-table-column label="曜日" prop="weekDay" width="80"></el-table-column>
                 <el-table-column label="平日/休日" width="80">
                     <template slot-scope="scope">
                         <span>{{formatDateType(scope.row)}}</span>
@@ -26,7 +26,7 @@
                             size="mini"
                             style="width: 100px"
                             placeholder="開始"
-                            v-model="scope.row.AMFromTime"
+                            v-model="scope.row.amFromTime"
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
@@ -37,35 +37,17 @@
                             size="mini"
                             style="width: 100px"
                             placeholder="終了"
-                            v-model="scope.row.AMToTime"
+                            v-model="scope.row.amToTime"
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
                                 end: '23:45',
-                                minTime: scope.row.AMFromTime
+                                minTime: scope.row.amFromTime
                             }"></el-time-select>
-                        <!-- <el-time-picker
-                            v-if="editable"
-                            is-range
-                            size="mini"
-                            v-model="timePickers[`${scope.$index}_AM`]"
-                            format="HH:mm"
-                            value-format="HH:mm"
-                            range-separator="~"
-                            start-placeholder="开始时间"
-                            end-placeholder="结束时间"
-                            placeholder="选择时间范围"
-                            :picker-options="{
-                                start: '08:30',
-                                step: '00:15',
-                                end: '18:30'
-                            }"
-                            @change="timePickerChange(scope, 'AM')">
-                        </el-time-picker> -->
                         <div v-else>
-                            <span>{{scope.row.AMFromTime}}</span>
+                            <span>{{scope.row.amFromTime}}</span>
                             ~
-                            <span>{{scope.row.AMToTime}}</span>
+                            <span>{{scope.row.amToTime}}</span>
                         </div>
                     </template>
                 </el-table-column>
@@ -76,7 +58,7 @@
                             size="mini"
                             style="width: 100px"
                             placeholder="開始"
-                            v-model="scope.row.PMFromTime"
+                            v-model="scope.row.pmFromTime"
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
@@ -87,37 +69,24 @@
                             size="mini"
                             style="width: 100px"
                             placeholder="終了"
-                            v-model="scope.row.PMToTime"
+                            v-model="scope.row.pmToTime"
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
                                 end: '23:45',
-                                minTime: scope.row.PMFromTime
+                                minTime: scope.row.pmFromTime
                             }"></el-time-select>
-                        <!-- <el-time-picker
-                            v-if="editable"
-                            is-range
-                            size="mini"
-                            v-model="timePickers[`${scope.$index}_PM`]"
-                            format="HH:mm"
-                            value-format="HH:mm"
-                            range-separator="~"
-                            start-placeholder="开始时间"
-                            end-placeholder="结束时间"
-                            placeholder="选择时间范围"
-                            @change="timePickerChange(scope, 'PM')">
-                        </el-time-picker> -->
                         <div v-else>
-                            <span>{{scope.row.PMFromTime}}</span>
+                            <span>{{scope.row.pmFromTime}}</span>
                             ~
-                            <span>{{scope.row.PMToTime}}</span>
+                            <span>{{scope.row.pmToTime}}</span>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="作業内容">
                     <template slot-scope="scope">
-                        <el-input v-if="editable" size="mini" v-model="scope.row.Content" :maxlength="100"></el-input>
-                        <p v-else>{{scope.row.Content || '-'}}</p>
+                        <el-input v-if="editable" size="mini" v-model="scope.row.content" :maxlength="100"></el-input>
+                        <p v-else>{{scope.row.content || '-'}}</p>
                     </template>
                 </el-table-column>
                 <el-table-column label="ｱｸｼｮﾝ" width="100">
@@ -134,9 +103,9 @@
                 size="small"
                 :data="fares"
                 class="table-wrapper">
-                <el-table-column label="費用項目" prop="FareID" width="120">
+                <el-table-column label="費用項目" prop="fareId" width="120">
                     <template slot-scope="scope">
-                        <el-select v-if="editable" size="mini" v-model="scope.row.FareID" @change="changeFareID(scope)">
+                        <el-select v-if="editable" size="mini" v-model="scope.row.fareId" @change="changeFareID(scope)">
                             <el-option :value="1" label="交通代"></el-option>
                             <el-option :value="99" label="その他"></el-option>
                         </el-select>
@@ -145,8 +114,8 @@
                 </el-table-column>
                 <el-table-column label="費用金額" width="200">
                     <template slot-scope="scope">
-                        <el-input v-if="editable" size="mini" type="number" v-model="scope.row.Amount"></el-input>
-                        <span v-else color="danger">{{scope.row.Amount}}</span>
+                        <el-input v-if="editable" size="mini" type="number" v-model="scope.row.amount"></el-input>
+                        <span v-else color="danger">{{scope.row.amount}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="コメント">
@@ -280,10 +249,6 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '编辑作业报告'
-            // });
             if (to.params.id) {
                 vm.getData(to.params.id);
             }
@@ -298,7 +263,7 @@ export default {
         getData(cfid) {
             const loading = this.$loading({ lock: true, text: '作業報告書データ取得中...' });
             this.$axios({
-                url: '/api/inittimesheet',
+                url: '/api/Timesheet/api_inittimesheet',
                 params: { cfid },
                 custom: {
                     loading,
@@ -306,40 +271,32 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (typeof res === 'object') {
-                    const result = res || {};
-                    const worktimes = result.WorkTimes || [];
+                if (res.code === 0) {
+                    const result = res.data || {};
+                    const worktimes = result.workTimes || [];
                     worktimes.forEach((item, index) => {
-                        if (item.DateType === 1 && this.workDayIndex === -1) {
+                        if (item.dateType === 1 && this.workDayIndex === -1) {
                             this.workDayIndex = index;
                         }
-                        // this.timePickers[`${index}_AM`] = [
-                        //     this.formatTime(item, 'AMFromTime') || '',
-                        //     this.formatTime(item, 'AMToTime') || ''
-                        // ];
-                        // this.timePickers[`${index}_PM`] = [
-                        //     this.formatTime(item, 'PMFromTime') || '',
-                        //     this.formatTime(item, 'PMToTime') || ''
-                        // ];
-                        item.Date = this.formatDate(item.Date);
-                        item.AMFromTime = this.formatTime(item, 'AMFromTime');
-                        item.AMToTime = this.formatTime(item, 'AMToTime');
-                        item.PMFromTime = this.formatTime(item, 'PMFromTime');
-                        item.PMToTime = this.formatTime(item, 'PMToTime');
-                        item.Content = item.Content || '';
+                        item.date = this.formatDate(item.date);
+                        item.amFromTime = this.formatTime(item, 'amFromTime');
+                        item.amToTime = this.formatTime(item, 'amToTime');
+                        item.pmFromTime = this.formatTime(item, 'pmFromTime');
+                        item.pmToTime = this.formatTime(item, 'pmToTime');
+                        item.content = item.content || '';
                     });
-                    if (result.Fares && result.Fares.length) {
-                        this.fares = [...result.Fares];
+                    if (result.fares && result.fares.length) {
+                        this.fares = [...result.fares];
                     } else {
-                        this.fares = [{ FareID: 1, Title: '交通费', Amount: '' }];
+                        this.fares = [{ fareId: 1, title: '交通费', amount: '' }];
                     }
                     this.worktimes = [...worktimes];
-                    this.essId = result.ID;
+                    this.essId = result.id;
                     this.files = {};
                     this.$root.$emit('UPLOAD', { type: 'clear' });
-                    this.total = `${result.TotalHours}時間${result.TotalMinutes}分`;
+                    this.total = `${result.totalHours}時間${result.totalMinutes}分`;
                     if (this.$route.name === 'ESSEdit') {
-                        this.editable = !result.Approved || false;
+                        this.editable = !result.approved || false;
                     } else {
                         this.editable = false;
                     }
@@ -354,12 +311,12 @@ export default {
             }
         },
         rowClassName({ row }) {
-            if (row.DateType !== 1) {
+            if (row.dateType !== 1) {
                 return 'warning';
             }
         },
         formatDateType(row) {
-            switch (Number(row.DateType)) {
+            switch (Number(row.dateType)) {
                 case 1:
                     return '平日';
                 case 2:
@@ -383,69 +340,42 @@ export default {
             return '';
         },
         formatFareID(row) {
-            if (row.FareID === 1) {
+            if (row.fareId === 1) {
                 return '交通费';
             } else {
-                return row.Title || '';
+                return row.title || '';
             }
         },
-        // timePickerChange(scope, type) {
-        //     this.updateTotal().then(secondTimeStamp => {
-        //         this.total = `${parseInt(secondTimeStamp / 3600).toString().padStart(2, '0')}小时${parseInt((secondTimeStamp % 3600) / 60).toString().padStart(2, '0')}分钟`;
-        //     });
-        //     this.worktimes[scope.$index][`${type}FromTime`] = (this.timePickers[`${scope.$index}_${type}`] && this.timePickers[`${scope.$index}_${type}`][0]) || '';
-        //     this.worktimes[scope.$index][`${type}ToTime`] = (this.timePickers[`${scope.$index}_${type}`] && this.timePickers[`${scope.$index}_${type}`][1]) || '';
-        // },
-        // updateTotal() {
-        //     return new Promise(resolve => {
-        //         let sumDuration = 0;
-        //         Object.keys(this.timePickers).forEach(item => {
-        //             if (this.timePickers[item]) {
-        //                 const [ fromTime, toTime ] = this.timePickers[item];
-        //                 let [ fromTimeHH, fromTimeMM ] = fromTime.split(':');
-        //                 let [ toTimeHH, toTimeMM ] = toTime.split(':');
-        //                 sumDuration += (
-        //                     (Number(toTimeHH) * 3600 + Number(toTimeMM) * 60) -
-        //                     (Number(fromTimeHH) * 3600 + Number(fromTimeMM) * 60)
-        //                 );
-        //             }
-        //         });
-        //         resolve(sumDuration);
-        //     });
-        // },
         copyOneToAll(scope) {
             // const timePickers = {};
             const worktimes = this.worktimes.map((item, index) => {
-                if (item.DateType !== 1 && this.workDayIndex !== index) {
+                if (item.dateType !== 1 && this.workDayIndex !== index) {
                     return item;
                 } else {
-                    // timePickers[`${index}_AM`] = [scope.row.AMFromTime, scope.row.AMToTime];
-                    // timePickers[`${index}_PM`] = [scope.row.PMFromTime, scope.row.PMToTime];
                     return {
-                        Date: item.Date,
-                        WeekDay: item.WeekDay,
-                        DateType: item.DateType,
-                        AMFromTime: scope.row.AMFromTime,
-                        AMToTime: scope.row.AMToTime,
-                        PMFromTime: scope.row.PMFromTime,
-                        PMToTime: scope.row.PMToTime,
-                        Content: scope.row.Content
+                        date: item.date,
+                        weekDay: item.weekDay,
+                        dateType: item.dateType,
+                        amFromTime: scope.row.amFromTime,
+                        amToTime: scope.row.amToTime,
+                        pmFromTime: scope.row.pmFromTime,
+                        pmToTime: scope.row.pmToTime,
+                        content: scope.row.content
                     };
                 }
             });
             this.worktimes = [...worktimes];
-            // this.timePickers = timePickers;
         },
         changeFareID(scope) {
-            if (scope.row.FareID === 1) {
-                this.fares[scope.$index].Title = '交通费';
+            if (scope.row.fareId === 1) {
+                this.fares[scope.$index].title = '交通费';
             }
         },
         addFare() {
             this.fares.push({
-                FareID: 1,
-                Title: '交通费',
-                Amount: ''
+                fareId: 1,
+                title: '交通费',
+                amount: ''
             });
         },
         removeFare(scope) {
@@ -458,12 +388,12 @@ export default {
             const formData = new FormData();
             let message = '';
             formData.append('CashflowID', this.$route.params.id);
-            formData.append('ID', this.essId);
+            formData.append('id', this.essId);
             this.worktimes.forEach((item, index) => {
                 Object.keys(item).forEach(key => {
-                    if ('AMFromTime,AMToTime,PMFromTime,PMToTime'.includes(key)) {
-                        formData.append(`worktimes[${index}].${key}`, `${item.Date} ${item[key] || '00:00'}`);
-                    } else if ('Date,WeekDay,DateType,Content'.includes(key)) {
+                    if ('amFromTime,amToTime,pmFromTime,pmToTime'.includes(key)) {
+                        formData.append(`worktimes[${index}].${key}`, `${item.date} ${item[key] || '00:00'}`);
+                    } else if ('Date,weekDay,dateType,content'.includes(key)) {
                         formData.append(`worktimes[${index}].${key}`, `${item[key] || ''}`);
                     }
                 });
@@ -471,26 +401,26 @@ export default {
             let noFile = false;
             let commentEmpty = false;
             this.fares.forEach((item, index) => {
-                if (item.Amount) {
+                if (item.amount) {
                     if (this.files[index]) {
                         formData.append(`file${index}`, this.files[index]);
                     }
-                    if (item.ID) {
-                        formData.append(`fares[${index}].ID`, item.ID);
+                    if (item.id) {
+                        formData.append(`fares[${index}].id`, item.id);
                     }
                     if (item.FileID) {
                         formData.append(`fares[${index}].FileID`, item.FileID);
                     }
-                    if (Number(item.Amount) > 3000 && !item.FileID && !this.files[index]) {
+                    if (Number(item.amount) > 3000 && !item.FileID && !this.files[index]) {
                         noFile = true;
                     }
-                    if (item.FareID >= 99 && !item.Comment) {
+                    if (item.fareId >= 99 && !item.Comment) {
                         commentEmpty = true;
                     }
-                    formData.append(`fares[${index}].FareID`, item.FareID);
-                    formData.append(`fares[${index}].Title`, item.Title || '');
+                    formData.append(`fares[${index}].fareId`, item.fareId);
+                    formData.append(`fares[${index}].title`, item.title || '');
                     formData.append(`fares[${index}].Comment`, item.Comment || '');
-                    formData.append(`fares[${index}].Amount`, item.Amount || '');
+                    formData.append(`fares[${index}].amount`, item.amount || '');
                 }
             });
             if (noFile) {
@@ -525,7 +455,7 @@ export default {
                 url: '/api/submittimesheet',
                 params: formData,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'content-Type': 'multipart/form-data'
                 },
                 custom: {
                     loading,
@@ -538,7 +468,7 @@ export default {
         },
         watchInvoice(scope) {
             this.$root.$emit('SHOW_PICTURE_DIALOG', {
-                url: `http://www.your-partner.co.jp/api/getfareimage?fareid=${scope.row.ID}`
+                url: `http://erp.your-partner.co.jp/api/getfareimage?fareid=${scope.row.id}`
             });
         }
     }

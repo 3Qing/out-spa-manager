@@ -17,27 +17,27 @@
                 placeholder="取引先"
                 v-model="customerid"
                 @change="changeDate">
-                <el-option v-for="item in customers" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+                <el-option v-for="item in customers" :key="item.id" :value="item.id" :label="item.title"></el-option>
             </el-select>
         </div>
         <el-table size="small" :data="tableData" :row-class-name="rowClassName">
-            <el-table-column label="請求書番号" prop="InvoiceNo" show-overflow-tooltip></el-table-column>
-            <el-table-column label="請求書ﾀｲﾄﾙ" prop="InvoiceTitle" show-overflow-tooltip></el-table-column>
-            <el-table-column label="取引先" prop="CustomerTitle" show-overflow-tooltip></el-table-column>
-            <el-table-column label="作業担当者" prop="EmployeeName"></el-table-column>
-            <el-table-column label="請求額" prop="InvoiceAmount"></el-table-column>
-            <el-table-column label="請求日" prop="InvoiceDate"></el-table-column>
-            <el-table-column label="入金予定日" prop="PlanCollectDate"></el-table-column>
-            <el-table-column label="実際入金日" prop="ActualCollectDate"></el-table-column>
-            <el-table-column label="入金額" prop="CollectAmount"></el-table-column>
+            <el-table-column label="請求書番号" prop="invoiceNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="請求書ﾀｲﾄﾙ" prop="invoiceTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="取引先" prop="customerTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="作業担当者" prop="employeeName"></el-table-column>
+            <el-table-column label="請求額" prop="invoiceAmount"></el-table-column>
+            <el-table-column label="請求日" prop="invoiceDate"></el-table-column>
+            <el-table-column label="入金予定日" prop="planCollectDate"></el-table-column>
+            <el-table-column label="実際入金日" prop="actualCollectDate"></el-table-column>
+            <el-table-column label="入金額" prop="collectAmount"></el-table-column>
             <el-table-column label="アクション" width="320px">
                 <template slot-scope="scope">
                     <el-button
                         type="primary"
-                        v-for="item in scope.row.Actions"
-                        :key="item.ID"
+                        v-for="item in scope.row.actions"
+                        :key="item.id"
                         @click="actionHandler(item, scope.row)"
-                        size="mini">{{item.Title}}</el-button>
+                        size="mini">{{item.title}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -89,9 +89,9 @@ export default {
     methods: {
         getCustomers() {
             this.$axios({
-                url: '/api/customersforselect'
+                url: '/api/Customer/api_customersforselect'
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.customers = res.data || [];
                 }
             });
@@ -99,7 +99,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
-                url: '/api/getinvoicelist',
+                url: '/api/Invoice/api_getinvoicelist',
                 params: {
                     fromperiod: this.date[0],
                     toperiod: this.date[1],
@@ -113,9 +113,10 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                 } else {
                     this.tableData = [];
                     this.total = 0;
@@ -127,28 +128,28 @@ export default {
             this.getData();
         },
         actionHandler(item, row) {
-            if (item.ID === 'act_downloadinvoice') {
+            if (item.id === 'act_downloadinvoice') {
                 this.downloadInvoice(row);
-            } else if (item.ID === 'act_collectsales') {
+            } else if (item.id === 'act_collectsales') {
                 this.$root.$emit('SHOW_GOLD_DIALOG', {
                     data: row,
                     callback: () => {
                         this.getData();
                     }
                 });
-            } else if (item.ID === 'act_cancelinvoice') {
+            } else if (item.id === 'act_cancelinvoice') {
                 this.cancelInvoice(row);
             }
         },
         downloadInvoice(row) {
-            formatApiUrl('/api/downloadinvoice', `?invid=${row.ID}`);
+            formatApiUrl('/api/Invoice/api_downloadinvoice', `?invid=${row.id}`);
         },
         cancelInvoice(row) {
             const loading = this.$loading({ lock: true, text: '正在取消请求书' });
             this.$axios({
-                url: '/api/cancelinvoice',
+                url: '/api/Invoice/api_cancelinvoice',
                 params: {
-                    invid: row.ID
+                    invid: row.id
                 },
                 custom: {
                     loading,

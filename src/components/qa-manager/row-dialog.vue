@@ -6,19 +6,19 @@
         @close="close">
         <el-form size="small" label-width="80px" label-suffix=":">
             <el-form-item label="質問1">
-                <p>{{form.Ask1}}</p>
+                <p>{{form.ask1}}</p>
             </el-form-item>
             <el-form-item label="質問2">
-                <p>{{form.Ask2}}</p>
+                <p>{{form.ask2}}</p>
             </el-form-item>
             <el-form-item label="質問3">
-                <p>{{form.Ask3}}</p>
+                <p>{{form.ask3}}</p>
             </el-form-item>
             <el-form-item label="回答">
-                <p>{{form.Answer}}</p>
+                <p>{{form.answer}}</p>
             </el-form-item>
             <el-form-item label="コメント">
-                <p>{{form.Comment}}</p>
+                <p>{{form.comment}}</p>
             </el-form-item>
         </el-form>
         <div slot="footer" style="text-align: center">

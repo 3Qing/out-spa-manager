@@ -4,62 +4,62 @@
             <el-row v-if="!IS_H5">
                 <el-col :span="10">
                     <span class="label">転記日:</span>
-                    <span>{{form.PostingDate}}</span>
+                    <span>{{form.postingDate}}</span>
                 </el-col>
                 <el-col :span="10">
                     <span class="label">伝票タイプ:</span>
-                    <span>{{form.DocType_Type}}</span>
+                    <span>{{form.docTypeText}}</span>
                 </el-col>
             </el-row>
             <el-row v-if="IS_H5">
                 <span class="label">転記日:</span>
-                <span>{{form.PostingDate}}</span>
+                <span>{{form.postingDate}}</span>
             </el-row>
             <el-row v-if="IS_H5">
                 <span class="label">伝票タイプ:</span>
-                <span>{{form.DocType_Type}}</span>
+                <span>{{form.docTypeText}}</span>
             </el-row>
             <el-row :class="[!IS_H5 && 'row-wrapper']">
                 <el-col :span="24">
                     <span class="label">テキスト:</span>
-                    <span>{{form.Comment}}</span>
+                    <span>{{form.comment}}</span>
                 </el-col>
             </el-row>
         </div>
-        <el-table size="mini" :data="items">
-            <el-table-column label="借貸" prop="DRCR" width="80px">
+        <el-table size="mini" :data="docitems">
+            <el-table-column label="借貸" prop="drcr" width="80px">
                 <template slot-scope="scope">
-                    <span>{{formatContext(scope.row.DRCR, 'DRCR')}}</span>
+                    <span>{{formatContext(scope.row.drcr, 'drcr')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="勘定コード" prop="Account_Text" width="100px">
+            <el-table-column label="勘定コード" prop="accountText" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.Account_Text || '-'}}</span>
+                    <span>{{scope.row.accountText || '-'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="金額" prop="Amount" width="100px">
+            <el-table-column label="金額" prop="amount" width="100px">
                 <template slot-scope="scope">
-                    <span>{{formatContext(scope.row['Amount'], 'Amount')}}</span>
+                    <span>{{formatContext(scope.row['amount'], 'amount')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="得意先" prop="Customer_Title">
+            <el-table-column label="得意先" prop="customerTitle">
                 <template slot-scope="scope">
-                    <span>{{scope.row.Customer_Title || '-'}}</span>
+                    <span>{{scope.row.customerTitle || '-'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="部門" prop="Team_Name">
+            <el-table-column label="部門" prop="teamName">
                 <template slot-scope="scope">
-                    <span>{{scope.row.Team_Name ||'-' }}</span>
+                    <span>{{scope.row.teamName ||'-' }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="従業員" prop="Employee_Name">
+            <el-table-column label="従業員" prop="employeeName">
                 <template slot-scope="scope">
-                    <span>{{scope.row.Employee_Name ||'-' }}</span>
+                    <span>{{scope.row.employeeName ||'-' }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="テキスト" prop="Comment">
+            <el-table-column label="テキスト" prop="comment">
                 <template slot-scope="scope">
-                    <span>{{scope.row.Comment || '-'}}</span>
+                    <span>{{scope.row.comment || '-'}}</span>
                 </template>
             </el-table-column>
         </el-table>
@@ -71,7 +71,7 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         form: Object,
-        items: Array,
+        docitems: Array,
         drcr: Array,
         docTypes: Array,
         acCounts: Array,
@@ -90,7 +90,7 @@ export default {
                         return item.Text;
                     }
                 }
-            } else if (type === 'DRCR') {
+            } else if (type === 'drcr') {
                 for (let item of this.drcr) {
                     if (value === item.value) {
                         return item.label;
@@ -120,7 +120,7 @@ export default {
                         return item.Name;
                     }
                 }
-            } else if (type === 'Amount') {
+            } else if (type === 'amount') {
                 return Number(value).toLocaleString();
             }
         }

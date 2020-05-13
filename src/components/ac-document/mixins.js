@@ -3,7 +3,7 @@ export default  {
         return {
             form: {
                 PostingDate: '',
-                'doctype.Type': '',
+                'DocType': '',
                 Comment: ''
             },
             drcr: [{
@@ -30,7 +30,7 @@ export default  {
     methods: {
         getDocType() {
             this.$axios({
-                url: '/api/doctypesforselect'
+                url: '/api/ACDoc/api_doctypesforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.docTypes = res.data || [];
@@ -39,7 +39,7 @@ export default  {
         },
         getCounts() {
             this.$axios({
-                url: '/api/accountsforselect'
+                url: '/api/ACDoc/api_accountsforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.acCounts = res.data || [];
@@ -48,14 +48,16 @@ export default  {
         },
         getTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                this.teams = res || [];
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
+                }
             });
         },
         getEmployees() {
             this.$axios({
-                url: '/api/employeesforselect'
+                url: '/api/Employee/api_employeesforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.employees = res.data || [];
@@ -64,7 +66,7 @@ export default  {
         },
         getCustom() {
             this.$axios({
-                url: '/api/customersforselect'
+                url: '/api/Customer/api_customersforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.customs = res.data || [];

@@ -3,7 +3,7 @@
         <el-form slot="header" class="main-header" size="mini" inline>
             <el-form-item>
                 <el-select v-model="teamid" placeholder="チーム" @change="getData" clearable>
-                    <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
+                    <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -37,8 +37,8 @@
         </el-form>
         <div>
             <el-table :data="tableData" size="mini" :height="height" v-if="height">
-                <el-table-column label="社員番号" prop="EmpeeNo" width="120px"></el-table-column>
-                <el-table-column label="氏名" prop="EmpeeName" width="140px"></el-table-column>
+                <el-table-column label="社員番号" prop="empeeNo" width="120px"></el-table-column>
+                <el-table-column label="氏名" prop="empeeName" width="140px"></el-table-column>
                 <el-table-column
                     v-for="(item, i) in columns"
                     :key="i"
@@ -48,12 +48,12 @@
                             <span
                                 :class="[
                                     'small',
-                                    scope.row.Profits[i].Status === 10 && 'bg-yellow',
-                                    Number(scope.row.Profits[i].Margin) < 0 && 'bg-danger'
+                                    scope.row.profits[i].status === 10 && 'bg-yellow',
+                                    Number(scope.row.profits[i].margin) < 0 && 'bg-danger'
                                 ]"
-                                :style="handleStyle(scope.row.Profits[i], 1)"
-                                v-if="scope.row.Profits[i].Margin">{{scope.row.Profits[i].Margin}}</span>
-                            <span class="margin-bar" v-if="scope.row.Profits[i].Sales" :style="handleStyle(scope.row.Profits[i], 2)">{{scope.row.Profits[i].Sales}}</span>
+                                :style="handleStyle(scope.row.profits[i], 1)"
+                                v-if="scope.row.profits[i].margin">{{scope.row.profits[i].margin}}</span>
+                            <span class="margin-bar" v-if="scope.row.profits[i].sales" :style="handleStyle(scope.row.profits[i], 2)">{{scope.row.profits[i].sales}}</span>
                         </div>
                     </template>    
                 </el-table-column>
@@ -100,39 +100,42 @@ export default {
     methods: {
         getTeam() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                this.teams = res;
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
+                }
             });
         },
         getData() {
             this.$axios({
-                url: '/api/profitchart',
+                url: '/api/Cashflow/api_profitchart',
                 params: {
                     period: this.period,
                     teamid: this.teamid || 0
                 }
             }).then(res => {
                 if (res && res.code === 0) {
-                    this.tableData = res.profitbyemp || [];
-                    const profitsummary = res.profitsummary || [];
+                    const data = res.data || {};
+                    this.tableData = data.profitsbyemp || [];
+                    const totalprofits = data.totalprofits || [];
                     let sales = [];
                     let margin = [];
                     this.tableData.forEach(item => {
-                        if (item.Profits) {
-                            item.Profits.forEach(cell => {
-                                if (this.maxSales < cell.Sales) {
-                                    this.maxSales = cell.Sales;
+                        if (item.profits) {
+                            item.profits.forEach(cell => {
+                                if (this.maxSales < cell.sales) {
+                                    this.maxSales = cell.sales;
                                 }
-                                if (this.maxMargin < cell.Margin) {
-                                    this.maxMargin = cell.Margin;
+                                if (this.maxMargin < cell.margin) {
+                                    this.maxMargin = cell.margin;
                                 }
                             });
                         }
                     });
-                    profitsummary.forEach(item => {
-                        sales.push(item.Sales);
-                        margin.push(item.Margin);
+                    totalprofits.forEach(item => {
+                        sales.push(item.sales);
+                        margin.push(item.margin);
                     });
                     this.yAxis = [ {
                         label: '利润金额',
@@ -205,13 +208,13 @@ export default {
         },
         handleStyle(data, type) {
             if (type === 1) {
-                const width = (Math.abs(Number(data.Margin) / this.maxSales)) * 100;
+                const width = (Math.abs(Number(data.margin) / this.maxSales)) * 100;
                 return {
                     width: `${width < 20 ? 20 : width}%`
                 };
             } else {
-                let left = Math.ceil((Math.abs(Number(data.Margin) / this.maxSales)) * 100);
-                let ratio = (Math.abs(Number(data.Sales) / this.maxSales));
+                let left = Math.ceil((Math.abs(Number(data.margin) / this.maxSales)) * 100);
+                let ratio = (Math.abs(Number(data.sales) / this.maxSales));
                 let dvalue = 0;
                 if (left && ratio === 1) {
                     dvalue = left < 20 ? 15 : left - 5;
@@ -219,8 +222,8 @@ export default {
                 return {
                     width: `${Math.ceil(ratio * 100) - dvalue}%`,
                     'left': left ? `${left < 20 ? 15 : left - 5}%` : 0,
-                    'border-color': Number(data.Sales) ? '#1473B7' : 'transparent',
-                    'background-color': Number(data.Sales) ? '#1473B7' : 'transparent',
+                    'border-color': Number(data.sales) ? '#1473B7' : 'transparent',
+                    'background-color': Number(data.sales) ? '#1473B7' : 'transparent',
                 };
             }
         }

@@ -15,13 +15,13 @@
                 @select="routerHandle">
                 <el-menu-item v-if="showH5Nav && $route.name !== 'Login'" @click="logout">登出</el-menu-item>
                 <el-menu-item-group v-for="(item, i) in MENUS" :key="i">
-                    <template slot="title">{{item.Title}}</template>
+                    <template slot="title">{{item.title}}</template>
                     <el-menu-item
                         v-for="(cell, j) in item.children"
-                        :class="[cell.Name === activeRouter && 'is-active']"
+                        :class="[cell.name === activeRouter && 'is-active']"
                         @click="openLink(cell)"
-                        :index="`${cell.Name || j}`"
-                        :key="j">{{cell.Title}}</el-menu-item>
+                        :index="`${cell.name || j}`"
+                        :key="j">{{cell.title}}</el-menu-item>
                 </el-menu-item-group>
             </el-menu>
         </el-aside><el-container>
@@ -159,7 +159,7 @@ export default {
                     this.activeRouter = 'Login';
                 });
             } else {
-                this.tabTitle = menu.Title;
+                this.tabTitle = menu.title;
             }
             if (!this.showMenu) {
                 this.showH5Nav = false;

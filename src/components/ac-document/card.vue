@@ -13,8 +13,8 @@
                 </el-col>
                 <el-col :span="10">
                     <span class="label">伝票タイプ</span>
-                    <el-select size="mini" v-model="form['doctype.Type']">
-                        <el-option v-for="item in docTypes" :key="item.Type" :label="item.Text" :value="item.Type"></el-option>
+                    <el-select size="mini" v-model="form['DocType']">
+                        <el-option v-for="item in docTypes" :key="item.type" :label="item.text" :value="item.type"></el-option>
                     </el-select>
                 </el-col>
             </el-row>
@@ -29,8 +29,8 @@
             </el-row>
             <el-row v-if="IS_H5" class="row-wrapper">
                 <span class="label">伝票タイプ</span>
-                <el-select size="mini" v-model="form['doctype.Type']">
-                    <el-option v-for="item in docTypes" :key="item.Type" :label="item.Text" :value="item.Type"></el-option>
+                <el-select size="mini" v-model="form['DocType']">
+                    <el-option v-for="item in docTypes" :key="item.type" :label="item.text" :value="item.type"></el-option>
                 </el-select>
             </el-row>
             <el-row class="row-wrapper">
@@ -61,18 +61,18 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column label="勘定コード" :prop="'account.Account'">
+            <el-table-column label="勘定コード" :prop="'AccountID'">
                 <template slot-scope="scope">
                     <el-select
-                        :class="[errors[scope.$index] && errors[scope.$index]['account.Account'] && 'errors-tip']"
-                        @change="changeHandler(scope, 'account.Account')"
-                        value-key="Account"
-                        v-model="scope.row['account.Account']"
+                        :class="[errors[scope.$index] && errors[scope.$index]['AccountID'] && 'errors-tip']"
+                        @change="changeHandler(scope, 'AccountID')"
+                        value-key="accountID"
+                        v-model="scope.row['AccountID']"
                         size="mini">
                         <el-option
                             v-for="(item, i) in acCounts"
                             :value="item"
-                            :label="item.Text"
+                            :label="item.text"
                             :key="i"></el-option>
                     </el-select>
                 </template>
@@ -86,44 +86,44 @@
                         size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="得意先" :prop="'customer.ID'">
+            <el-table-column label="得意先" :prop="'CustomerID'">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row['customer.ID']" size="mini">
+                    <el-select v-model="scope.row['CustomerID']" size="mini">
                         <el-option
                             v-for="item in customs"
-                            :value="item.ID"
-                            :label="item.Title"
-                            :key="item.ID"></el-option>
+                            :value="item.id"
+                            :label="item.title"
+                            :key="item.id"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column label="部門" :prop="'team.TeamID'">
+            <el-table-column label="部門" :prop="'TeamID'">
                 <template slot-scope="scope">
                     <el-select
-                        :class="[errors[scope.$index] && errors[scope.$index]['team.TeamID'] && 'errors-tip']"
-                        @change="changeHandler(scope, 'team.TeamID')"
-                        v-model="scope.row['team.TeamID']"
+                        :class="[errors[scope.$index] && errors[scope.$index]['TeamID'] && 'errors-tip']"
+                        @change="changeHandler(scope, 'TeamID')"
+                        v-model="scope.row['TeamID']"
                         size="mini">
                         <el-option
                             v-for="item in teams"
-                            :value="item.TeamID"
-                            :label="item.TeamName"
-                            :key="item.TeamID"></el-option>
+                            :value="item.id"
+                            :label="item.teamName"
+                            :key="item.id"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column label="従業員" :prop="'employee.ID'">
+            <el-table-column label="従業員" :prop="'EmployeeID'">
                 <template slot-scope="scope">
                     <el-select
-                        :class="[errors[scope.$index] && errors[scope.$index]['employee.ID'] && 'errors-tip']"
-                        @change="changeHandler(scope, 'employee.ID')"
-                        v-model="scope.row['employee.ID']"
+                        :class="[errors[scope.$index] && errors[scope.$index]['EmployeeID'] && 'errors-tip']"
+                        @change="changeHandler(scope, 'EmployeeID')"
+                        v-model="scope.row['EmployeeID']"
                         size="mini">
                         <el-option
                             v-for="item in employees"
-                            :value="item.ID"
-                            :label="item.Name"
-                            :key="item.ID"></el-option>
+                            :value="item.id"
+                            :label="item.name"
+                            :key="item.id"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
@@ -171,11 +171,11 @@ export default {
         addRow() {
             this.items.push({
                 DRCR: '',
-                'account.Account': '',
+                'AccountID': '',
                 Amount: '',
-                'customer.ID': '',
-                'team.TeamID': '',
-                'employee.ID': '',
+                'CustomerID': '',
+                'TeamID': '',
+                'EmployeeID': '',
                 Comment: ''
             });
         },

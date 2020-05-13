@@ -15,12 +15,12 @@
                     :loading="loading"
                     placeholder="作業担当者"
                     @change="changeHandler">
-                    <el-option v-for="item in opt.employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
+                    <el-option v-for="item in opt.employees" :key="item.id" :label="item.Name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="ロール" prop="roleid">
                 <el-select v-model="form.roleid">
-                    <el-option v-for="item in opt.allRole" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
+                    <el-option v-for="item in opt.allRole" :key="item.id" :label="item.Title" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="パスワード" prop="userpwd">
@@ -74,7 +74,7 @@ export default {
         this.$root.$off('SHOW_EDIT_DIALOG');
         this.$root.$on('SHOW_EDIT_DIALOG', ({ data = null, type = '', callback = null }) => {
             if (data) {
-                this.form.userid = data.ID;
+                this.form.userid = data.id;
             }
             this.rules = {
                 roleid: [{
@@ -88,13 +88,8 @@ export default {
                 }]
             };
             if (type === 'edit') {
-                // for (let key in this.form) {
-                //     if (key !== 'userid') {
-                //         this.form[key] = data[key];
-                //     }
-                // }
-                this.form.roleid = data.RoleID;
-                this.form.empeeid = data.ID;
+                this.form.roleid = data.roleID;
+                this.form.empeeid = data.id;
                 this.rules = {
                     roleid: [{
                         required: true, message: '请选择ロール'
@@ -115,8 +110,8 @@ export default {
                 if (valid) {
                     const loading = this.$loading({ lock: true, text: '正在保存中...' });
                     this.$axios({
-                        method: 'POST',
-                        url: '/api/updateuser',
+                        // method: 'POST',
+                        url: '/api/User/api_updateuser',
                         params: this.form,
                         custom: {
                             loading,

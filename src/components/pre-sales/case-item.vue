@@ -10,13 +10,13 @@
                         clearable
                         :remote-method="setCustomTitle"
                         v-if="form.edit">
-                        <el-option v-for="item in opt.customers" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
+                        <el-option v-for="item in opt.customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
                     </el-select>
                     <span v-else>{{form.CustomerTitle}}</span>
                 </el-form-item>
                 <el-form-item label="营业">
                     <el-select v-model="form.SalesPersonID" v-if="form.edit">
-                        <el-option v-for="item in opt.sales" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                        <el-option v-for="item in opt.sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                     <span v-else>{{form.SalesPersonName}}</span>
                 </el-form-item>
@@ -99,19 +99,19 @@ export default {
     },
     methods: {
         initNewCase() {
-            if (!this.form.ID) {
+            if (!this.form.id) {
                 this.displayStatus = [this.status[0]];
             }
-            if (!this.form.Items.length && this.form.ID) {
+            if (!this.form.Items.length && this.form.id) {
                 this.addNewItem();
-                if (!this.form.ID) {
+                if (!this.form.id) {
                     this.isEdit.push(0);
                 }
             }
         },
         getOperText() {
             if (this.form.edit) {
-                return this.form.ID ? '保存' : '新增';
+                return this.form.id ? '保存' : '新增';
             }
             return '编辑';
         },
@@ -192,11 +192,11 @@ export default {
                     return false;
                 }
                 const params = {
-                    'presales.ID': this.opt.ID,
+                    'presales.ID': this.opt.id,
                     Content: this.form.Content || '',
                     CustomerTitle: '',
                     'salesperson.ID': this.form.SalesPersonID,
-                    Status: this.form.ID ? this.form.Status : 1
+                    Status: this.form.id ? this.form.Status : 1
                 };
                 if (typeof this.form.CustomerID === 'string') {
                     params.CustomerTitle = this.form.CustomerID;
@@ -204,15 +204,15 @@ export default {
                 } else {
                     params['customer.ID'] = this.form.CustomerID;
                 }
-                if (this.form.ID) {
-                    params['ID'] = this.form.ID;
+                if (this.form.id) {
+                    params['ID'] = this.form.id;
                 }
                 this.submit(params);
             } else {
                 if (!this.form.Items.length) {
                     this.addNewItem();
                 }
-                if (!this.form.ID) {
+                if (!this.form.id) {
                     this.displayStatus = [this.status[0]];
                 } else {
                     this.displayStatus = [...this.status];
@@ -235,7 +235,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.form.edit = !this.form.edit;
                     this.$emit('update');
                 } else {
@@ -255,7 +255,7 @@ export default {
                     message: '请选择时间并填写内容'
                 });
                 return false;
-            } else if (!this.form.ID) {
+            } else if (!this.form.id) {
                 this.$message({
                     type: 'warning',
                     showClose: true,
@@ -266,10 +266,10 @@ export default {
             const params = {
                 Content: item.Content,
                 UpdateDateTime: item.UpdateDateTime + ':00',
-                'presalescase.ID': this.form.ID
+                'presalescase.ID': this.form.id
             };
-            if (item.ID) {
-                params['ID'] = item.ID;
+            if (item.id) {
+                params['ID'] = item.id;
             }
             this.$axios({
                 method: 'POST',

@@ -2,43 +2,55 @@
     <main-wrapper class="salary-calculate">
         <div slot="header" class="main-header">
             <el-date-picker
-                v-model="fromperiod"
+                v-model="period"
                 type="month"
                 size="mini"
                 value-format="yyyyMM"
                 value="yyyyMM"
                 :clearable="false"
                 @change="changeDate"></el-date-picker>
+            <el-select
+                v-model="empeeid"
+                size="mini"
+                @change="changeDate"
+                placeholder="客户清单">
+                <el-option
+                    v-for="item in customers"
+                    :key="item.id"
+                    :label="item.title"
+                    :value="item.id">
+                </el-option>
+            </el-select>
         </div>
         <el-table size="mini" :data="tableData">
-            <el-table-column label="就職タイプ" prop="EmployeeType"></el-table-column>
-            <el-table-column label="社員番号" prop="EmployeeNo"></el-table-column>
-            <el-table-column label="名前" prop="EmployeeName"></el-table-column>
-            <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="TimesheetStatus">
+            <el-table-column label="就職タイプ" prop="employeeType"></el-table-column>
+            <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
+            <el-table-column label="名前" prop="employeeName"></el-table-column>
+            <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="timesheetStatus">
                 <template slot-scope="scope">
-                    <span>{{transformTimesheet(scope.row.TimesheetStatus)}}</span>
+                    <span>{{transformTimesheet(scope.row.timesheetStatus)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="出勤日数" prop="ActualWorkDays"></el-table-column>
-            <el-table-column label="作業時間" prop="ActualHours"></el-table-column>
-            <el-table-column label="待機日数" prop="BenchDays"></el-table-column>
-            <el-table-column label="ﾌﾟﾛｼﾞｪｸﾄ賃金" prop="ProjectSalary" width="120px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="待機代" prop="BenchSalary" show-overflow-tooltip></el-table-column>
-            <el-table-column label="社会保険" prop="Insurance" show-overflow-tooltip></el-table-column>
-            <el-table-column label="交通代" prop="TravelFare" show-overflow-tooltip></el-table-column>
+            <el-table-column label="出勤日数" prop="actualWorkDays"></el-table-column>
+            <el-table-column label="作業時間" prop="actualHours"></el-table-column>
+            <el-table-column label="待機日数" prop="benchDays"></el-table-column>
+            <el-table-column label="ﾌﾟﾛｼﾞｪｸﾄ賃金" prop="projectSalary" width="120px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="待機代" prop="benchSalary" show-overflow-tooltip></el-table-column>
+            <el-table-column label="社会保険" prop="insurance" show-overflow-tooltip></el-table-column>
+            <el-table-column label="交通代" prop="travelFare" show-overflow-tooltip></el-table-column>
             <el-table-column label="その他費用" prop="" show-overflow-tooltip></el-table-column>
-            <el-table-column label="所得税" prop="IncomeTax" show-overflow-tooltip></el-table-column>
-            <el-table-column label="支払予定日" prop="DueDate" width="120px"></el-table-column>
-            <el-table-column label="支給額" prop="PayAmount"></el-table-column>
-            <el-table-column label="実際支払日" prop="PayedDate" width="120px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="所得税" prop="incomeTax" show-overflow-tooltip></el-table-column>
+            <el-table-column label="支払予定日" prop="dueDate" width="120px"></el-table-column>
+            <el-table-column label="支給額" prop="payAmount"></el-table-column>
+            <el-table-column label="実際支払日" prop="payedDate" width="120px" show-overflow-tooltip></el-table-column>
             <el-table-column label="アクション" min-width="240px">
                 <template slot-scope="scope">
                     <el-button
-                        v-for="item in scope.row.Actions"
-                        :key="item.ID"
+                        v-for="item in scope.row.actions"
+                        :key="item.id"
                         type="primary"
                         @click="actionHandler(item, scope.row)"
-                        size="mini">{{item.Title}}</el-button>
+                        size="mini">{{item.title}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -51,20 +63,20 @@
         <el-dialog :visible.sync="visible" title="修正" @close="close">
             <el-form size="mini" label-width="130px">
                 <el-form-item label="プロジェクト賃金">
-                    <el-input v-model.number="form.projectsalary"></el-input>
+                    <el-input v-model.number="form.projectSalary"></el-input>
                 </el-form-item>
                 <el-form-item label="精算金額">
-                    <el-input v-model.number="form.overtimesalary"></el-input>
+                    <el-input v-model.number="form.overtimeSalary"></el-input>
                 </el-form-item>
                 <el-form-item label="待機代">
-                    <el-input v-model.number="form.basesalary"></el-input>
+                    <el-input v-model.number="form.benchSalary"></el-input>
                 </el-form-item>
                 <el-form-item label="交通代">
-                    <el-input v-model.number="form.travelfare"></el-input>
+                    <el-input v-model.number="form.travelFare"></el-input>
                 </el-form-item>
                 <el-form-item label="支払予定日">
                     <el-date-picker
-                        v-model="form.duedate"
+                        v-model="form.dueDate"
                         type="date"
                         size="mini"
                         value-format="yyyy-MM-dd"
@@ -88,31 +100,33 @@ export default {
     },
     data() {
         return {
-            fromperiod: '',
+            period: '',
+            empeeid: '',
             // employeeid: '',
             page: 1,
             pageSize: 10,
             total: 0,
             // employees: [],
             tableData: [],
+            customers: [],
             visible: false,
             form: {
                 empeeid: '',
                 period: '',
-                projectsalary: '',
-                overtimesalary: '',
-                basesalary: '',
-                travelfare: '',
-                duedate: ''
+                projectSalary: '',
+                overtimeSalary: '',
+                benchSalary: '',
+                travelFare: '',
+                dueDate: ''
             }
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             const time = new Date();
-            vm.fromperiod = `${time.getFullYear()}${String(time.getMonth()).padStart(2, '0')}`;
-            // vm.getEmployees();
+            vm.period = `${time.getFullYear()}${String(time.getMonth()).padStart(2, '0')}`;
             vm.getData();
+            vm.getCustomer();
         });
     },
     computed: {
@@ -122,9 +136,10 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
-                url: '/api/getsalarylist',
+                url: '/api/Salary/api_getsalarylist',
                 params: {
-                    fromperiod: this.fromperiod,
+                    period: this.period,
+                    empeeid: this.empeeid,
                     page: this.page,
                     pagesize: this.pageSize
                 },
@@ -135,11 +150,21 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                 } else {
                     this.tableData = [];
                     this.total = 0;
+                }
+            });
+        },
+        getCustomer() {
+            this.$axios({
+                url: '/api/Customer/api_customersforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.customers = res.data || [];
                 }
             });
         },
@@ -148,22 +173,22 @@ export default {
             this.getData();
         },
         actionHandler(item, row) {
-            if (item.ID === 'act_calculatesalary') {
+            if (item.id === 'act_calculatesalary') {
                 this.getCalculateSalery(row);
-            } else if (item.ID === 'act_manualrevisesalary') {
+            } else if (item.id === 'act_manualrevisesalary') {
                 this.showDialog(row);
             }
         },
         showDialog(row) {
-            console.log(row);
             this.form = {
-                salaryid: row.ID,
-                projectsalary: row.ProjectSalary,
-                overtimesalary: row.OvertimeSalary,
-                basesalary: row.BenchSalary,
-                travelfare: row.TravelFare,
-                duedate: row.DueDate
+                salaryid: row.id,
+                projectSalary: row.projectSalary,
+                overtimeSalary: row.overtimeSalary,
+                benchSalary: row.benchSalary,
+                travelFare: row.travelFare,
+                dueDate: row.dueDate
             };
+            console.log(this.form);
             this.visible = true;
         },
         close() {
@@ -172,10 +197,10 @@ export default {
         getCalculateSalery(row) {
             const loading = this.$loading({ lock: true, text: '正在计算中...' });
             this.$axios({
-                url: '/api/calculatesalary',
+                url: '/api/Salary/api_calculatesalary',
                 params: {
-                    empeeid: row.EmployeeID,
-                    period: this.fromperiod
+                    empeeid: row.employeeID,
+                    period: this.period
                 },
                 custom: {
                     loading,
@@ -210,7 +235,7 @@ export default {
             }
         },
         save() {
-            if (!this.form.duedate) {
+            if (!this.form.dueDate) {
                 this.$message({
                     type: 'warning',
                     message: '请选择时间'
@@ -219,16 +244,15 @@ export default {
             }
             const params = {
                 salaryid: this.form.salaryid,
-                projectsalary: this.form.projectsalary || 0,
-                overtimesalary: this.form.overtimesalary || 0,
-                basesalary: this.form.basesalary || 0,
-                travelfare: this.form.travelfare || 0,
-                duedate: this.form.duedate
+                projectsalary: this.form.projectSalary || 0,
+                overtimesalary: this.form.overtimeSalary || 0,
+                basesalary: this.form.benchSalary || 0,
+                travelfare: this.form.travelFare || 0,
+                duedate: this.form.dueDate
             };
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
-                method: 'POST',
-                url: '/api/revisesalarymanual',
+                url: '/api/Salary/api_revisesalarymanual',
                 params,
                 custom: {
                     loading,

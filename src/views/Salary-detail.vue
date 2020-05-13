@@ -70,53 +70,6 @@
                 </el-row>
             </div>
         </div>
-        <!-- <el-form size="small" label-width="90px" label-suffix=":">
-            <el-form-item label="部門-所属">
-                <p>{{form.Team}}</p>
-            </el-form-item>
-            <el-form-item label="社員">
-                <p>{{form.EmpeeNo}}</p>
-            </el-form-item>
-            <el-form-item label="氏名">
-                <p>{{form.Name}}</p>
-            </el-form-item>
-            <el-form-item label="支給">
-                <el-row class="th-row">
-                    <el-col :span="4">基本給</el-col>
-                    <el-col :span="4">待機代</el-col>
-                    <el-col :span="4">時間外手当</el-col>
-                    <el-col :span="4">通勤手当</el-col>
-                    <el-col :span="4">総支給額</el-col>
-                </el-row>
-                <el-row class="td-row">
-                    <el-col :span="4">{{formatPrice(form.ProjectSalary)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.BaseSalary)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.OverTimeSalary)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.TravelFare)}}</el-col>
-                    <el-col :span="4">{{formatPrice(allowance)}}</el-col>
-                </el-row>
-            </el-form-item>
-            <el-form-item label="控除">
-                <el-row class="th-row">
-                    <el-col :span="6">雇用保険</el-col>
-                    <el-col :span="6">社会保険計</el-col>
-                    <el-col :span="6">所得税</el-col>
-                    <el-col :span="6">控除計</el-col>
-                </el-row>
-                <el-row class="td-row">
-                    <el-col :span="6">{{formatPrice(form.HireInsurance)}}</el-col>
-                    <el-col :span="6">{{formatPrice(form.HireInsurance)}}</el-col>
-                    <el-col :span="6">{{formatPrice(form.IncomeTax)}}</el-col>
-                    <el-col :span="6">{{formatPrice(meter)}}</el-col>
-                </el-row>
-            </el-form-item>
-            <el-form-item label="現金">
-                <p>{{formatPrice(allowance - meter)}}</p>
-            </el-form-item>
-            <el-form-item label="出勤日数">
-                <p>{{form.WorkDays}}天</p>
-            </el-form-item>
-        </el-form> -->
     </main-wrapper>
 </template>
 
@@ -149,7 +102,6 @@ export default {
         next(vm => {
             const time = new Date();
             vm.period = moment(time.getTime()).format('YYYYMM');
-            console.log(vm.period);
             vm.getData();
         });
     },
@@ -175,7 +127,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据...' });
             this.$axios({
-                url: '/api/getsalaryinfo',
+                url: '/api/Salary/api_getsalaryinfobyemp',
                 params: {
                     period: this.period
                 },

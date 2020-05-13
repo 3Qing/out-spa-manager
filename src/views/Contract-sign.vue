@@ -17,7 +17,7 @@
                         :remote-method="remoteMethod"
                         :loading="loading"
                         size="small">
-                        <el-option v-for="item in workList" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                        <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="開始期間" prop="FromDate">
@@ -61,12 +61,12 @@
                 </el-form-item>
                 <el-form-item label="営業担当" prop="salesperson">
                     <el-select v-model="form['salesperson.ID']" size="small">
-                        <el-option v-for="item in salespersonforselect" :key="item.ID" :value="item.ID" :label="item.Name"></el-option>
+                        <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="顧客" prop="customer">
                     <el-select v-model="form['customer.ID']" size="small">
-                        <el-option v-for="item in customerList" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+                        <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="商流備考" prop="BusinessFlow">
@@ -150,7 +150,6 @@
 </template>
 
 <script>
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 
 export default {
@@ -334,7 +333,7 @@ export default {
         getWorkList(keyword = '') {
             this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect',
+                url: '/api/Employee/api_employeesforselect',
                 params: {
                     keyword
                 }
@@ -350,9 +349,9 @@ export default {
         },
         getCustomerList() {
             this.$axios({
-                url: '/api/customersforselect'
+                url: '/api/Customer/api_customersforselect'
             }).then(res => {
-                if (res) {
+                if (res && res.code === 0) {
                     this.customerList = res.data || [];
                 }
             });
@@ -368,9 +367,9 @@ export default {
         },
         getSalespersonforselect() {
             this.$axios({
-                url: '/api/salespersonforselect'
+                url: '/api/Employee/api_salespersonforselect'
             }).then(res => {
-                if (res) {
+                if (res && res.code === 0) {
                     this.salespersonforselect = res.data || [];
                 }
             });

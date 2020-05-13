@@ -10,7 +10,7 @@
             <case-item
                 v-for="(item, i) in data"
                 :form="item"
-                :key="item.ID || i"
+                :key="item.id || i"
                 @update="$emit('update')"
                 :opt="opt"></case-item>
         </div>
@@ -46,7 +46,7 @@ export default {
     },
     watch: {
         itemID(val) {
-            this.$set(this.opt, 'ID', val);
+            this.$set(this.opt, 'id', val);
         }
     },
     mounted() {
@@ -71,14 +71,14 @@ export default {
         },
         getSalespersonforselect() {
             this.$axios({
-                url: '/api/salespersonforselect'
+                url: '/api/Employee/api_salespersonforselect'
             }).then(res => {
                 this.$set(this.opt, 'sales', res.data || []);
             });
         },
         getCustomerList() {
             this.$axios({
-                url: '/api/customersforselect'
+                url: '/api/Customer/api_customersforselect'
             }).then(res => {
                 this.$set(this.opt, 'customers', res.data || []);
             });

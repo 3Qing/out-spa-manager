@@ -3,17 +3,17 @@
         <el-form class="main-header header-form" slot="header" size="mini" inline>
             <el-form-item>
                 <el-select v-model="form.teamid" placeholder="部門" @change="changeHandle" clearable>
-                    <el-option v-for="item in TEAMS" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
+                    <el-option v-for="item in TEAMS" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
                 <el-select v-model="form.employeetype" placeholder="就職タイプ" @change="changeHandle" clearable>
-                    <el-option v-for="item in employeeTypes" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
+                    <el-option v-for="item in employeeTypes" :key="item.id" :label="item.title" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
                 <el-select v-model="form.positions" placeholder="ポジション" multiple collapse-tags @visible-change="visibleChange" clearable>
-                    <el-option v-for="item in positions" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
+                    <el-option v-for="item in positions" :key="item.id" :label="item.title" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -26,34 +26,34 @@
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData">
-                <el-table-column label="所属部門" prop="Team" width="80px"></el-table-column>
-                <el-table-column label="社員番号" prop="EmpeeID" width="100px"></el-table-column>
-                <el-table-column label="就職タイプ" prop="Type" width="100px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="氏名" prop="Name" show-overflow-tooltip></el-table-column>
-                <el-table-column label="年齢" prop="Age" width="60px"></el-table-column>
-                <el-table-column label="性別" prop="Sex" width="60px"></el-table-column>
-                <el-table-column label="国籍" prop="Nationality" width="80px"></el-table-column>
-                <el-table-column label="最寄駅" prop="Station" show-overflow-tooltip></el-table-column>
-                <el-table-column label="モジュール" prop="Module" show-overflow-tooltip></el-table-column>
-                <el-table-column label="認定資格" prop="Certificates"></el-table-column>
-                <el-table-column label="経験年数" prop="ExpYears" width="100px"></el-table-column>
-                <el-table-column label="ポジション" prop="Position" show-overflow-tooltip></el-table-column>
-                <el-table-column label="来日年数" prop="JPYears" width="100px"></el-table-column>
-                <el-table-column label="日本語能力" prop="JPLang" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="英語能力" prop="ENLang" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="所属部門" prop="teamName" width="80px"></el-table-column>
+                <el-table-column label="社員番号" prop="employeeNo" width="100px"></el-table-column>
+                <el-table-column label="就職タイプ" prop="type" width="100px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="氏名" prop="name" show-overflow-tooltip></el-table-column>
+                <el-table-column label="年齢" prop="age" width="60px"></el-table-column>
+                <el-table-column label="性別" prop="sex" width="60px"></el-table-column>
+                <el-table-column label="国籍" prop="nationality" width="80px"></el-table-column>
+                <el-table-column label="最寄駅" prop="station" show-overflow-tooltip></el-table-column>
+                <el-table-column label="モジュール" prop="mainSkill" show-overflow-tooltip></el-table-column>
+                <el-table-column label="認定資格" prop="certificates"></el-table-column>
+                <el-table-column label="経験年数" prop="expYears" width="100px"></el-table-column>
+                <el-table-column label="ポジション" prop="position" show-overflow-tooltip></el-table-column>
+                <el-table-column label="来日年数" prop="jpYears" width="100px"></el-table-column>
+                <el-table-column label="日本語能力" prop="jpLang" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="英語能力" prop="enLang" min-width="140px" show-overflow-tooltip></el-table-column>
                 <!-- <el-table-column label="ｽﾃｰﾀｽ" prop="Status" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="所在案件" prop="PJName" show-overflow-tooltip></el-table-column>
                 <el-table-column label="案件終了日" prop="ContractEndDate" width="140px"></el-table-column> -->
-                <el-table-column label="稼働単価" prop="ProjectSalary" show-overflow-tooltip></el-table-column>
-                <el-table-column label="待機代" prop="BaseSalary" show-overflow-tooltip></el-table-column>
-                <el-table-column label="提案単価" prop="SalesPrice" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="出張条件" prop="Travel" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="望む案件" prop="ExpectPJ" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="コメント" prop="Comment" show-overflow-tooltip></el-table-column>
-                <el-table-column label="アクション" :width="`${operWidth}px`">
+                <el-table-column label="稼働単価" prop="projectSalary" show-overflow-tooltip></el-table-column>
+                <el-table-column label="待機代" prop="baseSalary" show-overflow-tooltip></el-table-column>
+                <el-table-column label="提案単価" prop="salesPrice" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="出張条件" prop="travel" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="望む案件" prop="expectPJ" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="コメント" prop="comment" show-overflow-tooltip></el-table-column>
+                <el-table-column label="アクション" :width="`${operWidth}px`" v-if="operWidth">
                     <template slot-scope="scope">
                         <el-button
-                            v-for="(item, i) in (scope.row.Actions || [])"
+                            v-for="(item, i) in (scope.row.actions || [])"
                             size="mini"
                             :key="i"
                             @click="clickHandle(scope, item)">{{item.text}}</el-button>
@@ -67,7 +67,7 @@
             :page-sizes="pageSizes"
             @size-change="changePs"
             @current-change="changePn"
-            :layout="IS_H5 ? 'prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
+            :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
         <el-dialog :visible.sync="vislble" title="退職">
             <el-form size="mini">
@@ -162,39 +162,38 @@ export default {
     methods: {
         getData() {
             const loading = this.$loading({ lock: true, text: '社員一覧データ取得中...' });
-            let positions = [];
-            this.form.positions.forEach((item, i) => {
-                positions.push(`positions[${i}]=${item}`);
-            });
-            let url = '/api/getemployeelist';
-            if (positions.length) {
-                positions = positions.join('&');
-                url += `?${positions}`;
-            }
+            let url = '/api/Employee/api_getemployeelist';
             this.$axios({
+                method: 'POST',
                 url,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
                 params: {
                     teamid: this.form.teamid || '',
                     employeetype: this.form.employeetype || '',
-                    module: this.form.module,
+                    positions: this.form.positions,
+                    masterskill: this.form.module,
                     name: this.form.name,
                     page: this.pn,
                     pagesize: this.ps
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
                     let actionLen = 0;
-                    (res.data || []).forEach(item => {
-                        if (item.Actions) {
-                            if (item.Actions.length > actionLen) {
-                                actionLen = item.Actions.length;
+                    const data = res.data || {};
+                    (data.data || []).forEach(item => {
+                        if (item.actions) {
+                            if (item.actions.length > actionLen) {
+                                actionLen = item.actions.length;
                             }
                         }
                     });
                     this.operWidth = actionLen * 80;
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                 } else {
                     this.$message({
                         type: 'error',
@@ -206,28 +205,28 @@ export default {
         },
         getTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                if (res) {
-                    this.teams = res || [];
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
                 }
             });
         },
         getEmployeeTypes() {
             this.$axios({
-                url: '/api/employeetypesforselect'
+                url: '/api/Employee/api_employeetypesforselect'
             }).then(res => {
-                if (res) {
-                    this.employeeTypes = res || [];
+                if (res && res.code === 0) {
+                    this.employeeTypes = res.data || [];
                 }
             });
         },
         getPositions() {
             this.$axios({
-                url: '/api/positionsforselect'
+                url: '/api/Position/api_positionsforselect'
             }).then(res => {
-                if (res) {
-                    this.positions = res || [];
+                if (res && res.code === 0) {
+                    this.positions = res.data || [];
                 }
             });
         },
@@ -251,17 +250,17 @@ export default {
         },
         clickHandle(scope, item) {
             if (item.action === 'act_employeeupdate') {
-                this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.ID } });
+                this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.id } });
             } else if (item.action === 'act_employeeleave') {
                 this.vislble = true;
                 this.curData = scope.row;
             } else if (item.action === 'act_revisesalary') {
                 this.salary = {
-                    empeeid: scope.row.ID,
+                    empeeid: scope.row.id,
                     FromDate: '',
-                    PJSalary: Number(scope.row.ProjectSalary) || 0,
-                    BaseSalary: Number(scope.row.BaseSalary) || 0,
-                    Comment: scope.row.Comment
+                    PJSalary: Number(scope.row.projectSalary) || 0,
+                    BaseSalary: Number(scope.row.baseSalary) || 0,
+                    Comment: scope.row.comment
                 };
                 this.visilble2 = true;
             } else {
@@ -281,9 +280,9 @@ export default {
             }
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
-                url: '/api/employeeleave',
+                url: '/api/Employee/api_employeeleave',
                 params: {
-                    empeeid: this.curData.ID,
+                    empeeid: this.curData.id,
                     leavedate: this.leavedate
                 }
             }).then(res => {
@@ -314,9 +313,9 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
                 method: 'POST',
-                url: '/api/revisesalary',
+                url: '/api/Employee/api_revisesalary',
                 params: {
-                    empeeid: this.salary.empeeid,
+                    EmployeeID: this.salary.empeeid,
                     FromDate: this.salary.FromDate,
                     PJSalary: Number(this.salary.PJSalary) || 0,
                     BaseSalary: Number(this.salary.BaseSalary) || 0,
@@ -340,7 +339,6 @@ export default {
                         message: res ? res.message : '接口开小差了，没有返回信息'
                     });
                 }
-                console.log(res);
             });
         }
     }

@@ -27,6 +27,8 @@ import AccountManager from '@views/Account-manager';
 import ACDocList from '@views/AC-doc-list';
 import ProfitChart from '@views/Profit-chart';
 import BalanceSheet from '@views/Balance-sheet';
+import CustomerManager from '@views/Customer-manager';
+import Opportunity from '@views/Opportunity';
 
 
 Vue.use(Router);
@@ -155,6 +157,14 @@ const router = new Router({
         path: '/balancesheet',
         name: 'BalanceSheet',
         component: BalanceSheet
+    }, {
+        path: '/customermanager',
+        name: 'CustomerManager',
+        component: CustomerManager
+    }, {
+        path: '/opportunity',
+        name: 'Opportunity',
+        component: Opportunity
     }
     ]
 });

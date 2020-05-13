@@ -2,7 +2,7 @@
     <div class="role-menu-tree sort-item">
         <div class="clearfix">
             <div class="left fl">
-                <el-input v-model="data.Title" placeholder="菜单名称" clearable></el-input>
+                <el-input v-model="data.title" placeholder="菜单名称" clearable></el-input>
             </div>
             <div class="oper-area fr">
                 <el-button type="warning" size="mini" @click="addSubmenu">新增子集</el-button>
@@ -38,8 +38,8 @@ export default {
     methods: {
         addSubmenu() {
             this.data.children.push({
-                Title: '',
-                Name: '',
+                title: '',
+                name: '',
                 key: Math.random() * 1000,
             });
         },

@@ -4,19 +4,40 @@
             <el-select v-model="status" multiple collapse-tags @visible-change="visibelChange" size="mini">
                 <el-option v-for="item in empStatus" :key="item.val" :value="item.val" :label="item.label"></el-option>
             </el-select>
+            <el-select
+                v-model="keyword"
+                multiple
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入姓名"
+                :remote-method="remoteMethod"
+                size="mini"
+                :loading="loading">
+                <el-option
+                v-for="item in allName"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select>
         </div>
         <div class="left">
             <el-button size="mini" type="primary" @click="showEmpDialog">添加营业候选人</el-button>
             <el-table size="small" :data="tableData" @cell-click="cellClick">
-                <el-table-column label="员工号" prop="EmployeeID" width="100px"></el-table-column>
-                <el-table-column label="姓名" prop="EmployeeName" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="Avaiable Date" prop="AvaiableDate" min-width="140px"></el-table-column>
-                <el-table-column label="营业状态" prop="Status" width="140px">
+                <el-table-column label="员工号" prop="employeeNo" width="100px"></el-table-column>
+                <el-table-column label="姓名" prop="name" min-width="140px" show-overflow-tooltip></el-table-column>
+                <el-table-column label="Avaiable Date" prop="avaiableDate" min-width="140px">
                     <template slot-scope="scope">
-                        <div>{{getStatusText(scope.row.Status)}}</div>
+                        <span>{{formatTime(scope.row.avaiableDate)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="进行中Case数" prop="CaseCount" min-width="120px"></el-table-column>
+                <el-table-column label="营业状态" prop="status" width="140px">
+                    <template slot-scope="scope">
+                        <div>{{getStatusText(scope.row.status)}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="进行中Case数" prop="salesCaseCnt" min-width="120px"></el-table-column>
                 <el-table-column label="操作" width="80px">
                     <template slot-scope="scope">
                         <el-button type="warning" size="mini" @click="showIntroDialog(scope.row)">编辑</el-button>
@@ -32,22 +53,22 @@
                 @update="getCaseListData"></case-list>
         </div>
         <intro-dialog></intro-dialog>
-        <employee-dialog></employee-dialog>
+        <!-- <employee-dialog></employee-dialog> -->
     </main-wrapper>
 </template>
 
 <script>
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import CaseList from '@components/pre-sales/case-list';
-import EmployeeDialog from '@components/pre-sales/employee-dialog';
+// import EmployeeDialog from '@components/pre-sales/employee-dialog';
 import IntroDialog from '@components/pre-sales/intro-dialog';
+import { formatTime } from '@_public/utils';
 
 export default {
     components: {
         MainWrapper,
         CaseList,
-        EmployeeDialog,
+        // EmployeeDialog,
         IntroDialog
     },
     data() {
@@ -69,7 +90,12 @@ export default {
                 label: '失敗終了', val: 8
             }, {
                 label: '成功終了', val: 9
-            }]
+            }],
+            page: 1,
+            pageSize: 10,
+            loading: false,
+            allName: [],
+            keyword: ''
         };
     },
     provide() {
@@ -79,30 +105,32 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '营业候选人'
-            // });
             vm.getListData();
         });
     },
     methods: {
+        formatTime: formatTime,
         getListData() {
             const loading = this.$loading({ lock: true, text: '正在获取列表数据...' });
-            let url = '/api/getpresaleslist';
+            let url = '/api/Candidate/api_getcandidatelistinsale';
             let params = this.status.map((item, i) => `statuses[${i}]=${item}`);
             this.$axios({
                 url: `${url}?${params.join('&')}`,
+                params: {
+                    name: '',
+                    page: this.page,
+                    pagesize: this.pageSize
+                },
                 custom: {
                     vm: this
                 }
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    const result = res.data || [];
-                    this.tableData = result;
-                    if (result.length) {
-                        this.curItemID = result[0].ID;
+                    const data = res.data || {};
+                    this.tableData = data.data;
+                    if (data.data.length) {
+                        this.curItemID = data.data[0].id;
                         this.getCaseListData();
                     }
                 } else {
@@ -117,14 +145,15 @@ export default {
         getCaseListData() {
             this.caseLoading = true;
             this.$axios({
-                url: '/api/getpresalesinfobyid',
+                url: '/api/Candidate/api_getcandidatebyid',
                 params: {
-                    ID: this.curItemID
+                    id: this.curItemID
                 }
             }).then(res => {
                 this.caseLoading = false;
                 if (res && res.code === 0) {
-                    this.caseListData = res.data || [];
+                    const data = res.data || {};
+                    this.caseListData = data.salesCases || [];
                 } else {
                     this.$message({
                         type: 'error',
@@ -154,7 +183,7 @@ export default {
         },
         cellClick(row, column) {
             if (column.label !== '操作') {
-                this.curItemID = row.ID;
+                this.curItemID = row.id;
                 this.getCaseListData();
             }
         },
@@ -168,6 +197,15 @@ export default {
         visibelChange(val) {
             if (!val) {
                 this.getListData();
+            }
+        },
+        remoteMethod(keyword) {
+            if (keyword) {
+                this.$axios({
+                    url: '/api​/Candidate​/api_candidatesforselect'
+                }).then(res => {
+                    console.log(res);
+                });
             }
         }
     }

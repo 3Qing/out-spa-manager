@@ -8,20 +8,20 @@
         <el-form size="mini" label-width="90px" ref="form" :model="form" :rules="rules">
             <el-row v-if="!IS_H5">
                 <el-col :span="8">
-                    <el-form-item label="大学" prop="SchoolName">
-                        <el-input v-model="form.SchoolName" style="max-width: 300px"></el-input>
+                    <el-form-item label="大学" prop="schoolName">
+                        <el-input v-model="form.schoolName" style="max-width: 300px"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                    <el-form-item label="専攻" prop="Major">
-                        <el-input v-model="form.Major" style="max-width: 300px"></el-input>
+                    <el-form-item label="専攻" prop="major">
+                        <el-input v-model="form.major" style="max-width: 300px"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                    <el-form-item label="卒業年月" prop="GraduateDate" label-width="100px">
+                    <el-form-item label="卒業年月" prop="graduateDate" label-width="100px">
                         <el-date-picker
                             style="max-width: 140px;width: auto;"
-                            v-model="form.GraduateDate"
+                            v-model="form.graduateDate"
                             type="month"
                             value-format="yyyy-MM"
                             format="yyyy-MM">
@@ -29,44 +29,44 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-form-item label="大学" prop="SchoolName" v-if="IS_H5">
-                <el-input v-model="form.SchoolName"></el-input>
+            <el-form-item label="大学" prop="schoolName" v-if="IS_H5">
+                <el-input v-model="form.schoolName"></el-input>
             </el-form-item>
-            <el-form-item label="専攻" prop="Major" v-if="IS_H5">
-                <el-input v-model="form.Major"></el-input>
+            <el-form-item label="専攻" prop="major" v-if="IS_H5">
+                <el-input v-model="form.major"></el-input>
             </el-form-item>
-            <el-form-item label="卒業年月" prop="GraduateDate" v-if="IS_H5">
+            <el-form-item label="卒業年月" prop="graduateDate" v-if="IS_H5">
                 <el-date-picker
                     style="width: 100%;"
-                    v-model="form.GraduateDate"
+                    v-model="form.graduateDate"
                     type="month"
                     value-format="yyyy-MM"
                     format="yyyy-MM">
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="得意技術" prop="MasterSkills">
-                <el-input type="textarea" :rows="2" v-model="form.MasterSkills"></el-input>
+            <el-form-item label="得意技術" prop="masterSkills">
+                <el-input type="textarea" :rows="2" v-model="form.masterSkills"></el-input>
             </el-form-item>
             <el-form-item label="" class="ms-wrapper">
                 <el-row :gutter="10">
                     <el-col :span="6">
-                        <div><el-input v-model="form.MS01_Title" placeholder="标题" @input="inputHandler(1)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.MS01_Content" placeholder="内容" @input="inputHandler(1)"></el-input></div>
+                        <div><el-input v-model="form.mS01_Title" placeholder="标题" @input="inputHandler(1)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS01_Content" placeholder="内容" @input="inputHandler(1)"></el-input></div>
                         <p v-if="tip1" color="danger">请输入标题和内容</p>
                     </el-col>
                     <el-col :span="6">
-                        <div><el-input v-model="form.MS02_Title" placeholder="标题" @input="inputHandler(2)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.MS02_Content" placeholder="内容" @input="inputHandler(2)"></el-input></div>
+                        <div><el-input v-model="form.mS02_Title" placeholder="标题" @input="inputHandler(2)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS02_Content" placeholder="内容" @input="inputHandler(2)"></el-input></div>
                         <p v-if="tip2" color="danger">请输入标题和内容</p>
                     </el-col>
                     <el-col :span="6">
-                        <div><el-input v-model="form.MS03_Title" placeholder="标题" @input="inputHandler(3)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.MS03_Content" placeholder="内容" @input="inputHandler(3)"></el-input></div>
+                        <div><el-input v-model="form.mS03_Title" placeholder="标题" @input="inputHandler(3)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS03_Content" placeholder="内容" @input="inputHandler(3)"></el-input></div>
                         <p v-if="tip3" color="danger">请输入标题和内容</p>
                     </el-col>
                     <el-col :span="6">
-                        <div><el-input v-model="form.MS04_Title" placeholder="标题" @input="inputHandler(4)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.MS04_Content" placeholder="内容" @input="inputHandler(4)"></el-input></div>
+                        <div><el-input v-model="form.mS04_Title" placeholder="标题" @input="inputHandler(4)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS04_Content" placeholder="内容" @input="inputHandler(4)"></el-input></div>
                         <p v-if="tip4" color="danger">请输入标题和内容</p>
                     </el-col>
                 </el-row>
@@ -74,29 +74,29 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="日本語能力">
-                        <el-input type="textarea" v-model="form.JPLangLevel"></el-input>
+                        <el-input type="textarea" v-model="form.jpLangLevel"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="英語能力">
-                        <el-input type="textarea" v-model="form.ENLangLevel"></el-input>
+                        <el-input type="textarea" v-model="form.enLangLevel"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-row v-for="(item, i) in form.Certificates" :key="i">
+            <el-row v-for="(item, i) in form.certificates" :key="i">
                 <el-col :span="12">
                     <el-form-item>
                         <div slot="label">
                             <i class="el-icon-delete pointer" color="danger" @click="deleteCerts(i)"></i>資格名
                         </div>
-                        <el-input v-model="item.Title"></el-input>
+                        <el-input v-model="item.title"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="取得期日">
                         <el-date-picker
                             style="width: auto;"
-                            v-model="item.Date"
+                            v-model="item.passDate"
                             type="month"
                             value-format="yyyy-MM"
                             format="yyyy-MM">
@@ -107,13 +107,13 @@
             <el-form-item>
                 <el-button type="primary" size="mini" @click="addCert">新增资格</el-button>
             </el-form-item>
-            <el-form-item label="自己PR" prop="SelfIntro">
-                <el-input v-model="form.SelfIntro" type="textarea" :rows="3"></el-input>
+            <el-form-item label="自己PR" prop="selfIntro">
+                <el-input v-model="form.selfIntro" type="textarea" :rows="3"></el-input>
             </el-form-item>
         </el-form>
         <el-form
             class="project-exp-wrapper"
-            v-for="(item, i) in form.Projects"
+            v-for="(item, i) in form.projects"
             :key="i"
             :model="item"
             :ref="`form_${i}`"
@@ -139,8 +139,8 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="ロケーション" prop="Location">
-                        <el-input v-model="item.Location"></el-input>
+                    <el-form-item label="ロケーション" prop="location">
+                        <el-input v-model="item.location"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -155,43 +155,43 @@
                     value-format="yyyy-MM"
                     format="yyyy-MM"></el-date-picker>
             </el-form-item>
-            <el-form-item label="ロケーション" prop="Location" v-if="IS_H5">
-                <el-input v-model="item.Location"></el-input>
+            <el-form-item label="ロケーション" prop="location" v-if="IS_H5">
+                <el-input v-model="item.location"></el-input>
             </el-form-item>
-            <el-form-item label="プロジェクト名称" prop="ProjectName">
-                <el-input v-model="item.ProjectName"></el-input>
+            <el-form-item label="プロジェクト名称" prop="projectName">
+                <el-input v-model="item.projectName"></el-input>
             </el-form-item>
             <el-row v-if="!IS_H5">
                 <el-col :span="8">
-                    <el-form-item label="ポジション" prop="Position">
-                        <el-input v-model="item.Position"></el-input>
+                    <el-form-item label="ポジション" prop="position">
+                        <el-input v-model="item.position"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                    <el-form-item label="SAPバージョン" label-width="160px" prop="SystemInfo">
-                        <el-input v-model="item.SystemInfo"></el-input>
+                    <el-form-item label="SAPバージョン" label-width="160px" prop="systemInfo">
+                        <el-input v-model="item.systemInfo"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                    <el-form-item label="モジュール" prop="Modules">
-                        <el-input v-model="item.Modules"></el-input>
+                    <el-form-item label="モジュール" prop="modules">
+                        <el-input v-model="item.modules"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-form-item label="ポジション" prop="Position" v-if="IS_H5">
-                <el-input v-model="item.Position"></el-input>
+            <el-form-item label="ポジション" prop="position" v-if="IS_H5">
+                <el-input v-model="item.position"></el-input>
             </el-form-item>
-            <el-form-item label="SAPバージョン" prop="SystemInfo" v-if="IS_H5">
-                <el-input v-model="item.SystemInfo"></el-input>
+            <el-form-item label="SAPバージョン" prop="systemInfo" v-if="IS_H5">
+                <el-input v-model="item.systemInfo"></el-input>
             </el-form-item>
             <el-form-item label="モジュール" v-if="IS_H5">
-                <el-input v-model="item.Modules"></el-input>
+                <el-input v-model="item.modules"></el-input>
             </el-form-item>
             <el-form-item label="プロジェクト概要">
-                <el-input type="textarea" v-model="item.ProjectDesc" :rows="3"></el-input>
+                <el-input type="textarea" v-model="item.projectDesc" :rows="3"></el-input>
             </el-form-item>
             <el-form-item label="作業内容">
-                <el-input type="textarea" v-model="item.WorkContent" :rows="5"></el-input>
+                <el-input type="textarea" v-model="item.workContent" :rows="5"></el-input>
             </el-form-item>
             <el-form-item label="参画フェーズ">
                 <el-checkbox v-model="item.RequirementDef">要件定義</el-checkbox>
@@ -224,36 +224,36 @@ export default {
         return {
             form: {
                 ID: '',
-                SchoolName: '',
-                Major: '',
-                GraduateDate: '',
-                MasterSkills: '',
-                SelfIntro: '',
-                MS01_Title: '',
-                MS01_Content: '',
-                MS02_Title: '',
-                MS02_Content: '',
-                MS03_Title: '',
-                MS03_Content: '',
-                MS04_Title: '',
-                MS04_Content: '',
-                JPLangLevel: '',
-                ENLangLevel: '',
-                Certificates: [{
+                schoolName: '',
+                major: '',
+                graduateDate: '',
+                masterSkills: '',
+                selfIntro: '',
+                mS01_Title: '',
+                mS01_Content: '',
+                mS02_Title: '',
+                mS02_Content: '',
+                mS03_Title: '',
+                mS03_Content: '',
+                mS04_Title: '',
+                mS04_Content: '',
+                jpLangLevel: '',
+                enLangLevel: '',
+                certificates: [{
                     ID: '',
-                    Title: '',
-                    Date: ''
+                    title: '',
+                    passDate: ''
                 }],
-                Projects: [{
+                projects: [{
                     ID: '',
                     time: '',
-                    ProjectName: '',
-                    Position: '',
-                    ProjectDesc: '',
-                    WorkContent: '',
-                    Modules: '',
-                    Location: '',
-                    SystemInfo: '',
+                    projectName: '',
+                    position: '',
+                    projectDesc: '',
+                    workContent: '',
+                    modules: '',
+                    location: '',
+                    systemInfo: '',
                     RequirementDef: false,
                     BasicDesign: false,
                     DetailDesign: false,
@@ -266,19 +266,19 @@ export default {
                 }]
             },
             rules: {
-                SchoolName: [{
+                schoolName: [{
                     required: true, message: '请输入大学'
                 }],
-                Major: [{
+                major: [{
                     required: true, message: '请输入専攻'
                 }],
-                MasterSkills: [{
+                masterSkills: [{
                     required: true, message: '请输入得意技術'
                 }],
-                GraduateDate: [{
+                graduateDate: [{
                     required: true, message: '请输入卒業年月'
                 }],
-                SelfIntro: [{
+                selfIntro: [{
                     required: true, message: '请输入自己PR'
                 }]
             },
@@ -286,19 +286,19 @@ export default {
                 time: [{
                     required: true, message: '请选择期間'
                 }],
-                ProjectName: [{
+                projectName: [{
                     required: true, message: '请输入プロジェクト名称'
                 }],
-                Position: [{
+                position: [{
                     required: true, message: '请输入ポジション'
                 }],
-                SystemInfo: [{
+                systemInfo: [{
                     required: true, message: '请输入SAPバージョン'
                 }],
-                Modules: [{
+                modules: [{
                     required: true, message: '请输入モジュール'
                 }],
-                Location: [{
+                location: [{
                     required: true, message: '请输入ロケーション'
                 }]
             },
@@ -306,7 +306,7 @@ export default {
             tip2: false,
             tip3: false,
             tip4: false,
-            EmpeeID: ''
+            employeeID: ''
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -326,10 +326,10 @@ export default {
     methods: {
         getInfo(type) {
             const loading = this.$loading({ lock: true, text: '正在获取信息中...' });
-            let url = '/api/getresumebyuser';
+            let url = '/api/Resume/api_getresumebyuser';
             let params = {};
             if (type) {
-                url = '/api/getresumebyid';
+                url = '/api/Resume/api_getresumebyid';
                 params.ID = Number(this.$route.params.id) || 1;
             }
             this.$axios({
@@ -344,27 +344,27 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     const baseForm = JSON.parse(JSON.stringify(this.form));
-                    const baseProjects = { ...baseForm.Projects[0] };
-                    const baseCerts = { ...baseForm.Certificates[0] };
-                    const projects = data.Projects || [];
-                    const certs = data.Certificates || [];
+                    const baseProjects = { ...baseForm.projects[0] };
+                    const baseCerts = { ...baseForm.certificates[0] };
+                    const projects = data.projects || [];
+                    const certs = data.certificates || [];
                     const form = {};
                     for (let key in baseForm) {
-                        if (key !== 'Project' || key !== 'Certificates') {
+                        if (key !== 'projects' || key !== 'certificates') {
                             form[key] = data[key];
                         }
-                        if (key === 'GraduateDate') {
+                        if (key === 'graduateDate') {
                             form[key] = moment(new Date(data[key])).format('YYYY-MM');
                         }
                     }
-                    if (data.EmpeeID) {
-                        this.EmpeeID = data.EmpeeID;
+                    if (data.employeeID) {
+                        this.employeeID = data.employeeID;
                     }
                     this.form = Object.assign({ ...form }, {
-                        Projects: projects.map(item => {
+                        projects: projects.map(item => {
                             const tmp = {};
                             for (let key in baseProjects) {
-                                if (key !== 'FromDate' || key !== 'ToDate') {
+                                if (key !== 'fromDate' || key !== 'toDate') {
                                     if (key === 'ID' && !item[key]) {
                                         continue;
                                     }
@@ -372,15 +372,15 @@ export default {
                                 }
                             }
                             tmp.time = [
-                                (item.FromDate && moment(new Date(item.FromDate).getTime()).format('YYYY-MM')) || '',
-                                (item.ToDate && moment(new Date(item.ToDate).getTime()).format('YYYY-MM')) || ''
+                                (item.fromDate && moment(new Date(item.fromDate).getTime()).format('YYYY-MM')) || '',
+                                (item.toDate && moment(new Date(item.toDate).getTime()).format('YYYY-MM')) || ''
                             ];
                             return tmp;
                         }),
-                        Certificates: certs.map(item => {
+                        certificates: certs.map(item => {
                             const tmp = {};
                             for (let key in baseCerts) {
-                                if (key === 'ID' && !item[key]) {
+                                if (key === 'id' && !item[key]) {
                                     continue;
                                 }
                                 tmp[key] = item[key];
@@ -397,15 +397,15 @@ export default {
             });
         },
         newProject() {
-            this.form.Projects.push({
+            this.form.projects.push({
                 time: '',
-                ProjectName: '',
-                Position: '',
-                ProjectDesc: '',
-                WorkContent: '',
-                Modules: '',
-                Location: '',
-                SystemInfo: '',
+                projectName: '',
+                position: '',
+                projectDesc: '',
+                workContent: '',
+                modules: '',
+                location: '',
+                systemInfo: '',
                 RequirementDef: false,
                 BasicDesign: false,
                 DetailDesign: false,
@@ -418,13 +418,13 @@ export default {
             });
         },
         delProject(index) {
-            this.form.Projects.splice(index, 1);
+            this.form.projects.splice(index, 1);
         },
         beforeSubmit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     let count = 0;
-                    this.form.Projects.forEach((item, i) => {
+                    this.form.projects.forEach((item, i) => {
                         this.$refs[`form_${i}`][0].validate(valid => {
                             if (valid) {
                                 count++;
@@ -436,29 +436,29 @@ export default {
                             }
                         });
                     });
-                    if (count === this.form.Projects.length) {
+                    if (count === this.form.projects.length) {
                         const params = {
                             ID: (this.form.ID && Number(this.form.ID)) || '',
-                            SchoolName: this.form.SchoolName || '',
-                            Major: this.form.Major || '',
-                            GraduateDate: (this.form.GraduateDate && `${this.form.GraduateDate}-01`) || '',
-                            MasterSkills: this.form.MasterSkills || '',
-                            MS01_Title: this.form.MS01_Title || '',
-                            MS01_Content: this.form.MS01_Content || '',
-                            MS02_Title: this.form.MS02_Title || '',
-                            MS02_Content: this.form.MS02_Content || '',
-                            MS03_Title: this.form.MS03_Title || '',
-                            MS03_Content: this.form.MS03_Content || '',
-                            MS04_Title: this.form.MS04_Title || '',
-                            MS04_Content: this.form.MS04_Content || '',
-                            SelfIntro: this.form.SelfIntro || '',
-                            JPLangLevel: this.form.JPLangLevel || '',
-                            ENLangLevel: this.form.ENLangLevel || '',
-                            Certificates: this.form.Certificates || []
+                            schoolName: this.form.schoolName || '',
+                            major: this.form.major || '',
+                            graduateDate: (this.form.graduateDate && `${this.form.graduateDate}-01`) || '',
+                            masterSkills: this.form.masterSkills || '',
+                            mS01_Title: this.form.mS01_Title || '',
+                            mS01_Content: this.form.mS01_Content || '',
+                            mS02_Title: this.form.mS02_Title || '',
+                            mS02_Content: this.form.mS02_Content || '',
+                            mS03_Title: this.form.mS03_Title || '',
+                            mS03_Content: this.form.mS03_Content || '',
+                            mS04_Title: this.form.mS04_Title || '',
+                            mS04_Content: this.form.mS04_Content || '',
+                            selfIntro: this.form.selfIntro || '',
+                            jpLangLevel: this.form.jpLangLevel || '',
+                            enLangLevel: this.form.enLangLevel || '',
+                            certificates: this.form.certificates || []
                         };
                         let noPass = false;
-                        this.form.Certificates.forEach(item => {
-                            if ((item.Title && !item.Date) || (!item.Title && item.Date)) {
+                        this.form.certificates.forEach(item => {
+                            if ((item.title && !item.passDate) || (!item.title && item.passDate)) {
                                 noPass = true;
                             }
                         });
@@ -469,35 +469,35 @@ export default {
                             });
                             return false;
                         }
-                        if ((this.form.MS01_Title && !this.form.MS01_Content) || (!this.form.MS01_Title && this.form.MS01_Content)) {
+                        if ((this.form.mS01_Title && !this.form.mS01_Content) || (!this.form.mS01_Title && this.form.mS01_Content)) {
                             this.tip1 = true;
                             return;
                         }
-                        if ((this.form.MS02_Title && !this.form.MS02_Content) || (!this.form.MS02_Title && this.form.MS02_Content)) {
+                        if ((this.form.mS02_Title && !this.form.mS02_Content) || (!this.form.mS02_Title && this.form.mS02_Content)) {
                             this.tip2 = true;
                             return;
                         }
-                        if ((this.form.MS03_Title && !this.form.MS03_Content) || (!this.form.MS03_Title && this.form.MS03_Content)) {
+                        if ((this.form.mS03_Title && !this.form.mS03_Content) || (!this.form.mS03_Title && this.form.mS03_Content)) {
                             this.tip3 = true;
                             return;
                         }
-                        if ((this.form.MS04_Title && !this.form.MS04_Content) || (!this.form.MS04_Title && this.form.MS04_Content)) {
+                        if ((this.form.mS04_Title && !this.form.mS04_Content) || (!this.form.mS04_Title && this.form.mS04_Content)) {
                             this.tip4 = true;
                             return;
                         }
                         if (this.$route.params.id) {
                             params.ID = this.$route.params.id;
                         }
-                        params['employee.ID'] = this.$route.params.epId || this.EmpeeID;
-                        delete params.Projects;
+                        params['employee.ID'] = this.$route.params.epId || this.employeeID;
+                        delete params.projects;
 
-                        params.Projects = this.form.Projects && this.form.Projects.map(item => {
+                        params.projects = this.form.projects && this.form.projects.map(item => {
                             const tmp = { ...item };
                             delete tmp.time;
-                            tmp.FromDate = (item.time && `${item.time[0]}-01`) || '';
-                            tmp.ToDate = (item.time && `${item.time[1]}-01`) || '';
-                            tmp.Position = item.Position || '';
-                            tmp.Modules = item.Modules || '';
+                            tmp.fromDate = (item.time && `${item.time[0]}-01`) || '';
+                            tmp.toDate = (item.time && `${item.time[1]}-01`) || '';
+                            tmp.position = item.position || '';
+                            tmp.modules = item.modules || '';
                             return tmp;
                         });
                         this.submit(params);
@@ -532,7 +532,7 @@ export default {
                         let epId = this.$route.params.epId;
                         let id = res.data || 0;
                         if (this.$route.name === 'ResumeEdit') {
-                            epId = this.EmpeeID;
+                            epId = this.employeeID;
                             id = this.form.ID;
                         }
                         this.$router.replace({
@@ -563,13 +563,13 @@ export default {
             }
         },
         addCert() {
-            this.form.Certificates.push({
-                Title: '',
-                Date: ''
+            this.form.certificates.push({
+                title: '',
+                passDate: ''
             });
         },
         deleteCerts(i) {
-            this.form.Certificates.splice(i, 1);
+            this.form.certificates.splice(i, 1);
         }
     }
 };

@@ -18,6 +18,12 @@ export const MUTATIONS = {
         state.teams = teams;
     },
     [SET_ACTIONS](state, actions) {
-        state.actions = actions.map(item => item.action);
+        const auth = [];
+        for (let key in actions) {
+            if (key.indexOf('act') > -1 && actions[key]) {
+                auth.push(key);
+            }
+        }
+        state.actions = auth;
     }
 };

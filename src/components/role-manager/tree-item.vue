@@ -2,9 +2,9 @@
     <div class="role-tree-item" :style="style">
         <div class="tree-item" v-for="(item, i) in data" :key="item.key">
             <div>
-                <el-input v-model="item.Title" placeholder="菜单名称" clearable></el-input>
-                <el-select v-model="item.Name">
-                    <el-option v-for="route in opt.routeData" :label="route.RouteName" :value="route.RoutePath" :key="route.RoutePath"></el-option>
+                <el-input v-model="item.title" placeholder="菜单名称" clearable></el-input>
+                <el-select v-model="item.name">
+                    <el-option v-for="route in opt.routeData" :label="route.routeName" :value="route.routePath" :key="route.routePath"></el-option>
                 </el-select>
                 <i color="danger" class="el-icon-delete" @click="deleteItem(i)"></i>
                 <i color="primary" class="el-icon-rank"></i>
@@ -25,7 +25,6 @@ export default {
             default: () => ([])
         }
     },
-    // inject: [ 'opt' ],
     computed: {
         ...mapGetters(['IS_H5']),
         style() {

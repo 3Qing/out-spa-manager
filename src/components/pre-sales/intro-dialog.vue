@@ -63,7 +63,7 @@ export default {
                     empeeid: data.ID
                 }
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.content = res.data;
                 } else {
                     this.content = '';
@@ -77,7 +77,7 @@ export default {
                     id: data.ID
                 }
             }).then(res => {
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.content = res.data.ProposeText;
                     this.empStatus = res.data.Status;
                     this.AvaiableDate = res.data.AvaiableDate;
@@ -113,7 +113,7 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                if (res.code === 0) {
+                if (res && res.code === 0) {
                     this.callback && this.callback();
                     this.close();
                 } else {

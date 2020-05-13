@@ -1,16 +1,16 @@
 <template>
     <main-wrapper class="resume-list">
         <el-table size="mini" stripe :data="tableData">
-            <el-table-column label="社員番号" prop="EmpeeNo"></el-table-column>
-            <el-table-column label="氏名" prop="Name"></el-table-column>
-            <el-table-column label="就職タイプ" prop="RecruitType"></el-table-column>
-            <el-table-column label="履歴書更新" prop="ResumeID" width="120px">
+            <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
+            <el-table-column label="氏名" prop="name"></el-table-column>
+            <el-table-column label="就職タイプ" prop="recruitType"></el-table-column>
+            <el-table-column label="履歴書更新" prop="resumeID" width="120px">
                 <template slot-scope="scope">
                     <el-button
                         size="mini"
                         type="primary"
                         @click="toUpdate(scope.row)"
-                        >{{Number(scope.row.ResumeID) === 0 ? '履歴書登録' : '履歴書更新'}}</el-button>
+                        >{{Number(scope.row.resumeID) === 0 ? '履歴書登録' : '履歴書更新'}}</el-button>
                 </template>
             </el-table-column>
             <el-table-column label="最終更新日" prop="UpdateDate" width="140px">
@@ -21,17 +21,17 @@
             <el-table-column label="ダウンロード">
                 <el-table-column label="Excel" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-web-icon- iconfont" @click="download(scope.row, 'excel')" v-if="scope.row.ResumeID"></i>
+                        <i class="icon-web-icon- iconfont" @click="download(scope.row, 'excel')" v-if="scope.row.resumeID"></i>
                     </template>
                 </el-table-column>
                 <el-table-column label="Wrod" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-word iconfont" @click="download(scope.row, 'word')" v-if="scope.row.ResumeID"></i>
+                        <i class="icon-word iconfont" @click="download(scope.row, 'word')" v-if="scope.row.resumeID"></i>
                     </template>
                 </el-table-column>
                 <el-table-column label="PDF" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-PDF iconfont" v-if="scope.row.ResumeID"></i>
+                        <i class="icon-PDF iconfont" v-if="scope.row.resumeID"></i>
                     </template>
                 </el-table-column>
             </el-table-column>
@@ -46,7 +46,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { formatApiUrl } from '@_public/utils';
+import { apiDownloadFile } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -68,7 +68,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中...' });
             this.$axios({
-                url: '/api/getresumelist',
+                url: '/api/Resume/api_getresumelist',
                 params: {
                     page: this.page,
                     pagesize: this.pageSize
@@ -80,8 +80,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total || 0;
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total || 0;
                 } else {
                     this.$message({
                         type: 'error',
@@ -98,16 +99,24 @@ export default {
             this.$router.push({
                 name: 'ResumeUpdate',
                 params: {
-                    epId: row.EmpeeID,
-                    id: row.ResumeID || 0
+                    epId: row.employeeID,
+                    id: row.resumeID || 0
                 }
             });
         },
         download(row, type) {
             if (type === 'excel') {
-                formatApiUrl('/api/dlresumeexcel', `?id=${row.ResumeID}`);
+                apiDownloadFile({
+                    vm: this,
+                    url: `/api/Resume/api_downloadresumeexcel?id=${row.resumeID}`,
+                    filename: `${Date.now()}.xls`
+                });
             } else if (type === 'word') {
-                formatApiUrl('/api/dlresumeword', `?id=${row.ResumeID}`);
+                apiDownloadFile({
+                    vm: this,
+                    url: `/api/Resume/api_downloadresumeword?id=${row.resumeID}`,
+                    filename: `${Date.now()}.doc`
+                });
             }
         }
     }

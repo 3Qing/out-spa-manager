@@ -9,23 +9,23 @@
                     <el-option v-for="item in modules" :key="item" :value="item"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="質問１" prop="Ask1">
-                <el-input v-model="form.Ask1"></el-input>
+            <el-form-item label="質問１" prop="ask1">
+                <el-input v-model="form.ask1"></el-input>
             </el-form-item>
             <el-form-item label="質問2">
-                <el-input v-model="form.Ask2"></el-input>
+                <el-input v-model="form.ask2"></el-input>
             </el-form-item>
             <el-form-item label="質問3">
-                <el-input v-model="form.Ask3"></el-input>
+                <el-input v-model="form.ask3"></el-input>
             </el-form-item>
-            <el-form-item label="回答" prop="Answer">
-                <el-input type="textarea" v-model="form.Answer" :rows="5"></el-input>
+            <el-form-item label="回答" prop="answer">
+                <el-input type="textarea" v-model="form.answer" :rows="5"></el-input>
             </el-form-item>
-            <el-form-item label="重要度" prop="Importance">
-                <el-rate v-model="form.Importance" style="margin-top: 6px;"></el-rate>
+            <el-form-item label="重要度" prop="importance">
+                <el-rate v-model="form.importance" style="margin-top: 6px;"></el-rate>
             </el-form-item>
-            <el-form-item label="コメント" prop="Comment">
-                <el-input type="textarea" v-model="form.Comment" :rows="5"></el-input>
+            <el-form-item label="コメント" prop="comment">
+                <el-input type="textarea" v-model="form.comment" :rows="5"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -43,24 +43,24 @@ export default {
             form: {
                 ID: '',
                 Module: '',
-                Ask1: '',
-                Ask2: '',
-                Ask3: '',
-                Answer: '',
-                Importance: '',
-                Comment: ''
+                ask1: '',
+                ask2: '',
+                ask3: '',
+                answer: '',
+                importance: '',
+                comment: ''
             },
             rules: {
                 Module: [{
                     required: true, message: '请填写モジュール'
                 }],
-                Ask1: [{
+                ask1: [{
                     required: true, message: '请填写質問１'
                 }],
-                Answer: [{
+                answer: [{
                     required: true, message: '请填写回答'
                 }],
-                Comment: [{
+                comment: [{
                     required: true, message: '请填写コメント'
                 }],
             },
@@ -87,16 +87,24 @@ export default {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     const loading = this.$loading({ lock: true, test: '正在保存中...' });
+                    const params = {
+                        Tags: '',
+                        Ask1: this.form.ask1 || '',
+                        Ask2: this.form.ask2 || '',
+                        Ask3: this.form.ask3 || '',
+                        Answer: this.form.answer || '',
+                        Comment: this.form.comment || '',
+                        Importance: this.form.importance || 0
+                    };
                     this.$axios({
-                        url: '/api/updateqa',
-                        params: this.form,
+                        url: '/api/QA/api_updateqa',
+                        params,
                         custom: {
                             loading,
                             vm: this
                         }
                     }).then(res => {
                         loading.close();
-                        console.log(res);
                         if (res && res.code === 0) {
                             this.$message({
                                 type: 'success',

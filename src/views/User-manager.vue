@@ -8,12 +8,12 @@
             >新規追加</el-button>
         </div>
         <el-table size="mini" :data="tableData">
-            <el-table-column label="ユーザID" prop="ID"></el-table-column>
-            <el-table-column label="社員番号" prop="EmpeeID"></el-table-column>
-            <el-table-column label="氏名" prop="Name"></el-table-column>
-            <el-table-column label="ロール" prop="RoleTitle"></el-table-column>
-            <el-table-column label="最終登録日" prop="LatestLoginDate"></el-table-column>
-            <el-table-column label="退社期日" prop="LeaveDate"></el-table-column>
+            <el-table-column label="ユーザID" prop="id"></el-table-column>
+            <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
+            <el-table-column label="氏名" prop="name"></el-table-column>
+            <el-table-column label="ロール" prop="roleTitle"></el-table-column>
+            <el-table-column label="最終登録日" prop="latestLoginDate"></el-table-column>
+            <el-table-column label="退社期日" prop="leaveDate"></el-table-column>
             <el-table-column label="操作" width="180px">
                 <template slot-scope="scope">
                     <el-button
@@ -70,7 +70,7 @@ export default {
         getEmployees(keyword = '') {
             this.loading = true;
             this.$axios({
-                url: '/api/employeesforselect',
+                url: '/api/Employee/api_employeesforselect',
                 params: {
                     keyword
                 }
@@ -91,7 +91,7 @@ export default {
         // 获取角色列表
         getRoleList() {
             this.$axios({
-                url: '/api/getrolelist',
+                url: '/api/Role/api_getrolelist',
             }).then(res => {
                 if (res && res.code === 0) {
                     this.$set(this.opt, 'allRole', res.data || []);
@@ -107,7 +107,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中...' });
             this.$axios({
-                url: '/api/getuserlist',
+                url: '/api/User/api_getuserlist',
                 params: {
                     page: this.page,
                     pagesize: this.pageSize
@@ -119,8 +119,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.total = res.total || 0;
-                    this.tableData = res.data || [];
+                    const data = res.data || {};
+                    this.total = data.total || 0;
+                    this.tableData = data.data || [];
                 } else {
                     this.$message({
                         type: 'error',

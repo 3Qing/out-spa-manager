@@ -1,20 +1,38 @@
 <template>
     <main-wrapper class="employee-edit">
         <el-form size="small" label-width="130px" ref="form" :model="form" :rules="rules">
-            <el-form-item label="就职类型" prop="type">
-                <el-select v-model="form.type">
-                    <el-option v-for="item in employeeTypes" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+            <el-form-item label="就职类型" prop="employeeTypeID">
+                <el-select v-model="form.employeeTypeID">
+                    <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="英語氏名">
-                <el-input v-model="form.Furigana" :maxlength="20"></el-input>
+            <el-form-item label="英語姓">
+                <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="姓名" prop="name">
-                <el-input v-model="form.name" :maxlength="20"></el-input>
+            <el-form-item label="英語名">
+                <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="入职日期" prop="onboarddate">
+            <el-row v-if="!IS_H5">
+                <el-col :span="12">
+                    <el-form-item label="姓" prop="firstName">
+                        <el-input v-model="form.firstName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="名" prop="lastName">
+                        <el-input v-model="form.lastName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="姓" prop="firstName" v-if="IS_H5">
+                <el-input v-model="form.firstName" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="名" prop="lastName" v-if="IS_H5">
+                <el-input v-model="form.lastName" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="入职日期" prop="onBoardDate">
                 <el-date-picker
-                    v-model="form.onboarddate"
+                    v-model="form.onBoardDate"
                     type="date"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"></el-date-picker>
@@ -37,53 +55,53 @@
             <el-form-item label="最近车站" prop="station">
                 <el-input v-model="form.station" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="模块" prop="module">
-                <el-input v-model="form.module" :maxlength="20"></el-input>
+            <el-form-item label="模块" prop="mainSkill">
+                <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="SAP经验开始日" prop="startworkdate">
+            <el-form-item label="SAP经验开始日" prop="startWorkDate">
                 <el-date-picker
-                    v-model="form.startworkdate"
+                    v-model="form.startWorkDate"
                     type="date"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
-            <el-form-item label="岗位" prop="position">
-                <el-select v-model="form.position">
-                    <el-option v-for="item in positions" :key="item.ID" :label="item.Title" :value="item.ID"></el-option>
+            <el-form-item label="岗位" prop="positionID">
+                <el-select v-model="form.positionID">
+                    <el-option v-for="item in positions" :key="item.id" :label="item.title" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="来日时间" prop="arrivejpdate">
+            <el-form-item label="来日时间" prop="arriveJPDate">
                 <el-date-picker
-                    v-model="form.arrivejpdate"
+                    v-model="form.arriveJPDate"
                     type="date"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
-            <el-form-item label="所属部门" prop="team" v-if="!isEdit">
-                <el-select v-model="form.team">
-                    <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
+            <el-form-item label="所属部门" prop="TeamMembers" v-if="!isEdit">
+                <el-select v-model="form.TeamMembers">
+                    <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="日语能力">
                 <el-row>
                     <el-col :span="11">
-                        <el-select v-model="form.jplangcert">
+                        <el-select v-model="form.jpLangCert">
                             <el-option :label="'1级'" :value="1"></el-option>
                             <el-option :label="'2级'" :value="2"></el-option>
                             <el-option :label="'3级'" :value="3"></el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="11" :offset="2">
-                        <el-input v-model="form.jplangcomt"></el-input>
+                        <el-input v-model="form.jpLangComt"></el-input>
                     </el-col>
                 </el-row>
             </el-form-item>
             <el-form-item label="英语能力">
-                <el-input v-model="form.enlangcomt"></el-input>
+                <el-input v-model="form.enLangComt"></el-input>
             </el-form-item>
             <el-form-item label="SAP资格认证">
-                <el-checkbox-group v-model="form.Certs">
-                    <el-checkbox v-for="item in certificates" :key="item.CertID" :label="item.CertID">{{item.CertName}}</el-checkbox>
+                <el-checkbox-group v-model="form.certificates">
+                    <el-checkbox v-for="item in certificates" :key="item.id" :label="item.id">{{item.certName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
             <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
@@ -100,10 +118,10 @@
             <el-form-item label="销售价格" :class="[errorTip && 'error-input']">
                 <el-row>
                     <el-col :span="11">
-                        <el-input @input="formatPrice('salepricefrom')" @blur="validSalePrice('salepricefrom')" v-model="form.salepricefrom"></el-input>
+                        <el-input @input="formatPrice('salePriceFrom')" @blur="validSalePrice('salePriceFrom')" v-model="form.salePriceFrom"></el-input>
                     </el-col>
                     <el-col :span="11" :offset="2">
-                        <el-input @input="formatPrice('salepriceto')" @blur="validSalePrice('salepriceto')" v-model="form.salepriceto"></el-input>
+                        <el-input @input="formatPrice('salePriceTo')" @blur="validSalePrice('salePriceTo')" v-model="form.salePriceTo"></el-input>
                     </el-col>
                 </el-row>
                 <p color="danger" v-if="errorTip">起始价格不得大于最终价格</p>
@@ -112,7 +130,7 @@
                 <el-input v-model="form.travel" :maxlength="50"></el-input>
             </el-form-item>
             <el-form-item label="希望项目">
-                <el-input v-model="form.expectpj" :maxlength="50"></el-input>
+                <el-input v-model="form.expectPJ" :maxlength="50"></el-input>
             </el-form-item>
             <el-form-item label="备注">
                 <el-input v-model="form.comment" type="textarea" :rows="3" :maxlength="200"></el-input>
@@ -128,7 +146,8 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
+import moment from 'moment';
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -137,40 +156,43 @@ export default {
     data() {
         return {
             form: {
-                type: '',
+                employeeTypeID: '',
                 name: '',
-                Furigana: '',
-                onboarddate: '',
+                furigana: '',
+                onBoardDate: '',
                 sex: true,
                 birthday: '',
                 nationality: '',
                 station: '',
-                module: '',
+                mainSkill: '',
                 startworkdate: '',
                 position: '',
                 arrivejpdate: '',
-                team: '',
-                jplangcert: '',
-                jplangcomt: '',
-                enlangcomt: '',
-                Certs: [],
+                TeamMembers: '',
+                jpLangCert: '',
+                jpLangComt: '',
+                enLangComt: '',
+                certificates: [],
                 PJSalary: '',
                 BaseSalary: '',
                 SComment: '',
                 salepricefrom: '',
-                salepriceto: '',
+                salePriceTo: '',
                 travel: '',
-                expectpj: '',
+                expectPJ: '',
                 comment: ''
             },
             rules: {
-                type: [{
+                employeeTypeID: [{
                     required: true, message: '请选择就职类型', trigger: 'blur'
                 }],
-                name: [{
-                    required: true, message: '请输入姓名', trigger: 'blur'
+                firstName: [{
+                    required: true, message: '请输入姓', trigger: 'blur'
                 }],
-                onboarddate: [{
+                lastName: [{
+                    required: true, message: '请输入名', trigger: 'blur'
+                }],
+                onBoardDate: [{
                     required: true, message: '请选择入职时间', trigger: 'blur'
                 }],
                 sex: [{
@@ -185,7 +207,7 @@ export default {
                 station: [{
                     required: true, message: '请输入最近车站', trigger: 'blur'
                 }],
-                module: [{
+                mainSkill: [{
                     required: true, message: '请输入模块', trigger: 'blur'
                 }],
                 startworkdate: [{
@@ -197,7 +219,7 @@ export default {
                 arrivejpdate: [{
                     required: true, message: '请选择来日时间', trigger: 'blur'
                 }],
-                team: [{
+                TeamMembers: [{
                     required: true, message: '请选择所属部门', trigger: 'blur'
                 }]
             },
@@ -217,11 +239,6 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '员工入职'
-            // });
-            console.log(to.params.id);
             if (Number(to.params.id)) {
                 vm.getData();
             }
@@ -231,13 +248,16 @@ export default {
             vm.getCertificates();
         });
     },
+    computed: {
+        ...mapGetters([ 'IS_H5' ])
+    },
     methods: {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
-                url: '/api/getemployeeinfo',
+                url: '/api/Employee/api_getemployeeinfo',
                 params: {
-                    ID: this.$route.params.id
+                    id: this.$route.params.id
                 },
                 custom: {
                     loading,
@@ -247,8 +267,6 @@ export default {
                 loading.close();
                 this.isEdit = true;
                 if (res && res.code === 0) {
-                    // this.form = { ...res.data };
-                    console.log(res.data);
                     this.formatResultData(res.data || {});
                 } else {
                     this.$message({
@@ -259,75 +277,60 @@ export default {
             });
         },
         formatResultData(data) {
-            this.form = {
-                type: data.EmployeeType,
-                name: data.Name,
-                Furigana: data.Furigana,
-                onboarddate: data.OnBoardDate,
-                sex: data.Sex,
-                birthday: data.Birthday,
-                nationality: data.Nationality,
-                station: data.Station,
-                module: data.Module,
-                startworkdate: data.StartWorkDate,
-                position: data.Position,
-                arrivejpdate: data.ArrivePJDate,
-                jplangcert: data.JPLangCert || '',
-                jplangcomt: data.JPLangComt || '',
-                enlangcomt: data.ENLangComt || '',
-                Certs: data.Certificates && data.Certificates.map(item => item.CertID),
-                salepricefrom: data.SalePriceFrom,
-                salepriceto: data.SalePriceTo,
-                travel: data.Travel,
-                expectpj: data.ExpectPJ,
-                comment: data.Comment
-            };
+            const formatTime = time => moment(time).format('YYYY-MM-DD');
+            const form = { ...data };
+            form.onBoardDate = data.onBoardDate && formatTime(data.onBoardDate);
+            form.birthday = data.birthday && formatTime(data.birthday);
+            form.startWorkDate = data.startWorkDate && formatTime(data.startWorkDate);
+            form.arriveJPDate = data.arriveJPDate && formatTime(data.arriveJPDate);
+            form.certificates = data.certificates && data.certificates.map(item => item.id);
+            this.form = { ...form };
         },
         // 部门
         getTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                if (res) {
-                    this.teams = res || [];
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
                 }
             });
         },
         // 就职类型
         getEmployeeTypes() {
             this.$axios({
-                url: '/api/employeetypesforselect'
+                url: '/api/Employee/api_employeetypesforselect'
             }).then(res => {
-                if (res) {
-                    this.employeeTypes = res || [];
+                if (res.data) {
+                    this.employeeTypes = res.data || [];
                 }
             });
         },
         // 岗位
         getPositions() {
             this.$axios({
-                url: '/api/positionsforselect'
+                url: '/api/Position/api_positionsforselect'
             }).then(res => {
-                if (res) {
-                    this.positions = res || [];
+                if (res && res.code === 0) {
+                    this.positions = res.data || [];
                 }
             });
         },
         // SAP认证资格
         getCertificates() {
             this.$axios({
-                url: '/api/certificatesforselect'
+                url: '/api/Certificate/api_certificatesforselect'
             }).then(res => {
-                if (res) {
-                    this.certificates = res || [];
+                if (res && res.code === 0) {
+                    this.certificates = res.data || [];
                 }
             });
         },
         validSalePrice() {
             this.errorTip = false;
-            if (this.form.salepricefrom && this.form.salepriceto) {
-                let priceFrom = this.form.salepricefrom.replace(/,/g, '');
-                let priceTo = this.form.salepriceto.replace(/,/g, '');
+            if (this.form.salePriceFrom && this.form.salePriceTo) {
+                let priceFrom = this.form.salePriceFrom.replace(/,/g, '');
+                let priceTo = this.form.salePriceTo.replace(/,/g, '');
                 if (Number(priceFrom) > Number(priceTo)) {
                     this.errorTip = true;
                 } else {
@@ -362,12 +365,12 @@ export default {
                         return false;
                     }
                     let params = {};
-                    let type = 'employeeonboard';
+                    let type = 'Employee/api_employeeonboard';
                     if (this.isEdit) {
-                        params = this.editSubmitBefore();
-                        type = 'employeeupdate';
+                        params = this.getSubmitParams('edit');
+                        type = 'Employee/api_updateemployee';
                     } else {
-                        params = this.addSubmitBefore();
+                        params = this.getSubmitParams();
                     }
                     const formData = new FormData();
                     for (let key in params) {
@@ -385,76 +388,49 @@ export default {
                 }
             });
         },
-        addSubmitBefore() {
+        getSubmitParams(type) {
             let params = {
-                'type.ID': this.form.type,
-                name: this.form.name,
-                Furigana: this.form.Furigana,
-                onboarddate: this.form.onboarddate,
-                sex: this.form.sex,
-                birthday: this.form.birthday,
-                nationality: this.form.nationality,
-                station: this.form.station,
-                module: this.form.module,
-                startworkdate: this.form.startworkdate,
-                'position.ID': this.form.position,
-                arrivejpdate: this.form.arrivejpdate,
-                teammembers: [{
-                    FromDate: this.form.onboarddate,
-                    ToDate: '9999-12-31',
-                    TeamID: this.form.team
-                }],
-                jplangcert: this.form.jplangcert || 0,
-                jplangcomt: this.form.jplangcomt,
-                enlangcomt: this.form.enlangcomt,
-                salaries: [{
-                    FromDate: this.form.onboarddate,
-                    PJSalary: Number(this.form.PJSalary.toString().replace(/,/g, '')),
-                    BaseSalary: Number(this.form.BaseSalary.toString().replace(/,/g, '')),
-                    Comment: this.form.SComment,
-                }],
-                salepricefrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
-                salepriceto: Number(this.form.salepriceto.toString().replace(/,/g, '')),
-                travel: this.form.travel || '',
-                expectpj: this.form.expectpj || '',
-                comment: this.form.comment || ''
-            };
-            params.certificates = this.form.Certs.map(item => {
-                return {
-                    CertID: item,
-                    Date: '2020-01-01'
-                };
-            });
-            return params;
-        },
-        editSubmitBefore() {
-            return {
-                ID: this.$route.params.id,
-                'type.ID': this.form.type,
-                OnBoardDate: this.form.onboarddate,
-                Name: this.form.name,
-                Furigana: this.form.Furigana,
-                Sex: this.form.sex,
-                Birthday: this.form.birthday,
-                Nationality: this.form.nationality,
-                Station: this.form.station,
-                Module: this.form.module,
-                StartWorkDate: this.form.startworkdate,
-                certificates: this.form.Certs.map(item => ({
-                    CertID: item,
-                    Date: '2020-01-01'
+                'Salary.EmployeeID': this.form.employeeTypeID,
+                'Salary.PJSalary': Number(this.form.PJSalary.toString().replace(/,/g, '')),
+                'Salary.BaseSalary': Number(this.form.BaseSalary.toString().replace(/,/g, '')),
+                'Salary.Comment': this.form.SComment,
+                'Certificates': this.form.certificates.map(item => ({
+                    certificateID: item,
+                    id: item,
+                    date: '2020-01-01'
                 })),
-                'position.ID': this.form.position,
-                ArriveJPDate: this.form.arrivejpdate,
-                JPLangCert: this.form.jplangcert,
-                JPLangComt: this.form.jplangcomt,
-                ENLangComt: this.form.enlangcomt,
-                SalePriceFrom: Number(this.form.salepricefrom.toString().replace(/,/g, '')),
-                SalePriceTo: Number(this.form.salepriceto.toString().replace(/,/g, '')),
-                Travel: this.form.travel || '',
-                ExpectPJ: this.form.expectpj || '',
-                Comment: this.form.comment || ''
+                'TeamMembers': this.form.TeamMembers,
+                'CandidateID': this.form.candidateID || 0,
+                'EmployeeTypeID': this.form.employeeTypeID,
+                'OnBoardDate': this.form.onBoardDate,
+                'Furigana_FirstName': this.form.furigana_FirstName || '',
+                'Furigana_LastName':  this.form.furigana_LastName || '',
+                'Furigana': this.form.furigana || '',
+                'Name': this.form.name || '',
+                'FirstName': this.form.firstName || '',
+                'LastName': this.form.lastName || '',
+                'Sex': this.form.sex,
+                'Birthday': this.form.birthday,
+                'Nationality': this.form.nationality,
+                'LiveCity': this.form.liveCity || '',
+                'Station': this.form.station,
+                'MainSkill': this.form.mainSkill,
+                'StartWorkDate': this.form.startWorkDate,
+                'PositionID': this.form.positionID,
+                'ArriveJPDate': this.form.arriveJPDate,
+                'JPLangCert': this.form.jpLangCert || '',
+                'JPLangComt': this.form.jpLangComt || '',
+                'ENLangComt': this.form.enLangComt || '',
+                'SalePriceFrom': Number(this.form.salePriceFrom.toString().replace(/,/g, '')) || 0,
+                'SalePriceTo': Number(this.form.salePriceTo.toString().replace(/,/g, '')) || 0,
+                'Travel': this.form.travel || '',
+                'ExpectPJ': this.form.expectPJ || '',
+                'Comment': this.form.comment || ''
             };
+            if (type === 'edit') {
+                params.ID = this.$route.params.id;
+            }
+            return params;
         },
         submit(formData, api) {
             const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });

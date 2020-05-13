@@ -5,27 +5,27 @@
         </div>
         <el-form size="mini" label-width="100px">
             <el-form-item label="角色清单">
-                <el-radio-group class="role-list clearfix" v-model="form.ID" @change="changeRole">
-                    <el-radio :disabled="isNew" v-for="item in this.allRole" :key="item.ID" :label="item.ID">{{item.Title}}</el-radio>
+                <el-radio-group class="role-list clearfix" v-model="form.id" @change="changeRole">
+                    <el-radio :disabled="isNew" v-for="item in this.allRole" :key="item.id" :label="item.id">{{item.title}}</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="角色名称" v-if="isNew || form.ID">
+            <el-form-item label="角色名称" v-if="isNew || form.id">
                 <el-input style="width: 30%;" v-model="form.Title" :maxlength="50"></el-input>
             </el-form-item>
-            <el-form-item label="可管理Team" v-if="isNew || form.ID">
+            <el-form-item label="可管理Team" v-if="isNew || form.id">
                 <el-checkbox-group v-model="form.TeamID">
                     <el-checkbox
                         v-for="item in teams"
-                        :key="item.TeamID"
-                        :label="item.TeamID">{{item.TeamName}}</el-checkbox>
+                        :key="item.id"
+                        :label="item.id">{{item.teamName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="角色权限" v-if="isNew || form.ID">
+            <el-form-item label="角色权限" v-if="isNew || form.id">
                 <el-checkbox-group v-model="form.action">
-                    <el-checkbox v-for="item in actions" :key="item.Action" :label="item.Action">{{item.Title}}</el-checkbox>
+                    <el-checkbox v-for="item in actions" :key="item.id" :label="item.id">{{item.title}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="角色菜单" v-if="isNew || form.ID">
+            <el-form-item label="角色菜单" v-if="isNew || form.id">
                 <el-button
                     v-if="IS_H5"
                     class="add-btn"
@@ -50,7 +50,7 @@
                     size="mini"
                     @click="addMenuHandler">新增</el-button>
             </el-form-item>
-            <el-form-item v-if="isNew || form.ID">
+            <el-form-item v-if="isNew || form.id">
                 <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新增' : '保存'}}</el-button>
             </el-form-item>
         </el-form>
@@ -63,6 +63,7 @@ import MainWrapper from '@components/main-wrapper';
 import RoleMenuTree from '@components/role-manager/menu-tree';
 import Sortable from 'sortablejs';
 import { mapGetters } from 'vuex';
+// import moment from 'moment';
 
 export default {
     components: {
@@ -76,7 +77,7 @@ export default {
             curRole: '',
             cacheFormID: '',
             form: {
-                ID: '',
+                id: '',
                 Title: '',
                 TeamID: [],
                 action: []
@@ -85,50 +86,11 @@ export default {
             deep: 0,
             teams: [],
             actions: [],
-            opt: {},
-            routeName: [{
-                label: '作业报告/工资详细清单', name: 'ESSList'
-            }, {
-                label: '提交作业报告', name: 'ESSEdit'
-            }, {
-                label: '合同签订', name: 'ContractEdit'
-            }, {
-                label: '员工编辑', name: 'EmployeeEdit'
-            }, {
-                label: '员工列表', name: 'EmployeeList'
-            }, {
-                label: '活动清单', name: 'SalesActivity'
-            }, {
-                label: '营业候选人', name: 'PreSales'
-            }, {
-                label: '员工清单', name: 'PreSalesList'
-            }, {
-                label: '合同列表', name: 'ContractList'
-            }, {
-                label: '角色权限', name: 'RoleManager'
-            }, {
-                label: '现金流', name: 'CashflowList'
-            }, {
-                label: '发票列表', name: 'InvoiceList'
-            }, {
-                label: '薪资核算', name: 'SalaryCalculate'
-            }, {
-                label: '用户管理', name: 'UserManager'
-            }, {
-                label: 'QA管理', name: 'QAManager'
-            }, {
-                label: '简历列表', name: 'ResumeList'
-            }, {
-                label: '简历更新', name: 'ResumeUpdate'
-            }]
+            opt: {}
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // vm.$store.dispatch({
-            //     type: CHANGE_TAB_TITLE,
-            //     title: '角色管理'
-            // });
             vm.getRouteInfo();
             vm.getRoleList();
             vm.getAllTeams();
@@ -191,11 +153,10 @@ export default {
         // 获取路由信息
         getRouteInfo() {
             this.$axios({
-                url: '/api/getroutelist'
+                url: '/api/Role/api_getroutelist'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.$set(this.opt, 'routeData', res.data || []);
-                    // this.routeData = res.data || [];
                 } else {
                     this.$message({
                         type: 'error',
@@ -207,7 +168,7 @@ export default {
         // 获取角色列表
         getRoleList() {
             this.$axios({
-                url: '/api/getrolelist',
+                url: '/api/Role/api_getrolelist',
             }).then(res => {
                 if (res && res.code === 0) {
                     this.allRole = res.data || [];
@@ -223,17 +184,17 @@ export default {
         // 获取全部Team
         getAllTeams() {
             this.$axios({
-                url: '/api/teamsforselect'
+                url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                if (res) {
-                    this.teams = res || [];
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
                 }
             });
         },
         // 获取全部权限
         getAllActions() {
             this.$axios({
-                url: '/api/actionsforselect'
+                url: '/api/Role/api_actionsforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.actions = res.data || [];
@@ -246,9 +207,9 @@ export default {
         getRoleAllInfo() {
             const loading = this.$loading({ lock: true, text: '正在获取角色权限信息' });
             this.$axios({
-                url: '/api/getroleinfobyid',
+                url: '/api/Role/api_getroleinfobyid',
                 params: {
-                    ID: this.form.ID
+                    id: this.form.id
                 },
                 custom: {
                     loading,
@@ -259,11 +220,18 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.menus = [];
-                    this.cacheFormID = res.data.ID;
-                    this.form.Title = data.Title;
-                    this.form.TeamID = (data.Teams && data.Teams).map(item => item.TeamID);
-                    this.form.action = (data.Actions && data.Actions).map(item => item.action);
-                    this.menus = this.formatArrToJson(data.Menus);
+                    this.cacheFormID = res.data.id;
+                    this.form.Title = data.title;
+                    this.form.TeamID = (data.roleTeams && data.roleTeams).map(item => item.teamID);
+                    // this.form.action = (data.actions && data.actions).map(item => item.id);
+                    let action = [];
+                    for (let k in data) {
+                        if (k.indexOf('act') > -1 && data[k]) {
+                            action.push(k);
+                        }
+                    }
+                    this.form.action = action;
+                    this.menus = this.formatArrToJson(data.menus);
                 } else {
                     this.form.Title = '';
                     this.form.TeamID = [];
@@ -278,7 +246,7 @@ export default {
         newHandler() {
             this.isNew = !this.isNew;
             if (this.isNew) {
-                this.form.ID = '';
+                this.form.id = '';
                 this.form.Title = '';
                 this.form.TeamID = [];
                 this.form.action = [];
@@ -289,7 +257,7 @@ export default {
                     children: []
                 }];
             } else {
-                this.form.ID = this.cacheFormID;
+                this.form.id = this.cacheFormID;
                 this.getRoleAllInfo();
             }
         },
@@ -300,25 +268,25 @@ export default {
 
             arr.forEach(item => {
                 item.key = parseInt(Math.random() * 10000);
-                if (item.Level === 1) {
+                if (item.level === 1) {
                     if (!item['children']) {
                         item.children = [];
                     }
-                    tmp[item.Group] = item;
+                    tmp[item.group] = item;
                 }
-                obj[item.ID] = item;
+                obj[item.id] = item;
             });
             arr.forEach(item => {
-                if (item.Level === 2) {
-                    if (tmp[item.Group] && !tmp[item.Group]['children']) {
-                        tmp[item.Group].children = [];
+                if (item.level === 2) {
+                    if (tmp[item.group] && !tmp[item.group]['children']) {
+                        tmp[item.group].children = [];
                     }
-                    tmp[item.Group] && (tmp[item.Group].children[item.Order - 1] = item);
+                    tmp[item.group] && (tmp[item.group].children[item.order - 1] = item);
                 }
             });
             let data = [];
             for (let key in tmp) {
-                data[tmp[key].Order - 1] = tmp[key];
+                data[tmp[key].order - 1] = tmp[key];
             }
             if (!data.length) {
                 data.push({
@@ -351,33 +319,35 @@ export default {
             }
             const params = {
                 Title: this.form.Title || '',
-                teams: [],
-                menus: []
+                RoleTeams: [],
+                Menus: []
+                // UpdateTime: moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+                // CompanyID: 0
             };
             this.$root.$off('FORM_VALID');
-            if (this.form.ID) {
-                params.ID = this.form.ID;
+            if (this.form.id) {
+                params.ID = this.form.id;
             }
-            params.teams = this.form.TeamID.map(item => ({TeamID: item}));
+            params.RoleTeams = this.form.TeamID.map(item => ({TeamID: item}));
             let fieldValueEmpty = false;
             this.menus.forEach((item, i) => {
-                params.menus.push({
-                    ID: item.ID || '',
-                    Title: item.Title,
-                    Name: item.Name,
+                params.Menus.push({
+                    ID: item.id || 0,
+                    Title: item.title,
+                    Name: item.name || '',
                     Level: 1,
                     Group: i + 1,
                     Order: i + 1
                 });
                 if (item.children && item.children.length) {
                     item.children.forEach((cell, j) => {
-                        if (!cell.Name || !cell.Title) {
+                        if (!cell.name || !cell.title) {
                             fieldValueEmpty = true;
                         }
-                        params.menus.push({
-                            ID: cell.ID || '',
-                            Title: cell.Title,
-                            Name: cell.Name,
+                        params.Menus.push({
+                            ID: cell.id || 0,
+                            Title: cell.title,
+                            Name: cell.name || '',
                             Level: 2,
                             Group: i + 1,
                             Order: j + 1
@@ -392,29 +362,36 @@ export default {
                 });
                 return;
             }
+            // const actions = [];
             this.actions.forEach(item => {
-                if (this.form.action.includes(item.Action)) {
-                    params[item.Action] = true;
+                if (this.form.action.includes(item.id)) {
+                    params[item.id] = true;
+                    // actions.push({
+                    //     id: item.id,
+                    //     title: item.title
+                    // });
                 } else {
-                    params[item.Action] = false;
+                    params[item.id] = false;
                 }
             });
+            // params.Actions = actions;
             this.submit(params);
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: '正在提交角色权限信息' });
             this.$axios({
                 method: 'POST',
-                url: '/api/updaterole',
+                url: '/api/Role/api_updaterole',
                 params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    if (params.ID) {
+                    if (params.id) {
                         this.getRoleAllInfo();
                     } else {
                         this.isNew = false;

@@ -23,7 +23,7 @@ module.exports = {
         host: '127.0.0.1',
         proxy: {
             '/proxy': {
-                target: 'http://www.your-partner.co.jp',
+                target: 'http://erp.your-partner.co.jp',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/proxy': ''

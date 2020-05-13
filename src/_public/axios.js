@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 
 export default (params = {}) => {
-    const url = process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy';
+    const url = process.env.NODE_ENV === 'production' ? 'http://erp.your-partner.co.jp' : '/proxy';
     let options = {
         method: 'GET'
     };
@@ -14,11 +14,52 @@ export default (params = {}) => {
         options.withCredentials = true;
         delete options.params;
     }
+    if (options.formData === true) {
+        const formData = new FormData();
+        for (let key in params.params) {
+            if (params.params[key] instanceof Array) {
+                params.params[key].forEach((item, i) => {
+                    if (typeof item === 'object') {
+                        for (let k in item) {
+                            formData.append(`${key}[${i}].${k}`, item[k]);
+                        }
+                    } else {
+                        formData.append(`${key}[${i}]`, item);
+                    }
+                });
+            } else {
+                formData.append(key, params.params[key]);
+            }
+        }
+        options.data = formData;
+        if (!options.headers) {
+            options.headers = {};
+        }
+    }
+    const token = sessionStorage.getItem('token');
+    if (token) {
+        if (!options.headers) {
+            options.headers = {};
+        }
+        options.headers.Authorization = token;
+    }
     const custom = options.custom;
     delete options.custom;
     return axios(options)
         .then(res => {
             if (res.status === 200 && res.data) {
+                if (res.data.code === 99) {
+                    custom.vm && custom.vm.$message({
+                        type: 'warning',
+                        message: res.data.message
+                    });
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('appInfo');
+                    sessionStorage.removeItem('tabTitle');
+                    sessionStorage.removeItem('menus');
+                    sessionStorage.removeItem('routeHistory');
+                    custom.vm && custom.vm.$router.push({ name: 'Login' });
+                }
                 return res.data;
             } else {
                 return {

@@ -1,0 +1,349 @@
+<template>
+    <main-wrapper class="customer-manager">
+        <el-form class="main-header" slot="header" size="mini">
+            <el-form-item>
+                <el-select v-model="bptype" placeholder="取引先タイプ" @change="changeHandler">
+                    <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div class="main-content">
+            <div class="left">
+                <el-button type="primary" size="mini" @click="newHandler">新規登録</el-button>
+                <el-table size="mini" :data="tableData" @row-click="rowClickHandler">
+                    <el-table-column label="取引先番号" prop="id" width="100px"></el-table-column>
+                    <el-table-column label="名称" prop="title" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="电话" prop="tel" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="タイプ">
+                        <template slot-scope="scope">
+                            <span>{{formatCxt(scope.row)}}</span>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-pagination
+                    :current-page="page"
+                    :page-size="pageSize"
+                    @current-change="changePn"
+                    :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
+                    :total="total"></el-pagination>
+            </div>
+            <div class="right display-container">
+                <div class="display-header">
+                    <el-button size="mini" type="primary" @click="beforeSubmit('edit')">変更</el-button>
+                    <el-button size="mini" type="danger" @click="deleteHandler">削除</el-button>
+                </div>
+                <el-form size="mini" label-width="100px">
+                    <el-form-item :label="showFields.title">
+                        <el-input v-model="showForm.title" :placeholder="showFields.title"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.address1">
+                        <el-input v-model="showForm.address1" :placeholder="showFields.address1"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.address2">
+                        <el-input v-model="showForm.address2" :placeholder="showFields.address2"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.bank_AccountHolder">
+                        <el-input v-model="showForm.bank_AccountHolder" :placeholder="showFields.bank_AccountHolder"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.customerFlag">
+                        <el-checkbox v-model="showForm.customerFlag"></el-checkbox>
+                    </el-form-item>
+                    <el-form-item :label="showFields.vendorFlag">
+                        <el-checkbox v-model="showForm.vendorFlag"></el-checkbox>
+                    </el-form-item>
+                    <el-form-item :label="showFields.contactPerson">
+                        <el-input v-model="showForm.contactPerson" :placeholder="showFields.contactPerson"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.fax">
+                        <el-input v-model="showForm.fax" :placeholder="showFields.fax"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.postal">
+                        <el-input v-model="showForm.postal" :placeholder="showFields.postal"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </div>
+        <el-dialog :visible.sync="visible" title="新規登録" @close="close">
+            <el-form size="mini" label-width="100px">
+                <el-form-item :label="showFields.title">
+                    <el-input v-model="curForm.title" :placeholder="showFields.title"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.address1">
+                    <el-input v-model="curForm.address1" :placeholder="showFields.address1"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.address2">
+                    <el-input v-model="curForm.address2" :placeholder="showFields.address2"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.bank_AccountHolder">
+                    <el-input v-model="curForm.bank_AccountHolder" :placeholder="showFields.bank_AccountHolder"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.customerFlag">
+                    <el-checkbox v-model="curForm.customerFlag"></el-checkbox>
+                </el-form-item>
+                <el-form-item :label="showFields.vendorFlag">
+                    <el-checkbox v-model="curForm.vendorFlag"></el-checkbox>
+                </el-form-item>
+                <el-form-item :label="showFields.contactPerson">
+                    <el-input v-model="curForm.contactPerson" :placeholder="showFields.contactPerson"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.fax">
+                    <el-input v-model="curForm.fax" :placeholder="showFields.fax"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.postal">
+                    <el-input v-model="curForm.postal" :placeholder="showFields.postal"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button size="mini" @click="close">取消</el-button>
+                <el-button size="mini" type="primary" @click="beforeSubmit('add')">保存</el-button>
+            </div>
+        </el-dialog>
+    </main-wrapper>
+</template>
+
+<script>
+import MainWrapper from '@components/main-wrapper';
+import { mapGetters } from 'vuex';
+export default {
+    components: {
+        MainWrapper
+    },
+    data() {
+        return {
+            bptype: 0,
+            types: [{
+                label: '全部', value: 0
+            }, {
+                label: '得意先', value: 1
+            }, {
+                label: '仕入先', value: 2
+            }],
+            tableData: [],
+            page: 1,
+            pageSize: 10,
+            total: 0,
+            showFields: {
+                address1: 'address1',
+                address2: 'address2',
+                bank_AccountHolder: 'bank_AccountHolder',
+                contactPerson: 'contactPerson',
+                customerFlag: 'customerFlag',
+                fax: 'fax',
+                postal: 'postal',
+                title: 'title',
+                vendorFlag: 'vendorFlag'
+            },
+            showForm: {},
+            curForm: {},
+            curId: '',
+            visible: false
+        };
+    },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.getData();
+        });
+    },
+    computed: {
+        ...mapGetters(['IS_H5'])
+    },
+    methods: {
+        getData() {
+            const loading = this.$loading({ lock: true, text: '正在加载内容' });
+            this.$axios({
+                url: '/api/Customer/api_getcustomerlist',
+                params: {
+                    bptype: this.bptype,
+                    page: this.page,
+                    pagesize: this.pageSize
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    const data = res.data || {};
+                    this.total = data.total || 0;
+                    this.tableData = data.data || [];
+                    if (data.data.length) {
+                        if (this.curId) {
+                            const curForm = data.data.filter(item => item.id === this.curId);
+                            if (curForm.length) {
+                                this.handlerForm(curForm[0]);
+                                return;
+                            }
+                        }
+                        this.handlerForm(data.data[0]);
+                    }
+                }
+            });
+        },
+        handlerForm(data) {
+            const form = { ...this.showFields };
+            for (let key in form) {
+                if (key === 'vendorFlag' || key === 'customerFlag') {
+                    form[key] = !!data[key];
+                } else {
+                    form[key] = data[key] || '';
+                }
+            }
+            this.curId = data.id;
+            this.showForm = { ...form };
+            this.showForm.companyID = data.companyID;
+        },
+        formatCxt(row) {
+            if (row.customerFlag && !row.vendorFlag) {
+                return '得意先';
+            } else if (!row.customerFlag && row.vendorFlag) {
+                return '仕入先';
+            } else if (row.customerFlag && row.vendorFlag) {
+                return '得意先·仕入先';
+            }
+            return '-';
+        },
+        changePn(page) {
+            this.page = page;
+            this.getData();
+        },
+        changeHandler() {
+            this.page = 1;
+            this.getData();
+        },
+        rowClickHandler(row) {
+            this.handlerForm(row);
+        },
+        deleteHandler() {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/Customer/api_deletecustomer',
+                    params: {
+                        id: this.curId
+                    }
+                }).then(res => {
+                    if (res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getData();
+                        this.curId = '';
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
+        },
+        newHandler() {
+            this.curForm = {
+                address1: '',
+                address2: '',
+                bank_AccountHolder: '',
+                contactPerson: '',
+                customerFlag: false,
+                fax: '',
+                postal: '',
+                title: '',
+                vendorFlag: false
+            };
+            this.visible = true;
+        },
+        close() {
+            this.visible = false;
+            this.curForm = {};
+        },
+        beforeSubmit(type) {
+            let form = {};
+            if (type === 'edit') {
+                form = { ...this.showForm };
+            } else {
+                form = { ...this.curForm };
+            }
+            const params = {
+                Title: form.title,
+                Bank_AccountHolder: form.bank_AccountHolder,
+                Postal: form.postal,
+                Address1: form.address1,
+                Address2: form.address2,
+                Tel: form.tel,
+                Fax: form.fax,
+                ContactPerson: form.contactPerson,
+                CustomerFlag: form.customerFlag,
+                VendorFlag: form.vendorFlag
+            };
+            if (type === 'edit') {
+                params.ID = this.curId;
+                params.CompanyID = this.showForm.companyID;
+            }
+            if (!params.Title) {
+                this.$message({
+                    type: 'warning',
+                    message: '请输入名称'
+                });
+                return;
+            } else if (!params.CustomerFlag && !params.VendorFlag) {
+                this.$message({
+                    type: 'warning',
+                    message: `${this.showFields.CustomerFlag}和${this.showFields.VendorFlag}至少选择一个`
+                });
+            } else {
+                this.submit(params, type);
+            }
+        },
+        submit(params, type) {
+            const loading = this.$loading({ lock: true, text: '提交数据中...' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/Customer/api_updatecustomer',
+                params,
+                formData: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: type === 'edit' ? '更新成功' : '创建成功'
+                    });
+                    if (type === 'add') {
+                        this.close();
+                    }
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'warning',
+                        message: res.message
+                    });
+                }
+            });
+        }
+    }
+};
+</script>
+
+<style scoped lang="less">
+.customer-manager {
+    .main-content {
+        display: flex;
+        justify-content: space-between;
+        .left {
+            width: 45%;
+        }
+        .right {
+            width: 50%;
+        }
+    }
+    .display-container {
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid #DCDFE6;
+        .display-header {
+            margin-bottom: 20px;
+        }
+    }
+}
+</style>

@@ -3,7 +3,7 @@
         <el-form size="small" class="login-wrapper">
             <el-form-item>
                 <p class="item-title">社員番号（YP始まり）</p>
-                <el-input v-model="form.empeeid" placeholder="YP001"></el-input>
+                <el-input v-model="form.empeeno" placeholder="YP001"></el-input>
             </el-form-item>
             <el-form-item>
                 <p class="item-title">氏名</p>
@@ -25,6 +25,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
+import { formatApiUrl } from '@_public/utils';
 import {
     FETCH_MENUS,
     FETCH_TEAMS,
@@ -39,38 +40,39 @@ export default {
     data() {
         return {
             form: {
-                // YP032    YP008
-                // 劉 峰    李 テイテイ
-                // yz5m49d  tingting8
-                empeeid: process.env.NODE_ENV === 'production' ? '' : 'YP032',
+                // YP006  喬国霞  qqmm@yp
+                // YP032  劉 峰  yz5m49d
+                empeeno: process.env.NODE_ENV === 'production' ? '' : 'YP032',
                 username: process.env.NODE_ENV === 'production' ? '' : '劉 峰',
                 userpwd: process.env.NODE_ENV === 'production' ? '' : 'yz5m49d',
+                // empeeno: process.env.NODE_ENV === 'production' ? '' : 'YP006',
+                // username: process.env.NODE_ENV === 'production' ? '' : '喬国霞',
+                // userpwd: process.env.NODE_ENV === 'production' ? '' : 'qqmm@yp',
                 validatecode: ''
             },
-            validUrl: `${process.env.NODE_ENV === 'production' ? 'http://www.your-partner.co.jp' : '/proxy'}/api/getvalidatebmp`
+            validUrl: formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false)
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.reloadValidCover();
             vm.$store.dispatch({
                 type: CHANGE_TAB_TITLE,
                 title: 'ログイン'
             });
         });
     },
-    beforeMount() {
-        if (process.env.NODE_ENV === 'production') {
-            window.location.href = 'http://www.your-partner.co.jp/admin/#/login';
-        }
-    },
+    // beforeMount() {
+    //     if (process.env.NODE_ENV === 'production') {
+    //         window.location.href = 'http://www.your-partner.co.jp/admin/#/login';
+    //     }
+    // },
     methods: {
         reloadValidCover() {
-            this.validUrl = `${this.validUrl}?t=${new Date().getSeconds()}`;
+            this.validUrl = formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false);
         },
         beforeSubmit() {
             let message = '';
-            if (!this.form.empeeid) {
+            if (!this.form.empeeno) {
                 message = '社員番号を入力してください';
             } else if (!this.form.username) {
                 message = '氏名を入力してください';
@@ -93,7 +95,7 @@ export default {
             const loading = this.$loading({ lock: true, text: 'ログイン中...' });
             const params = Object.assign({}, this.form);
             this.$axios({
-                url: '/api/login',
+                url: '/api/User/api_login',
                 params,
                 custom: {
                     loading,
@@ -103,19 +105,21 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     let result = res.data || {};
+                    const data = result.data || {};
+                    const resMenus = data.menus || [];
                     let arr = [];
                     let tmp = {};
-                    result.menus.forEach(item => {
-                        if (item.Level === 1) {
-                            arr[Number(item.Order - 1)] = item;
-                            tmp[item.Group] = item;
+                    resMenus.forEach(item => {
+                        if (item.level === 1) {
+                            arr[Number(item.order - 1)] = item;
+                            tmp[item.group] = item;
                         }
-                        if (item.Level === 2) {
-                            if (tmp[item.Group] && !tmp[item.Group]['children']) {
-                                tmp[item.Group]['children'] = [];
-                                tmp[item.Group]['children'][Number(item.Order) - 1] = item;
-                            } else if (tmp[item.Group] && tmp[item.Group]['children']) {
-                                tmp[item.Group]['children'][Number(item.Order) - 1] = item;
+                        if (item.level === 2) {
+                            if (tmp[item.group] && !tmp[item.group]['children']) {
+                                tmp[item.group]['children'] = [];
+                                tmp[item.group]['children'][Number(item.order) - 1] = item;
+                            } else if (tmp[item.group] && tmp[item.group]['children']) {
+                                tmp[item.group]['children'][Number(item.order) - 1] = item;
                             }
                         }
                     });
@@ -126,38 +130,42 @@ export default {
                         }
                         return !!item;
                     });
-                    delete result.menus;
+                    delete data.menus;
                     sessionStorage.setItem('menus', JSON.stringify(menus));
-                    sessionStorage.setItem('appInfo', JSON.stringify(result));
+                    sessionStorage.setItem('appInfo', JSON.stringify(data));
                     this.$store.dispatch({
                         type: FETCH_MENUS,
                         res: menus || []
                     });
                     this.$store.dispatch({
                         type: FETCH_TEAMS,
-                        res: result.teams || []
+                        res: data.teams || []
                     });
                     this.$store.dispatch({
                         type: FETCH_ACTIONS,
-                        res: result.actions || []
+                        res: data.role || {}
                     });
                     let tabTitle = '';
                     let routeName = '';
                     for (let i = 0; i < menus.length; i++) {
                         if (!routeName && menus[i].children && menus[i].children.length) {
-                            tabTitle = menus[i].children[0].Title;
-                            routeName = menus[i].children[0].Name;
+                            tabTitle = menus[i].children[0].title;
+                            routeName = menus[i].children[0].name;
                             break;
                         }
                     }
                     if (!routeName) {
                         routeName = '/';
                     }
+                    if (result.key) {
+                        sessionStorage.setItem('token', result.key);
+                    }
                     sessionStorage.setItem('tabTitle', tabTitle);
                     this.$store.dispatch({
                         type: CHANGE_TAB_TITLE,
                         title: tabTitle
                     });
+                    console.log(routeName);
                     this.$router.push({ name: routeName });
                 } else {
                     this.reloadValidCover();
