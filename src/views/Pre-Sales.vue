@@ -58,7 +58,7 @@
                 :itemID="curItemID"
                 @update="getCaseListData"></case-list>
         </div>
-        <intro-dialog></intro-dialog>
+        <intro-dialog :allStatus="allStatus"></intro-dialog>
         <!-- <employee-dialog></employee-dialog> -->
     </main-wrapper>
 </template>
@@ -103,7 +103,8 @@ export default {
             total: 0,
             loading: false,
             allName: [],
-            keyword: ''
+            keyword: '',
+            allStatus: []
         };
     },
     provide() {
@@ -117,10 +118,20 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getListData();
+            vm.getSales();
         });
     },
     methods: {
         formatTime: formatTime,
+        getSales() {
+            this.$axios({
+                url: '/api/Employee/api_salespersonforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.allStatus = res.data || [];
+                }
+            });
+        },
         getListData() {
             const loading = this.$loading({ lock: true, text: '正在获取列表数据...' });
             let url = '/api/Candidate/api_getcandidatelistinsale';

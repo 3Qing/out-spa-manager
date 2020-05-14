@@ -36,7 +36,7 @@ export default {
     }
     .main-header {
         padding: 0 20px;
-        height: @height;
+        min-height: @height;
         line-height: @height;
         background-color: #e5edf4;
         .el-form-item__label, .el-form-item__content {

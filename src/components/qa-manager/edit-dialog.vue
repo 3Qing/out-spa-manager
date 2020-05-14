@@ -73,6 +73,7 @@ export default {
                 this.id = data.id;
                 this.getData(data.id);
             }
+            console.log(this.allTags);
             this.visible = true;
             this.callback = callback;
         });
@@ -89,7 +90,13 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
-                    this.form = { ...data };
+                    const form = { ...data };
+                    if (form.tags && form.tags.length) {
+                        form.tags = form.tags.map(item => item.id);
+                    } else {
+                        form.tags = [];
+                    }
+                    this.form = { ...form };
                 }
             });
         },
@@ -98,7 +105,7 @@ export default {
                 if (valid) {
                     const loading = this.$loading({ lock: true, test: '正在保存中...' });
                     const params = {
-                        Tags: this.form.tags || [],
+                        Tags: [],
                         Ask1: this.form.ask1 || '',
                         Ask2: this.form.ask2 || '',
                         Ask3: this.form.ask3 || '',
@@ -108,6 +115,9 @@ export default {
                     };
                     if (this.id) {
                         params.ID = this.id;
+                    }
+                    if (this.form.tags && this.form.tags.length) {
+                        params.Tags = this.form.tags.map(item => ({ID: item}));
                     }
                     this.$axios({
                         method: 'POST',

@@ -438,7 +438,7 @@ export default {
                     });
                     if (count === this.form.projects.length) {
                         const params = {
-                            ID: (this.form.ID && Number(this.form.ID)) || '',
+                            ID: (this.form.id && Number(this.form.id)) || '',
                             schoolName: this.form.schoolName || '',
                             major: this.form.major || '',
                             graduateDate: (this.form.graduateDate && `${this.form.graduateDate}-01`) || '',
@@ -509,7 +509,7 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在提交信息中...' });
             this.$axios({
                 method: 'POST',
-                url: '/api/updateresume',
+                url: '/api/Resume/api_updateresume',
                 params,
                 custom: {
                     loading,

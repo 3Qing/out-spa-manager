@@ -48,7 +48,11 @@
             <el-table-column label="注文単価・円（税抜）" prop="contractSales" show-overflow-tooltip></el-table-column>
             <el-table-column label="見込売掛金">
                 <el-table-column label="売掛金額・円（税込）" prop="planCollectSales" show-overflow-tooltip></el-table-column>
-                <el-table-column label="予定回収日" prop="planCollectDate" width="100px"></el-table-column>
+                <el-table-column label="予定回収日" prop="planCollectDate" width="100px">
+                    <template slot-scope="scope">
+                        <span>{{formatTime(scope.row.planCollectDate)}}</span>
+                    </template>
+                </el-table-column>
             </el-table-column>
             <el-table-column label="実際売掛金">
                 <el-table-column label="実際回収額・円" prop="actualCollectSales" show-overflow-tooltip></el-table-column>

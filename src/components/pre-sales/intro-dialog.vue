@@ -1,31 +1,135 @@
 <template>
     <el-dialog custom-class="intro-dialog" title="介绍文" :visible.sync="visible" @close="close">
-        <el-form v-if="showDate" inline label-width="50px" size="mini">
-            <el-form-item label="Date">
-                <el-date-picker
-                v-model="tmpData.avaiableDate"
-                type="date"
-                value-format="yyyy-MM-dd"
-                value="yyyy-MM-dd"></el-date-picker>
+        <el-form label-width="120px" size="mini">
+            <el-row v-if="!IS_H5">
+                <el-col :span="12">
+                    <el-form-item label="英語姓">
+                        <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="英語名">
+                        <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="英語姓" v-if="IS_H5">
+                <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="状态">
-                <el-select v-model="empStatus">
-                    <el-option v-for="item in status" :key="item.val" :value="item.val" :label="item.label"></el-option>
+            <el-form-item label="英語名" v-if="IS_H5">
+                <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-row v-if="!IS_H5">
+                <el-col :span="12">
+                    <el-form-item label="姓" prop="firstName">
+                        <el-input v-model="form.firstName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="名" prop="lastName">
+                        <el-input v-model="form.lastName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="姓" prop="firstName" v-if="IS_H5">
+                <el-input v-model="form.firstName" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="名" prop="lastName" v-if="IS_H5">
+                <el-input v-model="form.lastName" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="生日" prop="birthday">
+                <el-date-picker
+                    v-model="form.birthday"
+                    type="date"
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="国籍" prop="nationality">
+                <el-input v-model="form.nationality" :maxlength="10"></el-input>
+            </el-form-item>
+            <el-form-item label="最近车站" prop="station">
+                <el-input v-model="form.station" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="主要技能" prop="mainSkill">
+                <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+                <el-select v-model="form.sex">
+                    <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item label="开始营业日期" prop="salesFromDate">
+                <el-date-picker
+                    v-model="form.salesFromDate"
+                    type="date"
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="稼働可能开始日" prop="avaiableDate">
+                <el-date-picker
+                    v-model="form.avaiableDate"
+                    type="date"
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="状态">
+                <el-select v-model="form.status">
+                    <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="提案文">
+                <el-input v-model="form.proposeText" type="textarea" :rows="12" :maxlength="250"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="250"></el-input>
+            </el-form-item>
+            <el-form-item label="最低人件费金额">
+                <el-input v-model.number="form.costFrom"></el-input>
+            </el-form-item>
+            <el-form-item label="最高人件费金额">
+                <el-input v-model.number="form.costTo"></el-input>
+            </el-form-item>
+            <el-form-item label="最低提案金额">
+                <el-input v-model.number="form.salesFrom"></el-input>
+            </el-form-item>
+            <el-form-item label="最高提案金额">
+                <el-input v-model.number="form.salesTo"></el-input>
+            </el-form-item>
+            <el-form-item label="工作开始日">
+                <el-date-picker
+                    v-model="form.startWorkDate"
+                    type="date"
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="简历附件存储路径">
+                <el-input v-model="form.attachResume"></el-input>
+            </el-form-item>
         </el-form>
-        <el-input v-model="content" type="textarea" :rows="12" :maxlength="250"></el-input>
-        <el-button type="primary" size="small" :disabled="!content" @click="submit">确认</el-button>
+        <el-button type="primary" size="small" @click="submit">确认</el-button>
     </el-dialog>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
+    props: {
+        allStatus: {
+            type: Array,
+            default: () => {}
+        }
+    },
     data() {
         return {
             tmpData: {},
             data: {},
+            form: {},
             empStatus: '',
+            sexs: [{
+                label: '男', value: true
+            }, {
+                label: '女', value: false
+            }],
             date: '',
             content: '',
             showDate: false,
@@ -33,7 +137,9 @@ export default {
             callback: null
         };
     },
-    inject: ['status'],
+    computed: {
+        ...mapGetters(['IS_H5'])
+    },
     mounted() {
         this.$root.$off('SHOW_INTRO_DIALOG');
         this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false }) => {
@@ -83,6 +189,7 @@ export default {
                     this.empStatus = res.data.status;
                     this.avaiableDate = res.data.avaiableDate;
                     this.data = { ...res.data };
+                    this.form = { ...res.data };
                 } else {
                     this.$message({
                         type: 'error',
@@ -95,33 +202,34 @@ export default {
         submit() {
             const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
             const params = {
-                Furigana_FirstName: this.data.furigana_FirstName,
-                Furigana_LastName: this.data.furigana_LastName,
-                FirstName: this.data.firstName,
-                LastName: this.data.lastName,
-                Type: this.data.type,
-                Birthday: this.data.birthday,
-                Nationality: this.data.nationality,
-                LiveCity: this.data.liveCity,
-                Sex: this.data.sex,
-                SalesFromDate: this.data.salesFromDate,
-                Comment: this.data.comment,
-                CostFrom: this.data.costFrom,
-                CostTo: this.data.costTo,
-                SalesFrom: this.data.salesFrom,
-                SalesTo: this.data.salesTo,
-                MainSkill: this.data.mainSkill,
-                StartWorkDate: this.data.startWorkDate,
-                AttachResume: this.data.attachResume,
-                AvaiableDate: this.tmpData.avaiableDate,
-                ProposeText: this.content,
-                Status: this.empStatus || 1
+                Furigana_FirstName: this.form.furigana_FirstName,
+                Furigana_LastName: this.form.furigana_LastName,
+                FirstName: this.form.firstName,
+                LastName: this.form.lastName,
+                Type: this.form.type,
+                Birthday: this.form.birthday,
+                Nationality: this.form.nationality,
+                LiveCity: this.form.liveCity,
+                Sex: this.form.sex,
+                SalesFromDate: this.form.salesFromDate,
+                Comment: this.form.comment,
+                CostFrom: this.form.costFrom,
+                CostTo: this.form.costTo,
+                SalesFrom: this.form.salesFrom,
+                SalesTo: this.form.salesTo,
+                MainSkill: this.form.mainSkill,
+                StartWorkDate: this.form.startWorkDate,
+                AttachResume: this.form.attachResume,
+                AvaiableDate: this.form.avaiableDate,
+                ProposeText: this.form.proposeText,
+                Status: this.form.status || 1,
+                ID: this.form.id
             };
-            if (this.showDate) {
-                params.id = this.tmpData.id;
-            } else {
-                params['EmployeeID'] = this.tmpData.id;
-            }
+            // if (this.showDate) {
+            //     params.id = this.tmpData.id;
+            // } else {
+            //     params['EmployeeID'] = this.tmpData.id;
+            // }
             
             this.$axios({
                 method: 'POST',

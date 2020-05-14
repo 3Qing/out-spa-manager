@@ -56,6 +56,11 @@
                     </el-popover>
                 </template>
             </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <i class="el-icon-edit link" color="primary" @click="showIntroDialog(scope.row)"></i>
+                </template>
+            </el-table-column>
         </el-table>
         <el-pagination
             :current-page="page"
@@ -72,17 +77,20 @@
             <el-button type="primary" @click="downloadFile">下载既存リソース一覧</el-button>
             <el-button type="primary" @click="createExcel">リソース一覧再作成してからダウンロード</el-button>
         </el-dialog>
+        <intro-dialog :allStatus="allStatus"></intro-dialog>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
+import IntroDialog from '@components/pre-sales/intro-dialog';
 import { mapGetters } from 'vuex';
 import { apiDownloadFile } from '@_public/utils';
 
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        IntroDialog
     },
     data() {
         return {
@@ -97,18 +105,29 @@ export default {
             }, {
                 label: '全部', val: false
             }],
-            tableData: []
+            tableData: [],
+            allStatus: []
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getData();
+            vm.getSales();
         });
     },
     computed: {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        getSales() {
+            this.$axios({
+                url: '/api/Employee/api_salespersonforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.allStatus = res.data || [];
+                }
+            });
+        },
         changeHandle() {
             this.page = 1;
             this.getData();
@@ -259,6 +278,15 @@ export default {
                     }
                 }
             }
+        },
+        showIntroDialog(data) {
+            this.$root.$emit('SHOW_INTRO_DIALOG', {
+                data,
+                showDate: true,
+                callback: () => {
+                    this.getData();
+                }
+            });
         }
     }
 };

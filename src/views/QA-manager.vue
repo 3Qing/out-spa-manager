@@ -15,6 +15,7 @@
                 type="primary"
                 @click="doCreate"
             >新規追加</el-button>
+            <el-button type="primary" size="mini" @click="showDialog = true">标签管理</el-button>
         </el-form>
         <el-table size="mini" :data="tableData" @row-click="rowClick">
             <el-table-column label="番号" prop="id" width="100px"></el-table-column>
@@ -48,6 +49,7 @@
             layout="total, prev, pager, next, jumper"></el-pagination>
         <edit-dialog :allTags="tags"></edit-dialog>
         <row-dialog :form="curRow" :visible="visible" @close="visible = false"></row-dialog>
+        <tag-dialog :visible="showDialog" @close="showDialog = false" @updateTag="getTags"></tag-dialog>
     </main-wrapper>
 </template>
 
@@ -55,13 +57,15 @@
 import MainWrapper from '@components/main-wrapper';
 import EditDialog from '@components/qa-manager/edit-dialog';
 import RowDialog from '@components/qa-manager/row-dialog';
+import TagDialog from '@/components/qa-manager/tag-dialog';
 import { mapGetters } from 'vuex';
 import { formatTime } from '@_public/utils';
 export default {
     components: {
         MainWrapper,
         EditDialog,
-        RowDialog
+        RowDialog,
+        TagDialog
     },
     data() {
         return {
@@ -74,6 +78,7 @@ export default {
             tag: [],
             tableData: [],
             visible: false,
+            showDialog: false,
             curRow: {}
         };
     },
@@ -96,9 +101,6 @@ export default {
             this.$axios({
                 method: 'POST',
                 url: '/api/QA/api_getqalist',
-                // headers: {
-                //     'Content-Type': 'application/x-www-form-urlencoded'
-                // },
                 params: {
                     tagids: this.tag,
                     keyword: this.keyword,
@@ -171,8 +173,13 @@ export default {
 <style lang="less">
 .qa-manager {
     .main-header {
+        .el-form-item {
+            margin-left: 0 !important;
+            margin-right: 20px;
+        }
         .el-button {
-            margin-left: 20px;
+            margin-left: 0;
+            margin-right: 20px;
         }
     }
 }

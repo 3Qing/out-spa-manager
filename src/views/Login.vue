@@ -111,14 +111,23 @@ export default {
                     let tmp = {};
                     resMenus.forEach(item => {
                         if (item.level === 1) {
-                            arr[Number(item.order - 1)] = item;
-                            tmp[item.group] = item;
+                            if (tmp[item.group]) {
+                                tmp[item.group] = Object.assign(tmp[item.group], item);
+                            } else {
+                                tmp[item.group] = item;
+                            }
+                            arr[Number(item.order - 1)] = tmp[item.group];
                         }
                         if (item.level === 2) {
                             if (tmp[item.group] && !tmp[item.group]['children']) {
                                 tmp[item.group]['children'] = [];
                                 tmp[item.group]['children'][Number(item.order) - 1] = item;
                             } else if (tmp[item.group] && tmp[item.group]['children']) {
+                                tmp[item.group]['children'][Number(item.order) - 1] = item;
+                            } else if (!tmp[item.group]) {
+                                tmp[item.group] = {
+                                    children: []
+                                };
                                 tmp[item.group]['children'][Number(item.order) - 1] = item;
                             }
                         }
@@ -165,7 +174,6 @@ export default {
                         type: CHANGE_TAB_TITLE,
                         title: tabTitle
                     });
-                    console.log(routeName);
                     this.$router.push({ name: routeName });
                 } else {
                     this.reloadValidCover();

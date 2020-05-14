@@ -6,10 +6,22 @@
                     <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="英語姓">
+            <el-row v-if="!IS_H5">
+                <el-col :span="12">
+                    <el-form-item label="英語姓">
+                        <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="英語名">
+                        <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="英語姓" v-if="IS_H5">
                 <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="英語名">
+            <el-form-item label="英語名" v-if="IS_H5">
                 <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
             </el-form-item>
             <el-row v-if="!IS_H5">
@@ -77,8 +89,8 @@
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
-            <el-form-item label="所属部门" prop="TeamMembers" v-if="!isEdit">
-                <el-select v-model="form.TeamMembers">
+            <el-form-item label="所属部门" prop="teamMembers" v-if="!isEdit">
+                <el-select v-model="form.teamMembers">
                     <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
@@ -168,7 +180,7 @@ export default {
                 startworkdate: '',
                 position: '',
                 arrivejpdate: '',
-                TeamMembers: '',
+                teamMembers: '',
                 jpLangCert: '',
                 jpLangComt: '',
                 enLangComt: '',
@@ -219,7 +231,7 @@ export default {
                 arrivejpdate: [{
                     required: true, message: '请选择来日时间', trigger: 'blur'
                 }],
-                TeamMembers: [{
+                teamMembers: [{
                     required: true, message: '请选择所属部门', trigger: 'blur'
                 }]
             },
@@ -385,28 +397,27 @@ export default {
                         }
                     }
                     this.submit(formData, type);
+                } else {
+                    this.$message({
+                        type: 'warning',
+                        message: '有必填内容未填写'
+                    });
                 }
             });
         },
         getSubmitParams(type) {
             let params = {
                 'Salary.EmployeeID': this.form.employeeTypeID,
-                'Salary.PJSalary': Number(this.form.PJSalary.toString().replace(/,/g, '')),
-                'Salary.BaseSalary': Number(this.form.BaseSalary.toString().replace(/,/g, '')),
-                'Salary.Comment': this.form.SComment,
                 'Certificates': this.form.certificates.map(item => ({
                     certificateID: item,
-                    id: item,
-                    date: '2020-01-01'
+                    passDate: '2020-01-01'
                 })),
-                'TeamMembers': this.form.TeamMembers,
+                'TeamMembers': '',
                 'CandidateID': this.form.candidateID || 0,
                 'EmployeeTypeID': this.form.employeeTypeID,
                 'OnBoardDate': this.form.onBoardDate,
                 'Furigana_FirstName': this.form.furigana_FirstName || '',
                 'Furigana_LastName':  this.form.furigana_LastName || '',
-                'Furigana': this.form.furigana || '',
-                'Name': this.form.name || '',
                 'FirstName': this.form.firstName || '',
                 'LastName': this.form.lastName || '',
                 'Sex': this.form.sex,
@@ -427,8 +438,17 @@ export default {
                 'ExpectPJ': this.form.expectPJ || '',
                 'Comment': this.form.comment || ''
             };
+            if (this.form.teamMembers instanceof Array) {
+                params.TeamMembers = this.form.teamMembers.map(item => ({teamID: item.id}));
+            } else {
+                params.TeamMembers = [{teamID: this.form.teamMembers}];
+            }
             if (type === 'edit') {
                 params.ID = this.$route.params.id;
+            } else {
+                params['Salary.PJSalary'] = Number(this.form.PJSalary.toString().replace(/,/g, ''));
+                params['Salary.BaseSalary'] = Number(this.form.BaseSalary.toString().replace(/,/g, ''));
+                params['Salary.Comment'] = this.form.SComment;
             }
             return params;
         },
@@ -450,7 +470,8 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
-                    this.$router.back();
+                    // this.$router.back();
+                    this.$router.push({ name: 'EmployeeList' });
                 } else {
                     this.$message({
                         type: 'error',

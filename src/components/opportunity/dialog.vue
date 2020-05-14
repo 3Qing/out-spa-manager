@@ -149,20 +149,18 @@ export default {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     const params = {
+                        ID: this.form.id || 0,
                         Tags: this.form.tags.map(item => ({id: item})),
                         Content: this.form.content,
                         Title: this.form.title,
                         PubDate: this.form.pubDate,
                         CloseDate: this.form.closeDate,
                         Status: this.form.status,
-                        CustomerID: this.form.customerID
+                        CustomerID: this.form.customerID || 0
                     };
-                    if (this.edit) {
-                        params.ID = this.form.id;
-                    }
                     if (!Number(this.form.customerID) && typeof this.form.customerID !== 'number') {
                         params.CustomerTitle = this.form.customerTitle;
-                        params.CustomerID = '';
+                        params.CustomerID = 0;
                     }
                     const loading = this.$loading({ lock: true, text: '提交数据中' });
                     this.$axios({

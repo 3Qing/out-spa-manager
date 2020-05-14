@@ -117,9 +117,9 @@
             <el-table :data="personMonthArr" border size="small" v-loading="dialogLoading">
                 <el-table-column label="期间" width="220">
                     <template slot-scope="scope">
-                        {{scope.row.fromdate}}
+                        {{formatTime(scope.row.fromdate)}}
                         ~
-                        {{scope.row.todate}}
+                        {{formatTime(scope.row.todate)}}
                     </template>
                 </el-table-column>
                 <el-table-column property="contractworkdays" label="合同工作日数" width="110"></el-table-column>
@@ -393,7 +393,7 @@ export default {
             const params = new FormData();
             params.append('fromdate', this.datetime[0]);
             params.append('todate', this.datetime[1]);
-            params.append('id', this.curRow.id);
+            params.append('contractid', this.curRow.id);
             if (ningetsu) {
                 ningetsu.forEach((item, index) => {
                     params.append(`ningetsu[${index}]`, item);
@@ -404,7 +404,7 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
                 method: 'POST',
-                url: '/api/renewcontract',
+                url: '/api/Contract/api_renewcontract',
                 params,
                 custom: {
                     loading,
