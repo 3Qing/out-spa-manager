@@ -47,8 +47,8 @@
             <el-form-item label="国籍" prop="nationality">
                 <el-input v-model="form.nationality" :maxlength="10"></el-input>
             </el-form-item>
-            <el-form-item label="最近车站" prop="station">
-                <el-input v-model="form.station" :maxlength="20"></el-input>
+            <el-form-item label="最近车站" prop="liveCity">
+                <el-input v-model="form.liveCity" :maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="主要技能" prop="mainSkill">
                 <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
