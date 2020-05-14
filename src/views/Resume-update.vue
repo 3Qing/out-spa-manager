@@ -223,7 +223,7 @@ export default {
     data() {
         return {
             form: {
-                ID: '',
+                id: '',
                 schoolName: '',
                 major: '',
                 graduateDate: '',
@@ -485,9 +485,7 @@ export default {
                             this.tip4 = true;
                             return;
                         }
-                        if (this.$route.params.id) {
-                            params.ID = this.$route.params.id;
-                        }
+                        params.ID = this.form.id;
                         params['employee.ID'] = this.$route.params.epId || this.employeeID;
                         delete params.projects;
 
