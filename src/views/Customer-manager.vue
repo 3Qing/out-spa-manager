@@ -13,7 +13,7 @@
                 <el-table size="mini" :data="tableData" @row-click="rowClickHandler">
                     <el-table-column label="取引先番号" prop="id" width="100px"></el-table-column>
                     <el-table-column label="名称" prop="title" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="电话" prop="tel" show-overflow-tooltip></el-table-column>
+                    <!-- <el-table-column label="电话" prop="tel" show-overflow-tooltip></el-table-column> -->
                     <el-table-column label="タイプ">
                         <template slot-scope="scope">
                             <span>{{formatCxt(scope.row)}}</span>
@@ -54,6 +54,9 @@
                     <el-form-item :label="showFields.contactPerson">
                         <el-input v-model="showForm.contactPerson" :placeholder="showFields.contactPerson"></el-input>
                     </el-form-item>
+                    <el-form-item :label="showFields.tel">
+                        <el-input v-model="showForm.tel" :placeholder="showFields.tel"></el-input>
+                    </el-form-item>
                     <el-form-item :label="showFields.fax">
                         <el-input v-model="showForm.fax" :placeholder="showFields.fax"></el-input>
                     </el-form-item>
@@ -85,6 +88,9 @@
                 </el-form-item>
                 <el-form-item :label="showFields.contactPerson">
                     <el-input v-model="curForm.contactPerson" :placeholder="showFields.contactPerson"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.tel">
+                    <el-input v-model="curForm.tel" :placeholder="showFields.tel"></el-input>
                 </el-form-item>
                 <el-form-item :label="showFields.fax">
                     <el-input v-model="curForm.fax" :placeholder="showFields.fax"></el-input>
@@ -129,6 +135,7 @@ export default {
                 contactPerson: 'contactPerson',
                 customerFlag: 'customerFlag',
                 fax: 'fax',
+                tel: 'tel',
                 postal: 'postal',
                 title: 'title',
                 vendorFlag: 'vendorFlag'

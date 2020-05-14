@@ -149,7 +149,7 @@ export default {
          * }]
          * 
          * [{
-         *  EmployeeName: '', date1: {}, date2: {}, date3: {} ...
+         *  employeeName: '', date1: {}, date2: {}, date3: {} ...
          * }]
          * 
          * Mobile Table
@@ -162,40 +162,40 @@ export default {
             let data = [];
             result.forEach((item, i) => {
                 columns.push({
-                    label: `${item.Date} ${item.WeekDay}`,
+                    label: `${item.date} ${item.weekDay}`,
                     prop: `date${i + 1}`,
-                    Date: item.Date
+                    date: item.date
                 });
                 let sameName = '';
                 let recomIndex = -1;
                 let count = 0;
-                item.Activities.forEach((cell, j) => {
+                item.activities.forEach((cell, j) => {
                     if (!sameName) {
-                        sameName = cell.EmployeeName;
+                        sameName = cell.employeeName;
                         recomIndex = j;
                     }
-                    if (sameName === cell.EmployeeName) {
+                    if (sameName === cell.employeeName) {
                         count++;
-                        item.Activities[recomIndex].rowspan = count;
+                        item.activities[recomIndex].rowspan = count;
                     } else {
                         recomIndex = j;
-                        item.Activities[recomIndex].rowspan = count;
-                        this.sameName = cell.EmployeeName;
+                        item.activities[recomIndex].rowspan = count;
+                        this.sameName = cell.employeeName;
                         count = 0;
                     }
-                    if (!allEmployee[cell.EmployeeName]) {
-                        allEmployee[cell.EmployeeName] = {
+                    if (!allEmployee[cell.employeeName]) {
+                        allEmployee[cell.employeeName] = {
                             maxRows: 0
                         };
                     }
-                    if (!allEmployee[cell.EmployeeName][`date${i + 1}`]) {
-                        allEmployee[cell.EmployeeName][`date${i + 1}`] = [];
+                    if (!allEmployee[cell.employeeName][`date${i + 1}`]) {
+                        allEmployee[cell.employeeName][`date${i + 1}`] = [];
                     }
-                    allEmployee[cell.EmployeeName][`date${i + 1}`].push(cell);
-                    let length = allEmployee[cell.EmployeeName][`date${i + 1}`].length;
+                    allEmployee[cell.employeeName][`date${i + 1}`].push(cell);
+                    let length = allEmployee[cell.employeeName][`date${i + 1}`].length;
                     
-                    if (allEmployee[cell.EmployeeName].maxRows < length) {
-                        allEmployee[cell.EmployeeName].maxRows = length;
+                    if (allEmployee[cell.employeeName].maxRows < length) {
+                        allEmployee[cell.employeeName].maxRows = length;
                     }
                 });
             });
@@ -203,7 +203,7 @@ export default {
                 const maxRows = allEmployee[key].maxRows;
                 for (let i = 0; i < maxRows; i++) {
                     data.push({
-                        EmployeeName: key,
+                        employeeName: key,
                         rowspan: i == 0 ? maxRows : 0,
                         date1: (allEmployee[key].date1 && allEmployee[key].date1[i]) || null,
                         date2: (allEmployee[key].date2 && allEmployee[key].date2[i]) || null,
@@ -230,12 +230,12 @@ export default {
              * 集合 同姓名的数据
              */
             result.length && result.forEach(item => {
-                const date = moment(new Date(item.AtyDate).getTime()).format('YYYY-MM-DD');
+                const date = moment(new date(item.AtyDate).getTime()).format('YYYY-MM-DD');
                 if (!x[date]) {
                     x[date] = [];
                 }
-                if (!y[item.EmployeeName]) {
-                    y[item.EmployeeName] = [];
+                if (!y[item.employeeName]) {
+                    y[item.employeeName] = [];
                 }
                 if (!atyDates.includes(date)) {
                     atyDates.push(date);
@@ -244,7 +244,7 @@ export default {
                     mobileY[date] = [];
                 }
                 x[date] = item;
-                y[item.EmployeeName].push(item);
+                y[item.employeeName].push(item);
                 mobileY[date].push(item);
             });
             /**
@@ -274,11 +274,11 @@ export default {
             /**
              * 根据姓名，整理同姓名的不同日期的表格数据
              * 表头: [{ label: date, prop: AtyDate0 }, { label: date, prop: AtyDate1 }, ...]
-             * 表格数据: [{ EmployeeName: name, AtyDate0: { 返回值结构 }, AtyDate1: { 返回值结构 }, ... }]
+             * 表格数据: [{ employeeName: name, AtyDate0: { 返回值结构 }, AtyDate1: { 返回值结构 }, ... }]
              */
             Object.keys(y).forEach(name => {
                 let row = {
-                    EmployeeName: name
+                    employeeName: name
                 };
                 y[name].forEach(item => {
                     const date = moment(new Date(item.AtyDate).getTime()).format('YYYY-MM-DD');

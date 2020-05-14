@@ -452,7 +452,7 @@ export default {
             const loading = this.$loading({ lock: true, text: '作業報告書保存中...' });
             this.$axios({
                 method: 'POST',
-                url: '/api/submittimesheet',
+                url: '/api/Timesheet/api_submittimesheet',
                 params: formData,
                 headers: {
                     'content-Type': 'multipart/form-data'

@@ -56,6 +56,7 @@ export default {
         this.$set(this.style, 'max-height', `${mainWrapper - webHeaderH - addCaseBtnH - 20}px`);
         this.getSalespersonforselect();
         this.getCustomerList();
+        this.getOpport();
     },
     methods: {
         addCase() {
@@ -82,7 +83,14 @@ export default {
             }).then(res => {
                 this.$set(this.opt, 'customers', res.data || []);
             });
-        }
+        },
+        getOpport() {
+            this.$axios({
+                url: '/api/Opportunity/api_opportunityforselect'
+            }).then(res => {
+                this.$set(this.opt, 'opports', res.data || []);
+            });
+        },
     }
 };
 </script>

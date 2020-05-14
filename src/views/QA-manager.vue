@@ -2,9 +2,9 @@
     <main-wrapper class="qa-manager">
         <el-form slot="header" class="main-header" size="mini" inline>
             <el-form-item>
-                <el-select v-model="module" @change="changeHandler" clearable>
-                    <el-option v-for="item in modules" :key="item" :value="item"></el-option>
-                </el-select>
+                <el-checkbox-group v-model="tag" size="mini" @change="changeHandler">
+                    <el-checkbox-button v-for="(item, i) in tags" :label="item.id" :key="i">{{item.tagName}}</el-checkbox-button>
+                </el-checkbox-group>
             </el-form-item>
             <el-form-item style="margin-left: 20px;">
                 <el-input v-model="keyword" placeholder="请输入关键词" maxlength="10" @blur="changeHandler"></el-input>
@@ -46,7 +46,7 @@
             @current-change="changePage"
             :total="total"
             layout="total, prev, pager, next, jumper"></el-pagination>
-        <edit-dialog></edit-dialog>
+        <edit-dialog :allTags="tags"></edit-dialog>
         <row-dialog :form="curRow" :visible="visible" @close="visible = false"></row-dialog>
     </main-wrapper>
 </template>
@@ -70,7 +70,8 @@ export default {
             total: 0,
             module: '',
             keyword: '',
-            modules: ['FI', 'CO', 'ABAP', 'MM', 'SD', 'Fiori', 'データ移行'],
+            tags: [],
+            tag: [],
             tableData: [],
             visible: false,
             curRow: {}
@@ -79,6 +80,7 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getData();
+            vm.getTags();
         });
     },
     computed: {
@@ -87,11 +89,6 @@ export default {
             return this.ACTIONS.includes('act_updateqa');
         },
     },
-    provide() {
-        return {
-            modules: this.modules
-        };
-    },
     methods: {
         formatTime: formatTime,
         getData() {
@@ -99,11 +96,11 @@ export default {
             this.$axios({
                 method: 'POST',
                 url: '/api/QA/api_getqalist',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                // headers: {
+                //     'Content-Type': 'application/x-www-form-urlencoded'
+                // },
                 params: {
-                    module: this.module,
+                    tagids: this.tag,
                     keyword: this.keyword,
                     page: this.page,
                     pagesize: this.pageSize
@@ -111,7 +108,8 @@ export default {
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
@@ -123,6 +121,16 @@ export default {
                         type: 'error',
                         message: res ? res.message : 'インタフェース異常、データ取得できません！'
                     });
+                }
+            });
+        },
+        getTags() {
+            this.$axios({
+                url: '/api/QA/api_getqatags'
+            }).then(res => {
+                console.log(res);
+                if (res && res.code === 0) {
+                    this.tags = res.data  || [];
                 }
             });
         },

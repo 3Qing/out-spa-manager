@@ -15,10 +15,10 @@
                 size="mini"
                 :loading="loading">
                 <el-option
-                v-for="item in allName"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                    v-for="item in allName"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
                 </el-option>
             </el-select>
         </div>
@@ -44,6 +44,12 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-pagination
+                :current-page="page"
+                :page-size="pageSize"
+                @current-change="changePn"
+                :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
+                :total="total"></el-pagination>
         </div>
         <div class="right">
             <case-list
@@ -63,6 +69,7 @@ import CaseList from '@components/pre-sales/case-list';
 // import EmployeeDialog from '@components/pre-sales/employee-dialog';
 import IntroDialog from '@components/pre-sales/intro-dialog';
 import { formatTime } from '@_public/utils';
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -93,6 +100,7 @@ export default {
             }],
             page: 1,
             pageSize: 10,
+            total: 0,
             loading: false,
             allName: [],
             keyword: ''
@@ -102,6 +110,9 @@ export default {
         return {
             status: this.empStatus
         };
+    },
+    computed: {
+        ...mapGetters(['IS_H5'])
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
@@ -117,7 +128,7 @@ export default {
             this.$axios({
                 url: `${url}?${params.join('&')}`,
                 params: {
-                    name: '',
+                    name: this.keyword || '',
                     page: this.page,
                     pagesize: this.pageSize
                 },
@@ -129,6 +140,7 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.data;
+                    this.total = data.total || 0;
                     if (data.data.length) {
                         this.curItemID = data.data[0].id;
                         this.getCaseListData();
@@ -141,6 +153,10 @@ export default {
                     });
                 }
             });
+        },
+        changePn(page) {
+            this.page = page;
+            this.getListData();
         },
         getCaseListData() {
             this.caseLoading = true;
@@ -202,7 +218,10 @@ export default {
         remoteMethod(keyword) {
             if (keyword) {
                 this.$axios({
-                    url: '/api​/Candidate​/api_candidatesforselect'
+                    url: '/api/Candidate/api_candidatesforselect',
+                    params: {
+                        keyword
+                    }
                 }).then(res => {
                     console.log(res);
                 });

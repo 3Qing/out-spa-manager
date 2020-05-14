@@ -1,9 +1,9 @@
 <template>
     <div class="sales-mobile-table">
-        <el-table size="small" border v-for="list in data" :key="list.Date" :data="list.Activities" :span-method="arraySpanMobileMethod">
+        <el-table size="small" border v-for="list in data" :key="list.date" :data="list.Activities" :span-method="arraySpanMobileMethod">
             <el-table-column label="姓名" prop="EmployeeName" width="100px"></el-table-column>
             <el-table-column>
-                <p slot="header">{{list.Date}} {{list.WeekDay}}<i class="el-icon-plus" @click="addSales(list)"></i></p>
+                <p slot="header">{{list.date}} {{list.weekDay}}<i class="el-icon-plus" @click="addSales(list)"></i></p>
                 <template slot-scope="scope">
                     <div
                         :class="[cellClassName(scope, 'row')]"

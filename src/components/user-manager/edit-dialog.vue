@@ -13,9 +13,8 @@
                     reserve-keyword
                     :remote-method="remoteMethod"
                     :loading="loading"
-                    placeholder="作業担当者"
-                    @change="changeHandler">
-                    <el-option v-for="item in opt.employees" :key="item.id" :label="item.Name" :value="item.id"></el-option>
+                    placeholder="作業担当者">
+                    <el-option v-for="item in opt.employees" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="ロール" prop="roleid">
@@ -66,7 +65,8 @@ export default {
                 }]
             },
             type: '',
-            callback: null
+            callback: null,
+            loading: false
         };
     },
     inject: ['modules'],
@@ -110,7 +110,6 @@ export default {
                 if (valid) {
                     const loading = this.$loading({ lock: true, text: '正在保存中...' });
                     this.$axios({
-                        // method: 'POST',
                         url: '/api/User/api_updateuser',
                         params: this.form,
                         custom: {

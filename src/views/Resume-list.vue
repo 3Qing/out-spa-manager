@@ -13,9 +13,9 @@
                         >{{Number(scope.row.resumeID) === 0 ? '履歴書登録' : '履歴書更新'}}</el-button>
                 </template>
             </el-table-column>
-            <el-table-column label="最終更新日" prop="UpdateDate" width="140px">
+            <el-table-column label="最終更新日" prop="updateTime" width="140px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.UpdateDate || '-'}}</span>
+                    <span>{{formatTime(scope.row.updateTime) || '-'}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="ダウンロード">
@@ -46,7 +46,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { apiDownloadFile } from '@_public/utils';
+import { apiDownloadFile, formatTime } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -65,6 +65,7 @@ export default {
         });
     },
     methods: {
+        formatTime: formatTime,
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中...' });
             this.$axios({

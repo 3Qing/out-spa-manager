@@ -39,7 +39,7 @@ export default {
         cellClassName(data, field) {
             // 1是黄色，7和8是灰色，9是绿色
             if (data[field]) {
-                return data[field].Status === 1 ? 'cell-warning' : data[field].Status === 9 ? 'cell-success' : data[field].Status ? 'cell-info' : '';
+                return data[field].status === 1 ? 'cell-warning' : data[field].status === 9 ? 'cell-success' : data[field].status ? 'cell-info' : '';
             }
             return '';
         },

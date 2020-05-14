@@ -1,8 +1,8 @@
 <template>
     <div class="sales-web-table">
         <el-table size="small" border stripe :data="data" :span-method="arraySpanMethod">
-            <el-table-column label="姓名" prop="EmployeeName" width="100px"></el-table-column>
-            <el-table-column v-for="item in cols" :key="item.Date" :prop="item.prop">
+            <el-table-column label="姓名" prop="employeeName" width="100px"></el-table-column>
+            <el-table-column v-for="item in cols" :key="item.date" :prop="item.prop">
                 <p slot="header">{{item.label}}<i class="el-icon-plus" @click="addSales(item)"></i></p>
                 <template slot-scope="scope">
                     <el-popover

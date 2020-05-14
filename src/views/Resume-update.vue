@@ -194,15 +194,15 @@
                 <el-input type="textarea" v-model="item.workContent" :rows="5"></el-input>
             </el-form-item>
             <el-form-item label="参画フェーズ">
-                <el-checkbox v-model="item.RequirementDef">要件定義</el-checkbox>
-                <el-checkbox v-model="item.BasicDesign">基本設計</el-checkbox>
-                <el-checkbox v-model="item.DetailDesign">詳細設計</el-checkbox>
-                <el-checkbox v-model="item.Development">製造・単体テスト</el-checkbox>
-                <el-checkbox v-model="item.UnitTest">単体テスト</el-checkbox>
-                <el-checkbox v-model="item.IntegratedTest">結合テスト</el-checkbox>
-                <el-checkbox v-model="item.SystemTest">総合テスト</el-checkbox>
-                <el-checkbox v-model="item.DataMigration">データ移行</el-checkbox>
-                <el-checkbox v-model="item.Maintenance">運用保守</el-checkbox>
+                <el-checkbox v-model="item.requirementDef">要件定義</el-checkbox>
+                <el-checkbox v-model="item.basicDesign">基本設計</el-checkbox>
+                <el-checkbox v-model="item.detailDesign">詳細設計</el-checkbox>
+                <el-checkbox v-model="item.development">製造・単体テスト</el-checkbox>
+                <el-checkbox v-model="item.unitTest">単体テスト</el-checkbox>
+                <el-checkbox v-model="item.integratedTest">結合テスト</el-checkbox>
+                <el-checkbox v-model="item.systemTest">総合テスト</el-checkbox>
+                <el-checkbox v-model="item.dataMigration">データ移行</el-checkbox>
+                <el-checkbox v-model="item.maintenance">運用保守</el-checkbox>
             </el-form-item>
 
         </el-form>
@@ -254,15 +254,15 @@ export default {
                     modules: '',
                     location: '',
                     systemInfo: '',
-                    RequirementDef: false,
-                    BasicDesign: false,
-                    DetailDesign: false,
-                    Development: false,
-                    IntegratedTest: false,
-                    SystemTest: false,
-                    DataMigration: false,
-                    Maintenance: false,
-                    UnitTest: false,
+                    requirementDef: false,
+                    basicDesign: false,
+                    detailDesign: false,
+                    development: false,
+                    integratedTest: false,
+                    systemTest: false,
+                    dataMigration: false,
+                    maintenance: false,
+                    unitTest: false,
                 }]
             },
             rules: {
@@ -406,15 +406,15 @@ export default {
                 modules: '',
                 location: '',
                 systemInfo: '',
-                RequirementDef: false,
-                BasicDesign: false,
-                DetailDesign: false,
-                Development: false,
-                IntegratedTest: false,
-                SystemTest: false,
-                DataMigration: false,
-                Maintenance: false,
-                UnitTest: false,
+                requirementDef: false,
+                basicDesign: false,
+                detailDesign: false,
+                development: false,
+                integratedTest: false,
+                systemTest: false,
+                dataMigration: false,
+                maintenance: false,
+                unitTest: false,
             });
         },
         delProject(index) {

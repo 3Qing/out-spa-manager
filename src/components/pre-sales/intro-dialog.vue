@@ -3,7 +3,7 @@
         <el-form v-if="showDate" inline label-width="50px" size="mini">
             <el-form-item label="Date">
                 <el-date-picker
-                v-model="tmpData.AvaiableDate"
+                v-model="tmpData.avaiableDate"
                 type="date"
                 value-format="yyyy-MM-dd"
                 value="yyyy-MM-dd"></el-date-picker>
@@ -24,6 +24,7 @@ export default {
     data() {
         return {
             tmpData: {},
+            data: {},
             empStatus: '',
             date: '',
             content: '',
@@ -37,7 +38,7 @@ export default {
         this.$root.$off('SHOW_INTRO_DIALOG');
         this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false }) => {
             this.tmpData = data || {};
-            this.empStatus = this.tmpData.Status || 1;
+            this.empStatus = this.tmpData.status || 1;
             this.showDate = showDate;
             if (!showDate) {
                 this.createProposeText(data);
@@ -58,9 +59,9 @@ export default {
         },
         createProposeText(data) {
             this.$axios({
-                url: '/api/generateproposetext',
+                url: '/api/Candidate/api_generateproposetext',
                 params: {
-                    empeeid: data.ID
+                    empeeid: data.id
                 }
             }).then(res => {
                 if (res && res.code === 0) {
@@ -72,15 +73,16 @@ export default {
         },
         getProposeText(data) {
             this.$axios({
-                url: '/api/getpresalesinfo',
+                url: '/api/Candidate/api_getcandidateforupdate',
                 params: {
-                    id: data.ID
+                    id: data.id
                 }
             }).then(res => {
                 if (res && res.code === 0) {
-                    this.content = res.data.ProposeText;
-                    this.empStatus = res.data.Status;
-                    this.AvaiableDate = res.data.AvaiableDate;
+                    this.content = res.data.proposeText;
+                    this.empStatus = res.data.status;
+                    this.avaiableDate = res.data.avaiableDate;
+                    this.data = { ...res.data };
                 } else {
                     this.$message({
                         type: 'error',
@@ -93,24 +95,43 @@ export default {
         submit() {
             const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
             const params = {
-                AvaiableDate: this.tmpData.AvaiableDate,
+                Furigana_FirstName: this.data.furigana_FirstName,
+                Furigana_LastName: this.data.furigana_LastName,
+                FirstName: this.data.firstName,
+                LastName: this.data.lastName,
+                Type: this.data.type,
+                Birthday: this.data.birthday,
+                Nationality: this.data.nationality,
+                LiveCity: this.data.liveCity,
+                Sex: this.data.sex,
+                SalesFromDate: this.data.salesFromDate,
+                Comment: this.data.comment,
+                CostFrom: this.data.costFrom,
+                CostTo: this.data.costTo,
+                SalesFrom: this.data.salesFrom,
+                SalesTo: this.data.salesTo,
+                MainSkill: this.data.mainSkill,
+                StartWorkDate: this.data.startWorkDate,
+                AttachResume: this.data.attachResume,
+                AvaiableDate: this.tmpData.avaiableDate,
                 ProposeText: this.content,
                 Status: this.empStatus || 1
             };
             if (this.showDate) {
-                params.ID = this.tmpData.ID;
+                params.id = this.tmpData.id;
             } else {
-                params['employee.ID'] = this.tmpData.ID;
+                params['EmployeeID'] = this.tmpData.id;
             }
             
             this.$axios({
                 method: 'POST',
-                url: '/api/updatepresales',
+                url: '/api/Candidate/api_updatecandidate',
                 params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {

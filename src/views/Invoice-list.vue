@@ -54,7 +54,7 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
-import { formatApiUrl } from '@_public/utils';
+import { apiDownloadFile } from '@_public/utils';
 import GoldDialog from '@/components/invoice-list/gold-dialog';
 export default {
     components: {
@@ -142,7 +142,11 @@ export default {
             }
         },
         downloadInvoice(row) {
-            formatApiUrl('/api/Invoice/api_downloadinvoice', `?invid=${row.id}`);
+            apiDownloadFile({
+                vm: this,
+                url: `/api/Invoice/api_downloadinvoiceexcel?invid=${row.id}`,
+                filename: `${Date.now()}.xls`
+            });
         },
         cancelInvoice(row) {
             const loading = this.$loading({ lock: true, text: '正在取消请求书' });

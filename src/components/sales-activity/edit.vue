@@ -13,7 +13,7 @@
             </el-select>
             <span v-else>{{form.AtyType === 1 ? '面试' : '客户拜访'}}</span>
         </el-form-item>
-        <el-form-item label="活动状态" prop="Status" v-if="form.ID">
+        <el-form-item label="活动状态" prop="Status" v-if="form.id">
             <el-select v-model="form.Status" v-if="edit">
                 <el-option v-for="item in status" :key="item.value" :value="item.value" :label="item.label"></el-option>
             </el-select>
@@ -37,7 +37,7 @@
         </el-form-item>
         <el-form-item label="营业" prop="SalesPersonID">
             <el-select v-if="edit" v-model="form.SalesPersonID">
-                <el-option v-for="item in opt.sales" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
+                <el-option v-for="item in opt.sales" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
             <span v-else>{{getContext(form.SalesPersonID, 'sales')}}</span>
         </el-form-item>
@@ -50,7 +50,7 @@
                 reserve-keyword
                 clearable
                 :remote-method="remoteMethod">
-                <el-option v-for="item in opt.employees" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
+                <el-option v-for="item in opt.employees" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
             <span v-else>{{getContext(form.EmployeeID, 'employees')}}</span>
         </el-form-item>
@@ -154,7 +154,7 @@ export default {
         getContext(value, type) {
             if (this.opt[type]) {
                 for (let i = 0; i < this.opt[type].length; i++) {
-                    if (this.opt[type][i].ID === value) {
+                    if (this.opt[type][i].id === value) {
                         return this.opt[type][i].Name;
                     }
                 }

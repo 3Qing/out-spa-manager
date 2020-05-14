@@ -123,7 +123,7 @@ export default {
                 });
                 this.$store.dispatch({
                     type: FETCH_ACTIONS,
-                    res: tmp.actions || []
+                    res: tmp.role || []
                 });
                 this.$store.dispatch({
                     type: CHANGE_TAB_TITLE,

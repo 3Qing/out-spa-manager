@@ -4,19 +4,19 @@
             <el-button size="mini" type="primary" @click="dataChange('add')">新规登录</el-button>
         </div>
         <el-table size="mini" :data="tableData">
-            <el-table-column label="勘定コード" prop="Account"></el-table-column>
-            <el-table-column label="テキスト" prop="Text"></el-table-column>
-            <el-table-column label="BS/PL勘定" prop="BSPL">
+            <el-table-column label="勘定コード" prop="accountID"></el-table-column>
+            <el-table-column label="テキスト" prop="text"></el-table-column>
+            <el-table-column label="BS/PL勘定" prop="bspl">
                 <template slot-scope="scope">
                     <span>{{formatText(scope)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="消込管理" prop="ClearManagement">
+            <el-table-column label="消込管理" prop="clearManagement">
                 <template slot-scope="scope">
-                    <span>{{scope.row.ClearManagement ? '消込' : '未消込'}}</span>
+                    <span>{{scope.row.clearManagement ? '消込' : '未消込'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="財務諸表項目" prop="GroupText"></el-table-column>
+            <el-table-column label="財務諸表項目" prop="groupText"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button size="mini" type="primary" @click="dataChange('edit', scope.row)">变更</el-button>
@@ -31,26 +31,26 @@
             <div class="line-content">
                 <div class="item">
                     <span class="label">勘定コード</span>
-                    <el-input size="mini" class="content" v-model="curData['account.Account']" :disabled="isEdit"></el-input>
+                    <el-input size="mini" class="content" v-model="curData['accountID']" :disabled="isEdit"></el-input>
                 </div>
                 <div class="item">
                     <span class="label">テキスト</span>
-                    <el-input size="mini" class="content" v-model="curData['account.Text']"></el-input>
+                    <el-input size="mini" class="content" v-model="curData['text']"></el-input>
                 </div>
                 <div class="item">
                     <span class="label">BS/PL勘定</span>
-                    <el-select size="mini" class="content" v-model="curData['account.BSPL']">
+                    <el-select size="mini" class="content" v-model="curData['bspl']">
                         <el-option v-for="item in selects" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </div>
                 <div class="item">
                     <span class="label">消込管理</span>
-                    <el-checkbox v-model="curData['account.ClearManagement']"></el-checkbox>
+                    <el-checkbox v-model="curData['clearManagement']"></el-checkbox>
                 </div>
                 <div class="item">
                     <span class="label">財務諸表項目</span>
-                    <el-select size="mini" class="content" v-model="curData['account.reportgroup.ID']">
-                        <el-option v-for="item in accounts" :key="item.ID" :value="item.ID" :label="item.Text"></el-option>
+                    <el-select size="mini" class="content" v-model="curData['groupID']">
+                        <el-option v-for="item in accounts" :key="item.id" :value="item.id" :label="item.text"></el-option>
                     </el-select>
                 </div>
             </div>
@@ -84,11 +84,11 @@ export default {
             ],
             accounts: [],
             curData: {
-                'account.Account': '',
-                'account.Text': '',
-                'account.BSPL': true,
-                'account.ClearManagement': '',
-                'account.reportgroup.ID': '',
+                'accountID': '',
+                'text': '',
+                'bspl': true,
+                'clearManagement': '',
+                'groupID': '',
             }
 
         };
@@ -104,20 +104,20 @@ export default {
             if (type === 'add') {
                 this.isEdit = false;
                 this.curData = {
-                    'account.Account': '',
-                    'account.Text': '',
-                    'account.BSPL': true,
-                    'account.ClearManagement': '',
-                    'account.reportgroup.ID': ''
+                    'accountID': '',
+                    'text': '',
+                    'bspl': true,
+                    'clearManagement': '',
+                    'groupID': ''
                 };
             } else {
                 this.isEdit = true;
                 this.curData = {
-                    'account.Account': data.Account,
-                    'account.Text': data.Text,
-                    'account.BSPL': data.BSPL,
-                    'account.ClearManagement': data.ClearManagement,
-                    'account.reportgroup.ID': data.GroupID
+                    'accountID': data.accountID,
+                    'text': data.text,
+                    'bspl': data.bspl,
+                    'clearManagement': data.clearManagement,
+                    'groupID': data.GroupID
                 };
                 console.log(this.curData);
             }
@@ -156,21 +156,27 @@ export default {
             this.visible = false;
         },
         save() {
-            if (!this.curData['account.Account']) {
+            if (!this.curData['accountID']) {
                 this.$message.warning('');
                 return false;
             }
-            const params = { ...this.curData };
-            delete params.reportgroup;
+            const params = {
+                AccountID: this.curData.accountID,
+                Text: this.curData.text,
+                BSPL: this.curData.bspl,
+                ClearManagement: this.curData.clearManagement,
+                ACAccountGroupID: this.curData.groupID
+            };
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
                 method: 'POST',
-                url: '/api/updateaccount',
+                url: '/api/ACAccount/api_updateaccount',
                 params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
@@ -186,7 +192,7 @@ export default {
         },
         formatText(scope) {
             for (let item of this.selects) {
-                if (scope.row.BSPL === item.value) {
+                if (scope.row.bspl === item.value) {
                     return item.label;
                 }
             }

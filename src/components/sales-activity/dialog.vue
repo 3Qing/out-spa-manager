@@ -96,9 +96,9 @@ export default {
                     const formData = new FormData();
                     for (let key in this.baseForm) {
                         if (key === 'SalesPersonID') {
-                            formData.append('salesPerson.ID', this.baseForm[key]);
+                            formData.append('SalesPersonID', this.baseForm[key]);
                         } else if (key === 'EmployeeID') {
-                            formData.append('employee.ID', this.baseForm[key]);
+                            formData.append('CandidateID', this.baseForm[key]);
                         } else if (key === 'AtyDate') {
                             formData.append('AtyDate', this.baseForm[key]);
                         } else if (key === 'Status') {
@@ -115,7 +115,7 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在提交活动信息中...' });
             this.$axios({
                 method: 'POST',
-                url: '/api/updatesalesactivity',
+                url: '/api/SalesActivity/api_updatesalesactivity',
                 params,
                 custom: {
                     loading,

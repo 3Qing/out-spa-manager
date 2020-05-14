@@ -1,10 +1,16 @@
 <template>
     <div class="case-item">
         <div class="case-header clearfix">
-            <el-form class="header-left fl" size="mini" label-width="50px" label-suffix=":">
+            <el-form size="mini" label-width="50px" label-suffix=":" inline>
+                <el-form-item label="商机">
+                    <el-select v-model="form.opportunityID" v-if="form.edit">
+                        <el-option v-for="item in opt.opports" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                    <span v-else>{{handleText(form.opportunityID, opt.opports, 'text')}}</span>
+                </el-form-item>
                 <el-form-item label="客户">
                     <el-select
-                        v-model="form.CustomerID"
+                        v-model="form.customerID"
                         remote
                         filterable
                         clearable
@@ -12,31 +18,29 @@
                         v-if="form.edit">
                         <el-option v-for="item in opt.customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
                     </el-select>
-                    <span v-else>{{form.CustomerTitle}}</span>
+                    <span v-else>{{handleText(form.customerID, opt.customers, 'title')}}</span>
                 </el-form-item>
                 <el-form-item label="营业">
-                    <el-select v-model="form.SalesPersonID" v-if="form.edit">
+                    <el-select v-model="form.salesPersonID" v-if="form.edit">
                         <el-option v-for="item in opt.sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
-                    <span v-else>{{form.SalesPersonName}}</span>
+                    <span v-else>{{handleText(form.salesPersonID, opt.sales, 'name')}}</span>
                 </el-form-item>
-                <el-form-item label="概要">
-                    <el-input v-if="form.edit" type="textarea" v-model="form.Content" :maxlength="200" :rows="2"></el-input>
-                    <span v-else>{{form.Content}}</span>
-                </el-form-item>
-            </el-form>
-            <el-form class="fl header-status" size="mini" label-width="50px" label-suffix=":">
                 <el-form-item label="状态">
-                    <el-select v-if="form.edit" v-model="form.Status" size="mini">
+                    <el-select v-if="form.edit" v-model="form.status" size="mini">
                         <el-option v-for="item in displayStatus" :key="item.val" :value="item.val" :label="item.label"></el-option>
                     </el-select>
-                    <span v-else :class="[getStatusColor(form.Status)]">{{this.getStatusContent()}}</span>
+                    <span v-else :class="[getStatusColor(form.status)]">{{this.getStatusContent()}}</span>
+                </el-form-item>
+                <el-form-item label="概要">
+                    <el-input v-if="form.edit" type="textarea" v-model="form.content" :maxlength="200" :rows="2"></el-input>
+                    <span v-else>{{form.content}}</span>
                 </el-form-item>
             </el-form>
             <el-button size="mini" type="primary" @click="beforeSubmit">{{this.getOperText()}}</el-button>
         </div>
-        <ul class="case-content">
-            <li v-for="(item, i) in form.Items" :key="i">
+        <ul class="case-content" v-if="form.items && form.items.length">
+            <li v-for="(item, i) in form.items" :key="i">
                 <div class="edit-area" v-if="isEdit.includes(i)">
                     <el-date-picker
                         size="mini"
@@ -49,7 +53,7 @@
                 </div>
                 <p class="display-content" v-else><span class="item-index">{{i + 1}}.</span>{{formatDate(item.UpdateDateTime)}} {{item.Content}}</p>
                 <div class="oper-area">
-                    <i class="el-icon-circle-plus-outline" @click="addNewItem" v-if="!isEdit.includes(i) && i === form.Items.length - 1" color="primary"></i>
+                    <i class="el-icon-circle-plus-outline" @click="addNewItem" v-if="!isEdit.includes(i) && i === (form.items && form.items.length - 1)" color="primary"></i>
                     <i class="el-icon-edit-outline" v-if="!isEdit.includes(i)" @click="modifyItem(item, i)" color="warning"></i>
                 </div>
                 <span class="save-btn" v-if="isEdit.includes(i)" @click="submitCaseItem(item, i)" color="primary">保存</span>
@@ -66,12 +70,12 @@ export default {
             type: Object,
             default: () => ({
                 edit: false,
-                CustomerID: '',
-                SalesPersonID: '',
-                SalesPersonName: '',
-                Content: '',
-                Status: '',
-                Items: []
+                opportunityID: '',
+                customerID: '',
+                salesPersonID: '',
+                content: '',
+                status: '',
+                items: []
             })
         },
         opt: {
@@ -102,7 +106,7 @@ export default {
             if (!this.form.id) {
                 this.displayStatus = [this.status[0]];
             }
-            if (!this.form.Items.length && this.form.id) {
+            if (!this.form.items || (this.form.items && !this.form.items.length) && this.form.id) {
                 this.addNewItem();
                 if (!this.form.id) {
                     this.isEdit.push(0);
@@ -116,13 +120,14 @@ export default {
             return '编辑';
         },
         setCustomTitle(keyword) {
-            this.form.CustomerID = keyword;
+            this.form.customerID = keyword;
         },
         addNewItem() {
-            if (this.form.Items.length) {
-                this.isEdit.push(this.form.Items.length);
+            if (!this.form.items)  this.form.items = [];
+            if (this.form.items && this.form.items.length) {
+                this.isEdit.push(this.form.items.length);
             }
-            this.$set(this.form.Items, this.form.Items.length ? this.form.Items.length : 0, {
+            this.$set(this.form.items, this.form.items.length ? this.form.items.length : 0, {
                 UpdateDateTime: '',
                 Content: ''
             });
@@ -133,7 +138,7 @@ export default {
             } else {
                 item.UpdateDateTime = '';
             }
-            this.$set(this.form.Items, i, item);
+            this.$set(this.form.items, i, item);
             this.isEdit.push(i);
         },
         getStatusColor(status) {
@@ -151,12 +156,20 @@ export default {
                     return '';
             }
         },
+        handleText(id, arr, field) {
+            for (let item of arr) {
+                if (item.id === id) {
+                    return item[field];
+                }
+            }
+            return '-';
+        },
         saveCaseContent(data, i) {
             this.isEdit = this.isEdit.filter(item => item !== i);
         },
         getStatusContent() {
             for (let item of this.status) {
-                if (item.val === this.form.Status) {
+                if (item.val === this.form.status) {
                     return item.label;
                 }
             }
@@ -169,21 +182,21 @@ export default {
         },
         beforeSubmit() {
             if (this.form.edit) {
-                if (!this.form.SalesPersonID) {
+                if (!this.form.salesPersonID) {
                     this.$message({
                         type: 'warning',
                         showClose: true,
                         message: '请选择营业'
                     });
                     return false;
-                } else if (!this.form.CustomerID) {
+                } else if (!this.form.customerID) {
                     this.$message({
                         type: 'warning',
                         showClose: true,
                         message: '请选择客户'
                     });
                     return false;
-                } else if (!this.form.Status) {
+                } else if (!this.form.status) {
                     this.$message({
                         type: 'warning',
                         showClose: true,
@@ -192,24 +205,25 @@ export default {
                     return false;
                 }
                 const params = {
-                    'presales.ID': this.opt.id,
-                    Content: this.form.Content || '',
-                    CustomerTitle: '',
-                    'salesperson.ID': this.form.SalesPersonID,
-                    Status: this.form.id ? this.form.Status : 1
+                    CandidateID: this.opt.id,
+                    OpportunityID: this.form.opportunityID,
+                    Content: this.form.content || '',
+                    CustomerID: this.form.customerID,
+                    SalesPersonID: this.form.salesPersonID,
+                    Status: this.form.id ? this.form.status : 1
                 };
-                if (typeof this.form.CustomerID === 'string') {
-                    params.CustomerTitle = this.form.CustomerID;
-                    params['customer.ID'] = 0;
+                if (typeof this.form.customerID === 'string') {
+                    params.CustomerTitle = this.form.customerID;
+                    params.CustomerID = 0;
                 } else {
-                    params['customer.ID'] = this.form.CustomerID;
+                    params.CustomerID = this.form.customerID;
                 }
                 if (this.form.id) {
                     params['ID'] = this.form.id;
                 }
                 this.submit(params);
             } else {
-                if (!this.form.Items.length) {
+                if (!this.form.items.length) {
                     this.addNewItem();
                 }
                 if (!this.form.id) {
@@ -217,8 +231,8 @@ export default {
                 } else {
                     this.displayStatus = [...this.status];
                 }
-                if (this.form.CustomerTitle) {
-                    this.form.CustomerID = this.form.CustomerTitle;
+                if (this.form.customerTitle) {
+                    this.form.customerID = this.form.customerTitle;
                 }
                 this.$set(this.form, 'edit', !(this.form.edit || false));
             }
@@ -227,12 +241,13 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
                 method: 'POST',
-                url: '/api/updatepresalescase',
+                url: '/api/SalesCase/api_updatesalescase',
                 params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
@@ -306,6 +321,18 @@ export default {
     }
     .case-header {
         position: relative;
+        .el-form {
+            // display: flex;
+            .el-form-item {
+                width: 40%;
+            }
+            .el-form-item:nth-child(5) {
+                width: 100%;
+                .el-form-item__content {
+                    width: 70%;
+                }
+            }
+        }
         .header-left {
             width: 40%;
         }

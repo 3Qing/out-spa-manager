@@ -2,15 +2,15 @@
     <main-wrapper class="contract-sign">
         <div class="content">
             <el-form ref="form" :model="form" label-width="110px" :rules="rules">
-                <el-form-item label="注文名称" prop="Title">
-                    <el-input v-model="form.Title" size="small"></el-input>
+                <el-form-item label="注文名称" prop="title">
+                    <el-input v-model="form.title" size="small"></el-input>
                 </el-form-item>
-                <el-form-item label="内容" prop="Content">
-                    <el-input v-model="form.Content" size="small"></el-input>
+                <el-form-item label="内容" prop="content">
+                    <el-input v-model="form.content" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="作業担当" prop="empeeid">
                     <el-select
-                        v-model="form['employee.ID']"
+                        v-model="form['employee.id']"
                         filterable
                         remote
                         reserve-keyword
@@ -20,57 +20,57 @@
                         <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="開始期間" prop="FromDate">
-                    <el-date-picker v-model="form.FromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                <el-form-item label="開始期間" prop="fromDate">
+                    <el-date-picker v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
                 </el-form-item>
-                <el-form-item label="終了期間" prop="ToDate">
-                    <el-date-picker v-model="form.ToDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                <el-form-item label="終了期間" prop="toDate">
+                    <el-date-picker v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="支払サイト" prop="paymentterm">
-                    <el-select v-model="form['paymentterm.ID']" size="small">
-                        <el-option v-for="item in paymenttermsforselect" :key="item.ID" :value="item.ID" :label="item.Title"></el-option>
+                    <el-select v-model="form['paymentterm.id']" size="small">
+                        <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="単価" prop="UnitPrice">
-                    <el-input v-model="form.UnitPrice" size="small"></el-input>
+                <el-form-item label="単価" prop="unitPrice">
+                    <el-input v-model="form.unitPrice" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="作業時間">
                     <el-col :span="11">
-                        <el-form-item prop="HoursFrom">
-                            <el-input v-model="form.HoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                        <el-form-item prop="hoursFrom">
+                            <el-input v-model="form.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col class="text-center" :span="2">-</el-col>
                     <el-col :span="11">
-                        <el-form-item prop="HoursTo">
-                            <el-input v-model="form.HoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                        <el-form-item prop="hoursTo">
+                            <el-input v-model="form.hoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
                         </el-form-item>
                     </el-col>
                     <div class="err">{{erroeMsg}}</div>
                 </el-form-item>
-                <el-form-item label="超過精算単価" prop="OverTimePrice">
-                    <el-input v-model="form.OverTimePrice" size="small"></el-input>
+                <el-form-item label="超過精算単価" prop="overTimePrice">
+                    <el-input v-model="form.overTimePrice" size="small"></el-input>
                 </el-form-item>
-                <el-form-item label="控除精算単価" prop="UnderTimePrice">
-                    <el-input v-model="form.UnderTimePrice" size="small"></el-input>
+                <el-form-item label="控除精算単価" prop="underTimePrice">
+                    <el-input v-model="form.underTimePrice" size="small"></el-input>
                 </el-form-item>
-                <el-form-item label="精算単位" prop="CalculateUnit">
-                    <el-select v-model="form.CalculateUnit" size="small">
+                <el-form-item label="精算単位" prop="calculateUnit">
+                    <el-select v-model="form.calculateUnit" size="small">
                         <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="営業担当" prop="salesperson">
-                    <el-select v-model="form['salesperson.ID']" size="small">
+                    <el-select v-model="form['salesperson.id']" size="small">
                         <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="顧客" prop="customer">
-                    <el-select v-model="form['customer.ID']" size="small">
+                    <el-select v-model="form['customer.id']" size="small">
                         <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="商流備考" prop="BusinessFlow">
-                    <el-input v-model="form.BusinessFlow" size="small" type="textarea"></el-input>
+                <el-form-item label="商流備考" prop="businessFlow">
+                    <el-input v-model="form.businessFlow" size="small" type="textarea"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
@@ -98,48 +98,48 @@
             </el-table>
             <el-form class="preview-form" size="mini" label-width="110px" label-suffix=":" v-if="$route.params.id">
                 <el-form-item label="注文名称">
-                    <span>{{form.Title}}</span>
+                    <span>{{form.title}}</span>
                 </el-form-item>
                 <el-form-item label="内容">
-                    <span>{{form.Content}}</span>
+                    <span>{{form.content}}</span>
                 </el-form-item>
                 <el-form-item label="作業担当">
-                    <span>{{formatLabel(form['employee.ID'], 'employee')}}</span>
+                    <span>{{formatLabel(form['employee.id'], 'employee')}}</span>
                 </el-form-item>
                 <el-form-item label="開始期間">
-                    <span>{{form.FromDate}}</span>
+                    <span>{{form.fromDate}}</span>
                 </el-form-item>
                 <el-form-item label="終了期間">
-                    <span>{{form.ToDate}}</span>
+                    <span>{{form.toDate}}</span>
                 </el-form-item>
                 <el-form-item label="支払サイト">
-                    <span>{{formatLabel(form['paymentterm.ID'], 'payment')}}</span>
+                    <span>{{formatLabel(form['paymentterm.id'], 'payment')}}</span>
                 </el-form-item>
                 <el-form-item label="単価">
-                    <span>{{form.UnitPrice}}</span>
+                    <span>{{form.unitPrice}}</span>
                 </el-form-item>
                 <el-form-item label="作業時間">
-                    <span>{{form.HoursFrom}}</span>
+                    <span>{{form.hoursFrom}}</span>
                     <span>-</span>
-                    <span>{{form.HoursTo}}</span>
+                    <span>{{form.hoursTo}}</span>
                 </el-form-item>
                 <el-form-item label="超過精算単価">
-                    <span>{{form.OverTimePrice}}</span>
+                    <span>{{form.overTimePrice}}</span>
                 </el-form-item>
                 <el-form-item label="控除精算単価">
-                    <span>{{form.UnderTimePrice}}</span>
+                    <span>{{form.underTimePrice}}</span>
                 </el-form-item>
                 <el-form-item label="精算単位">
-                    <span>{{formatLabel(form.CalculateUnit, 'unit')}}</span>
+                    <span>{{formatLabel(form.calculateUnit, 'unit')}}</span>
                 </el-form-item>
                 <el-form-item label="営業担当">
-                    <span>{{formatLabel(form['salesperson.ID'], 'sales')}}</span>
+                    <span>{{formatLabel(form['salesperson.id'], 'sales')}}</span>
                 </el-form-item>
                 <el-form-item label="顧客">
-                    <span>{{formatLabel(form['customer.ID'], 'custom')}}</span>
+                    <span>{{formatLabel(form['customer.id'], 'custom')}}</span>
                 </el-form-item>
                 <el-form-item label="商流備考">
-                    <span>{{form.BusinessFlow}}</span>
+                    <span>{{form.businessFlow}}</span>
                 </el-form-item>
             </el-form>
             <div slot="footer">
@@ -160,21 +160,21 @@ export default {
         return {
             loading: false,
             form: {
-                Title: '',
-                Content: '',
-                'employee.ID': '',
-                FromDate: '',
-                ToDate: '',
-                'paymentterm.ID': '',
-                UnitPrice: '',
-                HoursFrom: '',
-                HoursTo: '',
-                OverTimePrice: '',
-                UnderTimePrice: '',
-                CalculateUnit: '',
-                'salesperson.ID': '',
-                'customer.ID': '',
-                BusinessFlow: '',
+                title: '',
+                content: '',
+                'employee.id': '',
+                fromDate: '',
+                toDate: '',
+                'paymentterm.id': '',
+                unitPrice: '',
+                hoursFrom: '',
+                hoursTo: '',
+                overTimePrice: '',
+                underTimePrice: '',
+                calculateUnit: '',
+                'salesperson.id': '',
+                'customer.id': '',
+                businessFlow: '',
                 ningetsu: ''
             },
             unit: [
@@ -192,25 +192,25 @@ export default {
                 }
             ],
             rules: {
-                Title: [
+                title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
                 ],
-                Content: [
+                content: [
                     { required: true, message: '请输入内容', trigger: 'blur' }
                 ],
-                FromDate: [
+                fromDate: [
                     { required: true, validator: this.validFromDate, trigger: 'blur' }
                 ],
-                ToDate: [
+                toDate: [
                     { required: true, validator: this.validToDate, trigger: 'blur' }
                 ],
-                UnitPrice: [
+                unitPrice: [
                     { required: true, message: '请输入単価', trigger: 'blur' }
                 ],
-                OverTimePrice: [
+                overTimePrice: [
                     { required: true, message: '请输入超過精算単価', trigger: 'blur' }
                 ],
-                UnderTimePrice: [
+                underTimePrice: [
                     { required: true, message: '请输入控除精算単価', trigger: 'blur' }
                 ],
             },
@@ -242,7 +242,7 @@ export default {
     },
     methods: {
         validFromDate(rule, value, callback) {
-            const toDate = new Date(this.form.ToDate).getTime() || -1;
+            const toDate = new Date(this.form.toDate).getTime() || -1;
             if (value) {
                 if (toDate > 0) {
                     if (new Date(value).getTime() > toDate) {
@@ -258,7 +258,7 @@ export default {
             }
         },
         validToDate(rule, value, callback) {
-            const fromDate = new Date(this.form.FromDate).getTime() || -1;
+            const fromDate = new Date(this.form.fromDate).getTime() || -1;
             if (value) {
                 if (fromDate > 0) {
                     if (new Date(value).getTime() < fromDate) {
@@ -277,11 +277,11 @@ export default {
         hoursChange(val, old) {
             const reg = /^\d+$|^\d+[.]?\d+$/;
             if (val !== old) {
-                if (!this.form.HoursFrom || !this.form.HoursTo) {
+                if (!this.form.hoursFrom || !this.form.hoursTo) {
                     this.erroeMsg = '请输入完整作業時間';
-                } else if (!reg.test(this.form.HoursFrom) || !reg.test(this.form.HoursTo)) {
+                } else if (!reg.test(this.form.hoursFrom) || !reg.test(this.form.hoursTo)) {
                     this.erroeMsg = '请输入数字';
-                } else if (parseInt(this.form.HoursFrom) > parseInt(this.form.HoursTo)) {
+                } else if (parseInt(this.form.hoursFrom) > parseInt(this.form.hoursTo)) {
                     this.erroeMsg = '结束作業時間需大于开始作業時間';
                 } else {
                     this.erroeMsg = '';
@@ -291,7 +291,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取合同资料中...' });
             this.$axios({
-                url: '/api/getcontractforupdate',
+                url: '/api/Contract/api_getcontractforupdate',
                 params: {
                     id: this.$route.params.id
                 },
@@ -304,21 +304,21 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     const form = {
-                        Title: data.Title || '',
-                        Content: data.Content || '',
-                        'employee.ID': (data.employee && data.employee.ID) || '',
-                        FromDate: data.FromDate || '',
-                        ToDate: data.ToDate || '',
-                        'paymentterm.ID': (data.paymentterm && data.paymentterm.ID) || '',
-                        UnitPrice: data.UnitPrice || '',
-                        HoursFrom: data.HoursFrom || '',
-                        HoursTo: data.HoursTo || '',
-                        OverTimePrice: data.OverTimePrice || '',
-                        UnderTimePrice: data.UnderTimePrice || '',
-                        CalculateUnit: data.CalculateUnit || '',
-                        'salesperson.ID': (data.salesperson && data.salesperson.ID) || '',
-                        'customer.ID': (data.customer && data.customer.ID) || '',
-                        BusinessFlow: data.BusinessFlow || ''
+                        title: data.title || '',
+                        content: data.content || '',
+                        'employee.id': (data.employee && data.employee.id) || '',
+                        fromDate: data.fromDate || '',
+                        toDate: data.toDate || '',
+                        'paymentterm.id': (data.paymentterm && data.paymentterm.id) || '',
+                        unitPrice: data.unitPrice || '',
+                        hoursFrom: data.hoursFrom || '',
+                        hoursTo: data.hoursTo || '',
+                        overTimePrice: data.overTimePrice || '',
+                        underTimePrice: data.underTimePrice || '',
+                        calculateUnit: data.calculateUnit || '',
+                        'salesperson.id': (data.salesperson && data.salesperson.id) || '',
+                        'customer.id': (data.customer && data.customer.id) || '',
+                        businessFlow: data.businessFlow || ''
                     };
                     this.form = form;
                 } else {
@@ -358,9 +358,9 @@ export default {
         },
         getPaymenttermsforselect() {
             this.$axios({
-                url: '/api/paymenttermsforselect'
+                url: '/api/PaymentTerm/api_paymenttermsforselect'
             }).then(res => {
-                if (res) {
+                if (res && res.code === 0) {
                     this.paymenttermsforselect = res.data || [];
                 }
             });
@@ -393,8 +393,8 @@ export default {
             });
         },
         completeMonth() {
-            const [ ,, fromD = '' ] = this.form.FromDate.split('-');
-            const [ toY = '', toM = '', toD = '' ] = this.form.ToDate.split('-');
+            const [ ,, fromD = '' ] = this.form.fromDate.split('-');
+            const [ toY = '', toM = '', toD = '' ] = this.form.toDate.split('-');
             if (Number(fromD) === 1 && (new Date(toY, toM, '0').getDate() === Number(toD))) {
                 return false;
             } else {
@@ -419,17 +419,17 @@ export default {
             } else {
                 params.append('ningetsu', '');
             }
-            let url = '/api/submitcontract';
+            let url = '/api/Contract/api_createcontract';
             if (this.$route.params.id) {
-                params.append('ID', this.$route.params.id);
-                url = '/api/updatecontract';
+                params.append('id', this.$route.params.id);
+                url = '/api/Contract/api_updatecontract';
             }
             this.$axios({
                 method: 'POST',
                 url,
                 params,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'content-Type': 'multipart/form-data'
                 },
                 custom: {
                     loading,
@@ -456,8 +456,8 @@ export default {
             this.$axios({
                 url: '/api/calculateningetsu',
                 params: {
-                    FromDate: this.form.FromDate,
-                    ToDate: this.form.ToDate
+                    fromDate: this.form.fromDate,
+                    toDate: this.form.toDate
                 }
             }).then(res => {
                 if (res) {
@@ -494,14 +494,14 @@ export default {
         formatLabel(val, type) {
             if (type === 'employee') {
                 for (let item of this.workList) {
-                    if (item.ID === val) {
+                    if (item.id === val) {
                         return item.Name;
                     }
                 }
             } else if (type === 'payment') {
                 for (let item of this.paymenttermsforselect) {
-                    if (item.ID === val) {
-                        return item.Title;
+                    if (item.id === val) {
+                        return item.title;
                     }
                 }
             } else if (type === 'unit') {
@@ -512,14 +512,14 @@ export default {
                 }
             } else if (type === 'sales') {
                 for (let item of this.salespersonforselect) {
-                    if (item.ID === val) {
+                    if (item.id === val) {
                         return item.Name;
                     }
                 }
             } else if (type === 'custom') {
                 for (let item of this.customerList) {
-                    if (item.ID === val) {
-                        return item.Title;
+                    if (item.id === val) {
+                        return item.title;
                     }
                 }
             }

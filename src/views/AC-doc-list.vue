@@ -3,7 +3,7 @@
         <el-form slot="header" class="main-header" inline>
             <el-form-item>
                 <el-select placeholder="伝票タイプ" size="mini" clearable v-model="selectValue" @change="changeData">
-                    <el-option v-for="(item) in selectList" :key="item.Type" :label="item.Text" :value="item.Type"></el-option>
+                    <el-option v-for="(item) in selectList" :key="item.type" :label="item.text" :value="item.type"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -106,7 +106,7 @@ export default {
         getDetailData(id) {
             const loading = this.$loading({ lock: true, text: '正在获取数据' });
             this.$axios({
-                url: '/api/getdocumentbyno',
+                url: '/api/ACDoc/api_getdocumentbyno',
                 params: {
                     docno: id
                 },
@@ -125,7 +125,7 @@ export default {
         getSelectList() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
-                url: '/api/doctypesforselect',
+                url: '/api/ACDoc/api_doctypesforselect',
                 custom: {
                     loading,
                     vm: this
@@ -143,7 +143,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
-                url: '/api/getdocumentlist',
+                url: '/api/ACDoc/api_getdocumentlist',
                 params: {
                     doctype: this.selectValue,
                     fromdate: this.dateValue ? this.dateValue[0] : '',
@@ -159,8 +159,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.tableData = res.data || [];
-                    this.total = res.total;
+                    const data = res.data || {};
+                    this.tableData = data.data || [];
+                    this.total = data.total;
                     if (this.tableData.length) {
                         this.getDetailData(this.tableData[0].DocNo);
                     }

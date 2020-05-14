@@ -13,13 +13,13 @@
         <div class="salary-wrapper">
             <p>株式会社ユアパートナー</p>
             <el-row>
-                <el-col :span="6">{{form.Period || period}}給料明細書</el-col>
+                <el-col :span="6">{{form.Periperiodod || period}}給料明細書</el-col>
                 <el-col :span="3" class="label">部門-所属</el-col>
-                <el-col :span="3">{{form.Team || '-'}}</el-col>
+                <el-col :span="3">{{form.teamName || '-'}}</el-col>
                 <el-col :span="3" class="label">社員</el-col>
-                <el-col :span="3">{{form.EmpeeNo || '-'}}</el-col>
+                <el-col :span="3">{{form.employeeNo || '-'}}</el-col>
                 <el-col :span="3" class="label">氏名</el-col>
-                <el-col :span="3">{{form.Name || '-'}}</el-col>
+                <el-col :span="3">{{form.name || '-'}}</el-col>
             </el-row>
             <div class="row-wrapper multiple-row">
                 <el-row>
@@ -31,10 +31,10 @@
                     <el-col :span="6" class="label">総支給額</el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="4" :offset="2">{{formatPrice(form.ProjectSalary)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.BaseSalary)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.OverTimeSalary)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.TravelFare)}}</el-col>
+                    <el-col :span="4" :offset="2">{{formatPrice(form.projectSalary)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.benchSalary)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.overtimeSalary)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.travelFare)}}</el-col>
                     <el-col :span="6">{{formatPrice(allowance)}}</el-col>
                 </el-row>
             </div>
@@ -48,9 +48,9 @@
                     <el-col :span="6" class="label">控除計</el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="4" :offset="2">{{formatPrice(form.HireInsurance)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.HireInsurance)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.IncomeTax)}}</el-col>
+                    <el-col :span="4" :offset="2">{{formatPrice(form.hireInsurance)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.hireInsurance)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.incomeTax)}}</el-col>
                     <el-col :span="4"></el-col>
                     <el-col :span="6">{{formatPrice(meter)}}</el-col>
                 </el-row>
@@ -66,7 +66,7 @@
             <div class="row-wrapper">
                 <el-row>
                     <el-col :span="2" class="label">出勤日数</el-col>
-                    <el-col :span="2">{{form.WorkDays}}天</el-col>
+                    <el-col :span="2">{{form.workDays || 0}}天</el-col>
                 </el-row>
             </div>
         </div>
@@ -88,13 +88,13 @@ export default {
                 Team: '',
                 EmpeeNo: '',
                 Name: '',
-                ProjectSalary: 0,
-                BaseSalary: 0,
-                OverTimeSalary: 0,
-                TravelFare: 0,
-                HireInsurance: 0,
-                IncomeTax: 0,
-                WorkDays: 0
+                projectSalary: 0,
+                benchSalary: 0,
+                overtimeSalary: 0,
+                travelFare: 0,
+                hireInsurance: 0,
+                incomeTax: 0,
+                workDays: 0
             }
         };
     },
@@ -108,19 +108,19 @@ export default {
     computed: {
         allowance() {
             const {
-                ProjectSalary = 0,
-                BaseSalary = 0,
-                OverTimeSalary = 0,
-                TravelFare = 0
+                projectSalary = 0,
+                benchSalary = 0,
+                overtimeSalary = 0,
+                travelFare = 0
             } = this.form;
-            return Number(ProjectSalary) + Number(BaseSalary) + Number(OverTimeSalary) + Number(TravelFare);
+            return Number(projectSalary) + Number(benchSalary) + Number(overtimeSalary) + Number(travelFare);
         },
         meter() {
             const {
-                HireInsurance = 0,
-                IncomeTax = 0
+                hireInsurance = 0,
+                incomeTax = 0
             } = this.form;
-            return Number(HireInsurance) * 2 + Number(IncomeTax);
+            return Number(hireInsurance) * 2 + Number(incomeTax);
         }
     },
     methods: {
@@ -148,6 +148,7 @@ export default {
             });
         },
         formatPrice(value) {
+            if (!value) return 0;
             return Number(value).toLocaleString();
         }
     }

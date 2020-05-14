@@ -4,10 +4,10 @@
         :visible.sync="visible"
         @close="close">
         <el-form size="small" label-width="100px" ref="form" :model="form" :rules="rules">
-            <el-form-item label="モジュール" prop="Module">
-                <el-select v-model="form.Module">
-                    <el-option v-for="item in modules" :key="item" :value="item"></el-option>
-                </el-select>
+            <el-form-item label="モジュール" prop="tags">
+                <el-checkbox-group v-model="form.tags" size="mini">
+                    <el-checkbox-button v-for="(item, i) in allTags" :label="item.id" :key="i">{{item.tagName}}</el-checkbox-button>
+                </el-checkbox-group>
             </el-form-item>
             <el-form-item label="質問１" prop="ask1">
                 <el-input v-model="form.ask1"></el-input>
@@ -37,21 +37,23 @@
 
 <script>
 export default {
+    props: ['allTags'],
     data() {
         return {
             visible: false,
+            id: '',
             form: {
-                ID: '',
-                Module: '',
+                id: '',
+                tags: [],
                 ask1: '',
                 ask2: '',
                 ask3: '',
                 answer: '',
-                importance: '',
+                importance: 0,
                 comment: ''
             },
             rules: {
-                Module: [{
+                tags: [{
                     required: true, message: '请填写モジュール'
                 }],
                 ask1: [{
@@ -59,36 +61,44 @@ export default {
                 }],
                 answer: [{
                     required: true, message: '请填写回答'
-                }],
-                comment: [{
-                    required: true, message: '请填写コメント'
-                }],
+                }]
             },
             callback: null
         };
     },
-    inject: ['modules'],
     mounted() {
         this.$root.$off('SHOW_EDIT_DIALOG');
         this.$root.$on('SHOW_EDIT_DIALOG', ({ data = null, callback = null }) => {
-            const res = { ...(data || {})};
-            if (res.Module) {
-                res.Module = res.Module.toUpperCase();
+            if (data) {
+                this.id = data.id;
+                this.getData(data.id);
             }
-            for (let key in this.form) {
-                this.form[key] = res[key];
-            }
-            this.callback = callback;
             this.visible = true;
+            this.callback = callback;
         });
     },
     methods: {
+        getData(id) {
+            const loading = this.$loading({ lock: true, text: '获取数据中' });
+            this.$axios({
+                url: '/api/QA/api_getqabyid',
+                params: {
+                    qaid: id
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    this.form = { ...data };
+                }
+            });
+        },
         submit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     const loading = this.$loading({ lock: true, test: '正在保存中...' });
                     const params = {
-                        Tags: '',
+                        Tags: this.form.tags || [],
                         Ask1: this.form.ask1 || '',
                         Ask2: this.form.ask2 || '',
                         Ask3: this.form.ask3 || '',
@@ -96,13 +106,18 @@ export default {
                         Comment: this.form.comment || '',
                         Importance: this.form.importance || 0
                     };
+                    if (this.id) {
+                        params.ID = this.id;
+                    }
                     this.$axios({
+                        method: 'POST',
                         url: '/api/QA/api_updateqa',
                         params,
                         custom: {
                             loading,
                             vm: this
-                        }
+                        },
+                        formData: true
                     }).then(res => {
                         loading.close();
                         if (res && res.code === 0) {

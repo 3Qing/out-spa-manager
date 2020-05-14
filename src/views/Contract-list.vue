@@ -141,7 +141,7 @@
 import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
-import { formatTime } from '@_public/utils';
+import { formatTime, apiDownloadFile } from '@_public/utils';
 export default {
     components: {
         MainWrapper,
@@ -301,14 +301,19 @@ export default {
             this.getData();
         },
         downloadPDF(row) {
-            const url = process.env.NODE_ENV === 'production' ? 'http://erp.your-partner.co.jp' : '/proxy';
-            window.open(`${url}/api/downloadcontractpdf?conid=${row.ID}`, '_blank');
+            apiDownloadFile({
+                vm: this,
+                url: `/api/Contract/api_downloadcontractpdf?conid=${row.id}`,
+                filename: `${Date.now()}.pdf`
+            });
+            // const url = process.env.NODE_ENV === 'production' ? 'http://erp.your-partner.co.jp' : '/proxy';
+            // window.open(`${url}/api/downloadcontractpdf?conid=${row.id}`, '_blank');
         },
         uploadFile({ file, opt }) {
             const loading = this.$loading({ lock: true, text: '正在上传文件' });
             const params = new FormData();
             params.append('file', file);
-            params.append('conid', opt.scope.row.ID);
+            params.append('conid', opt.scope.row.id);
             this.$axios({
                 method: 'POST',
                 url: '/api/uploadcontractpdf',
@@ -343,7 +348,7 @@ export default {
             this.$router.push({
                 name: 'ContractEdit',
                 params: {
-                    id: row.ID
+                    id: row.id
                 }
             });
         },
@@ -388,7 +393,7 @@ export default {
             const params = new FormData();
             params.append('fromdate', this.datetime[0]);
             params.append('todate', this.datetime[1]);
-            params.append('ID', this.curRow.ID);
+            params.append('id', this.curRow.id);
             if (ningetsu) {
                 ningetsu.forEach((item, index) => {
                     params.append(`ningetsu[${index}]`, item);

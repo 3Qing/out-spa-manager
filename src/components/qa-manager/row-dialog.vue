@@ -6,19 +6,19 @@
         @close="close">
         <el-form size="small" label-width="80px" label-suffix=":">
             <el-form-item label="質問1">
-                <p>{{form.ask1}}</p>
+                <p>{{data.ask1}}</p>
             </el-form-item>
             <el-form-item label="質問2">
-                <p>{{form.ask2}}</p>
+                <p>{{data.ask2}}</p>
             </el-form-item>
             <el-form-item label="質問3">
-                <p>{{form.ask3}}</p>
+                <p>{{data.ask3}}</p>
             </el-form-item>
             <el-form-item label="回答">
-                <p>{{form.answer}}</p>
+                <p>{{data.answer}}</p>
             </el-form-item>
             <el-form-item label="コメント">
-                <p>{{form.comment}}</p>
+                <p>{{data.comment}}</p>
             </el-form-item>
         </el-form>
         <div slot="footer" style="text-align: center">
@@ -36,7 +36,34 @@ export default {
             default: false
         }
     },
+    data() {
+        return {
+            data: {}
+        };
+    },
+    watch: {
+        visible: function(val) {
+            if (val) {
+                this.getData(this.form.id);
+            }
+        }
+    },
     methods: {
+        getData(id) {
+            const loading = this.$loading({ lock: true, text: '获取数据中' });
+            this.$axios({
+                url: '/api/QA/api_getqabyid',
+                params: {
+                    qaid: id
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    this.data = { ...data };
+                }
+            });
+        },
         close() {
             this.$emit('close');
         }
