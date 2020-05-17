@@ -295,7 +295,8 @@ export default {
             form.birthday = data.birthday && formatTime(data.birthday);
             form.startWorkDate = data.startWorkDate && formatTime(data.startWorkDate);
             form.arriveJPDate = data.arriveJPDate && formatTime(data.arriveJPDate);
-            form.certificates = data.certificates && data.certificates.map(item => item.id);
+            form.certificates = data.certificates && data.certificates.map(item => item.certificateID);
+            console.log(form);
             this.form = { ...form };
         },
         // 部门
@@ -407,7 +408,6 @@ export default {
         },
         getSubmitParams(type) {
             let params = {
-                'Salary.EmployeeID': this.form.employeeTypeID,
                 'Certificates': this.form.certificates.map(item => ({
                     certificateID: item,
                     passDate: '2020-01-01'

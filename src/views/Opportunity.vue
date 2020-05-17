@@ -1,10 +1,11 @@
 <template>
     <main-wrapper>
         <div class="main-header" slot="header">
-            <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
             <el-select v-model="status" size="mini" style="margin-left: 10px;" @change="changeHandle">
                 <el-option v-for="(item, i) in allStatus" :key="i" :label="item.label" :value="item.value"></el-option>
             </el-select>
+            <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
+            <el-button type="primary" size="mini" @click="showTagDialog">标签管理</el-button>
         </div>
         <el-table :data="tableData" size="small">
             <el-table-column label="标题" prop="title" show-overflow-tooltip></el-table-column>
@@ -26,8 +27,9 @@
             </el-table-column>
             <el-table-column label="提案次数" prop="salesCaseCnt" width="120px"></el-table-column>
             <el-table-column label="营业担当" prop="salesPerson" width="120px"></el-table-column>
-            <el-table-column label="操作" width="160px">
+            <el-table-column label="操作" width="260px">
                 <template slot-scope="scope">
+                    <el-button type="primary" size="mini" @click="handleAction(scope.row)">提案</el-button>
                     <el-button type="primary" size="mini" @click="showDialog(2, scope.row)">编辑</el-button>
                     <el-button type="danger" size="mini" @click="deleteHandler(scope)">删除</el-button>
                 </template>
@@ -39,7 +41,13 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <opport-dialog :allStatus="allStatus"></opport-dialog>
+        <opport-dialog :allStatus="opportStatus"></opport-dialog>
+        <tag-dialog :visible="visibleDialog" @close="visibleDialog = false" @updateTag="getTags"></tag-dialog>
+        <apply-dialog
+            :visible="showApply"
+            :data="curData"
+            @close="showApply = false"
+            @update="getData"></apply-dialog>
     </main-wrapper>
 </template>
 
@@ -48,10 +56,14 @@ import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import { formatTime } from '@_public/utils';
 import OpportDialog from '@components/opportunity/dialog';
+import TagDialog from '@/components/opportunity/tag-dialog';
+import ApplyDialog from '@components/opportunity/apply-dialog';
 export default {
     components: {
         MainWrapper,
-        OpportDialog
+        OpportDialog,
+        TagDialog,
+        ApplyDialog
     },
     data() {
         return {
@@ -70,7 +82,11 @@ export default {
                 label: '终止', value: 2
             }, {
                 label: '取消', value: 3
-            }]
+            }],
+            visibleDialog: false,
+            curData: {},
+            opportStatus: [],
+            showApply: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -78,6 +94,7 @@ export default {
             vm.getData();
             vm.getTags();
             vm.getCustomer();
+            vm.getOpportStatus();
         });
     },
     computed: {
@@ -116,6 +133,15 @@ export default {
                 }
             });
         },
+        getOpportStatus() {
+            this.$axios({
+                url: '/api/Opportunity/api_opportunitystatusforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.opportStatus = res.data || [];
+                }
+            });
+        },
         getTags() {
             this.$axios({
                 url: '/api/Opportunity/api_getopportunitytaglist'
@@ -139,6 +165,7 @@ export default {
             this.getData();
         },
         showDialog(type, row) {
+            console.log(row);
             this.$root.$emit('SHOW_OPPORT_DIALOG', {
                 data: type === 2 ? row : null,
                 tags: this.tags,
@@ -152,8 +179,51 @@ export default {
             this.$confirm('是否删除', '删除', {
                 type: 'warning'
             }).then(() => {
-                console.log(scope);
+                this.$axios({
+                    url: '/api/Opportunity/api_deleteopportunity',
+                    params: {
+                        id: scope.row.id
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getData();
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: res.message
+                        });
+                    }
+                });
             }).catch(() => {});
+        },
+        showTagDialog() {
+            this.visibleDialog = true;
+        },
+        handleAction(data) {
+            this.showApply = true;
+            this.curData = { ...data };
+            // const loading = this.$loading({ lock: true, text: '正在提交中' });
+            // this.$axios({
+            //     url: '/api/Opportunity/api_applyforopportunity'
+            // }).then(res => {
+            //     loading.close();
+            //     if (res && res.code === 0) {
+            //         this.$message({
+            //             type: 'success',
+            //             message: '提案成功'
+            //         });
+            //         this.getData();
+            //     } else {
+            //         this.$message({
+            //             type: 'warning',
+            //             message: res.message
+            //         });
+            //     }
+            // });
         }
     }
 };

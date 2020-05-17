@@ -1,12 +1,13 @@
 <template>
     <div class="upload-wrapper">
-        <div class="upload">
+        <div :class="[opt.showIcon && 'upload-icon', 'upload']" :title="opt.btnText">
             <input
                 type="file"
-                title=""
+                :title="opt.btnText"
                 :accept="opt.accept"
                 @change="beforeUpload">
-            <p>{{opt.btnText}}</p>
+            <p v-if="!opt.showIcon">{{opt.btnText}}</p>
+            <i v-else class="iconfont icon-upload"></i>
         </div>
         <div class="upload-preview" v-if="filename && opt.show">
             <i class="el-icon-document"></i>
@@ -24,7 +25,8 @@ export default {
             default: () => ({
                 btnText: '上传文件',
                 accept: 'image/*, application/pdf',
-                show: true
+                show: true,
+                showIcon: false
             })
         }
     },
@@ -87,6 +89,14 @@ export default {
             font-size: 0;
             outline: none;
             cursor: pointer;
+        }
+        &.upload-icon {
+            text-align: center;
+            color: #1473B7;
+            background-color: transparent;
+            &:hover {
+                background-color: transparent;
+            }
         }
     }
     .upload-preview {

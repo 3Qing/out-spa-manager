@@ -67,14 +67,12 @@ export default {
                 id: '',
                 tagName: ''
             };
-            this.inputVisible = false;
+            this.inputVisible =  false;
         },
         getTags() {
-            this.loading = true;
             this.$axios({
-                url: '/api/QA/api_getqatags'
+                url: '/api/Opportunity/api_getopportunitytaglist'
             }).then(res => {
-                this.loading = false;
                 if (res && res.code === 0) {
                     this.tags = res.data || [];
                 }
@@ -85,7 +83,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
-                    url: '/api/QA/api_deleteqatag',
+                    url: '/api/Opportunity/api_deleteopportunitytag',
                     params: {
                         id: tag.id
                     }
@@ -123,7 +121,7 @@ export default {
                 }
                 this.$axios({
                     method: 'POST',
-                    url: '/api/QA/api_updateqatag',
+                    url: '/api/Opportunity/api_updateopportunitytag',
                     params,
                     formData: true
                 }).then(res => {

@@ -30,7 +30,8 @@ import {
     FETCH_MENUS,
     FETCH_TEAMS,
     FETCH_ACTIONS,
-    CHANGE_TAB_TITLE
+    CHANGE_TAB_TITLE,
+    CHANEG_USER_INFO
 } from '@vuex/actions';
 
 export default {
@@ -153,6 +154,13 @@ export default {
                     this.$store.dispatch({
                         type: FETCH_ACTIONS,
                         res: data.role || {}
+                    });
+                    this.$store.dispatch({
+                        type: CHANEG_USER_INFO,
+                        res: {
+                            name: data.name,
+                            employeeNo: data.employeeNo
+                        }
                     });
                     let tabTitle = '';
                     let routeName = '';

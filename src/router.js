@@ -29,6 +29,10 @@ import ProfitChart from '@views/Profit-chart';
 import BalanceSheet from '@views/Balance-sheet';
 import CustomerManager from '@views/Customer-manager';
 import Opportunity from '@views/Opportunity';
+import Estimation from '@views/Estimation';
+import EstimationList from '@views/Estimation-list';
+import PurchaseOrder from '@views/Purchase-order';
+import PurchaseEdit from '@views/Purchase-edit';
 
 
 Vue.use(Router);
@@ -165,6 +169,22 @@ const router = new Router({
         path: '/opportunity',
         name: 'Opportunity',
         component: Opportunity
+    }, {
+        path: '/estimation/:id',
+        name: 'Estimation',
+        component: Estimation
+    }, {
+        path: '/estimationlist',
+        name: 'EstimationList',
+        component: EstimationList
+    }, {
+        path: '/purchaseorder',
+        name: 'PurchaseOrder',
+        component: PurchaseOrder
+    }, {
+        path: '/purchase/:id',
+        name: 'PurchaseEdit',
+        component: PurchaseEdit
     }
     ]
 });

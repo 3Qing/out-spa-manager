@@ -53,3 +53,22 @@ export function apiDownloadFile({ vm, url, filename }) {
         }
     });
 }
+
+export function imageFileToPreview({ vm, url, params }) {
+    vm.$axios({
+        url,
+        params,
+        headers: {
+            'Content-Type': 'application/octet-stream'
+        },
+        responseType: 'blob'
+    }).then(res => {
+        if (res) {
+            const csvData = new Blob([res]);
+            const url = window.URL.createObjectURL(csvData);
+            vm.$root.$emit('SHOW_PICTURE_DIALOG', {
+                url: url
+            });
+        }
+    });
+}

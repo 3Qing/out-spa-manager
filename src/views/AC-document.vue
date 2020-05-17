@@ -12,6 +12,7 @@
             :employees="employees"
             :customs="customs"
             :drcr="drcr"
+            :vendors="vendors"
             :errors="errors"></card-item>
     </main-wrapper>
 </template>

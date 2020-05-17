@@ -25,7 +25,8 @@ const state = {
     tabTitle: '首页',
     menus: LOGIN_MENUS,
     actions: [],
-    teams: []
+    teams: [],
+    userInfo: {}
 };
 
 export default new Vuex.Store({

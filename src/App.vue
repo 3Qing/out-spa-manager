@@ -28,6 +28,8 @@
             <el-header class="clearfix web-header" height="48px" v-if="showMenu">
                 <span class="fl">{{TAB_TITLE}}</span>
                 <div class="head-right fr" v-if="activeRouter !== 'Login'">
+                    <span>{{USER_INFO.employeeNo}}</span>
+                    <span>{{USER_INFO.name}}</span>
                     <span class="link" @click="logout">登出</span>
                 </div>
             </el-header>
@@ -43,7 +45,8 @@ import {
     FETCH_TEAMS,
     FETCH_ACTIONS,
     CHANGE_ISH5,
-    CHANGE_TAB_TITLE
+    CHANGE_TAB_TITLE,
+    CHANEG_USER_INFO
 } from '@vuex/actions';
 import { LOGIN_MENUS } from '@_public/router.config';
 
@@ -67,7 +70,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['TAB_TITLE', 'MENUS']),
+        ...mapGetters(['TAB_TITLE', 'MENUS', 'USER_INFO']),
         showArrow() {
             return this.$route.name !== 'Login' && this.$route.name !== 'Home';
         }
@@ -128,6 +131,13 @@ export default {
                 this.$store.dispatch({
                     type: CHANGE_TAB_TITLE,
                     title: tabTitle
+                });
+                this.$store.dispatch({
+                    type: CHANEG_USER_INFO,
+                    res: {
+                        name: tmp.name,
+                        employeeNo: tmp.employeeNo
+                    }
                 });
                 if (routeHistory) {
                     this.activeRouter = JSON.parse(routeHistory).name;

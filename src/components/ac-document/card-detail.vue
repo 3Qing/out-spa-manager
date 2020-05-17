@@ -52,6 +52,11 @@
                     <span>{{scope.row.teamName ||'-' }}</span>
                 </template>
             </el-table-column>
+            <el-table-column label="仕入先">
+                <template slot-scope="scope">
+                    <span>{{scope.row.vendorid ||'-' }}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="従業員" prop="employeeName">
                 <template slot-scope="scope">
                     <span>{{scope.row.employeeName ||'-' }}</span>
@@ -77,7 +82,8 @@ export default {
         acCounts: Array,
         teams: Array,
         employees: Array,
-        customs: Array
+        customs: Array,
+        vendors: Array
     },
     computed: {
         ...mapGetters(['IS_H5'])

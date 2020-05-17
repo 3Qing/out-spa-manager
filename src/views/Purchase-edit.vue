@@ -64,9 +64,13 @@
                         <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="顧客" prop="customer">
-                    <el-select v-model="form['customer.id']" size="small">
-                        <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                <el-form-item label="供应商">
+                    <el-select v-model="form.vendorid">
+                        <el-option
+                            v-for="item in vendors"
+                            :label="item.title"
+                            :value="item.id"
+                            :key="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="商流備考" prop="businessFlow">
@@ -135,9 +139,6 @@
                 <el-form-item label="営業担当">
                     <span>{{formatLabel(form['salesperson.id'], 'sales')}}</span>
                 </el-form-item>
-                <el-form-item label="顧客">
-                    <span>{{formatLabel(form['customer.id'], 'custom')}}</span>
-                </el-form-item>
                 <el-form-item label="商流備考">
                     <span>{{form.businessFlow}}</span>
                 </el-form-item>
@@ -173,7 +174,6 @@ export default {
                 underTimePrice: '',
                 calculateUnit: '',
                 'salesperson.id': '',
-                'customer.id': '',
                 businessFlow: '',
                 ningetsu: ''
             },
@@ -215,7 +215,7 @@ export default {
                 ],
             },
             workList: [],
-            customerList: [],
+            vendors: [],
             paymenttermsforselect: [],
             salespersonforselect: [],
             erroeMsg: '',
@@ -231,7 +231,7 @@ export default {
                 vm.getData();
             }
             vm.getWorkList(); // 员工列表
-            vm.getCustomerList(); // 客户列表
+            vm.getVendors(); // 客户列表
             vm.getPaymenttermsforselect(); // 支付条件清单
             vm.getSalespersonforselect(); // 销售人员
         });
@@ -285,9 +285,9 @@ export default {
             }
         },
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取合同资料中...' });
+            const loading = this.$loading({ lock: true, text: '正在获取资料中...' });
             this.$axios({
-                url: '/api/Contract/api_getcontractforupdate',
+                url: '/api/PurchaseOrder/api_getpoforupdate',
                 params: {
                     id: this.$route.params.id
                 },
@@ -313,7 +313,6 @@ export default {
                         underTimePrice: data.underTimePrice || '',
                         calculateUnit: data.calculateUnit || '',
                         'salesperson.id': (data.salesperson && data.salesperson.id) || '',
-                        'customer.id': (data.customer && data.customer.id) || '',
                         businessFlow: data.businessFlow || ''
                     };
                     this.form = form;
@@ -343,12 +342,12 @@ export default {
         remoteMethod(keyword) {
             this.getWorkList(keyword);
         },
-        getCustomerList() {
+        getVendors() {
             this.$axios({
-                url: '/api/Customer/api_customersforselect'
+                url: '/api/Customer/api_vendorsforselect'
             }).then(res => {
                 if (res && res.code === 0) {
-                    this.customerList = res.data || [];
+                    this.vendors = res.data || [];
                 }
             });
         },
@@ -415,10 +414,12 @@ export default {
             } else {
                 params.append('ningetsu', '');
             }
-            let url = '/api/Contract/api_createcontract';
-            if (this.$route.params.id) {
+            let url = '/api/PurchaseOrder/api_createpocontract';
+            if (this.$route.params.id !== 'new') {
                 params.append('id', this.$route.params.id);
-                url = '/api/Contract/api_updatecontract';
+                url = '/api/PurchaseOrder/api_updatepocontract';
+            } else {
+                params.append('id', 0);
             }
             this.$axios({
                 method: 'POST',
@@ -512,8 +513,8 @@ export default {
                         return item.Name;
                     }
                 }
-            } else if (type === 'custom') {
-                for (let item of this.customerList) {
+            } else if (type === 'vendor') {
+                for (let item of this.vendors) {
                     if (item.id === val) {
                         return item.title;
                     }

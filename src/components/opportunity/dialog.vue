@@ -23,7 +23,7 @@
             </el-form-item>
             <el-form-item label="商家状态">
                 <el-select v-model="form.status">
-                    <el-option v-for="item in allStatus" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="招聘标题">
@@ -105,10 +105,12 @@ export default {
                 const form = { ...data };
                 form.pubDate = formatTime(form.pubDate);
                 form.closeDate = formatTime(form.closeDate);
-                if (!form.customerID) form.customerID = '';
+                if (!form.customerID) {
+                    form.customerID = '';
+                }
                 form.tags = [];
                 this.form = { ...form };
-                this.getTags(form);
+                this.getInfo(form);
                 this.edit = true;
             }
             this.callback = callback;
@@ -118,7 +120,7 @@ export default {
         });
     },
     methods: {
-        getTags() {
+        getInfo() {
             this.$axios({
                 url: '/api/Opportunity/api_getopportunitybyid',
                 params: {
@@ -127,7 +129,13 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     const form = { ...this.form };
-                    const tags = (res.data && res.data.tags) || [];
+                    const data  = res.data || {};
+                    const tags = data.tags || [];
+                    if (!data.customerID) {
+                        if (data.customerTitle) {
+                            form.customerID = data.customerTitle;
+                        }
+                    }
                     form.tags = tags.map(item => item.id);
                     this.form = { ...form };
                 }

@@ -1,6 +1,6 @@
 <template>
-    <el-dialog custom-class="intro-dialog" title="介绍文" :visible.sync="visible" @close="close">
-        <el-form label-width="120px" size="mini">
+    <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" @close="close">
+        <el-form label-width="140px" size="mini">
             <el-row v-if="!IS_H5">
                 <el-col :span="12">
                     <el-form-item label="英語姓">
@@ -74,7 +74,7 @@
             </el-form-item>
             <el-form-item label="状态">
                 <el-select v-model="form.status">
-                    <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                    <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.text"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="提案文">
@@ -103,7 +103,9 @@
                     value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item label="简历附件存储路径">
-                <el-input v-model="form.attachResume"></el-input>
+                <upload
+                    :opt="{ btnText: '上传附件', accept: 'application/pdf', show: false, showIcon: true }"
+                    @upload="uploadFile"></upload>
             </el-form-item>
         </el-form>
         <el-button type="primary" size="small" @click="submit">确认</el-button>
@@ -112,6 +114,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Upload from '@components/upload';
 export default {
     props: {
         allStatus: {
@@ -119,19 +122,38 @@ export default {
             default: () => {}
         }
     },
+    components: {
+        Upload
+    },
     data() {
         return {
-            tmpData: {},
-            data: {},
-            form: {},
-            empStatus: '',
+            form: {
+                furigana_FirstName: '',
+                furigana_LastName: '',
+                firstName: '',
+                lastName: '',
+                birthday: '',
+                nationality: '',
+                liveCity: '',
+                mainSkill: '',
+                sex: '',
+                salesFromDate: '',
+                avaiableDate: '',
+                status: '',
+                proposeText: '',
+                comment: '',
+                costFrom: '',
+                costTo: '',
+                salesFrom: '',
+                salesTo: '',
+                startWorkDate: '',
+                attachResume: ''
+            },
             sexs: [{
                 label: '男', value: true
             }, {
                 label: '女', value: false
             }],
-            date: '',
-            content: '',
             showDate: false,
             visible: false,
             callback: null
@@ -141,15 +163,15 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     mounted() {
+        this.getSelect();
         this.$root.$off('SHOW_INTRO_DIALOG');
         this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false }) => {
-            this.tmpData = data || {};
-            this.empStatus = this.tmpData.status || 1;
-            this.showDate = showDate;
-            if (!showDate) {
-                this.createProposeText(data);
-            } else {
-                this.getProposeText(data);
+            if (data) {
+                if (!showDate) {
+                    this.createProposeText(data);
+                } else {
+                    this.getProposeText(data);
+                }
             }
             this.callback = callback;
             this.visible = true;
@@ -158,10 +180,35 @@ export default {
     methods: {
         close() {
             this.visible = false;
-            this.tmpData = {};
-            this.date = '';
-            this.empStatus = '';
-            this.content = '';
+            this.form = {
+                furigana_FirstName: '',
+                furigana_LastName: '',
+                firstName: '',
+                lastName: '',
+                birthday: '',
+                nationality: '',
+                liveCity: '',
+                mainSkill: '',
+                sex: '',
+                salesFromDate: '',
+                avaiableDate: '',
+                status: '',
+                proposeText: '',
+                comment: '',
+                costFrom: '',
+                costTo: '',
+                salesFrom: '',
+                salesTo: '',
+                startWorkDate: '',
+                attachResume: ''
+            };
+        },
+        getSelect() {
+            this.$axios({
+                url: '/api/Candidate/candidatetypeforselect'
+            }).then(res => {
+                console.log(res);
+            });
         },
         createProposeText(data) {
             this.$axios({
@@ -185,10 +232,6 @@ export default {
                 }
             }).then(res => {
                 if (res && res.code === 0) {
-                    this.content = res.data.proposeText;
-                    this.empStatus = res.data.status;
-                    this.avaiableDate = res.data.avaiableDate;
-                    this.data = { ...res.data };
                     this.form = { ...res.data };
                 } else {
                     this.$message({
@@ -223,13 +266,8 @@ export default {
                 AvaiableDate: this.form.avaiableDate,
                 ProposeText: this.form.proposeText,
                 Status: this.form.status || 1,
-                ID: this.form.id
+                ID: this.form.id || 0
             };
-            // if (this.showDate) {
-            //     params.id = this.tmpData.id;
-            // } else {
-            //     params['EmployeeID'] = this.tmpData.id;
-            // }
             
             this.$axios({
                 method: 'POST',
@@ -253,6 +291,9 @@ export default {
                     });
                 }
             });
+        },
+        uploadFile({ file }) {
+            this.form.attachResume = file;
         }
     }
 };

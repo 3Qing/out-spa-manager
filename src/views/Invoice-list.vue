@@ -30,8 +30,12 @@
             <el-table-column label="入金予定日" prop="planCollectDate"></el-table-column>
             <el-table-column label="実際入金日" prop="actualCollectDate"></el-table-column>
             <el-table-column label="入金額" prop="collectAmount"></el-table-column>
-            <el-table-column label="アクション" width="320px">
+            <el-table-column label="アクション" width="640px">
                 <template slot-scope="scope">
+                    <i class="iconfont icon-chengyi_pc_preview link" color="primary" @click="preview(scope.row)"></i>
+                    <!-- <el-button type="primary" size="mini" @click="preview(scope.row)">プレビュー（预览）</el-button> -->
+                    <el-button type="primary" size="mini" @click="downloadFile('pdf', scope.row)">PDFダウンロード</el-button>
+                    <el-button type="primary" size="mini" @click="downloadFile('excel', scope.row)">Excelダウンロード</el-button>
                     <el-button
                         type="primary"
                         v-for="item in scope.row.actions"
@@ -48,18 +52,21 @@
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
         <gold-dialog></gold-dialog>
+        <big-picture></big-picture>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
-import { apiDownloadFile } from '@_public/utils';
+import { apiDownloadFile, imageFileToPreview } from '@_public/utils';
 import GoldDialog from '@/components/invoice-list/gold-dialog';
+import BigPicture from '@components/big-picture';
 export default {
     components: {
         MainWrapper,
-        GoldDialog
+        GoldDialog,
+        BigPicture
     },
     data() {
         return {
@@ -115,7 +122,12 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
-                    this.tableData = data.data || [];
+                    const tableData = data.data || [];
+                    this.tableData = tableData.map(item => {
+                        const actions = item.actions || [];
+                        item.actions = actions.filter(item => item.id !== 'act_downloadinvoice');
+                        return item;
+                    });
                     this.total = data.total;
                 } else {
                     this.tableData = [];
@@ -185,6 +197,30 @@ export default {
         changeDate() {
             this.page = 1;
             this.getData();
+        },
+        downloadFile(type, row) {
+            if (type === 'pdf') {
+                apiDownloadFile({
+                    vm: this,
+                    url: `/api/Invoice/api_downloadinvoice?invid=${row.id}&filetype=0`,
+                    filename: `${Date.now()}.pdf`
+                });
+            } else if (type === 'excel') {
+                apiDownloadFile({
+                    vm: this,
+                    url: `/api/Invoice/api_downloadinvoice?invid=${row.id}&filetype=1`,
+                    filename: `${Date.now()}.xls`
+                });
+            }
+        },
+        preview(row) {
+            imageFileToPreview({
+                vm: this,
+                url: '/api/Invoice/api_previewinvoicefile',
+                params: {
+                    invid: row.id
+                }
+            });
         }
     }
 };
@@ -203,6 +239,12 @@ export default {
     .bg-success td {
         color: #fff;
         background-color: rgba(69, 190, 135, 0.78) !important;
+    }
+    .iconfont {
+        font-size: 20px;
+        margin-right: 10px;
+        display: inline-block;
+        vertical-align: top;
     }
 }
 </style>

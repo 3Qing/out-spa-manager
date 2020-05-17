@@ -21,8 +21,8 @@
                 clearable
                 @change="changeEndTime">
             </el-date-picker>
-            <el-select v-model="form.customerid" placeholder="取引先" @change="changeHandler" size="mini" clearable>
-                <el-option v-for="item in customers" :key="item.id" :value="item.id" :label="item.title"></el-option>
+            <el-select v-model="form.vendorid" placeholder="取引先" @change="changeHandler" size="mini" clearable>
+                <el-option v-for="item in vendors" :key="item.id" :value="item.id" :label="item.title"></el-option>
             </el-select>
             <el-select
                 v-model="form.empeeid"
@@ -68,17 +68,20 @@
             <el-table-column label="営業担当" prop="salesName" show-overflow-tooltip></el-table-column>
             <el-table-column label="注文書原本" width="180px">
                 <template slot-scope="scope">
-                    <i class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row)"></i>
-                    <i class="iconfont icon-chengyi_pc_preview link" color="primary" @click="previewHandle(scope)"></i>
+                    <el-button
+                        v-if="scope.row.paperReceived"
+                        size="mini"
+                        type="primary"
+                        @click="downloadPDF(scope.row)">照会</el-button>
                     <upload
                         class="info-btn"
                         v-if="scope.row.paperReceived"
-                        :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
+                        :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
                         @upload="uploadFile"></upload>
                     <upload
                         class="danger-btn"
                         v-if="!scope.row.paperReceived"
-                        :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
+                        :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
                         @upload="uploadFile"></upload>
                 </template>
             </el-table-column>
@@ -131,52 +134,43 @@
                 <el-button size="small" type="primary" @click="confirmDialog" :disabled="dialogLoading">确定</el-button>
             </div>
         </el-dialog>
-        <big-picture></big-picture>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
-import BigPicture from '@components/big-picture';
 import { mapGetters } from 'vuex';
-import { formatTime, apiDownloadFile, imageFileToPreview } from '@_public/utils';
+import { formatTime, apiDownloadFile } from '@_public/utils';
 export default {
     components: {
         MainWrapper,
-        Upload,
-        BigPicture
+        Upload
     },
     data() {
         return {
             form: {
                 periodfrom: '',
                 periodto: '',
-                customerid: '',
+                vendorid: '',
                 empeeid: '',
                 salespersonid: '',
-                page: 1,
-                pagesize: 10
+                papersended: ''
             },
-            visible: false,
+            page: 1,
+            pageSize: 10,
             total: 0,
-            customers: [],
             employees: [],
+            vendors: [],
             sales: [],
-            tableData: [],
-            value: '',
-            datetime: null,
-            dialogPresonMonth: false,
-            dialogLoading: false,
-            personMonthArr: [],
-            curRow: {},
-            loading: false
+            loading: false,
+            tableData: []
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getData();
-            vm.getCustomerList();
+            vm.getVendors();
             vm.getEmployees();
             vm.getSalespersonforselect();
         });
@@ -190,12 +184,30 @@ export default {
             this.form.page = 1;
             this.getData();
         },
-        getCustomerList() {
+        getData() {
+            const loading = this.$loading({ lock: true, text: '正在获取数据中' });
+            const params = Object.assign({
+                page: this.page,
+                pagesize: this.pageSize
+            }, this.form);
             this.$axios({
-                url: '/api/Customer/api_customersforselect'
+                url: '/api/PurchaseOrder/api_getpocontractlist',
+                params
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    this.tableData = data.data;
+                    this.total = data.total;
+                }
+            });
+        },
+        getVendors() {
+            this.$axios({
+                url: '/api/Customer/api_vendorsforselect'
             }).then(res => {
                 if (res && res.code === 0) {
-                    this.customers = res.data || [];
+                    this.vendors = res.data || [];
                 }
             });
         },
@@ -215,9 +227,6 @@ export default {
                     this.employees = res.data || [];
                 }
             });
-        },
-        remoteMethod(keyword) {
-            this.getEmployees(keyword);
         },
         getSalespersonforselect() {
             this.$axios({
@@ -272,28 +281,8 @@ export default {
                 }
             }
         },
-        getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取合同列表' });
-            this.$axios({
-                url: '/api/Contract/api_getcontractlist',
-                params: this.form,
-                custom: {
-                    loading,
-                    vm: this
-                }
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    const data = res.data || {};
-                    this.tableData = data.data || [];
-                    this.total = data.total;
-                } else {
-                    this.$message({
-                        type: 'error',
-                        message: res.message
-                    });
-                }
-            });
+        remoteMethod(keyword) {
+            this.getEmployees(keyword);
         },
         changePn(page) {
             this.form.page = page;
@@ -302,8 +291,8 @@ export default {
         downloadPDF(row) {
             apiDownloadFile({
                 vm: this,
-                url: `/api/Contract/api_downloadcontractpdf?conid=${row.id}`,
-                filename: `${Date.now()}.pdf`
+                url: `/api/PurchaseOrder/api_downloadpoexcel?id=${row.id}`,
+                filename: `${Date.now()}.cls`
             });
         },
         uploadFile({ file, opt }) {
@@ -343,7 +332,7 @@ export default {
         },
         toEdit(row) {
             this.$router.push({
-                name: 'ContractEdit',
+                name: 'PurchaseEdit',
                 params: {
                     id: row.id
                 }
@@ -423,77 +412,11 @@ export default {
         showDialog(row) {
             this.curRow = row;
             this.visible = true;
-        },
-        previewHandle(scope) {
-            imageFileToPreview({
-                vm: this,
-                url: '/api/Invoice/api_previewinvoicefile',
-                params: {
-                    invid: scope.row.id
-                }
-            });
         }
     }
 };
 </script>
 
-<style lang="less">
-.contract-list {
-    .main-header {
-        .el-date-editor, .el-select {
-            & + .el-date-editor {
-                margin-left: 2%;
-            }
-            width: 15%;
-            max-width: 140px;
-        }
-        .el-select {
-            margin-left: 2%;
-        }
-    }
-    .danger-btn {
-        margin-top: -3px;
-        display: inline-block;
-        vertical-align: top;
-        margin-left: 10px;
-        .upload {
-            background-color: #DB414E;
-            &:hover {
-                background-color: rgba(219, 65, 78, 0.8);
-            }
-        }
-    }
-    .info-btn {
-        margin-top: -3px;
-        display: inline-block;
-        vertical-align: top;
-        margin-left: 10px;
-        .upload {
-            background-color: #909399;
-            &:hover {
-                background-color: rgba(144, 147, 153, 0.8);
-            }
-        }
-    }
-    .el-pagination {
-        margin-top: 20px;
-        text-align: center;
-    }
-    .update-dialog {
-        width: 600px;
-        text-align: center;
-        .el-dialog__header {
-            display: none;
-        }
-        .el-date-editor {
-            margin: 20px 0;
-        }
-    }
-    .iconfont {
-        font-size: 16px;
-        & + .iconfont {
-            margin-left: 20px;
-        }
-    }
-}
+<style scoped>
+
 </style>

@@ -97,6 +97,17 @@
                     </el-select>
                 </template>
             </el-table-column>
+            <el-table-column label="仕入先">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.vendorid" size="mini">
+                        <el-option
+                            v-for="item in vendors"
+                            :value="item.id"
+                            :label="item.title"
+                            :key="item.id"></el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
             <el-table-column label="部門" :prop="'TeamID'">
                 <template slot-scope="scope">
                     <el-select
@@ -153,7 +164,8 @@ export default {
         teams: Array,
         employees: Array,
         customs: Array,
-        errors: Object
+        errors: Object,
+        vendors: Array
     },
     computed: {
         ...mapGetters(['IS_H5'])

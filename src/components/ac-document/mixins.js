@@ -16,6 +16,7 @@ export default  {
             teams: [],
             employees: [],
             customs: [],
+            vendors: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -25,6 +26,7 @@ export default  {
             vm.getTeams();
             vm.getCustom();
             vm.getEmployees();
+            vm.getVendors();
         });
     },
     methods: {
@@ -70,6 +72,15 @@ export default  {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.customs = res.data || [];
+                }
+            });
+        },
+        getVendors() {
+            this.$axios({
+                url: '/api/Customer/api_vendorsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.vendors = res.data || [];
                 }
             });
         }

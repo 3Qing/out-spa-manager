@@ -3,6 +3,7 @@ export const SET_TAB_TITLE = 'SET_TAB_TITLE';
 export const SET_MENUS = 'SET_MENUS';
 export const SET_TEAMS = 'SET_TEAMS';
 export const SET_ACTIONS = 'SET_ACTIONS';
+export const SET_USER_INFO = 'SET_USER_INFO';
 
 export const MUTATIONS = {
     [SET_ISH5](state, res) {
@@ -25,5 +26,8 @@ export const MUTATIONS = {
             }
         }
         state.actions = auth;
+    },
+    [SET_USER_INFO](state, data) {
+        state.userInfo = data;
     }
 };

@@ -6,11 +6,9 @@
                     <el-radio :label="true">营业中</el-radio>
                     <el-radio :label="false">全部</el-radio>
                 </el-radio-group>
-                <!-- <el-select v-model="avaiable" @change="getData">
-                    <el-option v-for="item in options" :key="item.val" :label="item.label" :value="item.val"></el-option>
-                </el-select> -->
             </el-form-item>
             <el-button size="mini" type="primary" @click="downloadFile">リソース一覧ダウンロード</el-button>
+            <el-button size="mini" type="primary" @click="showIntroDialog('add')">新規登録</el-button>
         </el-form>
         <el-table :data="tableData" size="small" :cell-class-name="cellClassName">
             <el-table-column label="営業可否">
@@ -58,7 +56,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <i class="el-icon-edit link" color="primary" @click="showIntroDialog(scope.row)"></i>
+                    <i class="el-icon-edit link" color="primary" @click="showIntroDialog('edit', scope.row)"></i>
                 </template>
             </el-table-column>
         </el-table>
@@ -121,7 +119,7 @@ export default {
     methods: {
         getSales() {
             this.$axios({
-                url: '/api/Employee/api_salespersonforselect'
+                url: '/api/Candidate/api_candidatestatusforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.allStatus = res.data || [];
@@ -279,9 +277,9 @@ export default {
                 }
             }
         },
-        showIntroDialog(data) {
+        showIntroDialog(type, data) {
             this.$root.$emit('SHOW_INTRO_DIALOG', {
-                data,
+                data: type === 'add' ? null : data,
                 showDate: true,
                 callback: () => {
                     this.getData();

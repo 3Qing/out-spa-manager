@@ -18,7 +18,11 @@
             <el-button type="primary" size="mini" @click="showDialog = true">标签管理</el-button>
         </el-form>
         <el-table size="mini" :data="tableData" @row-click="rowClick">
-            <el-table-column label="番号" prop="id" width="100px"></el-table-column>
+            <el-table-column label="番号" width="100px">
+                <template slot-scope="scope">
+                    <span>{{scope.$index + 1}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="質問" prop="ask1" show-overflow-tooltip></el-table-column>
             <el-table-column label="モジュール" prop="Module" show-overflow-tooltip></el-table-column>
             <el-table-column label="重要度" prop="importance" width="140px">
@@ -39,6 +43,7 @@
                         type="primary"
                         @click="doEdit(scope.row)"
                     >編集</el-button>
+                    <el-button size="mini" type="danger" @click="deleteHandler(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -165,6 +170,31 @@ export default {
                 this.curRow = { ...row };
                 this.visible = true;
             }
+        },
+        deleteHandler(row) {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '​/api​/QA​/api_deleteqa',
+                    params: {
+                        qaid: row.id
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getData();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
         }
     }
 };

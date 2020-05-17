@@ -45,6 +45,11 @@
                     <el-form-item :label="showFields.bank_AccountHolder">
                         <el-input v-model="showForm.bank_AccountHolder" :placeholder="showFields.bank_AccountHolder"></el-input>
                     </el-form-item>
+                    <el-form-item :label="showFields.paymentTermID">
+                        <el-select v-model="showForm.paymentTermID">
+                            <el-option v-for="item in payments" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item :label="showFields.customerFlag">
                         <el-checkbox v-model="showForm.customerFlag"></el-checkbox>
                     </el-form-item>
@@ -80,6 +85,11 @@
                 <el-form-item :label="showFields.bank_AccountHolder">
                     <el-input v-model="curForm.bank_AccountHolder" :placeholder="showFields.bank_AccountHolder"></el-input>
                 </el-form-item>
+                <el-form-item :label="showFields.paymentTermID">
+                        <el-select v-model="curForm.paymentTermID">
+                            <el-option v-for="item in payments" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                        </el-select>
+                    </el-form-item>
                 <el-form-item :label="showFields.customerFlag">
                     <el-checkbox v-model="curForm.customerFlag"></el-checkbox>
                 </el-form-item>
@@ -138,17 +148,20 @@ export default {
                 tel: 'tel',
                 postal: 'postal',
                 title: 'title',
-                vendorFlag: 'vendorFlag'
+                vendorFlag: 'vendorFlag',
+                paymentTermID: 'paymentTermID'
             },
             showForm: {},
             curForm: {},
             curId: '',
-            visible: false
+            visible: false,
+            payments: []
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getData();
+            vm.getPayment();
         });
     },
     computed: {
@@ -180,6 +193,15 @@ export default {
                         }
                         this.handlerForm(data.data[0]);
                     }
+                }
+            });
+        },
+        getPayment() {
+            this.$axios({
+                url: '/api/PaymentTerm/api_paymenttermsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.payments = res.data || [];
                 }
             });
         },
@@ -278,7 +300,8 @@ export default {
                 Fax: form.fax,
                 ContactPerson: form.contactPerson,
                 CustomerFlag: form.customerFlag,
-                VendorFlag: form.vendorFlag
+                VendorFlag: form.vendorFlag,
+                PaymentTermID: form.paymentTermID
             };
             if (type === 'edit') {
                 params.ID = this.curId;
