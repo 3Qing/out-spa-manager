@@ -184,7 +184,7 @@ export default {
             apiDownloadFile({
                 vm: this,
                 url: `/api/Candidate/api_downloadcandidatelistexcel?insale=${this.avaiable}`,
-                filename: `${Date.now()}.xls`
+                filename: `${Date.now()}.xlsx`
             });
             this.visible = false;
         },

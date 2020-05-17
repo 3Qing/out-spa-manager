@@ -9,7 +9,7 @@ import ContractSign from '@views/Contract-sign';
 import EmployeeEdit from '@views/Employee-edit';
 import EmployeeList from '@views/Employee-list';
 import SalesActivity from '@views/Sales-activity';
-import PreSales from '@views/Pre-sales';
+import PreSales from '@views/Pre-Sales';
 import RoleManager from '@views/Role-manager';
 import PreSalesList from '@views/Pre-sales-list';
 import ContractList from '@views/Contract-list';
@@ -33,6 +33,8 @@ import Estimation from '@views/Estimation';
 import EstimationList from '@views/Estimation-list';
 import PurchaseOrder from '@views/Purchase-order';
 import PurchaseEdit from '@views/Purchase-edit';
+import PaymentList from '@views/Payment-list';
+import PositionList from '@views/Position';
 
 
 Vue.use(Router);
@@ -185,6 +187,14 @@ const router = new Router({
         path: '/purchase/:id',
         name: 'PurchaseEdit',
         component: PurchaseEdit
+    }, {
+        path: '/paymenttermlist',
+        name: 'Paymenttermlist',
+        component: PaymentList
+    }, {
+        path: '/positionList',
+        name: 'PositionList',
+        component: PositionList
     }
     ]
 });

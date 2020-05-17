@@ -1,158 +1,214 @@
 <template>
     <main-wrapper class="employee-edit">
-        <el-form size="small" label-width="130px" ref="form" :model="form" :rules="rules">
-            <el-form-item label="就职类型" prop="employeeTypeID">
-                <el-select v-model="form.employeeTypeID">
-                    <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-row v-if="!IS_H5">
-                <el-col :span="12">
-                    <el-form-item label="英語姓">
-                        <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="英語名">
-                        <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item label="英語姓" v-if="IS_H5">
-                <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="英語名" v-if="IS_H5">
-                <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-row v-if="!IS_H5">
-                <el-col :span="12">
-                    <el-form-item label="姓" prop="firstName">
-                        <el-input v-model="form.firstName" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="名" prop="lastName">
-                        <el-input v-model="form.lastName" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item label="姓" prop="firstName" v-if="IS_H5">
-                <el-input v-model="form.firstName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="名" prop="lastName" v-if="IS_H5">
-                <el-input v-model="form.lastName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="入职日期" prop="onBoardDate">
-                <el-date-picker
-                    v-model="form.onBoardDate"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="性别" prop="sex">
-                <el-select v-model="form.sex">
-                    <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="生日" prop="birthday">
-                <el-date-picker
-                    v-model="form.birthday"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="国籍" prop="nationality">
-                <el-input v-model="form.nationality" :maxlength="10"></el-input>
-            </el-form-item>
-            <el-form-item label="最近车站" prop="station">
-                <el-input v-model="form.station" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="模块" prop="mainSkill">
-                <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="SAP经验开始日" prop="startWorkDate">
-                <el-date-picker
-                    v-model="form.startWorkDate"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="岗位" prop="positionID">
-                <el-select v-model="form.positionID">
-                    <el-option v-for="item in positions" :key="item.id" :label="item.title" :value="item.id"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="来日时间" prop="arriveJPDate">
-                <el-date-picker
-                    v-model="form.arriveJPDate"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="所属部门" prop="teamMembers" v-if="!isEdit">
-                <el-select v-model="form.teamMembers">
-                    <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="日语能力">
-                <el-row>
-                    <el-col :span="11">
-                        <el-select v-model="form.jpLangCert">
-                            <el-option :label="'1级'" :value="1"></el-option>
-                            <el-option :label="'2级'" :value="2"></el-option>
-                            <el-option :label="'3级'" :value="3"></el-option>
+        <el-row>
+            <el-col :span="12">
+                <el-form size="small" label-width="130px" ref="form" :model="isDisplay ? {} : form" :rules="isDisplay ? {} : rules" label-suffix=":">
+                    <el-form-item label="就职类型" prop="employeeTypeID">
+                        <p v-if="isDisplay">{{getContent(form.employeeTypeID, employeeTypes, 'id', 'title')}}</p>
+                        <el-select v-model="form.employeeTypeID" v-else>
+                            <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
                         </el-select>
-                    </el-col>
-                    <el-col :span="11" :offset="2">
-                        <el-input v-model="form.jpLangComt"></el-input>
-                    </el-col>
-                </el-row>
-            </el-form-item>
-            <el-form-item label="英语能力">
-                <el-input v-model="form.enLangComt"></el-input>
-            </el-form-item>
-            <el-form-item label="SAP资格认证">
-                <el-checkbox-group v-model="form.certificates">
-                    <el-checkbox v-for="item in certificates" :key="item.id" :label="item.id">{{item.certName}}</el-checkbox>
-                </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
-                <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')"></el-input>
-                <p color="danger" v-if="emptyTip">请填写绩效工资或基本工资</p>
-            </el-form-item>
-            <el-form-item label="基本工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
-                <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')"></el-input>
-                <p color="danger" v-if="emptyTip">请填写基本工资或绩效工资</p>
-            </el-form-item>
-            <el-form-item label="工资的备注" v-if="!isEdit">
-                <el-input v-model="form.SComment" :maxlength="50"></el-input>
-            </el-form-item>
-            <el-form-item label="销售价格" :class="[errorTip && 'error-input']">
-                <el-row>
-                    <el-col :span="11">
-                        <el-input @input="formatPrice('salePriceFrom')" @blur="validSalePrice('salePriceFrom')" v-model="form.salePriceFrom"></el-input>
-                    </el-col>
-                    <el-col :span="11" :offset="2">
-                        <el-input @input="formatPrice('salePriceTo')" @blur="validSalePrice('salePriceTo')" v-model="form.salePriceTo"></el-input>
-                    </el-col>
-                </el-row>
-                <p color="danger" v-if="errorTip">起始价格不得大于最终价格</p>
-            </el-form-item>
-            <el-form-item label="出差条件">
-                <el-input v-model="form.travel" :maxlength="50"></el-input>
-            </el-form-item>
-            <el-form-item label="希望项目">
-                <el-input v-model="form.expectPJ" :maxlength="50"></el-input>
-            </el-form-item>
-            <el-form-item label="备注">
-                <el-input v-model="form.comment" type="textarea" :rows="3" :maxlength="200"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" size="small" @click="beforeSubmit">保存</el-button>
-                <el-button size="small" @click="resetForm">重置</el-button>
-                <el-button size="small" @click="$router.back()">返回</el-button>
-            </el-form-item>
-        </el-form>
+                    </el-form-item>
+                    <el-row v-if="!IS_H5">
+                        <el-col :span="12">
+                            <el-form-item label="英語姓">
+                                <p v-if="isDisplay">{{form.furigana_FirstName}}</p>
+                                <el-input v-model="form.furigana_FirstName" :maxlength="20" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="英語名">
+                                <p v-if="isDisplay">{{form.furigana_LastName}}</p>
+                                <el-input v-model="form.furigana_LastName" :maxlength="20" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-form-item label="英語姓" v-if="IS_H5">
+                        <p v-if="isDisplay">{{form.furigana_FirstName}}</p>
+                        <el-input v-model="form.furigana_FirstName" :maxlength="20" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="英語名" v-if="IS_H5">
+                        <p v-if="isDisplay">{{form.furigana_LastName}}</p>
+                        <el-input v-model="form.furigana_LastName" :maxlength="20" v-else></el-input>
+                    </el-form-item>
+                    <el-row v-if="!IS_H5">
+                        <el-col :span="12">
+                            <el-form-item label="姓" prop="firstName">
+                                <p v-if="isDisplay">{{form.firstName}}</p>
+                                <el-input v-model="form.firstName" :maxlength="20" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="名" prop="lastName">
+                                <p v-if="isDisplay">{{form.lastName}}</p>
+                                <el-input v-model="form.lastName" :maxlength="20" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-form-item label="姓" prop="firstName" v-if="IS_H5">
+                        <p v-if="isDisplay">{{form.firstName}}</p>
+                        <el-input v-model="form.firstName" :maxlength="20" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="名" prop="lastName" v-if="IS_H5">
+                        <p v-if="isDisplay">{{form.lastName}}</p>
+                        <el-input v-model="form.lastName" :maxlength="20" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="入职日期" prop="onBoardDate">
+                        <p v-if="isDisplay">{{form.onBoardDate}}</p>
+                        <el-date-picker
+                            v-else
+                            v-model="form.onBoardDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="性别" prop="sex">
+                        <p v-if="isDisplay">{{getContent(form.sex, sexs, 'value', 'label')}}</p>
+                        <el-select v-model="form.sex" v-else>
+                            <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="生日" prop="birthday">
+                        <p v-if="isDisplay">{{form.birthday}}</p>
+                        <el-date-picker
+                            v-else
+                            v-model="form.birthday"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="国籍" prop="nationality">
+                        <p v-if="isDisplay">{{form.nationality}}</p>
+                        <el-input v-model="form.nationality" :maxlength="10" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="最近车站" prop="station">
+                        <p v-if="isDisplay">{{form.station}}</p>
+                        <el-input v-model="form.station" :maxlength="20" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="模块" prop="mainSkill">
+                        <p v-if="isDisplay">{{form.mainSkill}}</p>
+                        <el-input v-model="form.mainSkill" :maxlength="20" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="SAP经验开始日" prop="startWorkDate">
+                        <p v-if="isDisplay">{{form.startWorkDate}}</p>
+                        <el-date-picker
+                            v-else
+                            v-model="form.startWorkDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="岗位" prop="positionID">
+                        <p v-if="isDisplay">{{getContent(form.positionID, positions, 'id', 'title')}}</p>
+                        <el-select v-model="form.positionID" v-else>
+                            <el-option v-for="item in positions" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="来日时间" prop="arriveJPDate">
+                        <p v-if="isDisplay">{{form.arriveJPDate}}</p>
+                        <el-date-picker
+                            v-else
+                            v-model="form.arriveJPDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="所属部门" v-if="isDisplay">
+                        <p>{{getContent(form.teamMembers, teams, 'id', 'teamName')}}</p>
+                    </el-form-item>
+                    <el-form-item label="所属部门" prop="teamMembers" v-if="!isEdit && !isDisplay">
+                        <el-select v-model="form.teamMembers">
+                            <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="日语能力">
+                        <p v-if="isDisplay">{{getContent(form.jpLangCert, jpLangs, 'value', 'label')}}{{form.jpLangComt}}</p>
+                        <el-row v-else>
+                            <el-col :span="11">
+                                <el-select v-model="form.jpLangCert">
+                                    <el-option v-for="item in jpLangs" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                </el-select>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-input v-model="form.jpLangComt"></el-input>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item label="英语能力">
+                        <p v-if="isDisplay">{{form.enLangComt}}</p>
+                        <el-input v-model="form.enLangComt" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="SAP资格认证">
+                        <p v-if="isDisplay">{{this.getCerts()}}</p>
+                        <el-checkbox-group v-model="form.certificates" v-else>
+                            <el-checkbox v-for="item in certificates" :key="item.id" :label="item.id">{{item.certName}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
+                        <p v-if="isDisplay">{{priceToString(form.PJSalary)}}</p>
+                        <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')" v-else></el-input>
+                        <p color="danger" v-if="emptyTip">请填写绩效工资或基本工资</p>
+                    </el-form-item>
+                    <el-form-item label="基本工资" :class="[emptyTip && 'error-input']" v-if="!isEdit">
+                        <p v-if="isDisplay">{{priceToString(form.BaseSalary)}}</p>
+                        <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')" v-else></el-input>
+                        <p color="danger" v-if="emptyTip">请填写基本工资或绩效工资</p>
+                    </el-form-item>
+                    <el-form-item label="工资的备注" v-if="!isEdit">
+                        <p v-if="isDisplay">{{form.SComment}}</p>
+                        <el-input v-model="form.SComment" :maxlength="50" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="销售价格" :class="[errorTip && 'error-input']">
+                        <p v-if="isDisplay">{{priceToString(form.salePriceFrom)}}~{{priceToString(form.salePriceTo)}}</p>
+                        <el-row v-else>
+                            <el-col :span="11">
+                                <el-input @input="formatPrice('salePriceFrom')" @blur="validSalePrice('salePriceFrom')" v-model="form.salePriceFrom"></el-input>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-input @input="formatPrice('salePriceTo')" @blur="validSalePrice('salePriceTo')" v-model="form.salePriceTo"></el-input>
+                            </el-col>
+                        </el-row>
+                        <p color="danger" v-if="errorTip">起始价格不得大于最终价格</p>
+                    </el-form-item>
+                    <el-form-item label="出差条件">
+                        <p v-if="isDisplay">{{form.travel}}</p>
+                        <el-input v-model="form.travel" :maxlength="50" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="希望项目">
+                        <p v-if="isDisplay">{{form.expectPJ}}</p>
+                        <el-input v-model="form.expectPJ" :maxlength="50" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <p v-if="isDisplay">{{form.comment}}</p>
+                        <el-input v-model="form.comment" type="textarea" :rows="3" :maxlength="200" v-else></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
+                        <el-button size="small" @click="resetForm" v-if="!isDisplay">重置</el-button>
+                        <el-button size="small" @click="$router.back()">返回</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            <el-col :span="12" v-if="isDisplay">
+                <div class="top"></div>
+                <div class="bottom">
+                    <el-form label-width="130px" label-suffix=":" v-for="item in form.salaries" :key="item.id">
+                        <el-form-item label="时间">
+                            <p>{{formatTime(item.fromDate)}}</p>
+                        </el-form-item>
+                        <el-form-item label="绩效工资">
+                            <p>{{priceToString(item.pjSalary)}}</p>
+                        </el-form-item>
+                        <el-form-item label="基本工资">
+                            <p>{{priceToString(item.baseSalary)}}</p>
+                        </el-form-item>
+                        <el-form-item label="工资的备注">
+                            <p>{{item.comment}}</p>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </el-col>
+        </el-row>
     </main-wrapper>
 </template>
 
@@ -160,6 +216,7 @@
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
+import { priceToNumber, priceToString, formatTime } from '@_public/utils';
 
 export default {
     components: {
@@ -236,6 +293,7 @@ export default {
                 }]
             },
             isEdit: false,
+            isDisplay: false,
             emptyTip: false,
             errorTip: false,
             employeeTypes: [],
@@ -243,6 +301,13 @@ export default {
                 label: '男', value: true
             }, {
                 label: '女', value: false
+            }],
+            jpLangs: [{
+                label: '1级', value: 1
+            }, {
+                label: '2级', value: 2
+            }, {
+                label: '3级', value: 3
             }],
             teams: [],
             positions: [],
@@ -252,6 +317,9 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             if (Number(to.params.id)) {
+                if (to.query.display) {
+                    vm.isDisplay = true;
+                }
                 vm.getData();
             }
             vm.getTeams();
@@ -264,6 +332,8 @@ export default {
         ...mapGetters([ 'IS_H5' ])
     },
     methods: {
+        priceToString: priceToString,
+        formatTime: formatTime,
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -296,7 +366,13 @@ export default {
             form.startWorkDate = data.startWorkDate && formatTime(data.startWorkDate);
             form.arriveJPDate = data.arriveJPDate && formatTime(data.arriveJPDate);
             form.certificates = data.certificates && data.certificates.map(item => item.certificateID);
-            console.log(form);
+            // if (data.salaries && data.salaries.length) {
+            //     const sales = data.salaries[0];
+            //     form.PJSalary = sales.pjSalary;
+            //     form.BaseSalary = sales.baseSalary;
+            //     form.SComment = sales.comment;
+            // }
+            form.salaries = data.salaries || [];
             this.form = { ...form };
         },
         // 部门
@@ -436,7 +512,10 @@ export default {
                 'SalePriceTo': Number(this.form.salePriceTo.toString().replace(/,/g, '')) || 0,
                 'Travel': this.form.travel || '',
                 'ExpectPJ': this.form.expectPJ || '',
-                'Comment': this.form.comment || ''
+                'Comment': this.form.comment || '',
+                'BaseSalary': priceToNumber(this.form.BaseSalary),
+                'PJSalary': priceToNumber(this.form.PJSalary),
+                'SComment': this.form.SComment
             };
             if (this.form.teamMembers instanceof Array) {
                 params.TeamMembers = this.form.teamMembers.map(item => ({teamID: item.id}));
@@ -470,7 +549,6 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
-                    // this.$router.back();
                     this.$router.push({ name: 'EmployeeList' });
                 } else {
                     this.$message({
@@ -480,6 +558,23 @@ export default {
                     });
                 }
             });
+        },
+        getContent(val, arr, key, field) {
+            for (let item of arr) {
+                if (item[key] === val) {
+                    return item[field];
+                }
+            }
+            return '-';
+        },
+        getCerts() {
+            const arr = [];
+            this.certificates.forEach(item => {
+                if (this.form.certificates.includes(item.id)) {
+                    arr.push(item.certName);
+                }
+            });
+            return arr.join('，');
         }
     }
 };
@@ -488,7 +583,9 @@ export default {
 <style lang="less">
 .employee-edit {
     .el-form {
-        width: 500px;
+        .el-form-item {
+            margin-bottom: 10px;
+        }
         .el-date-editor, .el-select {
             width: 100%;
         }

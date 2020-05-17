@@ -110,13 +110,13 @@ export default {
                 apiDownloadFile({
                     vm: this,
                     url: `/api/Resume/api_downloadresumeexcel?id=${row.resumeID}`,
-                    filename: `${Date.now()}.xls`
+                    filename: `YP履歴書_${row.furigana_LastName.substring(0, 1)}${row.furigana_FirstName.substring(0,1)}.xlsx`
                 });
             } else if (type === 'word') {
                 apiDownloadFile({
                     vm: this,
                     url: `/api/Resume/api_downloadresumeword?id=${row.resumeID}`,
-                    filename: `${Date.now()}.doc`
+                    filename: `YP履歴書_${row.furigana_LastName.substring(0, 1)}${row.furigana_FirstName.substring(0,1)}.doc`
                 });
             }
         }

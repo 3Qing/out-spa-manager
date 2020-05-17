@@ -1,4 +1,5 @@
 @headHeight: 0.74rem;
+@lineHeight: 0.96rem;
 
 @media screen and (max-width: 1200px) and (min-width: 750px) {
     .employee-list {
@@ -14,6 +15,11 @@
             .el-form-item {
                 margin: 0 !important;
                 width: 25% !important;
+            }
+            .el-button {
+                & + .el-button {
+                    margin-left: .2rem;
+                }
             }
         }
     }
@@ -39,8 +45,8 @@
             }
         }
         .main-header {
-            height: @headHeight !important;
-            line-height: @headHeight !important;
+            height: auto;
+            line-height: @lineHeight !important;
             .el-form-item__label {
                 width: 1.2rem;
                 height: @headHeight !important;
@@ -72,6 +78,10 @@
             }
         }
         .ess-list {
+            .main-header {
+                // line-height: .96rem !important;
+                padding-top: .1rem !important;
+            }
             .el-card {
                 .card-header {
                     padding: 0.1rem 0.15rem;
@@ -156,6 +166,12 @@
                     position: relative;
                     top: 50%;
                     transform: translateY(-50%);
+                    display: inline-block;
+                    width: auto;
+                    margin-top: .4rem !important;
+                    & + .el-button {
+                        margin-left: .2rem;
+                    }
                 }
             }
             .sales-dialog {
@@ -173,6 +189,14 @@
             }
         }
         .pre-sales {
+            .main-header {
+                .el-select {
+                    width: 45%;
+                    & + .el-select {
+                        margin-left: 5%;
+                    }
+                }
+            }
             .left {
                 width: 100%;
                 float: none;
@@ -207,8 +231,8 @@
             .main-header {
                 height: auto !important;
                 .el-form-item {
-                    width: 35%;
-                    margin-right: 0.4rem;
+                    width: 100%;
+                    // margin-right: 0.4rem;
                 }
                 .el-form-item__content {
                     margin-left: 0;
@@ -217,6 +241,9 @@
                     width: auto;
                     margin-left: 0;
                     display: inline-block;
+                    & + .el-button {
+                        margin-left: .2rem;
+                    }
                 }
             }
             .download-dialog {
@@ -246,6 +273,9 @@
         .role-manager {
             #menuTree {
                 width: 100%;
+            }
+            .el-form {
+                margin-top: .2rem;
             }
             .role-menu-tree {
                 width: 100%;
@@ -287,13 +317,14 @@
         }
         .invoice-list {
             .main-header {
-                height: auto !important;
+                line-height: .96rem !important;
                 .el-date-editor {
                     width: 60%;
                 }
                 .el-select {
                     width: 35%;
                     margin-left: 5%;
+                    margin-top: -2px;
                 }
             }
         }
@@ -311,17 +342,30 @@
             .main-header {
                 height: auto !important;
                 .el-form-item {
-                    width: 45%;
-                    & + .el-form-item {
-                        margin-left: 10%;
-                    }
+                    width: 100%;
+                    height: auto;
+                    margin: 0 !important;
                     .el-form-item__content {
                         margin-left: 0;
-                    }
-                    .el-select, .el-input {
-                        width: 100%
+                        width: 100%;
+                        height: auto !important;
                     }
                 }
+                .el-input {
+                    width: 100%;
+                }
+                // .el-form-item {
+                //     width: 45%;
+                //     & + .el-form-item {
+                //         margin-left: 10%;
+                //     }
+                //     .el-form-item__content {
+                //         margin-left: 0;
+                //     }
+                //     .el-select, .el-input {
+                //         width: 100%
+                //     }
+                // }
                 .el-button {
                     width: 100%;
                     margin: 0.1rem 0 0;
@@ -331,7 +375,7 @@
         .resume-update {
             .main-header {
                 .fr.el-button {
-                    margin-top: 0.1rem;
+                    margin-top: 0.2rem;
                 }
             }
             .el-icon-delete {
@@ -400,6 +444,75 @@
             .main-header {
                 .el-form-item__content {
                     margin: 0;
+                }
+            }
+        }
+        .opportunity-wrapper {
+            .main-header {
+                height: auto !important;
+                .el-select {
+                    width: 100%;
+                    margin-left: 0 !important;
+                }
+                .el-button {
+                    & + .el-button {
+                        margin-left: .2rem;
+                    }
+                }
+            }
+        }
+        .estimation-wrapper {
+            .main-header {
+                height: auto !important;
+                .el-date-editor {
+                    width: 100%;
+                }
+                & > .el-input {
+                    width: 45% !important;
+                    margin-right: 0 !important;
+                    & + .el-input {
+                        margin-left: 10%;
+                    }
+                }
+                .el-select {
+                    width: 45%;
+                    margin-right: 0;
+                    .el-input {
+                        width: 100%;
+                    }
+                    &:nth-child(5n) {
+                        margin-left: 10%;
+                    }
+                    &:nth-child(6) {
+                        margin-right: 10%;
+                    }
+                }
+            }
+        }
+        .cashflow-list {
+            .main-header {
+                height: auto;
+                .el-date-editor, .el-select {
+                    width: 45%;
+                    margin: 0;
+                    & + .el-date-editor {
+                        margin-left: 10%;
+                    }
+                }
+                .el-select + .el-select {
+                    margin-left: 10%;
+                }
+                .el-input {
+                    width: 100%;
+                    margin-left: 0;
+                }
+            }
+        }
+        .salary-calculate {
+            .main-header {
+                .el-select, .el-date-editor {
+                    width: 100% !important;
+                    margin: 0 !important;
                 }
             }
         }

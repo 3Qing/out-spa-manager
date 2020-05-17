@@ -406,10 +406,10 @@ export default {
                         formData.append(`file${index}`, this.files[index]);
                     }
                     if (item.id) {
-                        formData.append(`fares[${index}].id`, item.id);
+                        formData.append(`employeefares[${index}].id`, item.id);
                     }
                     if (item.FileID) {
-                        formData.append(`fares[${index}].FileID`, item.FileID);
+                        formData.append(`employeefares[${index}].FileID`, item.FileID);
                     }
                     if (Number(item.amount) > 3000 && !item.FileID && !this.files[index]) {
                         noFile = true;
@@ -417,10 +417,10 @@ export default {
                     if (item.fareId >= 99 && !item.Comment) {
                         commentEmpty = true;
                     }
-                    formData.append(`fares[${index}].fareId`, item.fareId);
-                    formData.append(`fares[${index}].title`, item.title || '');
-                    formData.append(`fares[${index}].Comment`, item.Comment || '');
-                    formData.append(`fares[${index}].amount`, item.amount || '');
+                    formData.append(`employeefares[${index}].fareId`, item.fareId);
+                    formData.append(`employeefares[${index}].title`, item.title || '');
+                    formData.append(`employeefares[${index}].Comment`, item.Comment || '');
+                    formData.append(`employeefares[${index}].amount`, item.amount || '');
                 }
             });
             if (noFile) {

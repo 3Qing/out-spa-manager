@@ -1,6 +1,6 @@
 <template>
     <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" @close="close">
-        <el-form label-width="140px" size="mini">
+        <el-form label-width="120px" size="mini">
             <el-row v-if="!IS_H5">
                 <el-col :span="12">
                     <el-form-item label="英語姓">
@@ -37,76 +37,118 @@
             <el-form-item label="名" prop="lastName" v-if="IS_H5">
                 <el-input v-model="form.lastName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="生日" prop="birthday">
-                <el-date-picker
-                    v-model="form.birthday"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="国籍" prop="nationality">
-                <el-input v-model="form.nationality" :maxlength="10"></el-input>
-            </el-form-item>
-            <el-form-item label="最近车站" prop="liveCity">
-                <el-input v-model="form.liveCity" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="主要技能" prop="mainSkill">
-                <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="性别" prop="sex">
-                <el-select v-model="form.sex">
-                    <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="开始营业日期" prop="salesFromDate">
-                <el-date-picker
-                    v-model="form.salesFromDate"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="稼働可能开始日" prop="avaiableDate">
-                <el-date-picker
-                    v-model="form.avaiableDate"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="状态">
-                <el-select v-model="form.status">
-                    <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.text"></el-option>
-                </el-select>
-            </el-form-item>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="生日" prop="birthday">
+                        <el-date-picker
+                            v-model="form.birthday"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="国籍" prop="nationality">
+                        <el-input v-model="form.nationality" :maxlength="10"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="城市" prop="liveCity">
+                        <el-input v-model="form.liveCity" :maxlength="10"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="主要技能" prop="mainSkill">
+                        <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="性别" prop="sex">
+                        <el-select v-model="form.sex">
+                            <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="开始营业日期" prop="salesFromDate">
+                        <el-date-picker
+                            v-model="form.salesFromDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="稼働可能开始日" prop="avaiableDate">
+                        <el-date-picker
+                            v-model="form.avaiableDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="状态">
+                        <el-select v-model="form.status">
+                            <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+            </el-row>
             <el-form-item label="提案文">
                 <el-input v-model="form.proposeText" type="textarea" :rows="12" :maxlength="250"></el-input>
             </el-form-item>
             <el-form-item label="备注">
                 <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="250"></el-input>
             </el-form-item>
-            <el-form-item label="最低人件费金额">
-                <el-input v-model.number="form.costFrom"></el-input>
-            </el-form-item>
-            <el-form-item label="最高人件费金额">
-                <el-input v-model.number="form.costTo"></el-input>
-            </el-form-item>
-            <el-form-item label="最低提案金额">
-                <el-input v-model.number="form.salesFrom"></el-input>
-            </el-form-item>
-            <el-form-item label="最高提案金额">
-                <el-input v-model.number="form.salesTo"></el-input>
-            </el-form-item>
-            <el-form-item label="工作开始日">
-                <el-date-picker
-                    v-model="form.startWorkDate"
-                    type="date"
-                    format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="简历附件存储路径">
-                <upload
-                    :opt="{ btnText: '上传附件', accept: 'application/pdf', show: false, showIcon: true }"
-                    @upload="uploadFile"></upload>
-            </el-form-item>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="最低人件费金额">
+                        <el-input v-model.number="form.costFrom"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="最高人件费金额">
+                        <el-input v-model.number="form.costTo"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="最低提案金额">
+                        <el-input v-model.number="form.salesFrom"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="最高提案金额">
+                        <el-input v-model.number="form.salesTo"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="工作开始日">
+                        <el-date-picker
+                            v-model="form.startWorkDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="简历附件存储路径">
+                        <upload
+                            :opt="{ btnText: '上传附件', accept: 'application/pdf', show: false, showIcon: true }"
+                            @upload="uploadFile"></upload>
+                    </el-form-item>
+                </el-col>
+            </el-row>
         </el-form>
         <el-button type="primary" size="small" @click="submit">确认</el-button>
     </el-dialog>
@@ -299,14 +341,3 @@ export default {
 };
 </script>
 
-<style lang="less">
-.intro-dialog {
-    .el-dialog__body {
-        padding-top: 10px;
-    }
-    .el-button {
-        display: block;
-        margin: 20px auto 0;
-    }
-}
-</style>

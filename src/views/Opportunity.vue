@@ -1,5 +1,5 @@
 <template>
-    <main-wrapper>
+    <main-wrapper class="opportunity-wrapper">
         <div class="main-header" slot="header">
             <el-select v-model="status" size="mini" style="margin-left: 10px;" @change="changeHandle">
                 <el-option v-for="(item, i) in allStatus" :key="i" :label="item.label" :value="item.value"></el-option>

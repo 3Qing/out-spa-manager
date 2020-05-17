@@ -28,7 +28,7 @@
             :current-page="page"
             @current-change="changePage"
             :total="total"
-            layout="total, prev, pager, next, jumper"></el-pagination>
+            :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"></el-pagination>
         <edit-dialog :opt="opt" @filter="remoteMethod"></edit-dialog>
     </main-wrapper>
 </template>
@@ -36,6 +36,7 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import EditDialog from '@components/user-manager/edit-dialog';
+import { mapGetters } from 'vuex';
 export default {
     components: {
         MainWrapper,
@@ -59,6 +60,9 @@ export default {
             vm.getRoleList();
             vm.getData();
         });
+    },
+    computed: {
+        ...mapGetters([ 'IS_H5' ])
     },
     provide() {
         return {

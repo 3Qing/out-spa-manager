@@ -22,7 +22,6 @@
             <el-form-item>
                 <el-input v-model="form.name" placeholder="氏名" :maxlength="30" @blur="changeHandle" clearable></el-input>
             </el-form-item>
-            <!-- <el-button type="primary" icon="el-icon-download" size="mini">下载</el-button> -->
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData">
@@ -52,6 +51,7 @@
                 <el-table-column label="コメント" prop="comment" show-overflow-tooltip></el-table-column>
                 <el-table-column label="アクション" :width="`${operWidth}px`" v-if="operWidth">
                     <template slot-scope="scope">
+                        <el-button size="mini" @click="toDetail(scope.row)">显示</el-button>
                         <el-button
                             v-for="(item, i) in (scope.row.actions || [])"
                             size="mini"
@@ -111,7 +111,6 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -191,7 +190,7 @@ export default {
                             }
                         }
                     });
-                    this.operWidth = actionLen * 80;
+                    this.operWidth = actionLen * 80 + 80;
                     this.tableData = data.data || [];
                     this.total = data.total;
                 } else {
@@ -247,6 +246,17 @@ export default {
         changeHandle() {
             this.pn = 1;
             this.getData();
+        },
+        toDetail(row) {
+            this.$router.push({
+                name: 'EmployeeEdit',
+                params: {
+                    id: row.id
+                },
+                query: {
+                    display: 1
+                }
+            });
         },
         clickHandle(scope, item) {
             if (item.action === 'act_employeeupdate') {

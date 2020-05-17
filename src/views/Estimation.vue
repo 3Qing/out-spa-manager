@@ -74,45 +74,26 @@
                             <el-option
                                 v-for="item in pays"
                                 :key="item.id"
-                                :label="item.text"
+                                :label="item.title"
                                 :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="有效期间">
-                        <el-date-picker
-                            v-model="data.validityPeriod"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            format="yyyy-MM-dd"
-                            placeholder="选择日期">
-                        </el-date-picker>
+                        <el-input v-model="data.validatyPeriod"></el-input>
                     </el-form-item>
                 </el-form>
             </el-col>
             <el-col :span="12"></el-col>
         </el-row>
-        <el-table size="small" v-if="show" :data="tableData">
+        <el-table size="small" v-if="show" :data="tableData" :summary-method="getSummaries" show-summary>
             <el-table-column label="No" width="100px">
                 <template slot-scope="scope">
                     <span>{{scope.row.estimationID}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="期间" width="360px">
-                <template slot-scope="scope">
-                    <el-date-picker
-                        v-model="scope.row.period"
-                        type="daterange"
-                        size="mini"
-                        style="width: 320px"
-                        range-separator="~"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
-                    </el-date-picker>
-                </template>
-            </el-table-column>
             <el-table-column label="工数" width="160px">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.title" size="mini"></el-input>
+                    <el-input v-model="scope.row.ningetsu" size="mini"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="基本单位" width="140px">
@@ -120,7 +101,7 @@
                     <el-input v-model="scope.row.unitPrice" size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="金额" width="140px">
+            <el-table-column label="金额" width="100px">
                 <template slot-scope="scope">
                     <span>{{scope.row.amount || 0}}</span>
                 </template>
@@ -142,7 +123,7 @@
             <el-input v-model="data.comment" type="textarea" :rows="10"></el-input>
         </div>
         <div class="text-center" v-if="show">
-            <el-button type="primary" size="mini">保存</el-button>
+            <el-button type="primary" size="mini" @click="beforeSubmit">保存</el-button>
             <el-button size="mini" @click="$router.back()">返回</el-button>
         </div>
     </main-wrapper>
@@ -151,6 +132,7 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
+import { formatTime } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -181,6 +163,8 @@ export default {
                 const monthStartDate = new Date(year,  month, 1);
                 const monthEndDate = new Date(year, month + 1, 0);
                 vm.dates = [ moment(monthStartDate).format('YYYY-MM-DD'), moment(monthEndDate).format('YYYY-MM-DD') ];
+            } else {
+                vm.getData();
             }
             vm.getCustomer();
             vm.getOpport();
@@ -189,6 +173,7 @@ export default {
         });
     },
     methods: {
+        formatTime: formatTime,
         getInitEstimation() {
             if (this.dates.length !== 2
                 || !this.fromhours
@@ -225,20 +210,29 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    this.data = res.data || {};
+                    const data = res.data || {};
+                    data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
+                    this.data = { ...data };
                     if (this.data.items && this.data.items.length) {
-                        this.tableData = this.data.items.map(item => {
-                            const tmp = { ...item };
-                            tmp.period = [
-                                moment(item.fromDate).format('YYYY-MM-DD'),
-                                moment(item.toDate).format('YYYY-MM-DD')
-                            ];
-                            return tmp;
-                        });
+                        this.tableData = [ ...data.items ];
                     } else {
                         this.tableData = [ {} ];
                     }
                     this.show = true;
+                }
+            });
+        },
+        getData() {
+            const loading = this.$loading({ lock: true, text: '正在获取信息中' });
+            this.$axios({
+                url: '/api/Estimation/api_getestimationbyid',
+                params: {
+                    id: this.$route.params.id
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    console.log(res);
                 }
             });
         },
@@ -278,6 +272,9 @@ export default {
                 }
             });
         },
+        getSummaries({ column, data }) {
+            console.log(column, data);
+        },
         handleAdd(scope) {
             const tmp = [ ...this.tableData ];
             tmp.splice(scope.$index + 1, 1, {});
@@ -287,6 +284,46 @@ export default {
             const tmp = [ ...this.tableData ];
             tmp.splice(scope.$index + 1, 0);
             this.tableData = [ ...tmp ];
+        },
+        beforeSubmit() {
+            const params = {
+                Comment: this.data.comment,
+                CustomerID: this.customerid,
+                OpportunityID: this.opportunityid || 0,
+                PaymentTermID: this.data.paymentTermID || 0,
+                SubmitDate: this.data.submitDate,
+                SubmitDocuments: this.data.submitDocuments,
+                SubmitLocation: this.data.submitLocation,
+                Title: this.data.title,
+                ValidatyPeriod: this.data.validatyPeriod || '',
+                FromDate: this.dates[0],
+                ToDate: this.dates[1],
+                Items: this.tableData.map(item => ({
+                    ID: item.id,
+                    Amount: item.amount || 0,
+                    Comment: item.comment || '',
+                    Ningetsu: item.ningetsu || 0,
+                    UnitPrice: item.unitPrice
+                }))
+            };
+            this.submit(params);
+        },
+        submit(params) {
+            const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/Estimation/api_updateestimation',
+                params,
+                formData: true
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '提交成功'
+                    });
+                }
+            });
         }
     }
 };
@@ -317,9 +354,15 @@ export default {
             width: 100%;
         }
     }
+    .link {
+        font-size: 16px;
+        & + .link {
+            margin-left: 10px;
+        }
+    }
     .bottom {
         display: flex;
-        margin-top: 40px;
+        margin: 40px 0 20px;
         .title {
             width: 100px;
             text-align: center;

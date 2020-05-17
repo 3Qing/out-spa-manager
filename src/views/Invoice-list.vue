@@ -157,7 +157,7 @@ export default {
             apiDownloadFile({
                 vm: this,
                 url: `/api/Invoice/api_downloadinvoiceexcel?invid=${row.id}`,
-                filename: `${Date.now()}.xls`
+                filename: `${Date.now()}.xlsx`
             });
         },
         cancelInvoice(row) {
@@ -209,7 +209,7 @@ export default {
                 apiDownloadFile({
                     vm: this,
                     url: `/api/Invoice/api_downloadinvoice?invid=${row.id}&filetype=1`,
-                    filename: `${Date.now()}.xls`
+                    filename: `${Date.now()}.xlsx`
                 });
             }
         },

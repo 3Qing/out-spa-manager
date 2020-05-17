@@ -59,7 +59,6 @@
                 @update="getCaseListData"></case-list>
         </div>
         <intro-dialog :allStatus="allStatus"></intro-dialog>
-        <!-- <employee-dialog></employee-dialog> -->
     </main-wrapper>
 </template>
 

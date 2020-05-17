@@ -44,7 +44,7 @@
                     :key="i"
                     :label="item">
                     <template slot-scope="scope">
-                        <div class="bar-box" >
+                        <div class="bar-box">
                             <span
                                 :class="[
                                     'small',
@@ -221,7 +221,8 @@ export default {
                 }
                 return {
                     width: `${Math.ceil(ratio * 100) - dvalue}%`,
-                    'left': left ? `${left < 20 ? 15 : left - 5}%` : 0,
+                    // 'left': left ? `${left < 20 ? 15 : left - 5}%` : 0,
+                    // 'text-align': 'right',
                     'border-color': Number(data.sales) ? '#1473B7' : 'transparent',
                     'background-color': Number(data.sales) ? '#1473B7' : 'transparent',
                 };
@@ -272,6 +273,9 @@ export default {
             height: 100%;
         }
     }
+    .el-table .cell {
+        padding: 0;
+    }
     .bar-box {
         padding: 0;
         width: 100%;
@@ -304,6 +308,7 @@ export default {
             position: absolute;
             left: 0;
             top: 0;
+            text-indent: 50%;
         }
     }
 }

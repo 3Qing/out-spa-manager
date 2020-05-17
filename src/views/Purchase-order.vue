@@ -164,7 +164,12 @@ export default {
             vendors: [],
             sales: [],
             loading: false,
-            tableData: []
+            tableData: [],
+            visible: false,
+            dialogPresonMonth: false,
+            dialogLoading: false,
+            datetime: null,
+            personMonthArr: []
         };
     },
     beforeRouteEnter(to, from, next) {

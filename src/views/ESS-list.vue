@@ -167,7 +167,7 @@ export default {
             apiDownloadFile({
                 vm: this,
                 url: `/api/Timesheet/api_downloadtimesheet?cfid=${row.cfid}`,
-                filename: `${Date.now()}.xls`
+                filename: `${Date.now()}.xlsx`
             });
         }
     }

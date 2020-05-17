@@ -51,7 +51,7 @@
             :current-page="page"
             @current-change="changePage"
             :total="total"
-            layout="total, prev, pager, next, jumper"></el-pagination>
+            :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"></el-pagination>
         <edit-dialog :allTags="tags"></edit-dialog>
         <row-dialog :form="curRow" :visible="visible" @close="visible = false"></row-dialog>
         <tag-dialog :visible="showDialog" @close="showDialog = false" @updateTag="getTags"></tag-dialog>
@@ -94,7 +94,7 @@ export default {
         });
     },
     computed: {
-        ...mapGetters(['ACTIONS']),
+        ...mapGetters(['ACTIONS', 'IS_H5']),
         hasUpdateAu() {
             return this.ACTIONS.includes('act_updateqa');
         },
