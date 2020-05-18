@@ -76,16 +76,10 @@ export function imageFileToPreview({ vm, url, params }) {
 export function priceToString(val) {
     if (!val) return '';
     return Number(val).toLocaleString();
-    // let val = value.replace(/,/g, '');
-    // if (value.indexOf('.') > -1) {
-    //     this.form[key] = parseInt(value).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
-    // } else {
-    //     this.form[key] = value.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
-    // }
 }
 
 export function priceToNumber(val) {
     if (!val) return 0;
-    let value = val.replace(/,/g, '');
+    let value = String(val).replace(/,/g, '');
     return Number(value);
 }

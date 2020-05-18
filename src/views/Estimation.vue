@@ -40,21 +40,22 @@
                     :value="item.id"></el-option>
             </el-select>
             <el-button type="primary" size="mini" @click="getInitEstimation">初始化</el-button>
+            <el-button size="mini" @click="$router.back()">返回</el-button>
         </div>
         <el-row v-if="show">
             <el-col :span="12">
-                <el-form size="mini" label-width="100px">
-                    <el-form-item class="first-item">
+                <el-form size="mini" label-width="100px" :model="data" ref="form" :rules="rules">
+                    <el-form-item class="first-item" prop="customerTitle">
                         <el-input v-model="data.customerTitle"></el-input>
                         <span>御中</span>
                     </el-form-item>
-                    <el-form-item label="简明">
+                    <el-form-item label="简明" prop="title">
                         <el-input v-model="data.title"></el-input>
                     </el-form-item>
-                    <el-form-item label="预见期金额">
-                        <el-input v-model="data.amount"></el-input>
+                    <el-form-item label="预见期金额" prop="amount">
+                        <el-input v-model="data.amount" @input="handlePrice"></el-input>
                     </el-form-item>
-                    <el-form-item label="纳期">
+                    <el-form-item label="纳期" prop="submitDate">
                         <el-date-picker
                             v-model="data.submitDate"
                             type="date"
@@ -63,13 +64,13 @@
                             placeholder="选择日期">
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item label="纳入场所">
+                    <el-form-item label="纳入场所" prop="submitLocation">
                         <el-input v-model="data.submitLocation"></el-input>
                     </el-form-item>
-                    <el-form-item label="纳品物品">
+                    <el-form-item label="纳品物品" prop="submitDocuments">
                         <el-input v-model="data.submitDocuments"></el-input>
                     </el-form-item>
-                    <el-form-item label="支出">
+                    <el-form-item label="支出" prop="paymentTermID">
                         <el-select v-model="data.paymentTermID">
                             <el-option
                                 v-for="item in pays"
@@ -78,8 +79,8 @@
                                 :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="有效期间">
-                        <el-input v-model="data.validatyPeriod"></el-input>
+                    <el-form-item label="有效期间" prop="validityPeriod">
+                        <el-input v-model="data.validityPeriod"></el-input>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -88,22 +89,29 @@
         <el-table size="small" v-if="show" :data="tableData" :summary-method="getSummaries" show-summary>
             <el-table-column label="No" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.estimationID}}</span>
+                    <span>{{scope.$index + 1}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="员工" width="160px">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.employeeID" size="mini">
+                        <el-option v-for="item in employees" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
                 </template>
             </el-table-column>
             <el-table-column label="工数" width="160px">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.ningetsu" size="mini"></el-input>
+                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="1"></el-input-number>
                 </template>
             </el-table-column>
             <el-table-column label="基本单位" width="140px">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.unitPrice" size="mini"></el-input>
+                    <el-input v-model="scope.row.unitPrice" size="mini" @input="handleInput(scope)"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="金额" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.amount || 0}}</span>
+                    <span>{{priceToString(scope.row.amount || 0)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="通过">
@@ -120,11 +128,10 @@
         </el-table>
         <div class="bottom" v-if="show">
             <span class="title">偏考</span>
-            <el-input v-model="data.comment" type="textarea" :rows="10"></el-input>
+            <el-input v-model="data.comment" type="textarea" :rows="7"></el-input>
         </div>
         <div class="text-center" v-if="show">
             <el-button type="primary" size="mini" @click="beforeSubmit">保存</el-button>
-            <el-button size="mini" @click="$router.back()">返回</el-button>
         </div>
     </main-wrapper>
 </template>
@@ -132,7 +139,7 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
-import { formatTime } from '@_public/utils';
+import { formatTime, priceToString, priceToNumber } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -145,14 +152,39 @@ export default {
             customerid: '',
             opportunityid: '',
             employeeids: [],
-            form: {},
             customers: [],
             employees: [],
             opports: [],
             pays: [],
             data: {},
             show: false,
-            tableData: []
+            tableData: [],
+            rules: {
+                customerTitle: [{
+                    required: true, message: '请填写客户名称', trigger: 'blur'
+                }],
+                title: [{
+                    required:  true, message: '请填写标题', trigger: 'blur'
+                }],
+                amount: [{
+                    required: true, message: '请填写金额', trigger: 'blur'
+                }],
+                submitDate: [{
+                    required: true, message: '请选择纳期', trigger: 'blur'
+                }],
+                submitLocation: [{
+                    required: true, message: '请填写纳入场所', trigger: 'blur'
+                }],
+                submitDocuments: [{
+                    required: true, message: '请填写纳品物品', trigger: 'blur'
+                }],
+                paymentTermID: [{
+                    required: true, message: '请选择支出', trigger: 'blur'
+                }],
+                validityPeriod: [{
+                    required: true, message: '请填写有效期间', trigger: 'blur'
+                }]
+            }
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -174,6 +206,9 @@ export default {
     },
     methods: {
         formatTime: formatTime,
+        priceToString: priceToString,
+        priceToNumber: priceToNumber,
+        // 初始化报价单
         getInitEstimation() {
             if (this.dates.length !== 2
                 || !this.fromhours
@@ -211,10 +246,16 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
+                    data.amount = priceToString(priceToNumber(data.amount));
                     data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
                     this.data = { ...data };
                     if (this.data.items && this.data.items.length) {
-                        this.tableData = [ ...data.items ];
+                        this.tableData = data.items.map(item => {
+                            const tmp = { ...item };
+                            tmp.unitPrice = priceToString(tmp.unitPrice);
+                            tmp.ningetsu = Number((Number(tmp.ningetsu) / 100).toFixed(2));
+                            return tmp;
+                        });
                     } else {
                         this.tableData = [ {} ];
                     }
@@ -232,7 +273,28 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    console.log(res);
+                    const data = res.data || {};
+                    data.amount = priceToString(priceToNumber(data.amount));
+                    this.data = { ...data };
+                    this.dates = [
+                        moment(new Date(data.fromDate).getTime()).format('YYYY-MM-DD'),
+                        moment(new Date(data.toDate).getTime()).format('YYYY-MM-DD')
+                    ];
+                    this.fromhours = data.fromHours;
+                    this.tohours = data.toHours;
+                    this.customerid = data.customerID;
+                    this.opportunityid = data.opportunityID;
+                    if (data.items && data.items.length) {
+                        this.tableData = data.items.map(item => {
+                            const tmp = { ...item };
+                            tmp.unitPrice = priceToString(tmp.unitPrice);
+                            tmp.ningetsu = Number((Number(tmp.ningetsu) / 100).toFixed(2));
+                            return tmp;
+                        });
+                    } else {
+                        this.tableData = [{}];
+                    }
+                    this.show = true;
                 }
             });
         },
@@ -272,41 +334,97 @@ export default {
                 }
             });
         },
-        getSummaries({ column, data }) {
-            console.log(column, data);
+        // 合计
+        getSummaries(p) {
+            const { columns, data } = p;
+            const sum = [];
+            let total = 0;
+            data.forEach(item => {
+                total += (item.amount && Number(item.amount)) || 0;
+            });
+            columns.forEach((item, index) => {
+                if (index === 3) {
+                    sum[index] = '总计：';
+                } else if (index === 4) {
+                    sum[index] = priceToString(total);
+                } else {
+                    sum[index] = '';
+                }
+            });
+            return sum;
         },
         handleAdd(scope) {
             const tmp = [ ...this.tableData ];
-            tmp.splice(scope.$index + 1, 1, {});
+            tmp.splice(scope.$index + 1, 0, {});
             this.tableData = [ ...tmp ];
         },
         handleDel(scope) {
             const tmp = [ ...this.tableData ];
-            tmp.splice(scope.$index + 1, 0);
+            tmp.splice(scope.$index, 1);
             this.tableData = [ ...tmp ];
         },
+        handleInput(scope) {
+            const tableData = this.tableData.map(item => ({ ...item }));
+            tableData[scope.$index].unitPrice = priceToString(priceToNumber(scope.row.unitPrice));
+            this.tableData = tableData;
+        },
+        handlePrice() {
+            this.data.amount = priceToString(priceToNumber(this.data.amount));
+        },
         beforeSubmit() {
-            const params = {
-                Comment: this.data.comment,
-                CustomerID: this.customerid,
-                OpportunityID: this.opportunityid || 0,
-                PaymentTermID: this.data.paymentTermID || 0,
-                SubmitDate: this.data.submitDate,
-                SubmitDocuments: this.data.submitDocuments,
-                SubmitLocation: this.data.submitLocation,
-                Title: this.data.title,
-                ValidatyPeriod: this.data.validatyPeriod || '',
-                FromDate: this.dates[0],
-                ToDate: this.dates[1],
-                Items: this.tableData.map(item => ({
-                    ID: item.id,
-                    Amount: item.amount || 0,
-                    Comment: item.comment || '',
-                    Ningetsu: item.ningetsu || 0,
-                    UnitPrice: item.unitPrice
-                }))
-            };
-            this.submit(params);
+            this.$refs.form.validate(valid => {
+                if (valid) {
+                    const params = {
+                        Comment: this.data.comment,
+                        CustomerID: this.customerid,
+                        OpportunityID: this.opportunityid || 0,
+                        PaymentTermID: this.data.paymentTermID || 0,
+                        SubmitDate: this.data.submitDate,
+                        SubmitDocuments: this.data.submitDocuments,
+                        SubmitLocation: this.data.submitLocation,
+                        Title: this.data.title,
+                        ValidatyPeriod: this.data.validityPeriod || '',
+                        FromDate: this.dates[0],
+                        ToDate: this.dates[1],
+                        FromHours: this.fromhours,
+                        ToHours: this.tohours,
+                        Amount: priceToNumber(this.data.amount),
+                        Items: this.tableData.map(item => ({
+                            ID: item.id,
+                            EmployeeID: item.employeeID,
+                            Amount: item.amount || 0,
+                            Comment: item.comment || '',
+                            Ningetsu: item.ningetsu || 0,
+                            UnitPrice: priceToNumber(item.unitPrice)
+                        }))
+                    };
+                    for (let item of this.tableData) {
+                        if (!item.amount || !item.comment || !item.ningetsu || !item.unitPrice) {
+                            this.$message({
+                                type: 'warning',
+                                message: '表格中存在未填写字段'
+                            });
+                            return;
+                        }
+                    }
+                    if (!this.data.comment) {
+                        this.$message({
+                            type: 'warning',
+                            message: '请填写偏考'
+                        });
+                        return;
+                    }
+                    if (Number(this.$route.params.id)) {
+                        params.ID = this.$route.params.id;
+                    }
+                    this.submit(params);
+                } else {
+                    this.$message({
+                        type: 'warning',
+                        message: '存在字段未填写'
+                    });
+                }
+            });
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: '正在提交信息中' });
@@ -322,6 +440,16 @@ export default {
                         type: 'success',
                         message: '提交成功'
                     });
+                    if (Number(this.$route.params.id)) {
+                        this.getData();
+                    } else {
+                        this.$router.replace({
+                            name: 'Estimation',
+                            params: {
+                                id: res.data.id
+                            }
+                        });
+                    }
                 }
             });
         }
@@ -366,7 +494,7 @@ export default {
         .title {
             width: 100px;
             text-align: center;
-            line-height: 117px;
+            line-height: 160px;
         }
         .el-input {
             flex: 1 0 0;

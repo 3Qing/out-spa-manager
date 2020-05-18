@@ -40,6 +40,7 @@
             <el-select v-model="form.salespersonid" placeholder="営業担当" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
             </el-select>
+            <el-button type="primary" size="mini" @click="toEdit({id: 'new'})" style="margin-left: 20px;">新建登録</el-button>
         </div>
         <el-table size="small" :data="tableData">
             <el-table-column label="注文番号" width="120px">

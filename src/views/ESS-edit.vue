@@ -103,9 +103,9 @@
                 size="small"
                 :data="fares"
                 class="table-wrapper">
-                <el-table-column label="費用項目" prop="fareId" width="120">
+                <el-table-column label="費用項目" prop="fareID" width="120">
                     <template slot-scope="scope">
-                        <el-select v-if="editable" size="mini" v-model="scope.row.fareId" @change="changeFareID(scope)">
+                        <el-select v-if="editable" size="mini" v-model="scope.row.fareID" @change="changeFareID(scope)">
                             <el-option :value="1" label="交通代"></el-option>
                             <el-option :value="99" label="その他"></el-option>
                         </el-select>
@@ -120,17 +120,17 @@
                 </el-table-column>
                 <el-table-column label="コメント">
                     <template slot-scope="scope">
-                        <el-input v-if="editable" v-model="scope.row.Comment" size="mini" clearable></el-input>
-                        <span v-else>{{scope.row.Comment || '-'}}</span>
+                        <el-input v-if="editable" v-model="scope.row.comment" size="mini" clearable></el-input>
+                        <span v-else>{{scope.row.comment || '-'}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="領収書" min-width="300">
                     <template slot-scope="scope">
                         <el-row>
-                            <el-col :span="7" v-if="scope.row.FileID">
+                            <el-col :span="7" v-if="scope.row.fileID">
                                 <el-button @click="watchInvoice(scope)" type="primary" size="mini">領収書照会</el-button>
                             </el-col>
-                            <el-col v-if="editable" :span="scope.row.FileID ? 17 : 24">
+                            <el-col v-if="editable" :span="scope.row.fileID ? 17 : 24">
                                 <upload :opt="{ btnText: '領収書写真ｱｯﾌﾟﾛｰﾄﾞ', scope: scope, show: true }" @upload="upload"></upload>
                             </el-col>
                         </el-row>
@@ -157,6 +157,7 @@ import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import BigPicture from '@components/big-picture';
 import moment from 'moment';
+import { imageFileToPreview } from '@_public/utils';
 
 export default {
     components: {
@@ -285,10 +286,10 @@ export default {
                         item.pmToTime = this.formatTime(item, 'pmToTime');
                         item.content = item.content || '';
                     });
-                    if (result.fares && result.fares.length) {
-                        this.fares = [...result.fares];
+                    if (result.employeeFares && result.employeeFares.length) {
+                        this.fares = [...result.employeeFares];
                     } else {
-                        this.fares = [{ fareId: 1, title: '交通费', amount: '' }];
+                        this.fares = [{ fareID: 1, title: '交通费', amount: '' }];
                     }
                     this.worktimes = [...worktimes];
                     this.essId = result.id;
@@ -340,7 +341,7 @@ export default {
             return '';
         },
         formatFareID(row) {
-            if (row.fareId === 1) {
+            if (row.fareID === 1) {
                 return '交通费';
             } else {
                 return row.title || '';
@@ -367,13 +368,13 @@ export default {
             this.worktimes = [...worktimes];
         },
         changeFareID(scope) {
-            if (scope.row.fareId === 1) {
+            if (scope.row.fareID === 1) {
                 this.fares[scope.$index].title = '交通费';
             }
         },
         addFare() {
             this.fares.push({
-                fareId: 1,
+                fareID: 1,
                 title: '交通费',
                 amount: ''
             });
@@ -408,18 +409,18 @@ export default {
                     if (item.id) {
                         formData.append(`employeefares[${index}].id`, item.id);
                     }
-                    if (item.FileID) {
-                        formData.append(`employeefares[${index}].FileID`, item.FileID);
+                    if (item.fileID) {
+                        formData.append(`employeefares[${index}].fileID`, item.fileID);
                     }
-                    if (Number(item.amount) > 3000 && !item.FileID && !this.files[index]) {
+                    if (Number(item.amount) > 3000 && !item.fileID && !this.files[index]) {
                         noFile = true;
                     }
-                    if (item.fareId >= 99 && !item.Comment) {
+                    if (item.fareID >= 99 && !item.comment) {
                         commentEmpty = true;
                     }
-                    formData.append(`employeefares[${index}].fareId`, item.fareId);
+                    formData.append(`employeefares[${index}].fareID`, item.fareID);
                     formData.append(`employeefares[${index}].title`, item.title || '');
-                    formData.append(`employeefares[${index}].Comment`, item.Comment || '');
+                    formData.append(`employeefares[${index}].comment`, item.comment || '');
                     formData.append(`employeefares[${index}].amount`, item.amount || '');
                 }
             });
@@ -467,8 +468,12 @@ export default {
             });
         },
         watchInvoice(scope) {
-            this.$root.$emit('SHOW_PICTURE_DIALOG', {
-                url: `http://erp.your-partner.co.jp/api/getfareimage?fareid=${scope.row.id}`
+            imageFileToPreview({
+                vm: this,
+                url: '/api/Timesheet/api_getfareimage',
+                params: {
+                    id: scope.row.id
+                }
             });
         }
     }

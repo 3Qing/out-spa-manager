@@ -192,20 +192,20 @@
             <el-col :span="12" v-if="isDisplay">
                 <div class="top"></div>
                 <div class="bottom">
-                    <el-form label-width="130px" label-suffix=":" v-for="item in form.salaries" :key="item.id">
-                        <el-form-item label="时间">
-                            <p>{{formatTime(item.fromDate)}}</p>
-                        </el-form-item>
-                        <el-form-item label="绩效工资">
-                            <p>{{priceToString(item.pjSalary)}}</p>
-                        </el-form-item>
-                        <el-form-item label="基本工资">
-                            <p>{{priceToString(item.baseSalary)}}</p>
-                        </el-form-item>
-                        <el-form-item label="工资的备注">
-                            <p>{{item.comment}}</p>
-                        </el-form-item>
-                    </el-form>
+                    <el-table :data="form.salaries" size="small">
+                        <el-table-column label="时间">
+                            <template slot-scope="scope">
+                                <p>{{formatTime(scope.row.fromDate)}}</p>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="绩效工资" prop="pjSalary"></el-table-column>
+                        <el-table-column label="基本工资" prop="baseSalary"></el-table-column>
+                        <el-table-column label="工资的备注" prop="comment">
+                            <template slot-scope="scope">
+                                <p>{{scope.row.comment || '-'}}</p>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </div>
             </el-col>
         </el-row>

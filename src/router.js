@@ -35,7 +35,7 @@ import PurchaseOrder from '@views/Purchase-order';
 import PurchaseEdit from '@views/Purchase-edit';
 import PaymentList from '@views/Payment-list';
 import PositionList from '@views/Position';
-
+import CompanyEdit from '@views/Company-edit';
 
 Vue.use(Router);
 
@@ -195,6 +195,10 @@ const router = new Router({
         path: '/positionList',
         name: 'PositionList',
         component: PositionList
+    }, {
+        path: '/companynew',
+        name: 'CompanyNew',
+        component: CompanyEdit
     }
     ]
 });

@@ -4,17 +4,21 @@
             <el-select v-model="customerid" size="mini" @change="handleChange" clearable>
                 <el-option v-for="item in customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
             </el-select>
-            <el-button type="primary" size="mini" @click="handleEdit({estimationNo: 'new'})">新建登録</el-button>
+            <el-button type="primary" size="mini" @click="handleEdit({id: 'new'})">新建登録</el-button>
         </div>
         <el-table :data="tableData" size="small">
-            <el-table-column label="No" prop="estimationNo" width="100px"></el-table-column>
+            <el-table-column label="No" prop="id" width="100px"></el-table-column>
             <el-table-column label="发布日期" prop="pubDate" width="120px">
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.pubDate)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="客户名称" prop="customerTitle"></el-table-column>
-            <el-table-column label="商标名称" prop="opportunityTitle"></el-table-column>
+            <el-table-column label="商标名称" prop="opportunityTitle" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{scope.row.opportunityTitle || '-'}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="80px">
                 <template slot-scope="scope">
                     <i class="el-icon-edit link" color="primary" @click="handleEdit(scope.row)"></i>
@@ -95,7 +99,7 @@ export default {
             this.$router.push({
                 name: 'Estimation',
                 params: {
-                    id: row.estimationNo || 'new'
+                    id: row.id || 'new'
                 }
             });
         },
@@ -106,7 +110,7 @@ export default {
         downloadFile(row) {
             apiDownloadFile({
                 vm: this,
-                api: `/api/Estimation/api_downloadestimationexcel?id=${row.id}`,
+                url: `/api/Estimation/api_downloadestimationexcel?id=${row.id}`,
                 filename: `${Date.now()}.cls`
             });
         }

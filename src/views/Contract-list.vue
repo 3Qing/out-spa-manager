@@ -82,9 +82,10 @@
                         @upload="uploadFile"></upload>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="160px">
+            <el-table-column label="操作" width="240px">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.row.editable" type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
+                    <el-button size="mini" @click="toEdit(scope.row, 'display')">显示</el-button>
+                    <el-button v-if="scope.row.editable" size="mini" @click="toEdit(scope.row)">編集</el-button>
                     <el-button v-if="scope.row.extendable" size="mini" @click="showDialog(scope.row)">更新</el-button>
                 </template>
             </el-table-column>
@@ -341,13 +342,19 @@ export default {
         close() {
             this.visible = false;
         },
-        toEdit(row) {
-            this.$router.push({
+        toEdit(row, type) {
+            const params = {
                 name: 'ContractEdit',
                 params: {
                     id: row.id
                 }
-            });
+            };
+            if (type === 'display') {
+                params.query = {
+                    display: 1
+                };
+            }
+            this.$router.push(params);
         },
         formatNingetsu(scope) {
             const personMonthArr = [...this.personMonthArr];
