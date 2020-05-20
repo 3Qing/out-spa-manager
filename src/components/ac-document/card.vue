@@ -44,8 +44,8 @@
                 </el-col>
             </el-row>
         </div>
-        <el-button type="primary" size="mini" @click="addRow">新增</el-button>
-        <el-table size="mini" :data="items">
+        <el-button type="primary" size="mini" @click="addRow" style="margin-bottom: 10px;">新增</el-button>
+        <el-table size="mini" :data="items" border>
             <el-table-column label="借貸" prop="DRCR">
                 <template slot-scope="scope">
                     <el-select
@@ -205,6 +205,7 @@ export default {
 
 <style lang="less">
 .ac-box {
+    box-shadow: none !important;
     .errors-tip {
         input {
             border-color: #DB414E !important;

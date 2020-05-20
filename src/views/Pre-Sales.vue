@@ -23,8 +23,8 @@
             </el-select>
         </div>
         <div class="left">
-            <el-button size="mini" type="primary" @click="showEmpDialog">添加营业候选人</el-button>
-            <el-table size="small" :data="tableData" @cell-click="cellClick">
+            <el-button size="mini" type="primary" @click="showEmpDialog" style="margin-bottom: 10px">添加营业候选人</el-button>
+            <el-table size="small" :data="tableData" @cell-click="cellClick" border>
                 <el-table-column label="员工号" prop="employeeNo" width="100px"></el-table-column>
                 <el-table-column label="姓名" prop="name" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="Avaiable Date" prop="avaiableDate" min-width="140px">
@@ -243,14 +243,15 @@ export default {
 
 <style lang="less">
 .pre-sales {
-
     .content-wrapper {
-        &:after {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 0;
-            clear: both;
+        & > div {
+            &:after {
+                content: '';
+                display: block;
+                width: 100%;
+                height: 0;
+                clear: both;
+            }
         }
     }
     .left {

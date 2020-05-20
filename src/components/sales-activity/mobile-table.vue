@@ -3,7 +3,7 @@
         <el-table size="small" border v-for="list in data" :key="list.date" :data="list.Activities" :span-method="arraySpanMobileMethod">
             <el-table-column label="姓名" prop="EmployeeName" width="100px"></el-table-column>
             <el-table-column>
-                <p slot="header">{{list.date}} {{list.weekDay}}<i class="el-icon-plus" @click="addSales(list)"></i></p>
+                <p slot="header">{{list.date}} {{list.weekDay}}<i class="el-icon-plus" @click="addSales(list)" color="warning"></i></p>
                 <template slot-scope="scope">
                     <div
                         :class="[cellClassName(scope, 'row')]"
@@ -37,7 +37,7 @@ export default {
             position: absolute;
             right: .2rem;
             top: 50%;
-            color: #1473b7;
+            // color: #1473b7;
             transform: translateY(-50%);
         }
         .el-icon-edit-outline {

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5321591",
+      "name": "Excel",
+      "font_class": "Excel",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
       "icon_id": "8776878",
       "name": "download",
       "font_class": "icon-test",
@@ -25,13 +32,6 @@
       "font_class": "chengyi_pc_preview",
       "unicode": "e60a",
       "unicode_decimal": 58890
-    },
-    {
-      "icon_id": "2191547",
-      "name": "excel",
-      "font_class": "web-icon-",
-      "unicode": "e6df",
-      "unicode_decimal": 59103
     },
     {
       "icon_id": "8765263",

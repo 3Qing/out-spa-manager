@@ -4,7 +4,7 @@
         <div class="main-header" slot="header">
             <el-button size="mini" type="primary" @click="dataChange('add')">新规登录</el-button>
         </div>
-        <el-table size="mini" :data="tableData">
+        <el-table size="mini" :data="tableData" border>
             <el-table-column label="勘定コード" prop="accountID"></el-table-column>
             <el-table-column label="テキスト" prop="text"></el-table-column>
             <el-table-column label="BS/PL勘定" prop="bspl">
@@ -18,9 +18,9 @@
                 </template>
             </el-table-column>
             <el-table-column label="財務諸表項目" prop="groupText"></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="操作" width="120px">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="primary" @click="dataChange('edit', scope.row)">变更</el-button>
+                    <el-button size="mini" type="warning" @click="dataChange('edit', scope.row)">变更</el-button>
                 </template>
             </el-table-column>
         </el-table>

@@ -121,7 +121,7 @@ export default {
 <style scoped lang="less">
 .invoice-gold-dialog {
     .el-input {
-        width: 100%;
+        width: 240px;
     }
 }
 </style>

@@ -23,7 +23,7 @@
         </el-form>
         <el-row>
             <el-col :span="IS_H5 ? 24 : 13">
-                <el-table size="mini" :data="tableData" @row-click="rowClick">
+                <el-table size="mini" :data="tableData" @row-click="rowClick" border>
                     <el-table-column label="伝票番号" prop="DocNo"></el-table-column>
                     <el-table-column label="伝票タイプ" prop="DocType"></el-table-column>
                     <el-table-column label="転記日" prop="PostingDate"></el-table-column>

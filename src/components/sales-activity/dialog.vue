@@ -141,6 +141,7 @@ export default {
 
 <style lang="less">
 .sales-dialog {
+    max-width: 800px !important;
     .el-dialog__body {
         padding-top: 0;
     }

@@ -28,12 +28,24 @@
             <el-header class="clearfix web-header" height="48px" v-if="showMenu">
                 <span class="fl">{{TAB_TITLE}}</span>
                 <div class="head-right fr" v-if="activeRouter !== 'Login'">
-                    <span>{{USER_INFO.employeeNo}}</span>
-                    <span>{{USER_INFO.name}}</span>
-                    <span class="link" @click="logout">登出</span>
+                    <span>{{USER_INFO.employeeNo}}</span>&nbsp;<span color="gray">|</span>&nbsp;<span>{{USER_INFO.name}}</span>
+                    <span class="link" color="danger" @click="logout">登出</span>
                 </div>
             </el-header>
-            <el-main><router-view></router-view></el-main>
+            <el-main>
+                <div class="page-tag" v-if="routes.length">
+                    <el-tag
+                        class="link"
+                        v-for="(item, i) in routes"
+                        :key="i"
+                        @click.native="toView(item)"
+                        :closable="routes.length !== 1"
+                        effect="plain"
+                        :type="item.name === activeRouter ? '' : 'info'"
+                        @close="closeRoute(item, i)">{{item.title}}</el-tag>
+                </div>
+                <router-view></router-view>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -56,12 +68,19 @@ export default {
             activeRouter: 'Login',
             showH5Nav: false,
             showMenu: true,
-            tabTitle: ''
+            tabTitle: '',
+            routes: []
         };
     },
     watch: {
         '$route'(route) {
             this.activeRouter = route.name;
+            if (!this.routes.length && this.USER_INFO) {
+                this.routes.push({
+                    name: route.name,
+                    title: this.TAB_TITLE
+                });
+            }
             sessionStorage.setItem('routeHistory', JSON.stringify({
                 name: route.name,
                 params: route.params || {},
@@ -95,6 +114,7 @@ export default {
     methods: {
         logout() {
             sessionStorage.removeItem('appInfo');
+            sessionStorage.removeItem('pageTag');
             this.$store.dispatch({
                 type: FETCH_MENUS,
                 res: LOGIN_MENUS
@@ -102,6 +122,7 @@ export default {
             if (this.showH5Nav) {
                 this.showH5Nav = false;
             }
+            this.routes = [];
             this.activeRouter = 'Login';
             this.$router.push({ name: 'Login' });
         },
@@ -112,6 +133,7 @@ export default {
             const routeHistory = sessionStorage.getItem('routeHistory');
             const appInfo = sessionStorage.getItem('appInfo');
             const tabTitle = sessionStorage.getItem('tabTitle');
+            const pageTag = sessionStorage.getItem('pageTag');
             
             if (appInfo) {
                 const menus = sessionStorage.getItem('menus') || [];
@@ -146,6 +168,9 @@ export default {
                     this.$router.push({ name: 'ESSList' });
                     sessionStorage.setItem('routeHistory', JSON.stringify({ name: 'ESSList' }));
                 }
+                if (pageTag) {
+                    this.routes = JSON.parse(pageTag);
+                }
             } else {
                 this.$router.push({ name: 'Login' });
             }
@@ -170,6 +195,11 @@ export default {
                 });
             } else {
                 this.tabTitle = menu.title;
+                const filter = this.routes.filter(item => item.name === menu.name);
+                if (!filter.length) {
+                    this.routes.push(menu);
+                    sessionStorage.setItem('pageTag', JSON.stringify(this.routes));
+                }
             }
             if (!this.showMenu) {
                 this.showH5Nav = false;
@@ -177,24 +207,39 @@ export default {
         },
         displayMenu() {
             this.showH5Nav = !this.showH5Nav;
+        },
+        toView(item) {
+            this.$router.push(item);
+        },
+        closeRoute(data, i) {
+            this.routes.splice(i, 1);
+            if (data.name === this.activeRouter) {
+                if (i === 0) {
+                    this.$router.push(this.routes[i]);
+                } else {
+                    this.$router.push(this.routes[i - 1]);
+                }
+            }
+            sessionStorage.setItem('PAGE_TAG', JSON.stringify(this.routes));
         }
     }
 };
 </script>
 
 <style lang="less">
+@height: 48px;
 .public-container {
     width: 100%;
     height: 100%;
     .web-header {
         font-size: 20px;
-        line-height: 48px;
+        line-height: @height;
         background-color: #fff;
         border-bottom: 1px solid #C1D4E5;
         .head-right {
             font-size: 14px;
             font-weight: normal;
-            span + span {
+            span:nth-child(4) {
                 margin-left: 20px;
             }
         }
@@ -261,6 +306,25 @@ export default {
         overflow: auto;
         padding: 0;
         background-color: #e5edf4;
+        .page-tag {
+            height: @height;
+            line-height: @height;
+            background-color: #fff;
+            border-bottom: 1px solid #C1D4E5;
+            .el-tag {
+                height: @height;
+                line-height: @height;
+                border-top: none;
+                border-radius: 0;
+                // border-bottom: 0;
+                &.el-tag--plain {
+                    border-color: #d3d4d6;
+                }
+                & + .el-tag {
+                    border-left: none;
+                }
+            }
+        }
     }
     .el-footer {
         border-top: 1px solid #c1d4e5;

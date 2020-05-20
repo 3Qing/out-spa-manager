@@ -198,6 +198,11 @@ export default {
 
 <style lang="less">
 .login {
+    .content-wrapper {
+        & > div {
+            box-shadow: none;
+        }
+    }
     .el-form {
         width: 220px;
         .el-form-item {

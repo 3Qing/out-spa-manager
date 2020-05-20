@@ -20,7 +20,7 @@
                 <el-option v-for="item in customers" :key="item.id" :value="item.id" :label="item.title"></el-option>
             </el-select>
         </div>
-        <el-table size="small" :data="tableData" :row-class-name="rowClassName">
+        <el-table size="small" :data="tableData" :row-class-name="rowClassName" border>
             <el-table-column label="請求書番号" prop="invoiceNo" show-overflow-tooltip></el-table-column>
             <el-table-column label="請求書ﾀｲﾄﾙ" prop="invoiceTitle" show-overflow-tooltip></el-table-column>
             <el-table-column label="取引先" prop="customerTitle" show-overflow-tooltip></el-table-column>
@@ -30,12 +30,11 @@
             <el-table-column label="入金予定日" prop="planCollectDate"></el-table-column>
             <el-table-column label="実際入金日" prop="actualCollectDate"></el-table-column>
             <el-table-column label="入金額" prop="collectAmount"></el-table-column>
-            <el-table-column label="アクション" width="640px">
+            <el-table-column label="アクション" width="320px">
                 <template slot-scope="scope">
-                    <i class="iconfont icon-chengyi_pc_preview link" color="primary" @click="preview(scope.row)"></i>
-                    <!-- <el-button type="primary" size="mini" @click="preview(scope.row)">プレビュー（预览）</el-button> -->
-                    <el-button type="primary" size="mini" @click="downloadFile('pdf', scope.row)">PDFダウンロード</el-button>
-                    <el-button type="primary" size="mini" @click="downloadFile('excel', scope.row)">Excelダウンロード</el-button>
+                    <i class="iconfont icon-chengyi_pc_preview link oper-icon" color="primary" @click="preview(scope.row)"></i>
+                    <i class="icon-PDF iconfont oper-icon" color="danger" @click="downloadFile('pdf', scope.row)"></i>
+                    <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadFile('excel', scope.row)"></i>
                     <el-button
                         type="primary"
                         v-for="item in scope.row.actions"
@@ -245,6 +244,12 @@ export default {
         margin-right: 10px;
         display: inline-block;
         vertical-align: top;
+    }
+    .el-table {
+        .oper-icon {
+            font-size: 20px;
+            margin-top: 4px;
+        }
     }
 }
 </style>

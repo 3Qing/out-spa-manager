@@ -41,7 +41,7 @@
                 <el-option v-for="item in sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
             </el-select>
         </div>
-        <el-table size="small" :data="tableData">
+        <el-table size="small" :data="tableData" border>
             <el-table-column label="注文番号" width="120px">
                 <template slot-scope="scope">
                     <div>{{scope.row.contractNo || '-'}}</div>
@@ -69,7 +69,7 @@
             <el-table-column label="注文書原本" width="180px">
                 <template slot-scope="scope">
                     <i class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row)"></i>
-                    <i class="iconfont icon-chengyi_pc_preview link" color="primary" @click="previewHandle(scope)"></i>
+                    <i class="iconfont icon-chengyi_pc_preview link" color="warning" @click="previewHandle(scope)"></i>
                     <upload
                         class="info-btn"
                         v-if="scope.row.paperReceived"
@@ -84,9 +84,9 @@
             </el-table-column>
             <el-table-column label="操作" width="240px">
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="toEdit(scope.row, 'display')">显示</el-button>
-                    <el-button v-if="scope.row.editable" size="mini" @click="toEdit(scope.row)">編集</el-button>
-                    <el-button v-if="scope.row.extendable" size="mini" @click="showDialog(scope.row)">更新</el-button>
+                    <el-button size="mini" @click="toEdit(scope.row, 'display')" type="success">显示</el-button>
+                    <el-button v-if="scope.row.editable" size="mini" @click="toEdit(scope.row)" type="warning">編集</el-button>
+                    <el-button v-if="scope.row.extendable" size="mini" @click="showDialog(scope.row)" type="primary">更新</el-button>
                 </template>
             </el-table-column>
         </el-table>

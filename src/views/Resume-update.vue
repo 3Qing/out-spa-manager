@@ -2,8 +2,8 @@
     <main-wrapper class="resume-update">
         <div class="main-header clearfix" slot="header">
             <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="beforeSubmit">{{Number($route.params.id) > 0 ? '更新' : '新增'}}</el-button>
-            <el-button v-else size="mini" type="primary" @click="beforeSubmit">修改</el-button>
-            <el-button class="fr" size="mini" type="primary" @click="$router.back()">返回</el-button>
+            <el-button v-else size="mini" type="warning" @click="beforeSubmit">修改</el-button>
+            <el-button class="fr" size="mini" @click="$router.back()">返回</el-button>
         </div>
         <el-form size="mini" label-width="90px" ref="form" :model="form" :rules="rules">
             <el-row v-if="!IS_H5">

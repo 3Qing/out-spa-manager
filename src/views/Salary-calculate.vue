@@ -22,7 +22,7 @@
                 </el-option>
             </el-select>
         </div>
-        <el-table size="mini" :data="tableData">
+        <el-table size="mini" :data="tableData" border>
             <el-table-column label="就職タイプ" prop="employeeType"></el-table-column>
             <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
             <el-table-column label="名前" prop="employeeName"></el-table-column>
@@ -46,9 +46,9 @@
             <el-table-column label="アクション" min-width="240px">
                 <template slot-scope="scope">
                     <el-button
-                        v-for="item in scope.row.actions"
+                        v-for="(item, i) in scope.row.actions"
                         :key="item.id"
-                        type="primary"
+                        :type="i === 0 ? 'warning' : 'primary'"
                         @click="actionHandler(item, scope.row)"
                         size="mini">{{item.title}}</el-button>
                 </template>
@@ -60,7 +60,7 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <el-dialog :visible.sync="visible" title="修正" @close="close">
+        <el-dialog :visible.sync="visible" title="修正" @close="close" custom-class="salary-dialog">
             <el-form size="mini" label-width="130px">
                 <el-form-item label="プロジェクト賃金">
                     <el-input v-model.number="form.projectSalary"></el-input>
@@ -85,6 +85,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer">
+                <el-button size="mini" @click="close">取消</el-button>
                 <el-button type="primary" size="mini" @click="save">保存</el-button>
             </div>
         </el-dialog>
@@ -285,6 +286,11 @@ export default {
             width: 200px;
             margin-left: 40px;
         }
+    }
+}
+.salary-dialog {
+    .el-input, .el-date-editor {
+        width: 240px;
     }
 }
 </style>

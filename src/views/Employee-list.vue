@@ -24,7 +24,7 @@
             </el-form-item>
         </el-form>
         <div class="table-wrapper">
-            <el-table size="small" :data="tableData">
+            <el-table size="small" :data="tableData" border>
                 <el-table-column label="所属部門" prop="teamName" width="80px"></el-table-column>
                 <el-table-column label="社員番号" prop="employeeNo" width="100px"></el-table-column>
                 <el-table-column label="就職タイプ" prop="type" width="100px" show-overflow-tooltip></el-table-column>
@@ -40,9 +40,6 @@
                 <el-table-column label="来日年数" prop="jpYears" width="100px"></el-table-column>
                 <el-table-column label="日本語能力" prop="jpLang" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="英語能力" prop="enLang" min-width="140px" show-overflow-tooltip></el-table-column>
-                <!-- <el-table-column label="ｽﾃｰﾀｽ" prop="Status" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="所在案件" prop="PJName" show-overflow-tooltip></el-table-column>
-                <el-table-column label="案件終了日" prop="ContractEndDate" width="140px"></el-table-column> -->
                 <el-table-column label="稼働単価" prop="projectSalary" show-overflow-tooltip></el-table-column>
                 <el-table-column label="待機代" prop="baseSalary" show-overflow-tooltip></el-table-column>
                 <el-table-column label="提案単価" prop="salesPrice" min-width="140px" show-overflow-tooltip></el-table-column>
@@ -51,11 +48,13 @@
                 <el-table-column label="コメント" prop="comment" show-overflow-tooltip></el-table-column>
                 <el-table-column label="アクション" :width="`${operWidth}px`" v-if="operWidth">
                     <template slot-scope="scope">
-                        <el-button size="mini" @click="toDetail(scope.row)">显示</el-button>
+                        <!-- <i class="el-icon-view oper-icon" color="primary"></i> -->
+                        <el-button size="mini" type="success" @click="toDetail(scope.row)">显示</el-button>
                         <el-button
                             v-for="(item, i) in (scope.row.actions || [])"
                             size="mini"
                             :key="i"
+                            :type="i === 0 ? 'warning' : 'primary'"
                             @click="clickHandle(scope, item)">{{item.text}}</el-button>
                     </template>
                 </el-table-column>

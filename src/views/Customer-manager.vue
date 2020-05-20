@@ -9,11 +9,10 @@
         </el-form>
         <div class="main-content">
             <div class="left">
-                <el-button type="primary" size="mini" @click="newHandler">新規登録</el-button>
-                <el-table size="mini" :data="tableData" @row-click="rowClickHandler">
+                <el-button type="primary" size="mini" @click="newHandler" style="margin-bottom: 10px;">新規登録</el-button>
+                <el-table size="mini" :data="tableData" @row-click="rowClickHandler" border>
                     <el-table-column label="取引先番号" prop="id" width="100px"></el-table-column>
                     <el-table-column label="名称" prop="title" show-overflow-tooltip></el-table-column>
-                    <!-- <el-table-column label="电话" prop="tel" show-overflow-tooltip></el-table-column> -->
                     <el-table-column label="タイプ">
                         <template slot-scope="scope">
                             <span>{{formatCxt(scope.row)}}</span>
@@ -27,7 +26,7 @@
                     :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
                     :total="total"></el-pagination>
             </div>
-            <div class="right display-container">
+            <el-card class="right display-container">
                 <div class="display-header">
                     <el-button size="mini" type="primary" @click="beforeSubmit('edit')">変更</el-button>
                     <el-button size="mini" type="danger" @click="deleteHandler">削除</el-button>
@@ -69,7 +68,7 @@
                         <el-input v-model="showForm.postal" :placeholder="showFields.postal"></el-input>
                     </el-form-item>
                 </el-form>
-            </div>
+            </el-card>
         </div>
         <el-dialog :visible.sync="visible" title="新規登録" @close="close">
             <el-form size="mini" label-width="100px">
@@ -369,8 +368,8 @@ export default {
     }
     .display-container {
         padding: 15px;
-        border-radius: 4px;
-        border: 1px solid #DCDFE6;
+        border-radius: 8px;
+        // border: 1px solid #DCDFE6;
         .display-header {
             margin-bottom: 20px;
         }

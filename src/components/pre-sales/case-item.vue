@@ -37,7 +37,7 @@
                     <span v-else>{{form.content}}</span>
                 </el-form-item>
             </el-form>
-            <el-button size="mini" type="primary" @click="beforeSubmit">{{this.getOperText()}}</el-button>
+            <el-button size="mini" type="warning" @click="beforeSubmit">{{this.getOperText()}}</el-button>
         </div>
         <ul class="case-content" v-if="form.items && form.items.length">
             <li v-for="(item, i) in form.items" :key="i">

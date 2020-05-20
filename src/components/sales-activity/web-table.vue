@@ -3,7 +3,7 @@
         <el-table size="small" border stripe :data="data" :span-method="arraySpanMethod">
             <el-table-column label="姓名" prop="employeeName" width="100px"></el-table-column>
             <el-table-column v-for="item in cols" :key="item.date" :prop="item.prop">
-                <p slot="header">{{item.label}}<i class="el-icon-plus" @click="addSales(item)"></i></p>
+                <p slot="header">{{item.label}}<i class="el-icon-plus" @click="addSales(item)" color="warning"></i></p>
                 <template slot-scope="scope">
                     <el-popover
                         width="350"
@@ -52,7 +52,7 @@ export default {
         position: absolute;
         right: 5px;
         top: 50%;
-        color: #1473b7;
+        // color: #1473b7;
         transform: translateY(-50%);
     }
     .el-icon-edit-outline {

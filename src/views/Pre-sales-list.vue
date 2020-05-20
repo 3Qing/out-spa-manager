@@ -56,7 +56,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <i class="el-icon-edit link" color="primary" @click="showIntroDialog('edit', scope.row)"></i>
+                    <i class="el-icon-edit link" color="warning" @click="showIntroDialog('edit', scope.row)"></i>
                 </template>
             </el-table-column>
         </el-table>

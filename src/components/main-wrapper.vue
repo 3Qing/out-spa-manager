@@ -2,7 +2,9 @@
     <div class="main-wrapper">
         <slot name="header"></slot>
         <div class="content-wrapper">
-            <slot></slot>
+            <div>
+                <slot></slot>
+            </div>
         </div>
         <div class="footer"></div>
     </div>
@@ -50,6 +52,11 @@ export default {
     .content-wrapper {
         padding: 20px 20px 50px;
         background-color: #fff;
+        & > div {
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px 5px #f8f8f8;
+        }
     }
     .footer {
         border-top: 1px solid #c1d4e5;

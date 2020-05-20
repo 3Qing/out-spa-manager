@@ -7,7 +7,7 @@
                 @click="showDialog(null, 'create')"
             >新規追加</el-button>
         </div>
-        <el-table size="mini" :data="tableData">
+        <el-table size="mini" :data="tableData" border>
             <el-table-column label="ユーザID" prop="id"></el-table-column>
             <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
             <el-table-column label="氏名" prop="name"></el-table-column>
@@ -18,7 +18,7 @@
                 <template slot-scope="scope">
                     <el-button
                         size="mini"
-                        type="primary"
+                        type="warning"
                         @click="showDialog(scope.row, 'edit')"
                     >編集</el-button>
                 </template>

@@ -21,17 +21,17 @@
             <el-table-column label="ダウンロード">
                 <el-table-column label="Excel" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-web-icon- iconfont" @click="download(scope.row, 'excel')" v-if="scope.row.resumeID"></i>
+                        <i class="icon-Excel iconfont" color="success" @click="download(scope.row, 'excel')" v-if="scope.row.resumeID"></i>
                     </template>
                 </el-table-column>
                 <el-table-column label="Wrod" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-word iconfont" @click="download(scope.row, 'word')" v-if="scope.row.resumeID"></i>
+                        <i class="icon-word iconfont" color="primary" @click="download(scope.row, 'word')" v-if="scope.row.resumeID"></i>
                     </template>
                 </el-table-column>
                 <el-table-column label="PDF" width="60px">
                     <template slot-scope="scope">
-                        <i class="icon-PDF iconfont" v-if="scope.row.resumeID"></i>
+                        <i class="icon-PDF iconfont" color="danger" v-if="scope.row.resumeID"></i>
                     </template>
                 </el-table-column>
             </el-table-column>
@@ -131,9 +131,9 @@ export default {
         font-size: 26px;
         position: relative;
         top: 4px;
-        &:hover {
-            color: #1473B7;
-        }
+        // &:hover {
+        //     color: #1473B7;
+        // }
     }
 }
 </style>

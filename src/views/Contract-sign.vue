@@ -1,50 +1,99 @@
 <template>
     <main-wrapper class="contract-sign">
+        <div slot="header" class="main-header">
+            <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
+            <el-button v-if="!isDisplay" @click="resetForm('form')" size="small" type="danger">重置</el-button>
+            <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
+        </div>
         <div class="content">
             <el-row>
                 <el-col :span="12">
                     <el-form ref="form" :model="form" label-width="110px" :rules="isDisplay ? {} : rules" label-suffix=":">
-                        <el-form-item label="注文名称" prop="title">
-                            <p v-if="isDisplay">{{form.title || '-'}}</p>
-                            <el-input v-model="form.title" size="small" v-else></el-input>
-                        </el-form-item>
-                        <el-form-item label="内容" prop="content">
-                            <p v-if="isDisplay">{{form.content || '-'}}</p>
-                            <el-input v-model="form.content" size="small" v-else></el-input>
-                        </el-form-item>
-                        <el-form-item label="作業担当" prop="empeeid">
-                            <p v-if="isDisplay">{{getContent(form['employee.id'], workList, 'id', 'name')}}</p>
-                            <el-select
-                                v-else
-                                v-model="form['employee.id']"
-                                filterable
-                                remote
-                                reserve-keyword
-                                :remote-method="remoteMethod"
-                                :loading="loading"
-                                size="small">
-                                <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="開始期間" prop="fromDate">
-                            <p v-if="isDisplay">{{form.fromDate}}</p>
-                            <el-date-picker v-else v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="終了期間" prop="toDate">
-                            <p v-if="isDisplay">{{form.toDate}}</p>
-                            <el-date-picker v-else v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="支払サイト" prop="paymentterm">
-                            <p v-if="isDisplay">{{form['paymentterm.id']}}</p>
-                            <el-select v-else v-model="form['paymentterm.id']" size="small">
-                                <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="単価" prop="unitPrice">
-                            <p v-if="isDisplay">{{form.unitPrice}}</p>
-                            <el-input v-model="form.unitPrice" size="small" @input="handlePrice" v-else></el-input>
-                        </el-form-item>
-                        <el-form-item label="作業時間">
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="注文名称" prop="title">
+                                    <p v-if="isDisplay">{{form.title || '-'}}</p>
+                                    <el-input v-model="form.title" size="small" v-else></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="内容" prop="content">
+                                    <p v-if="isDisplay">{{form.content || '-'}}</p>
+                                    <el-input v-model="form.content" size="small" v-else></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="作業担当" prop="empeeid">
+                                    <p v-if="isDisplay">{{getContent(form['employee.id'], workList, 'id', 'name')}}</p>
+                                    <el-select
+                                        v-else
+                                        v-model="form['employee.id']"
+                                        filterable
+                                        remote
+                                        reserve-keyword
+                                        :remote-method="remoteMethod"
+                                        :loading="loading"
+                                        size="small">
+                                        <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="支払サイト" prop="paymentterm">
+                                    <p v-if="isDisplay">{{form['paymentterm.id']}}</p>
+                                    <el-select v-else v-model="form['paymentterm.id']" size="small">
+                                        <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="開始期間" prop="fromDate">
+                                    <p v-if="isDisplay">{{form.fromDate}}</p>
+                                    <el-date-picker v-else v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="終了期間" prop="toDate">
+                                    <p v-if="isDisplay">{{form.toDate}}</p>
+                                    <el-date-picker v-else v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="単価" prop="unitPrice">
+                                    <p v-if="isDisplay">{{form.unitPrice}}</p>
+                                    <el-input v-model="form.unitPrice" size="small" @input="handlePrice" v-else></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="精算単位" prop="calculateUnit">
+                                    <p v-if="isDisplay">{{getContent(form.calculateUnit, unit, 'value', 'label')}}</p>
+                                    <el-select v-else v-model="form.calculateUnit" size="small">
+                                        <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="作業時間">
+                                    <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p>
+                                    <el-input v-model="form.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}" v-else></el-input>
+                                    <div class="err">{{erroeMsg}}</div>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12" v-if="!isDisplay">
+                                <el-form-item label="">
+                                    <el-input v-model="form.hoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <!-- <el-form-item label="作業時間">
                             <el-col :span="11">
                                 <el-form-item prop="hoursFrom">
                                     <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p>
@@ -58,78 +107,82 @@
                                 </el-form-item>
                             </el-col>
                             <div class="err">{{erroeMsg}}</div>
-                        </el-form-item>
-                        <el-form-item label="超過精算単価" prop="overTimePrice">
-                            <p v-if="isDisplay">{{form.overTimePrice}}</p>
-                            <el-input v-model="form.overTimePrice" size="small" v-else></el-input>
-                        </el-form-item>
-                        <el-form-item label="控除精算単価" prop="underTimePrice">
-                            <p v-if="isDisplay">{{form.underTimePrice}}</p>
-                            <el-input v-model="form.underTimePrice" size="small" v-else></el-input>
-                        </el-form-item>
-                        <el-form-item label="精算単位" prop="calculateUnit">
-                            <p v-if="isDisplay">{{getContent(form.calculateUnit, unit, 'value', 'label')}}</p>
-                            <el-select v-else v-model="form.calculateUnit" size="small">
-                                <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="営業担当" prop="salesperson">
-                            <p v-if="isDisplay">{{form['salesperson.id']}}</p>
-                            <el-select v-else v-model="form['salesperson.id']" size="small">
-                                <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="顧客" prop="customer">
-                            <p v-if="isDisplay">{{getContent(form['customer.id'], customerList, 'id', 'title')}}</p>
-                            <el-select v-else v-model="form['customer.id']" size="small">
-                                <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
-                            </el-select>
-                        </el-form-item>
+                        </el-form-item> -->
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="超過精算単価" prop="overTimePrice">
+                                    <p v-if="isDisplay">{{form.overTimePrice}}</p>
+                                    <el-input v-model="form.overTimePrice" size="small" v-else></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="控除精算単価" prop="underTimePrice">
+                                    <p v-if="isDisplay">{{form.underTimePrice}}</p>
+                                    <el-input v-model="form.underTimePrice" size="small" v-else></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="営業担当" prop="salesperson">
+                                    <p v-if="isDisplay">{{form['salesperson.id']}}</p>
+                                    <el-select v-else v-model="form['salesperson.id']" size="small">
+                                        <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="顧客" prop="customer">
+                                    <p v-if="isDisplay">{{getContent(form['customer.id'], customerList, 'id', 'title')}}</p>
+                                    <el-select v-else v-model="form['customer.id']" size="small">
+                                        <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
                         <el-form-item label="商流備考" prop="businessFlow">
                             <p v-if="isDisplay">{{form.businessFlow}}</p>
                             <el-input v-model="form.businessFlow" size="small" type="textarea" v-else></el-input>
                         </el-form-item>
-                        <el-form-item>
-                            <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
-                            <el-button v-if="!isDisplay" @click="resetForm('form')" size="small">重置</el-button>
-                            <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
-                        </el-form-item>
                     </el-form>
                 </el-col>
-                <el-col :span="12">
-                    <el-table size="small" :data="cashflows">
-                        <el-table-column label="fromDate" prop="fromDate" width="100px">
-                            <template slot-scope="scope">
-                                <span>{{formatTime(scope.row.fromDate)}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="toDate" prop="toDate" width="100px">
-                            <template slot-scope="scope">
-                                <span>{{formatTime(scope.row.toDate)}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="ningetsu" prop="ningetsu"></el-table-column>
-                        <el-table-column label="actualHours" prop="actualHours"></el-table-column>
-                        <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
-                        <el-table-column label="planCollectSales" prop="planCollectSales">
-                            <template slot-scope="scope">
-                                <span>{{priceToString(scope.row.planCollectSales)}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="planCollectAddSales" prop="planCollectAddSales">
-                            <template slot-scope="scope">
-                                <span>{{priceToString(scope.row.planCollectAddSales)}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="planCollectTax" prop="planCollectTax">
-                            <template slot-scope="scope">
-                                <span>{{priceToString(scope.row.planCollectTax)}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column>
-                    </el-table>
+                <el-col :span="12" v-if="isDisplay">
+                    <div class="top"></div>
                 </el-col>
             </el-row>
+            <div class="bottom" v-if="isDisplay">
+                <el-table size="small" :data="cashflows" border>
+                    <el-table-column label="fromDate" prop="fromDate" width="100px">
+                        <template slot-scope="scope">
+                            <span>{{formatTime(scope.row.fromDate)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="toDate" prop="toDate" width="100px">
+                        <template slot-scope="scope">
+                            <span>{{formatTime(scope.row.toDate)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="ningetsu" prop="ningetsu"></el-table-column>
+                    <el-table-column label="actualHours" prop="actualHours"></el-table-column>
+                    <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
+                    <el-table-column label="planCollectSales" prop="planCollectSales">
+                        <template slot-scope="scope">
+                            <span>{{priceToString(scope.row.planCollectSales)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="planCollectAddSales" prop="planCollectAddSales">
+                        <template slot-scope="scope">
+                            <span>{{priceToString(scope.row.planCollectAddSales)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="planCollectTax" prop="planCollectTax">
+                        <template slot-scope="scope">
+                            <span>{{priceToString(scope.row.planCollectTax)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column>
+                </el-table>
+            </div>
         </div>
         <el-dialog :visible.sync="dialogPresonMonth">
             <el-table :data="personMonthArr" border size="small" v-loading="dialogLoading">
@@ -629,12 +682,12 @@ export default {
     }
     .content {
         padding: 0 20px;
-        .el-select {
-            width: 100%;
+        .el-select, .el-input, .el-date-editor {
+            width: 220px;
         }
-        .el-input {
-            width: 100%;
-        }
+        // .el-input {
+        //     width: 100%;
+        // }
     }
     .errborder{
         .el-input__inner{
@@ -649,6 +702,9 @@ export default {
         position: absolute;
         top: 100%;
         left: 0;
+    }
+    .bottom {
+        margin-top: 20px;
     }
 }
 .preview-form {

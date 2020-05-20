@@ -1,6 +1,7 @@
 <template>
     <main-wrapper class="role-manager">
         <div style="text-align: right">
+            <el-button type="warning" size="mini" @click="showDialog">拷贝角色</el-button>
             <el-button type="primary" size="mini" @click="newHandler">{{isNew ? '取消新增' : '新增角色'}}</el-button>
         </div>
         <el-form size="mini" label-width="100px">
@@ -53,17 +54,28 @@
             <el-form-item v-if="isNew || form.id">
                 <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新增' : '保存'}}</el-button>
             </el-form-item>
+            <el-dialog :visible="visible" title="拷贝角色" @close="close">
+                <el-form label-suffix="：" label-width="80px">
+                    <el-form-item label="角色">
+                        <el-radio-group class="role-list clearfix" v-model="curRoleId">
+                            <el-radio v-for="item in this.allRole" :key="item.id" :label="item.id">{{item.title}}</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer">
+                    <el-button size="mini" @click="close">取消</el-button>
+                    <el-button type="primary" size="mini" @click="copyRole">确认</el-button>
+                </div>
+            </el-dialog>
         </el-form>
     </main-wrapper>
 </template>
 
 <script>
-// import { CHANGE_TAB_TITLE } from '@vuex/actions';
 import MainWrapper from '@components/main-wrapper';
 import RoleMenuTree from '@components/role-manager/menu-tree';
 import Sortable from 'sortablejs';
 import { mapGetters } from 'vuex';
-// import moment from 'moment';
 
 export default {
     components: {
@@ -86,7 +98,9 @@ export default {
             deep: 0,
             teams: [],
             actions: [],
-            opt: {}
+            opt: {},
+            visible: false,
+            curRoleId: ''
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -362,19 +376,13 @@ export default {
                 });
                 return;
             }
-            // const actions = [];
             this.actions.forEach(item => {
                 if (this.form.action.includes(item.id)) {
                     params[item.id] = true;
-                    // actions.push({
-                    //     id: item.id,
-                    //     title: item.title
-                    // });
                 } else {
                     params[item.id] = false;
                 }
             });
-            // params.Actions = actions;
             this.submit(params);
         },
         submit(params) {
@@ -397,6 +405,37 @@ export default {
                         this.isNew = false;
                         this.getRoleList();
                     }
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res.message
+                    });
+                }
+            });
+        },
+        showDialog() {
+            this.visible = true;
+        },
+        close() {
+            this.visible = false;
+            this.curRoleId = '';
+        },
+        copyRole() {
+            const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+            this.$axios({
+                url: '/api/Role/api_copyrole',
+                params: {
+                    roleid: this.curRoleId
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '拷贝成功'
+                    });
+                    this.getRoleList();
+                    this.close();
                 } else {
                     this.$message({
                         type: 'error',

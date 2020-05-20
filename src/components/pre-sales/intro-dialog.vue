@@ -1,6 +1,6 @@
 <template>
     <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" @close="close">
-        <el-form label-width="120px" size="mini">
+        <el-form label-width="130px" size="mini">
             <el-row v-if="!IS_H5">
                 <el-col :span="12">
                     <el-form-item label="英語姓">

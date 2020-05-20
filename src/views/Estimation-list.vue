@@ -6,7 +6,7 @@
             </el-select>
             <el-button type="primary" size="mini" @click="handleEdit({id: 'new'})">新建登録</el-button>
         </div>
-        <el-table :data="tableData" size="small">
+        <el-table :data="tableData" size="small" border>
             <el-table-column label="No" prop="id" width="100px"></el-table-column>
             <el-table-column label="发布日期" prop="pubDate" width="120px">
                 <template slot-scope="scope">
@@ -21,7 +21,7 @@
             </el-table-column>
             <el-table-column label="操作" width="80px">
                 <template slot-scope="scope">
-                    <i class="el-icon-edit link" color="primary" @click="handleEdit(scope.row)"></i>
+                    <i class="el-icon-edit link" color="warning" @click="handleEdit(scope.row)"></i>
                     <i class="iconfont icon-icon-test link" color="primary" @click="downloadFile(scope.row)"></i>
                 </template>
             </el-table-column>

@@ -3,7 +3,7 @@
         <div class="main-header" slot="header">
             <el-button type="primary" size="mini" @click="handleEdit(null)">新增支付</el-button>
         </div>
-        <el-table size="small" :data="tableData">
+        <el-table size="small" :data="tableData" border>
             <el-table-column label="ID" prop="id" width="100px"></el-table-column>
             <el-table-column label="支付标题" prop="title"></el-table-column>
             <el-table-column label="付款天数" prop="daysInterval"></el-table-column>

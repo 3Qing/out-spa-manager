@@ -7,7 +7,7 @@
             <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
             <el-button type="primary" size="mini" @click="showTagDialog">标签管理</el-button>
         </div>
-        <el-table :data="tableData" size="small">
+        <el-table :data="tableData" size="small" border>
             <el-table-column label="标题" prop="title" show-overflow-tooltip></el-table-column>
             <el-table-column label="内容" prop="content" show-overflow-tooltip></el-table-column>
             <el-table-column label="发布日期" prop="pubDate" width="140px">
@@ -30,7 +30,7 @@
             <el-table-column label="操作" width="260px">
                 <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click="handleAction(scope.row)">提案</el-button>
-                    <el-button type="primary" size="mini" @click="showDialog(2, scope.row)">编辑</el-button>
+                    <el-button type="warning" size="mini" @click="showDialog(2, scope.row)">编辑</el-button>
                     <el-button type="danger" size="mini" @click="deleteHandler(scope)">删除</el-button>
                 </template>
             </el-table-column>
@@ -206,29 +206,17 @@ export default {
         handleAction(data) {
             this.showApply = true;
             this.curData = { ...data };
-            // const loading = this.$loading({ lock: true, text: '正在提交中' });
-            // this.$axios({
-            //     url: '/api/Opportunity/api_applyforopportunity'
-            // }).then(res => {
-            //     loading.close();
-            //     if (res && res.code === 0) {
-            //         this.$message({
-            //             type: 'success',
-            //             message: '提案成功'
-            //         });
-            //         this.getData();
-            //     } else {
-            //         this.$message({
-            //             type: 'warning',
-            //             message: res.message
-            //         });
-            //     }
-            // });
         }
     }
 };
 </script>
 
-<style scoped>
-
+<style lang="less">
+.opportunity-wrapper {
+    .main-header {
+        .el-button {
+            margin-left: 10px;
+        }
+    }
+}
 </style>

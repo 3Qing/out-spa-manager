@@ -3,7 +3,7 @@
         <div class="main-header" slot="header">
             <el-button type="primary" size="mini" @click="handleEdit(null)">新增岗位</el-button>
         </div>
-        <el-table size="small" :data="tableData">
+        <el-table size="small" :data="tableData" border>
             <el-table-column label="ID" prop="id" width="100px"></el-table-column>
             <el-table-column label="岗位名称" prop="title"></el-table-column>
             <el-table-column label="操作" width="100px">
