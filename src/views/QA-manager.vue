@@ -24,7 +24,6 @@
                 </template>
             </el-table-column>
             <el-table-column label="質問" prop="ask1" show-overflow-tooltip></el-table-column>
-            <el-table-column label="モジュール" prop="Module" show-overflow-tooltip></el-table-column>
             <el-table-column label="重要度" prop="importance" width="140px">
                 <template slot-scope="scope">
                     <el-rate v-model="scope.row.importance" :max="5" disabled></el-rate>

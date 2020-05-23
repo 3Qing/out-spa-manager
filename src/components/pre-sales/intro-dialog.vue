@@ -247,7 +247,7 @@ export default {
         },
         getSelect() {
             this.$axios({
-                url: '/api/Candidate/candidatetypeforselect'
+                url: '/api/Candidate/api_candidatetypeforselect'
             }).then(res => {
                 console.log(res);
             });

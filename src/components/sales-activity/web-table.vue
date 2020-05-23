@@ -15,7 +15,7 @@
                             :class="[cellClassName(scope.row, item.prop)]"
                             @click="showDialog(scope.row, item.prop)">
                             {{formatContext(scope.row, item.prop)}}
-                            <i v-if="formatContext(scope.row, item.prop)" class="el-icon-edit-outline"></i>
+                            <i v-if="formatContext(scope.row, item.prop)" class="el-icon-edit-outline-outline"></i>
                         </div>
                     </el-popover>
                 </template>
@@ -55,7 +55,7 @@ export default {
         // color: #1473b7;
         transform: translateY(-50%);
     }
-    .el-icon-edit-outline {
+    .el-icon-edit-outline-outline {
         position: absolute;
         right: 15px;
         top: 50%;

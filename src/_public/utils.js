@@ -83,3 +83,13 @@ export function priceToNumber(val) {
     let value = String(val).replace(/,/g, '');
     return Number(value);
 }
+
+export function fileToBase64(file) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            resolve(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    });
+}

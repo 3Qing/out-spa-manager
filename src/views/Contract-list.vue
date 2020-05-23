@@ -68,25 +68,31 @@
             <el-table-column label="営業担当" prop="salesName" show-overflow-tooltip></el-table-column>
             <el-table-column label="注文書原本" width="180px">
                 <template slot-scope="scope">
-                    <i class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row)"></i>
-                    <i class="iconfont icon-chengyi_pc_preview link" color="warning" @click="previewHandle(scope)"></i>
+                    <i v-if="scope.row.paperReceived" class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row)"></i>
+                    <i v-if="scope.row.paperReceived" class="iconfont icon-chengyi_pc_preview link" color="warning" @click="previewHandle(scope)"></i>
                     <upload
                         class="info-btn"
                         v-if="scope.row.paperReceived"
                         :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
                         @upload="uploadFile"></upload>
-                    <upload
+                    <!-- <upload
                         class="danger-btn"
                         v-if="!scope.row.paperReceived"
                         :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
-                        @upload="uploadFile"></upload>
+                        @upload="uploadFile"></upload> -->
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="240px">
+            <el-table-column label="操作" width="100px" fixed="right">
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="toEdit(scope.row, 'display')" type="success">显示</el-button>
-                    <el-button v-if="scope.row.editable" size="mini" @click="toEdit(scope.row)" type="warning">編集</el-button>
-                    <el-button v-if="scope.row.extendable" size="mini" @click="showDialog(scope.row)" type="primary">更新</el-button>
+                    <el-tooltip effect="dark" content="显示" placement="top-start">
+                        <i class="el-icon-view oper-icon" color="success" @click="toEdit(scope.row, 'display')"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="编辑" placement="top-start" v-if="scope.row.editable">
+                        <i class="el-icon-edit-outline oper-icon" color="warning" @click="toEdit(scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="更新" placement="top-start" v-if="scope.row.extendable">
+                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -485,16 +491,6 @@ export default {
     .el-pagination {
         margin-top: 20px;
         text-align: center;
-    }
-    .update-dialog {
-        width: 600px;
-        text-align: center;
-        .el-dialog__header {
-            display: none;
-        }
-        .el-date-editor {
-            margin: 20px 0;
-        }
     }
     .iconfont {
         font-size: 16px;

@@ -6,9 +6,9 @@
             <i class="el-icon-menu" @click="displayMenu"></i>
         </el-header>
         <el-aside :class="[!showMenu && 'h5-nav']" width="200px" v-if="showMenu || showH5Nav">
-            <el-menu
+            <div class="logo"><img src="./assets/logo.png" alt="Logo"></div><el-menu
                 class="aside-menu"
-                background-color="#0b253c"
+                background-color="#075096"
                 active-text-color="#fff"
                 text-color="#fff"
                 :default-active="activeRouter"
@@ -75,7 +75,7 @@ export default {
     watch: {
         '$route'(route) {
             this.activeRouter = route.name;
-            if (!this.routes.length && this.USER_INFO) {
+            if (!this.routes.length && this.USER_INFO && route.name !== 'Login') {
                 this.routes.push({
                     name: route.name,
                     title: this.TAB_TITLE
@@ -244,6 +244,14 @@ export default {
             }
         }
     }
+    .logo {
+        width: 100%;
+        font-size: 0;
+        line-height: 1;
+        img {
+            width: 100%;
+        }
+    }
     .h5-header {
         color: #1473b7;
         background-color: #fff;
@@ -281,17 +289,21 @@ export default {
                 color: #fff;
             }
             &.is-active {
-                background-color: #1473b7 !important;
+                background-color: #0b253c !important;
+                // background-color: #1473b7 !important;
                 &:hover {
-                    background-color: #1473b7 !important;
+                    background-color: #0b253c !important;
+                    // background-color: #1473b7 !important;
                 }
             }
             &:hover {
-                background-color: #071826 !important;
+                background-color: #0b253c !important;
+                // background-color: #071826 !important;
             }
         }
         .el-menu-item-group__title {
-            background-color: #0b253c;
+            color: #000;
+            background-color: #075096;
         }
     }
     .h5-nav {

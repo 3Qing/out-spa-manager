@@ -1,19 +1,19 @@
 <template>
     <main-wrapper class="role-manager">
         <div style="text-align: right">
-            <el-button type="warning" size="mini" @click="showDialog">拷贝角色</el-button>
+            <el-button type="warning" size="mini" @click="copyRole">ロールコピー</el-button>
             <el-button type="primary" size="mini" @click="newHandler">{{isNew ? '取消新增' : '新增角色'}}</el-button>
         </div>
         <el-form size="mini" label-width="100px">
-            <el-form-item label="角色清单">
+            <el-form-item label="ロール一覧">
                 <el-radio-group class="role-list clearfix" v-model="form.id" @change="changeRole">
                     <el-radio :disabled="isNew" v-for="item in this.allRole" :key="item.id" :label="item.id">{{item.title}}</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="角色名称" v-if="isNew || form.id">
+            <el-form-item label="ロール名" v-if="isNew || form.id">
                 <el-input style="width: 30%;" v-model="form.Title" :maxlength="50"></el-input>
             </el-form-item>
-            <el-form-item label="可管理Team" v-if="isNew || form.id">
+            <el-form-item label="管理部門" v-if="isNew || form.id">
                 <el-checkbox-group v-model="form.TeamID">
                     <el-checkbox
                         v-for="item in teams"
@@ -21,18 +21,18 @@
                         :label="item.id">{{item.teamName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="角色权限" v-if="isNew || form.id">
+            <el-form-item label="権限" v-if="isNew || form.id">
                 <el-checkbox-group v-model="form.action">
                     <el-checkbox v-for="item in actions" :key="item.id" :label="item.id">{{item.title}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="角色菜单" v-if="isNew || form.id">
+            <el-form-item label="メニュー" v-if="isNew || form.id">
                 <el-button
                     v-if="IS_H5"
                     class="add-btn"
                     type="primary"
                     size="mini"
-                    @click="addMenuHandler">新增</el-button>
+                    @click="addMenuHandler">新規追加</el-button>
                 <div id="menuTree">
                     <role-menu-tree
                         v-for="(item, i) in menus"
@@ -49,12 +49,12 @@
                     class="add-btn"
                     type="primary"
                     size="mini"
-                    @click="addMenuHandler">新增</el-button>
+                    @click="addMenuHandler">新規追加</el-button>
             </el-form-item>
             <el-form-item v-if="isNew || form.id">
-                <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新增' : '保存'}}</el-button>
+                <el-button type="primary" size="mini" @click="beforeSubmit">{{isNew ? '新規' : '保存'}}</el-button>
             </el-form-item>
-            <el-dialog :visible="visible" title="拷贝角色" @close="close">
+            <!-- <el-dialog :visible="visible" title="ロールコピー" @close="close">
                 <el-form label-suffix="：" label-width="80px">
                     <el-form-item label="角色">
                         <el-radio-group class="role-list clearfix" v-model="curRoleId">
@@ -64,9 +64,9 @@
                 </el-form>
                 <div slot="footer">
                     <el-button size="mini" @click="close">取消</el-button>
-                    <el-button type="primary" size="mini" @click="copyRole">确认</el-button>
+                    <el-button type="primary" size="mini" @click="copyRole">実行</el-button>
                 </div>
-            </el-dialog>
+            </el-dialog> -->
         </el-form>
     </main-wrapper>
 </template>
@@ -120,7 +120,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['IS_H5'])
+        ...mapGetters(['IS_H5', 'GET_LOADING'])
     },
     methods: {
         initSort() {
@@ -181,9 +181,11 @@ export default {
         },
         // 获取角色列表
         getRoleList() {
+            const loading = this.$loading({ lock: true, text: this.GET_LOADING });
             this.$axios({
                 url: '/api/Role/api_getrolelist',
             }).then(res => {
+                loading.close();
                 if (res && res.code === 0) {
                     this.allRole = res.data || [];
                 } else {
@@ -219,7 +221,7 @@ export default {
         },
         // 获取角色权限信息
         getRoleAllInfo() {
-            const loading = this.$loading({ lock: true, text: '正在获取角色权限信息' });
+            const loading = this.$loading({ lock: true, text: 'ロール情報取得中...' });
             this.$axios({
                 url: '/api/Role/api_getroleinfobyid',
                 params: {
@@ -421,28 +423,30 @@ export default {
             this.curRoleId = '';
         },
         copyRole() {
-            const loading = this.$loading({ lock: true, text: '正在提交信息中' });
-            this.$axios({
-                url: '/api/Role/api_copyrole',
-                params: {
-                    roleid: this.curRoleId
-                }
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.$message({
-                        type: 'success',
-                        message: '拷贝成功'
-                    });
-                    this.getRoleList();
-                    this.close();
-                } else {
-                    this.$message({
-                        type: 'error',
-                        message: res.message
-                    });
-                }
-            });
+            this.$confirm('是否拷贝角色', '拷贝', {}).then(() => {
+                const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+                this.$axios({
+                    url: '/api/Role/api_copyrole',
+                    params: {
+                        roleid: this.form.id
+                    }
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '拷贝成功'
+                        });
+                        this.getRoleList();
+                        // this.close();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
         }
     }
 };

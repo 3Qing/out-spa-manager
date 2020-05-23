@@ -26,7 +26,9 @@ const state = {
     menus: LOGIN_MENUS,
     actions: [],
     teams: [],
-    userInfo: {}
+    userInfo: {},
+    getLoading: '正在获取信息中',
+    postLoading: '正在提交信息中'
 };
 
 export default new Vuex.Store({

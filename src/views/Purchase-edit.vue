@@ -419,7 +419,7 @@ export default {
                 } else if (key === 'customer.id') {
                     params.append('customerID', this.form[key]);
                 } else if (key === 'unitPrice') {
-                    params.append('unitPirce', priceToNumber(this.form[key]));
+                    params.append('unitPrice', priceToNumber(this.form[key]));
                 } else if (key !== 'ningetsu') {
                     params.append(key, this.form[key]);
                 }

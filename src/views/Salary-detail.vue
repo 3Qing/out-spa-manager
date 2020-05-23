@@ -120,7 +120,7 @@ export default {
                 hireInsurance = 0,
                 incomeTax = 0
             } = this.form;
-            return Number(hireInsurance) * 2 + Number(incomeTax);
+            return Number(hireInsurance) + Number(incomeTax);
         }
     },
     methods: {

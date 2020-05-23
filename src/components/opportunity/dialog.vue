@@ -13,6 +13,7 @@
             <el-form-item label="客户清单" prop="customerID">
                 <el-select
                     v-model="form.customerID"
+                    placeholder="選択また入力"
                     remote
                     filterable
                     clearable
@@ -26,7 +27,7 @@
                     <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="招聘标题">
+            <el-form-item label="招聘标题" prop="title">
                 <el-input v-model="form.title"></el-input>
             </el-form-item>
             <el-form-item label="招聘内容" prop="content">
@@ -64,6 +65,7 @@
 
 <script>
 import { formatTime } from '@_public/utils';
+import moment from 'moment';
 export default {
     props: {
         allStatus: {
@@ -79,9 +81,13 @@ export default {
                 title: '',
                 content: '',
                 pubDate: '',
-                closeDate: ''
+                closeDate: '',
+                status: 0
             },
             rules: {
+                title: [{
+                    required: true, message: '请填写招聘标题'
+                }],
                 content: [{
                     required: true, message: '请填写招聘内容'
                 }],
@@ -112,6 +118,9 @@ export default {
                 this.form = { ...form };
                 this.getInfo(form);
                 this.edit = true;
+            } else {
+                this.$set(this.form, 'pubDate', moment(new Date().getTime()).format('YYYY-MM-DD'));
+                this.$set(this.form, 'closeDate', moment(new Date().getTime()).add(1, 'months').format('YYYY-MM-DD'));
             }
             this.callback = callback;
             this.tags = tags;

@@ -1,9 +1,9 @@
 <template>
     <main-wrapper class="resume-update">
         <div class="main-header clearfix" slot="header">
-            <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="beforeSubmit">{{Number($route.params.id) > 0 ? '更新' : '新增'}}</el-button>
-            <el-button v-else size="mini" type="warning" @click="beforeSubmit">修改</el-button>
-            <el-button class="fr" size="mini" @click="$router.back()">返回</el-button>
+            <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="beforeSubmit">{{Number($route.params.id) > 0 ? '変更' : '新規'}}</el-button>
+            <el-button v-else size="mini" type="warning" @click="beforeSubmit">変更</el-button>
+            <el-button class="fr" size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-form size="mini" label-width="90px" ref="form" :model="form" :rules="rules">
             <el-row v-if="!IS_H5">
@@ -50,24 +50,28 @@
             <el-form-item label="" class="ms-wrapper">
                 <el-row :gutter="10">
                     <el-col :span="6">
-                        <div><el-input v-model="form.mS01_Title" placeholder="标题" @input="inputHandler(1)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS01_Content" placeholder="内容" @input="inputHandler(1)"></el-input></div>
-                        <p v-if="tip1" color="danger">请输入标题和内容</p>
+                        <p class="text-align">得意分野1</p>
+                        <div><el-input v-model="form.mS01_Title" placeholder="タイトル" @input="inputHandler(1)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS01_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(1)"></el-input></div>
+                        <p v-if="tip1" color="danger">タイトルと内容を入力してください！</p>
                     </el-col>
                     <el-col :span="6">
-                        <div><el-input v-model="form.mS02_Title" placeholder="标题" @input="inputHandler(2)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS02_Content" placeholder="内容" @input="inputHandler(2)"></el-input></div>
-                        <p v-if="tip2" color="danger">请输入标题和内容</p>
+                        <p class="text-align">得意分野2</p>
+                        <div><el-input v-model="form.mS02_Title" placeholder="タイトル" @input="inputHandler(2)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS02_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(2)"></el-input></div>
+                        <p v-if="tip2" color="danger">タイトルと内容を入力してください！</p>
                     </el-col>
                     <el-col :span="6">
-                        <div><el-input v-model="form.mS03_Title" placeholder="标题" @input="inputHandler(3)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS03_Content" placeholder="内容" @input="inputHandler(3)"></el-input></div>
-                        <p v-if="tip3" color="danger">请输入标题和内容</p>
+                        <p class="text-align">得意分野3</p>
+                        <div><el-input v-model="form.mS03_Title" placeholder="タイトル" @input="inputHandler(3)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS03_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(3)"></el-input></div>
+                        <p v-if="tip3" color="danger">タイトルと内容を入力してください！</p>
                     </el-col>
                     <el-col :span="6">
-                        <div><el-input v-model="form.mS04_Title" placeholder="标题" @input="inputHandler(4)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS04_Content" placeholder="内容" @input="inputHandler(4)"></el-input></div>
-                        <p v-if="tip4" color="danger">请输入标题和内容</p>
+                        <p class="text-align">得意分野4</p>
+                        <div><el-input v-model="form.mS04_Title" placeholder="タイトル" @input="inputHandler(4)"></el-input></div>
+                        <div class="mt-10"><el-input v-model="form.mS04_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(4)"></el-input></div>
+                        <p v-if="tip4" color="danger">タイトルと内容を入力してください！</p>
                     </el-col>
                 </el-row>
             </el-form-item>
@@ -105,7 +109,7 @@
                 </el-col>
             </el-row>
             <el-form-item>
-                <el-button type="primary" size="mini" @click="addCert">新增资格</el-button>
+                <el-button type="primary" size="mini" @click="addCert">資格追加</el-button>
             </el-form-item>
             <el-form-item label="自己PR" prop="selfIntro">
                 <el-input v-model="form.selfIntro" type="textarea" :rows="3"></el-input>
@@ -132,8 +136,8 @@
                             style="width: auto;"
                             type="monthrange"
                             range-separator="~"
-                            start-placeholder="开始月份"
-                            end-placeholder="结束月份"
+                            start-placeholder="開始年月"
+                            end-placeholder="終了年月"
                             value-format="yyyy-MM"
                             format="yyyy-MM"></el-date-picker>
                     </el-form-item>
@@ -150,8 +154,8 @@
                     style="width: auto;"
                     type="monthrange"
                     range-separator="~"
-                    start-placeholder="开始月份"
-                    end-placeholder="结束月份"
+                    start-placeholder="開始年月"
+                    end-placeholder="終了年月"
                     value-format="yyyy-MM"
                     format="yyyy-MM"></el-date-picker>
             </el-form-item>
@@ -207,7 +211,7 @@
 
         </el-form>
         <div class="text-center">
-            <el-button size="mini" type="primary" @click="newProject">新增项目经验</el-button>
+            <el-button size="mini" type="primary" @click="newProject">プロジェクト経験追加</el-button>
         </div>
     </main-wrapper>
 </template>
@@ -267,39 +271,39 @@ export default {
             },
             rules: {
                 schoolName: [{
-                    required: true, message: '请输入大学'
+                    required: true, message: '大学を入力してください！'
                 }],
                 major: [{
-                    required: true, message: '请输入専攻'
+                    required: true, message: '専攻を入力してください！'
                 }],
                 masterSkills: [{
-                    required: true, message: '请输入得意技術'
+                    required: true, message: '得意技術を入力してください！'
                 }],
                 graduateDate: [{
-                    required: true, message: '请输入卒業年月'
+                    required: true, message: '卒業年月を入力してください！'
                 }],
                 selfIntro: [{
-                    required: true, message: '请输入自己PR'
+                    required: true, message: '自己PRを入力してください！'
                 }]
             },
             projectRules: {
                 time: [{
-                    required: true, message: '请选择期間'
+                    required: true, message: '期間を指定してください！'
                 }],
                 projectName: [{
-                    required: true, message: '请输入プロジェクト名称'
+                    required: true, message: 'プロジェクト名称を入力してください！'
                 }],
                 position: [{
-                    required: true, message: '请输入ポジション'
+                    required: true, message: 'ポジションを入力してください！'
                 }],
                 systemInfo: [{
-                    required: true, message: '请输入SAPバージョン'
+                    required: true, message: 'SAPバージョンを入力してください！'
                 }],
                 modules: [{
-                    required: true, message: '请输入モジュール'
+                    required: true, message: 'モジュールを入力してください！'
                 }],
                 location: [{
-                    required: true, message: '请输入ロケーション'
+                    required: true, message: 'ロケーションを入力してください！'
                 }]
             },
             tip1: false,
@@ -325,7 +329,7 @@ export default {
     },
     methods: {
         getInfo(type) {
-            const loading = this.$loading({ lock: true, text: '正在获取信息中...' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             let url = '/api/Resume/api_getresumebyuser';
             let params = {};
             if (type) {

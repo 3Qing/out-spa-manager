@@ -31,7 +31,7 @@
                     <el-button size="mini" type="primary" @click="beforeSubmit('edit')">変更</el-button>
                     <el-button size="mini" type="danger" @click="deleteHandler">削除</el-button>
                 </div>
-                <el-form size="mini" label-width="100px">
+                <el-form size="mini" label-width="140px">
                     <el-form-item :label="showFields.title">
                         <el-input v-model="showForm.title" :placeholder="showFields.title"></el-input>
                     </el-form-item>
@@ -138,17 +138,17 @@ export default {
             pageSize: 10,
             total: 0,
             showFields: {
-                address1: 'address1',
-                address2: 'address2',
-                bank_AccountHolder: 'bank_AccountHolder',
-                contactPerson: 'contactPerson',
-                customerFlag: 'customerFlag',
-                fax: 'fax',
-                tel: 'tel',
-                postal: 'postal',
-                title: 'title',
-                vendorFlag: 'vendorFlag',
-                paymentTermID: 'paymentTermID'
+                address1: '住所（番地まで）',
+                address2: '住所（詳細）',
+                bank_AccountHolder: '銀行名義人',
+                contactPerson: '連絡担当',
+                customerFlag: '得意先フラグ',
+                fax: 'FAX',
+                tel: '電話',
+                postal: '郵便番号',
+                title: '名称',
+                vendorFlag: '仕入先フラグ',
+                paymentTermID: '支払条件'
             },
             showForm: {},
             curForm: {},
@@ -168,7 +168,7 @@ export default {
     },
     methods: {
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在加载内容' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
                 url: '/api/Customer/api_getcustomerlist',
                 params: {
@@ -223,7 +223,7 @@ export default {
             } else if (!row.customerFlag && row.vendorFlag) {
                 return '仕入先';
             } else if (row.customerFlag && row.vendorFlag) {
-                return '得意先·仕入先';
+                return '得意先＆仕入先';
             }
             return '-';
         },
@@ -239,7 +239,7 @@ export default {
             this.handlerForm(row);
         },
         deleteHandler() {
-            this.$confirm('是否删除', '删除', {
+            this.$confirm('削除しますか？', '削除', {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
@@ -251,7 +251,7 @@ export default {
                     if (res.code === 0) {
                         this.$message({
                             type: 'success',
-                            message: '删除成功'
+                            message: '削除完了'
                         });
                         this.getData();
                         this.curId = '';
@@ -309,20 +309,20 @@ export default {
             if (!params.Title) {
                 this.$message({
                     type: 'warning',
-                    message: '请输入名称'
+                    message: '名称を入力してください！'
                 });
                 return;
             } else if (!params.CustomerFlag && !params.VendorFlag) {
                 this.$message({
                     type: 'warning',
-                    message: `${this.showFields.CustomerFlag}和${this.showFields.VendorFlag}至少选择一个`
+                    message: `${this.showFields.CustomerFlag}と${this.showFields.VendorFlag}最低一つ選択してください！`
                 });
             } else {
                 this.submit(params, type);
             }
         },
         submit(params, type) {
-            const loading = this.$loading({ lock: true, text: '提交数据中...' });
+            const loading = this.$loading({ lock: true, text: 'データ提出中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/Customer/api_updatecustomer',
@@ -336,7 +336,7 @@ export default {
                 if (res.code === 0) {
                     this.$message({
                         type: 'success',
-                        message: type === 'edit' ? '更新成功' : '创建成功'
+                        message: type === 'edit' ? '更新完了' : '作成完了'
                     });
                     if (type === 'add') {
                         this.close();
@@ -369,6 +369,7 @@ export default {
     .display-container {
         padding: 15px;
         border-radius: 8px;
+        text-align: left;
         // border: 1px solid #DCDFE6;
         .display-header {
             margin-bottom: 20px;

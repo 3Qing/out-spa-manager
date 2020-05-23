@@ -54,7 +54,7 @@
                 <p class="display-content" v-else><span class="item-index">{{i + 1}}.</span>{{formatDate(item.UpdateDateTime)}} {{item.Content}}</p>
                 <div class="oper-area">
                     <i class="el-icon-circle-plus-outline" @click="addNewItem" v-if="!isEdit.includes(i) && i === (form.items && form.items.length - 1)" color="primary"></i>
-                    <i class="el-icon-edit-outline" v-if="!isEdit.includes(i)" @click="modifyItem(item, i)" color="warning"></i>
+                    <i class="el-icon-edit-outline-outline" v-if="!isEdit.includes(i)" @click="modifyItem(item, i)" color="warning"></i>
                 </div>
                 <span class="save-btn" v-if="isEdit.includes(i)" @click="submitCaseItem(item, i)" color="primary">保存</span>
             </li>

@@ -30,9 +30,11 @@
             <el-table-column label="入金予定日" prop="planCollectDate"></el-table-column>
             <el-table-column label="実際入金日" prop="actualCollectDate"></el-table-column>
             <el-table-column label="入金額" prop="collectAmount"></el-table-column>
-            <el-table-column label="アクション" width="320px">
+            <el-table-column label="アクション" width="320px" fixed="right">
                 <template slot-scope="scope">
-                    <i class="iconfont icon-chengyi_pc_preview link oper-icon" color="primary" @click="preview(scope.row)"></i>
+                    <el-tooltip effect="dark" content="预览" placement="top-start">
+                        <i class="iconfont icon-chengyi_pc_preview link oper-icon" color="primary" @click="preview(scope.row)"></i>
+                    </el-tooltip>
                     <i class="icon-PDF iconfont oper-icon" color="danger" @click="downloadFile('pdf', scope.row)"></i>
                     <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadFile('excel', scope.row)"></i>
                     <el-button

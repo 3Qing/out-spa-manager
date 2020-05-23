@@ -46,16 +46,21 @@
                 <el-table-column label="出張条件" prop="travel" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="望む案件" prop="expectPJ" min-width="140px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="コメント" prop="comment" show-overflow-tooltip></el-table-column>
-                <el-table-column label="アクション" :width="`${operWidth}px`" v-if="operWidth">
+                <el-table-column label="アクション" width="160px" fixed="right">
                     <template slot-scope="scope">
-                        <!-- <i class="el-icon-view oper-icon" color="primary"></i> -->
-                        <el-button size="mini" type="success" @click="toDetail(scope.row)">显示</el-button>
-                        <el-button
+                        <el-tooltip effect="dark" content="显示" placement="top-start">
+                            <i class="el-icon-view oper-icon" color="success" @click="toDetail(scope.row)"></i>
+                        </el-tooltip>
+                        <el-tooltip
                             v-for="(item, i) in (scope.row.actions || [])"
-                            size="mini"
                             :key="i"
-                            :type="i === 0 ? 'warning' : 'primary'"
-                            @click="clickHandle(scope, item)">{{item.text}}</el-button>
+                            effect="dark"
+                            :content="item.text"
+                            placement="top-start">
+                            <i :class="[getClass(item), 'oper-icon']"
+                                :color="getColor(item)"
+                                @click="clickHandle(scope, item)"></i>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
@@ -279,6 +284,28 @@ export default {
                 });
             }
         },
+        getClass(item) {
+            if (item.action === 'act_employeeupdate') {
+                return 'el-icon-edit-outline';
+            } else if (item.action === 'act_employeeleave') {
+                return 'el-icon-money';
+            } else if (item.action === 'act_revisesalary') {
+                return 'el-icon-user';
+            } else {
+                return 'el-icon-money';
+            }
+        },
+        getColor(item) {
+            if (item.action === 'act_employeeupdate') {
+                return 'warning';
+            } else if (item.action === 'act_employeeleave') {
+                return 'primary';
+            } else if (item.action === 'act_revisesalary') {
+                return 'danger';
+            } else {
+                return 'primary';
+            }
+        },
         confirmLeave() {
             if (!this.leavedate) {
                 this.$message({
@@ -362,6 +389,9 @@ export default {
     .el-pagination {
         margin-top: 20px;
         text-align: center;
+    }
+    .oper-icon {
+        font-size: 18px !important;
     }
 }
 </style>

@@ -8,13 +8,13 @@
             >新規追加</el-button>
         </div>
         <el-table size="mini" :data="tableData" border>
-            <el-table-column label="ユーザID" prop="id"></el-table-column>
+            <el-table-column label="ユーザID" prop="id" width="140px"></el-table-column>
             <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
             <el-table-column label="氏名" prop="name"></el-table-column>
             <el-table-column label="ロール" prop="roleTitle"></el-table-column>
             <el-table-column label="最終登録日" prop="latestLoginDate"></el-table-column>
             <el-table-column label="退社期日" prop="leaveDate"></el-table-column>
-            <el-table-column label="操作" width="180px">
+            <el-table-column label="操作" width="120px">
                 <template slot-scope="scope">
                     <el-button
                         size="mini"

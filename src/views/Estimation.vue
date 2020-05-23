@@ -7,8 +7,8 @@
                 format="yyyy-MM-dd"
                 type="daterange"
                 range-separator="~"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+                start-placeholder="開始日"
+                end-placeholder="終了日"
                 size="mini">
             </el-date-picker>
             <el-input v-model="fromhours" size="mini" style="width:100px"></el-input>
@@ -39,38 +39,37 @@
                     :label="item.name"
                     :value="item.id"></el-option>
             </el-select>
-            <el-button type="primary" size="mini" @click="getInitEstimation">初始化</el-button>
-            <el-button size="mini" @click="$router.back()">返回</el-button>
+            <el-button type="primary" size="mini" @click="getInitEstimation">見積書初期化</el-button>
+            <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row v-if="show">
             <el-col :span="12">
                 <el-form size="mini" label-width="100px" :model="data" ref="form" :rules="rules">
-                    <el-form-item class="first-item" prop="customerTitle">
+                    <el-form-item label="得意先" class="first-item" prop="customerTitle">
                         <el-input v-model="data.customerTitle"></el-input>
-                        <span>御中</span>
                     </el-form-item>
-                    <el-form-item label="简明" prop="title">
+                    <el-form-item label="タイトル" prop="title">
                         <el-input v-model="data.title"></el-input>
                     </el-form-item>
-                    <el-form-item label="预见期金额" prop="amount">
+                    <el-form-item label="見積合計金額" prop="amount">
                         <el-input v-model="data.amount" @input="handlePrice"></el-input>
                     </el-form-item>
-                    <el-form-item label="纳期" prop="submitDate">
+                    <el-form-item label="納期" prop="submitDate">
                         <el-date-picker
                             v-model="data.submitDate"
                             type="date"
                             value-format="yyyy-MM-dd"
                             format="yyyy-MM-dd"
-                            placeholder="选择日期">
+                            placeholder="日付">
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item label="纳入场所" prop="submitLocation">
+                    <el-form-item label="納入場所" prop="submitLocation">
                         <el-input v-model="data.submitLocation"></el-input>
                     </el-form-item>
-                    <el-form-item label="纳品物品" prop="submitDocuments">
+                    <el-form-item label="納品物" prop="submitDocuments">
                         <el-input v-model="data.submitDocuments"></el-input>
                     </el-form-item>
-                    <el-form-item label="支出" prop="paymentTermID">
+                    <el-form-item label="支払サイト" prop="paymentTermID">
                         <el-select v-model="data.paymentTermID">
                             <el-option
                                 v-for="item in pays"
@@ -79,7 +78,7 @@
                                 :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="有效期间" prop="validityPeriod">
+                    <el-form-item label="有効期間" prop="validityPeriod">
                         <el-input v-model="data.validityPeriod"></el-input>
                     </el-form-item>
                 </el-form>
@@ -92,34 +91,34 @@
                     <span>{{scope.$index + 1}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="员工" width="160px">
+            <el-table-column label="社員" width="160px">
                 <template slot-scope="scope">
                     <el-select v-model="scope.row.employeeID" size="mini">
                         <el-option v-for="item in employees" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column label="工数" width="160px">
+            <el-table-column label="人月" width="160px">
                 <template slot-scope="scope">
                     <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="1"></el-input-number>
                 </template>
             </el-table-column>
-            <el-table-column label="基本单位" width="140px">
+            <el-table-column label="単価" width="140px">
                 <template slot-scope="scope">
                     <el-input v-model="scope.row.unitPrice" size="mini" @input="handleInput(scope)"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="金额" width="100px">
+            <el-table-column label="金額" width="100px">
                 <template slot-scope="scope">
                     <span>{{priceToString(scope.row.amount || 0)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="通过">
+            <el-table-column label="備考">
                 <template slot-scope="scope">
                     <el-input v-model="scope.row.comment" size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="80px">
+            <el-table-column label="アクション" width="80px">
                 <template slot-scope="scope">
                     <i class="el-icon-plus link" color="primary" @click="handleAdd(scope)"></i>
                     <i class="el-icon-delete link" color="danger" @click="handleDel(scope)"></i>
@@ -127,11 +126,11 @@
             </el-table-column>
         </el-table>
         <div class="bottom" v-if="show">
-            <span class="title">偏考</span>
+            <span class="title">備考</span>
             <el-input v-model="data.comment" type="textarea" :rows="7"></el-input>
         </div>
         <div class="text-center" v-if="show">
-            <el-button type="primary" size="mini" @click="beforeSubmit">保存</el-button>
+            <el-button type="primary" size="mini" @click="beforeSubmit">見積書作成</el-button>
         </div>
     </main-wrapper>
 </template>
@@ -161,28 +160,28 @@ export default {
             tableData: [],
             rules: {
                 customerTitle: [{
-                    required: true, message: '请填写客户名称', trigger: 'blur'
+                    required: true, message: '得意先を指定してください！', trigger: 'blur'
                 }],
                 title: [{
-                    required:  true, message: '请填写标题', trigger: 'blur'
+                    required:  true, message: 'タイトルを入力してください！', trigger: 'blur'
                 }],
                 amount: [{
-                    required: true, message: '请填写金额', trigger: 'blur'
+                    required: true, message: '金額を入力してください！', trigger: 'blur'
                 }],
                 submitDate: [{
-                    required: true, message: '请选择纳期', trigger: 'blur'
+                    required: true, message: '納期を入力してください！', trigger: 'blur'
                 }],
                 submitLocation: [{
-                    required: true, message: '请填写纳入场所', trigger: 'blur'
+                    required: true, message: '納品場所を入力してください！', trigger: 'blur'
                 }],
                 submitDocuments: [{
-                    required: true, message: '请填写纳品物品', trigger: 'blur'
+                    required: true, message: '納品物を入力してください！', trigger: 'blur'
                 }],
                 paymentTermID: [{
-                    required: true, message: '请选择支出', trigger: 'blur'
+                    required: true, message: '支払サイトを指定してください！', trigger: 'blur'
                 }],
                 validityPeriod: [{
-                    required: true, message: '请填写有效期间', trigger: 'blur'
+                    required: true, message: '有効期間を入力してください！', trigger: 'blur'
                 }]
             }
         };
@@ -217,18 +216,18 @@ export default {
                 || !this.employeeids.length) {
                 this.$message({
                     type: 'warning',
-                    message: '请设置全部的条件'
+                    message: '見積条件を指定してください！'
                 });
                 return;
             }
             if (Number(this.fromhours) > Number(this.tohours)) {
                 this.$message({
                     type: 'warning',
-                    message: '开始工时不得大于结束工时'
+                    message: '工数範囲が不正です'
                 });
                 return;
             }
-            const loading = this.$loading({ lock: true, text: '正在获取数据中' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/Estimation/api_proposeestimation',
@@ -264,7 +263,7 @@ export default {
             });
         },
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取信息中' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
                 url: '/api/Estimation/api_getestimationbyid',
                 params: {
@@ -344,7 +343,7 @@ export default {
             });
             columns.forEach((item, index) => {
                 if (index === 3) {
-                    sum[index] = '总计：';
+                    sum[index] = '合計：';
                 } else if (index === 4) {
                     sum[index] = priceToString(total);
                 } else {
@@ -383,7 +382,7 @@ export default {
                         SubmitDocuments: this.data.submitDocuments,
                         SubmitLocation: this.data.submitLocation,
                         Title: this.data.title,
-                        ValidatyPeriod: this.data.validityPeriod || '',
+                        ValidityPeriod: this.data.validityPeriod || '',
                         FromDate: this.dates[0],
                         ToDate: this.dates[1],
                         FromHours: this.fromhours,
@@ -394,7 +393,7 @@ export default {
                             EmployeeID: item.employeeID,
                             Amount: item.amount || 0,
                             Comment: item.comment || '',
-                            Ningetsu: item.ningetsu || 0,
+                            Ningetsu: Number(item.ningetsu || 0) * 100,
                             UnitPrice: priceToNumber(item.unitPrice)
                         }))
                     };
@@ -402,7 +401,7 @@ export default {
                         if (!item.amount || !item.comment || !item.ningetsu || !item.unitPrice) {
                             this.$message({
                                 type: 'warning',
-                                message: '表格中存在未填写字段'
+                                message: '必須項目は全部入力してください！'
                             });
                             return;
                         }
@@ -410,7 +409,7 @@ export default {
                     if (!this.data.comment) {
                         this.$message({
                             type: 'warning',
-                            message: '请填写偏考'
+                            message: '備考を入力してください！'
                         });
                         return;
                     }
@@ -421,13 +420,13 @@ export default {
                 } else {
                     this.$message({
                         type: 'warning',
-                        message: '存在字段未填写'
+                        message: '必須項目は全部入力してください！'
                     });
                 }
             });
         },
         submit(params) {
-            const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+            const loading = this.$loading({ lock: true, text: 'データ提出中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/Estimation/api_updateestimation',
@@ -438,18 +437,19 @@ export default {
                 if (res && res.code === 0) {
                     this.$message({
                         type: 'success',
-                        message: '提交成功'
+                        message: '見積書作成完了！'
                     });
-                    if (Number(this.$route.params.id)) {
-                        this.getData();
-                    } else {
-                        this.$router.replace({
-                            name: 'Estimation',
-                            params: {
-                                id: res.data.id
-                            }
-                        });
-                    }
+                    this.$router.push({ name: 'EstimationList' });
+                    // if (Number(this.$route.params.id)) {
+                    //     this.getData();
+                    // } else {
+                    //     this.$router.replace({
+                    //         name: 'Estimation',
+                    //         params: {
+                    //             id: res.data.id
+                    //         }
+                    //     });
+                    // }
                 }
             });
         }

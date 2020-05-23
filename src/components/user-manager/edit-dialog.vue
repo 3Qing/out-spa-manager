@@ -19,7 +19,7 @@
             </el-form-item>
             <el-form-item label="ロール" prop="roleid">
                 <el-select v-model="form.roleid">
-                    <el-option v-for="item in opt.allRole" :key="item.id" :label="item.Title" :value="item.id"></el-option>
+                    <el-option v-for="item in opt.allRole" :key="item.id" :label="item.title" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="パスワード" prop="userpwd">

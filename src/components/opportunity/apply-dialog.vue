@@ -10,7 +10,7 @@
                     @clear="clearHandle"
                     @change="handleChange"
                     :remote-method="getCandidate">
-                    <el-option v-for="item in candidates" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                    <el-option v-for="item in candidates" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="备注">
@@ -19,7 +19,7 @@
         </el-form>
         <div slot="footer">
             <el-button size="mini" type="primary" @click="submit">保存</el-button>
-            <el-button size="mini" @close="close">取消</el-button>
+            <el-button size="mini" @click="close">取消</el-button>
         </div>
     </el-dialog>
 </template>
@@ -56,7 +56,7 @@ export default {
             this.loading = true;
             this.form.candidateid = keyword;
             this.$axios({
-                url: '/api/Candidate/api_candidatetypeforselect',
+                url: '/api/Candidate/api_candidatesforselect',
                 params: {
                     keyword
                 }
@@ -69,7 +69,6 @@ export default {
         },
         handleChange(val) {
             this.$set(this.form, 'candidateid', val);
-            console.log(this.form);
         },
         clearHandle() {
             this.form.candidateid = '';

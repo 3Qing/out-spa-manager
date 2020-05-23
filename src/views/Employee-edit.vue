@@ -2,13 +2,13 @@
     <main-wrapper class="employee-edit">
         <div class="main-header" slot="header">
             <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
-            <el-button type="danger" size="small" @click="resetForm" v-if="!isDisplay">重置</el-button>
-            <el-button size="small" @click="$router.back()">返回</el-button>
+            <el-button type="danger" size="small" @click="resetForm" v-if="!isDisplay">リセット</el-button>
+            <el-button size="small" @click="$router.back()">リターン</el-button>
         </div>
         <el-row>
             <el-col :span="12">
                 <el-form size="small" label-width="130px" ref="form" :model="isDisplay ? {} : form" :rules="isDisplay ? {} : rules" label-suffix=":">
-                    <el-form-item label="就职类型" prop="employeeTypeID">
+                    <el-form-item label="就職タイプ" prop="employeeTypeID">
                         <p v-if="isDisplay">{{getContent(form.employeeTypeID, employeeTypes, 'id', 'title')}}</p>
                         <el-select v-model="form.employeeTypeID" v-else>
                             <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
@@ -16,51 +16,51 @@
                     </el-form-item>
                     <el-row v-if="!IS_H5">
                         <el-col :span="12">
-                            <el-form-item label="英語姓">
+                            <el-form-item label="姓（フリガナ）">
                                 <p v-if="isDisplay">{{form.furigana_FirstName}}</p>
                                 <el-input v-model="form.furigana_FirstName" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="英語名">
+                            <el-form-item label="名（フリガナ）">
                                 <p v-if="isDisplay">{{form.furigana_LastName}}</p>
                                 <el-input v-model="form.furigana_LastName" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="英語姓" v-if="IS_H5">
+                    <el-form-item label="姓（フリガナ）" v-if="IS_H5">
                         <p v-if="isDisplay">{{form.furigana_FirstName}}</p>
                         <el-input v-model="form.furigana_FirstName" :maxlength="20" v-else></el-input>
                     </el-form-item>
-                    <el-form-item label="英語名" v-if="IS_H5">
+                    <el-form-item label="名（フリガナ）" v-if="IS_H5">
                         <p v-if="isDisplay">{{form.furigana_LastName}}</p>
                         <el-input v-model="form.furigana_LastName" :maxlength="20" v-else></el-input>
                     </el-form-item>
                     <el-row v-if="!IS_H5">
                         <el-col :span="12">
-                            <el-form-item label="姓" prop="firstName">
+                            <el-form-item label="姓（漢字）" prop="firstName">
                                 <p v-if="isDisplay">{{form.firstName}}</p>
                                 <el-input v-model="form.firstName" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="名" prop="lastName">
+                            <el-form-item label="名（漢字）" prop="lastName">
                                 <p v-if="isDisplay">{{form.lastName}}</p>
                                 <el-input v-model="form.lastName" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="姓" prop="firstName" v-if="IS_H5">
+                    <el-form-item label="姓（漢字）" prop="firstName" v-if="IS_H5">
                         <p v-if="isDisplay">{{form.firstName}}</p>
                         <el-input v-model="form.firstName" :maxlength="20" v-else></el-input>
                     </el-form-item>
-                    <el-form-item label="名" prop="lastName" v-if="IS_H5">
+                    <el-form-item label="名（漢字）" prop="lastName" v-if="IS_H5">
                         <p v-if="isDisplay">{{form.lastName}}</p>
                         <el-input v-model="form.lastName" :maxlength="20" v-else></el-input>
                     </el-form-item>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="入职日期" prop="onBoardDate">
+                            <el-form-item label="入社日" prop="onBoardDate">
                                 <p v-if="isDisplay">{{form.onBoardDate}}</p>
                                 <el-date-picker
                                     v-else
@@ -71,7 +71,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="性别" prop="sex">
+                            <el-form-item label="性別" prop="sex">
                                 <p v-if="isDisplay">{{getContent(form.sex, sexs, 'value', 'label')}}</p>
                                 <el-select v-model="form.sex" v-else>
                                     <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
@@ -81,7 +81,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="生日" prop="birthday">
+                            <el-form-item label="生年月日" prop="birthday">
                                 <p v-if="isDisplay">{{form.birthday}}</p>
                                 <el-date-picker
                                     v-else
@@ -100,13 +100,13 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="最近车站" prop="station">
+                            <el-form-item label="最寄り駅" prop="station">
                                 <p v-if="isDisplay">{{form.station}}</p>
                                 <el-input v-model="form.station" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="模块" prop="mainSkill">
+                            <el-form-item label="メインスキル" prop="mainSkill">
                                 <p v-if="isDisplay">{{form.mainSkill}}</p>
                                 <el-input v-model="form.mainSkill" :maxlength="20" v-else></el-input>
                             </el-form-item>
@@ -114,7 +114,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="SAP经验开始日" prop="startWorkDate">
+                            <el-form-item label="経験年数" prop="startWorkDate">
                                 <p v-if="isDisplay">{{form.startWorkDate}}</p>
                                 <el-date-picker
                                     v-else
@@ -125,7 +125,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="岗位" prop="positionID">
+                            <el-form-item label="ポジション" prop="positionID">
                                 <p v-if="isDisplay">{{getContent(form.positionID, positions, 'id', 'title')}}</p>
                                 <el-select v-model="form.positionID" v-else>
                                     <el-option v-for="item in positions" :key="item.id" :label="item.title" :value="item.id"></el-option>
@@ -135,7 +135,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="来日时间" prop="arriveJPDate">
+                            <el-form-item label="来日時間" prop="arriveJPDate">
                                 <p v-if="isDisplay">{{form.arriveJPDate}}</p>
                                 <el-date-picker
                                     v-else
@@ -146,10 +146,10 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="所属部门" v-if="isDisplay">
+                            <el-form-item label="所属部門" v-if="isDisplay">
                                 <p>{{getContent(form.teamMembers, teams, 'id', 'teamName')}}</p>
                             </el-form-item>
-                            <el-form-item label="所属部门" prop="teamMembers" v-if="!isEdit && !isDisplay">
+                            <el-form-item label="所属部門" prop="teamMembers" v-if="!isEdit && !isDisplay">
                                 <el-select v-model="form.teamMembers">
                                     <el-option v-for="item in teams" :key="item.id" :label="item.teamName" :value="item.id"></el-option>
                                 </el-select>
@@ -158,7 +158,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="日语能力">
+                            <el-form-item label="日本語能力">
                                 <p v-if="isDisplay">{{getContent(form.jpLangCert, jpLangs, 'value', 'label')}}{{form.jpLangComt}}</p>
                                 <el-select v-model="form.jpLangCert" v-else>
                                     <el-option v-for="item in jpLangs" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -171,11 +171,11 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="英语能力">
+                    <el-form-item label="英語能力">
                         <p v-if="isDisplay">{{form.enLangComt}}</p>
                         <el-input v-model="form.enLangComt" v-else></el-input>
                     </el-form-item>
-                    <el-form-item label="SAP资格认证">
+                    <el-form-item label="資格認定">
                         <p v-if="isDisplay">{{this.getCerts()}}</p>
                         <el-checkbox-group v-model="form.certificates" v-else>
                             <el-checkbox v-for="item in certificates" :key="item.id" :label="item.id">{{item.certName}}</el-checkbox>
@@ -203,10 +203,10 @@
                     </el-form-item>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="销售价格" :class="[errorTip && 'error-input']">
+                            <el-form-item label="提案単価" :class="[errorTip && 'error-input']">
                                 <p v-if="isDisplay">{{priceToString(form.salePriceFrom)}}~{{priceToString(form.salePriceTo)}}</p>
                                 <el-input @input="formatPrice('salePriceFrom')" @blur="validSalePrice('salePriceFrom')" v-model="form.salePriceFrom" v-else></el-input>
-                                <p color="danger" v-if="errorTip">起始价格不得大于最终价格</p>
+                                <p color="danger" v-if="errorTip">提案単価範囲が不正です！</p>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12" v-if="!isDisplay">
@@ -229,19 +229,19 @@
                     </el-form-item> -->
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="出差条件">
+                            <el-form-item label="出張条件">
                                 <p v-if="isDisplay">{{form.travel}}</p>
                                 <el-input v-model="form.travel" :maxlength="50" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="希望项目">
+                            <el-form-item label="希望案件">
                                 <p v-if="isDisplay">{{form.expectPJ}}</p>
                                 <el-input v-model="form.expectPJ" :maxlength="50" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="备注">
+                    <el-form-item label="コメント">
                         <p v-if="isDisplay">{{form.comment}}</p>
                         <el-input v-model="form.comment" type="textarea" :rows="3" :maxlength="200" v-else></el-input>
                     </el-form-item>
@@ -393,7 +393,7 @@ export default {
         priceToString: priceToString,
         formatTime: formatTime,
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取数据中' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
                 url: '/api/Employee/api_getemployeeinfo',
                 params: {
@@ -535,7 +535,7 @@ export default {
                 } else {
                     this.$message({
                         type: 'warning',
-                        message: '有必填内容未填写'
+                        message: '必須項目を入力してください！'
                     });
                 }
             });

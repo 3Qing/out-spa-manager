@@ -1,19 +1,32 @@
 <template>
-    <main-wrapper class="ac-doc-wrapper">
+    <main-wrapper class="ac-doc-wrapper" :class="[!show && 'hidden-card']">
         <div slot="header" class="main-header">
-            <el-button type="primary" size="mini" @click="beforeSubmit">転記</el-button>
+            <el-button type="primary" size="mini" @click="beforeSubmit" v-if="show">転記</el-button>
+            <upload :opt="{
+                btnText: '上传文件',
+                accept: 'image/*, application/pdf',
+                show: false
+            }" @upload="upload"></upload>
         </div>
-        <card-item
-            :form="form"
-            :items="items"
-            :doc-types="docTypes"
-            :ac-counts="acCounts"
-            :teams="teams"
-            :employees="employees"
-            :customs="customs"
-            :drcr="drcr"
-            :vendors="vendors"
-            :errors="errors"></card-item>
+        <el-row v-if="show">
+            <el-col :span="12">
+                <div class="preview-image"><img :src="img"></div>
+            </el-col>
+            <el-col :span="12">
+                <card-item
+                    :ocr="true"
+                    :form="form"
+                    :items="items"
+                    :doc-types="docTypes"
+                    :ac-counts="acCounts"
+                    :teams="teams"
+                    :employees="employees"
+                    :customs="customs"
+                    :drcr="drcr"
+                    :vendors="vendors"
+                    :errors="errors"></card-item>
+            </el-col>
+        </el-row>
     </main-wrapper>
 </template>
 
@@ -21,11 +34,16 @@
 import MainWrapper  from '@components/main-wrapper';
 import CardItem from '@components/ac-document/card';
 import mixins from '@components/ac-document/mixins';
+import Upload from '@components/upload';
+import { mapGetters } from 'vuex';
+import moment from 'moment';
+import { fileToBase64 } from '@_public/utils';
 
 export default {
     components: {
         MainWrapper,
-        CardItem
+        CardItem,
+        Upload
     },
     data() {
         return {
@@ -62,11 +80,51 @@ export default {
                 'EmployeeID': '',
                 Comment: ''
             }],
-            errors: {}
+            errors: {},
+            show: false,
+            img: ''
         };
     },
     mixins: [ mixins ],
+    computed: {
+        ...mapGetters([ 'POST_LOADING' ])
+    },
     methods: {
+        upload({ file }) {
+            const loading = this.$loading({ lock: true, text: this.POST_LOADING });
+            this.$axios({
+                method: 'POST',
+                url: '/api/ACDoc/api_proposedocumentbyocr',
+                params: {
+                    file: file
+                },
+                formData: true
+            }).then(res => {
+                loading.close();
+                fileToBase64(file).then(result => {
+                    this.img = result;
+                });
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    const items = data.docItems || [];
+                    this.items = items.map(item => ({
+                        DRCR: item.drcr,
+                        'AccountID': item.accountID,
+                        Amount: item.amount,
+                        'CustomerID': item.customerID,
+                        'TeamID': item.teamID,
+                        'EmployeeID': item.employeeID,
+                        Comment: item.comment
+                    }));
+                    this.form = {
+                        PostingDate: moment(new Date(data.postingDate).getTime()).format('YYYY-MM-DD'),
+                        DocType: data.docType,
+                        Comment: data.comment
+                    };
+                    this.show = true;
+                }
+            });
+        },
         beforeSubmit() {
             if (!(this.form.PostingDate && this.form['DocType'])) {
                 this.$message({
@@ -178,4 +236,31 @@ export default {
 </script>
 
 <style lang="less">
+.ac-doc-wrapper {
+    .main-header {
+        .upload-wrapper {
+            display: inline-block;
+            vertical-align: top;
+            margin: 11px 0 0 15px;
+        }
+    }
+    &.hidden-card {
+        .content-wrapper {
+            & > div {
+                display: none;
+            }
+        }
+    }
+    .preview-image {
+        width: 100%;
+        img {
+            width: 100%;
+        }
+    }
+    .ac-box {
+        width: 100% !important;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1) !important;
+        text-align: left;
+    }
+}
 </style>

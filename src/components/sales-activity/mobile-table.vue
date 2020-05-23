@@ -9,7 +9,7 @@
                         :class="[cellClassName(scope, 'row')]"
                         @click="showDialog(scope, 'row')">
                         {{formatContext(scope, 'row')}}
-                        <i v-if="formatContext(scope, 'row')" class="el-icon-edit-outline"></i>
+                        <i v-if="formatContext(scope, 'row')" class="el-icon-edit-outline-outline"></i>
                     </div>
                 </template>
             </el-table-column>
@@ -40,7 +40,7 @@ export default {
             // color: #1473b7;
             transform: translateY(-50%);
         }
-        .el-icon-edit-outline {
+        .el-icon-edit-outline-outline {
             position: absolute;
             right: 0.1rem;
             font-size: 0.32rem;

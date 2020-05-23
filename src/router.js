@@ -36,6 +36,8 @@ import PurchaseEdit from '@views/Purchase-edit';
 import PaymentList from '@views/Payment-list';
 import PositionList from '@views/Position';
 import CompanyEdit from '@views/Company-edit';
+import CompanyList from '@views/Company-list';
+import ACDocOCR from '@views/AC-doc-OCR';
 
 Vue.use(Router);
 
@@ -199,6 +201,18 @@ const router = new Router({
         path: '/companynew',
         name: 'CompanyNew',
         component: CompanyEdit
+    }, {
+        path: '/companyedit/:id',
+        name: 'CompanyEdit',
+        component: CompanyEdit
+    }, {
+        path: '/companylist',
+        name: 'CompanyList',
+        component: CompanyList
+    }, {
+        path: '/acdococr',
+        name: 'ACDocOCR',
+        component: ACDocOCR
     }
     ]
 });

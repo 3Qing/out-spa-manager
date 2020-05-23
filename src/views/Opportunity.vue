@@ -2,14 +2,14 @@
     <main-wrapper class="opportunity-wrapper">
         <div class="main-header" slot="header">
             <el-select v-model="status" size="mini" style="margin-left: 10px;" @change="changeHandle">
-                <el-option v-for="(item, i) in allStatus" :key="i" :label="item.label" :value="item.value"></el-option>
+                <el-option v-for="(item, i) in opportStatus" :key="i" :label="item.text" :value="item.id"></el-option>
             </el-select>
             <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
             <el-button type="primary" size="mini" @click="showTagDialog">标签管理</el-button>
         </div>
         <el-table :data="tableData" size="small" border>
             <el-table-column label="标题" prop="title" show-overflow-tooltip></el-table-column>
-            <el-table-column label="内容" prop="content" show-overflow-tooltip></el-table-column>
+            <!-- <el-table-column label="内容" prop="content" show-overflow-tooltip></el-table-column> -->
             <el-table-column label="发布日期" prop="pubDate" width="140px">
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.pubDate)}}</span>

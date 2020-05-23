@@ -298,7 +298,7 @@ export default {
             apiDownloadFile({
                 vm: this,
                 url: `/api/PurchaseOrder/api_downloadpoexcel?id=${row.id}`,
-                filename: `${Date.now()}.cls`
+                filename: `${Date.now()}.xlsx`
             });
         },
         uploadFile({ file, opt }) {

@@ -69,6 +69,7 @@
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
 import echarts from 'echarts';
+import { mapGetters } from 'vuex';
 export default {
     components: {
         MainWrapper
@@ -87,6 +88,9 @@ export default {
             maxMargin: 0,
             height: 0
         };
+    },
+    computed: {
+        ...mapGetters([ 'GET_LOADING' ])
     },
     mounted() {
         const wHeight = document.documentElement.clientHeight;
@@ -108,6 +112,7 @@ export default {
             });
         },
         getData() {
+            const loading = this.$loading({ lock: true, text: this.GET_LOADING });
             this.$axios({
                 url: '/api/Cashflow/api_profitchart',
                 params: {
@@ -115,6 +120,7 @@ export default {
                     teamid: this.teamid || 0
                 }
             }).then(res => {
+                loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.profitsbyemp || [];
@@ -138,10 +144,10 @@ export default {
                         margin.push(item.margin);
                     });
                     this.yAxis = [ {
-                        label: '利润金额',
+                        label: '利益額',
                         data: margin
                     }, {
-                        label: '销售额',
+                        label: '売上額',
                         data: sales
                     } ];
                     this.$nextTick(() => {

@@ -5,7 +5,7 @@
             <el-button size="mini" type="primary" @click="dataChange('add')">新规登录</el-button>
         </div>
         <el-table size="mini" :data="tableData" border>
-            <el-table-column label="勘定コード" prop="accountID"></el-table-column>
+            <el-table-column label="勘定コード" prop="accountID" width="140px"></el-table-column>
             <el-table-column label="テキスト" prop="text"></el-table-column>
             <el-table-column label="BS/PL勘定" prop="bspl">
                 <template slot-scope="scope">

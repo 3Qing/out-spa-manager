@@ -1,5 +1,5 @@
 <template>
-    <main-wrapper class="ess-list">
+    <main-wrapper class="ess-list" :class="[!allData.length && 'no-content']">
         <el-form class="main-header" slot="header" size="small" label-width="60px" label-position="left">
             <el-form-item label="年度">
                 <el-select v-model="fullYear" @change="changeYear">
@@ -176,6 +176,13 @@ export default {
 
 <style lang="less">
 .ess-list {
+    &.no-content {
+        .content-wrapper {
+            & > div {
+                display: none;
+            }
+        }
+    }
     .el-card {
         & + .el-card {
             margin-top: 20px;

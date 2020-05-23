@@ -68,7 +68,7 @@
             </el-table-column>
             <el-table-column label="粗利・円" prop="profit" show-overflow-tooltip></el-table-column>
             <el-table-column label="請求書番号" width="120px" prop="invoiceNo" show-overflow-tooltip></el-table-column>
-            <el-table-column label="アクション" width="350px">
+            <el-table-column label="アクション" width="350px" fixed="right">
                 <template slot-scope="scope">
                     <el-button
                         type="primary"

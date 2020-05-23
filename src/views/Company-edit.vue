@@ -1,86 +1,99 @@
 <template>
     <main-wrapper class="company-edit-wrapper">
         <div class="main-header" slot="header">
-            <el-button type="primary" size="mini" @click="beforeSubmit">提交</el-button>
-            <!-- <el-button type="danger" size="mini">重置</el-button> -->
-            <el-button size="mini" @click="$router.back()">返回</el-button>
+            <el-button type="primary" size="mini" @click="beforeSubmit" v-if="!isDisplay">提交</el-button>
+            <el-button type="danger" size="mini" @click="reset" v-if="!isDisplay">重置</el-button>
+            <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row>
             <el-col :span="12">
-                <el-form size="mini" label-width="100px" ref="form" :model="form">
+                <el-form size="mini" label-width="100px" ref="form" :model="form" :rules="isDisplay ? {} : rules" label-suffix=":">
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="title">
-                                <el-input v-model="form.title" :maxlength="30"></el-input>
+                            <el-form-item label="会社名" prop="title">
+                                <p v-if="isDisplay">{{form.title}}</p>
+                                <el-input v-model="form.title" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="Postal">
-                                <el-input v-model="form.postal" :maxlength="30"></el-input>
+                            <el-form-item label="郵便番号">
+                                <p v-if="isDisplay">{{form.postal}}</p>
+                                <el-input v-model="form.postal" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="Address">
-                                <el-input v-model="form.address"></el-input>
+                            <el-form-item label="所在地" prop="address">
+                                <p v-if="isDisplay">{{form.address}}</p>
+                                <el-input v-model="form.address" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="Phone">
-                                <el-input v-model="form.phone" :maxlength="30"></el-input>
+                            <el-form-item label="電話">
+                                <p v-if="isDisplay">{{form.phone}}</p>
+                                <el-input v-model="form.phone" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
                             <el-form-item label="Fax">
-                                <el-input v-model="form.fax" :maxlength="30"></el-input>
+                                <p v-if="isDisplay">{{form.fax}}</p>
+                                <el-input v-model="form.fax" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="AccountOwner">
-                                <el-input v-model="form.accountOwner" :maxlength="30"></el-input>
+                            <el-form-item label="銀行口座名義人">
+                                <p v-if="isDisplay">{{form.accountOwner}}</p>
+                                <el-input v-model="form.accountOwner" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="userName">
-                                <el-input v-model="form.userName" :maxlength="30"></el-input>
+                            <el-form-item label="管理者ユーザ名" prop="userName">
+                                <p v-if="isDisplay">{{form.userName}}</p>
+                                <el-input v-model="form.userName" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="userPassword">
-                                <el-input v-model="form.userPassword" show-password :maxlength="30"></el-input>
+                            <el-form-item label="管理者パスワード" prop="userPassword">
+                                <p v-if="isDisplay">{{form.userPassword}}</p>
+                                <el-input v-model="form.userPassword" show-password :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="contactPerson">
-                                <el-input v-model="form.contactPerson" show-password :maxlength="30"></el-input>
+                            <el-form-item label="連絡担当者" prop="contactPerson">
+                                <p v-if="isDisplay">{{form.contactPerson}}</p>
+                                <el-input v-model="form.contactPerson" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="contactTelMail">
-                                <el-input v-model="form.contactTelMail" show-password :maxlength="30"></el-input>
+                            <el-form-item label="ホムページ">
+                                <p v-if="isDisplay">{{form.webSite}}</p>
+                                <el-input v-model="form.webSite" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row>
-                        <el-col :span="12">
-                            <el-form-item label="logoImage">
-                                <el-input v-model="form.logoImage" show-password :maxlength="30"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="webSite">
-                                <el-input v-model="form.webSite" show-password :maxlength="30"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                    <el-form-item label="連絡方法">
+                        <p v-if="isDisplay">{{form.contactTelMail}}</p>
+                        <el-input v-model="form.contactTelMail" type="textarea" :rows="3" v-else></el-input>
+                    </el-form-item>
                 </el-form>
+            </el-col>
+            <el-col :span="10" :offset="2">
+                <div class="image-wrapper" v-if="isDisplay">
+                    <img :src="form.logoImage" alt="">
+                </div>
+                <div class="image-wrapper" v-if="isDisplay">
+                    <img :src="form.touhonImage" alt="">
+                </div>
+                <card-upload v-if="!isDisplay" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" style="margin-left: 20px;" @success="upload"></card-upload>
+                <image-croppa></image-croppa>
             </el-col>
         </el-row>
     </main-wrapper>
@@ -88,9 +101,16 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
+import { mapGetters } from 'vuex';
+// import UploadCroppa from '@components/upload-croppa';
+import CardUpload from '@components/card-upload';
+import ImageCroppa from '@components/image-croppa';
+import { fileToBase64 } from '@_public/utils';
 export default {
     components:  {
-        MainWrapper
+        MainWrapper,
+        CardUpload,
+        ImageCroppa
     },
     data() {
         return {
@@ -106,44 +126,155 @@ export default {
                 contactPerson: '',
                 contactTelMail: '',
                 logoImage: '',
-                webSite: ''
-            }
+                webSite: '',
+                touhonImage: ''
+            },
+            rules: {},
+            isDisplay: false
         };
     },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            if (to.params.id) {
+                vm.getData();
+                vm.rules = {
+                    title: [{
+                        required: true, message: '请输入会社名', trigger: 'blur'
+                    }],
+                    address: [{
+                        required: true, message: '请输入所在地', trigger: 'blur'
+                    }],
+                    contactPerson: [{
+                        required: true, message: '请输入連絡担当者', trigger: 'blur'
+                    }]
+                };
+            } else {
+                vm.rules = {
+                    title: [{
+                        required: true, message: '请输入会社名', trigger: 'blur'
+                    }],
+                    address: [{
+                        required: true, message: '请输入所在地', trigger: 'blur'
+                    }],
+                    contactPerson: [{
+                        required: true, message: '请输入連絡担当者', trigger: 'blur'
+                    }],
+                    userName: [{
+                        required: true, message: '请输入管理者ユーザ名', trigger: 'blur'
+                    }],
+                    userPassword: [{
+                        required: true, message: '请输入管理者パスワード', trigger: 'blur'
+                    }],
+                };
+                vm.$nextTick(() => {
+                    vm.reset();
+                });
+            }
+            if (to.query.display) {
+                vm.isDisplay = true;
+                vm.getLogo();
+                vm.getTouhon();
+            }
+        });
+    },
+    computed: {
+        ...mapGetters(['GET_LOADING'])
+    },
     methods: {
+        getLogo() {
+            this.$axios({
+                url: '/api/Company/api_getcompanylogoimg'
+            }).then(res => {
+                console.log(res);
+                fileToBase64(res).then(result => {
+                    this.form.logoImage = result;
+                });
+            });
+        },
+        getTouhon() {
+            this.$axios({
+                url: '/api/Company/api_getcompanytouhonimg'
+            }).then(res => {
+                console.log(res);
+                fileToBase64(res).then(result => {
+                    this.form.touhonImage = result;
+                });
+            });
+        },
+        getData() {
+            const loading = this.$loading({ lock: true, text: this.GET_LOADING });
+            this.$axios({
+                url: '/api/Company/api_getcompanyinfo',
+                params: {
+                    id: this.$route.params.id
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    this.form = data;
+                }
+            });
+        },
+        reset() {
+            this.$refs.form.resetFields();
+        },
         beforeSubmit() {
-            const params = {
-                Title: this.form.title,
-                Postal: this.form.postal,
-                Address: this.form.address || '',
-                Phone: this.form.phone || '',
-                Fax: this.form.fax || '',
-                AccountOwner: this.form.accountOwner || '',
-                'user.Name': this.form.userName || '',
-                'user.Password': this.form.userPassword || '',
-                ContractPerson: this.form.contactPerson || '',
-                ContactTelMail: this.form.contactTelMail || '',
-                LogoImage: this.form.logoImage || '',
-                WebSite: this.form.webSite || ''
-            };
-            this.submit(params);
+            this.$refs.form.validate(valid => {
+                if (valid) {
+                    if (!this.form.logoImage || !this.form.touhonImage) {
+                        this.$message({
+                            type: 'warning',
+                            message: '请上传图片'
+                        });
+                        return;
+                    }
+                    const params = {
+                        Title: this.form.title,
+                        Postal: this.form.postal,
+                        Address: this.form.address || '',
+                        Phone: this.form.phone || '',
+                        Fax: this.form.fax || '',
+                        AccountOwner: this.form.accountOwner || '',
+                        'user.Name': this.form.userName || '',
+                        'user.Password': this.form.userPassword || '',
+                        ContractPerson: this.form.contactPerson || '',
+                        ContactTelMail: this.form.contactTelMail || '',
+                        LogoImage: this.form.logoImage || '',
+                        WebSite: this.form.webSite || '',
+                        TouhonImage: this.form.touhonImage || ''
+                    };
+                    if (this.$route.params.id) {
+                        params.ID = this.$route.params.id;
+                    }
+                    this.submit(params);
+                }
+            });
         },
         submit(params) {
-            const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+            const loading = this.$loading({ lock: true, text: 'データ提出中...' });
+            let url = '/api/Company/api_joinerpplatform';
+            if (params.ID) {
+                url = '/api/Company/api_updatecompanyinfo';
+            }
             this.$axios({
                 method: 'POST',
-                url: '/api/Company/api_joinerpplatform',
+                url,
                 params,
                 formData: true,
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
+                    this.$router.push({ name: 'CompanyList' });
                     this.$message({
                         type: 'success',
-                        message: '保存成功'
+                        message: '保存完了'
                     });
                 }
             });
+        },
+        upload({res, opt}) {
+            this.form[opt.field] = res.file;
         }
     }
 };
@@ -154,6 +285,18 @@ export default {
     .el-form {
         .el-input {
             width: 220px;
+        }
+    }
+    .image-wrapper {
+        display: inline-block;
+        vertical-align: top;
+        width: 300px;
+        height: 400px;
+        & + .image-wrapper {
+            margin-left: 20px;
+        }
+        img {
+            width: 100%;
         }
     }
 }

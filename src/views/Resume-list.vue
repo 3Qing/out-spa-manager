@@ -1,7 +1,7 @@
 <template>
     <main-wrapper class="resume-list">
         <el-table size="mini" stripe :data="tableData">
-            <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
+            <el-table-column label="社員番号" prop="employeeNo" width="140px"></el-table-column>
             <el-table-column label="氏名" prop="name"></el-table-column>
             <el-table-column label="就職タイプ" prop="recruitType"></el-table-column>
             <el-table-column label="履歴書更新" prop="resumeID" width="120px">
@@ -15,7 +15,7 @@
             </el-table-column>
             <el-table-column label="最終更新日" prop="updateTime" width="140px">
                 <template slot-scope="scope">
-                    <span>{{formatTime(scope.row.updateTime) || '-'}}</span>
+                    <span>{{(formatTime(scope.row.updateTime) !== '0001-01-01' ? formatTime(scope.row.updateTime) : '-')}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="ダウンロード">

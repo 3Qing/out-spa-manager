@@ -19,7 +19,7 @@
             <span v-else style="margin-right: 5px;">{{tag.tagName}}</span>
             <el-button v-if="curTag.id === tag.id" size="mini" @click="updateTag('edit')">保存</el-button>
             <i v-if="curTag.id === tag.id" class="el-icon-view" @click="cancelEdit"></i>
-            <i v-else class="el-icon-edit" @click="curTag = { ...tag }"></i>
+            <i v-else class="el-icon-edit-outline" @click="curTag = { ...tag }"></i>
         </el-tag>
         <el-input
             v-if="inputVisible"
@@ -163,7 +163,7 @@ export default {
         .el-button {
             margin-right: 10px;
         }
-        .el-icon-edit, .el-icon-edit {
+        .el-icon-edit-outline, .el-icon-edit-outline {
             cursor: pointer;
         }
     }

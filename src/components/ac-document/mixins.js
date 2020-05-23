@@ -3,7 +3,7 @@ export default  {
         return {
             form: {
                 PostingDate: '',
-                'DocType': '',
+                DocType: '',
                 Comment: ''
             },
             drcr: [{

@@ -8,8 +8,12 @@
             <el-table-column label="岗位名称" prop="title"></el-table-column>
             <el-table-column label="操作" width="100px">
                 <template slot-scope="scope">
-                    <i class="el-icon-edit link" color="primary" @click="handleEdit(scope.row)"></i>
-                    <i class="el-icon-delete link" color="danger" @click="handleDelete(scope.row)"></i>
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                        <i class="el-icon-edit-outline link" color="primary" @click="handleEdit(scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete link" color="danger" @click="handleDelete(scope.row)"></i>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>

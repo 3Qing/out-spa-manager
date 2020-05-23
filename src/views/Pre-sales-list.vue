@@ -50,13 +50,13 @@
                         title="提案文"
                         trigger="hover">
                         <pre>{{scope.row.proposeText}}</pre>
-                        <i slot="reference" class="el-icon-document"></i>
+                        <i slot="reference" class="el-icon-document oper-icon"></i>
                     </el-popover>
                 </template>
             </el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="操作" fixed="right" width="60px">
                 <template slot-scope="scope">
-                    <i class="el-icon-edit link" color="warning" @click="showIntroDialog('edit', scope.row)"></i>
+                    <i class="el-icon-edit-outline oper-icon" color="warning" @click="showIntroDialog('edit', scope.row)"></i>
                 </template>
             </el-table-column>
         </el-table>
@@ -84,6 +84,7 @@ import MainWrapper from '@components/main-wrapper';
 import IntroDialog from '@components/pre-sales/intro-dialog';
 import { mapGetters } from 'vuex';
 import { apiDownloadFile } from '@_public/utils';
+import moment from 'moment';
 
 export default {
     components: {
@@ -184,7 +185,7 @@ export default {
             apiDownloadFile({
                 vm: this,
                 url: `/api/Candidate/api_downloadcandidatelistexcel?insale=${this.avaiable}`,
-                filename: `${Date.now()}.xlsx`
+                filename: `YPリソース一覧${moment(new Date().getTime()).format('MMDD')}.xlsx`
             });
             this.visible = false;
         },

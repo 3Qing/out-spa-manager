@@ -209,6 +209,7 @@ export default {
             margin-bottom: 12px;
         }
         .item-title {
+            color: #075096;
             font-weight: bold;
         }
         .valid-cover {

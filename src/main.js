@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App';
 import ElemenetUi from 'element-ui';
+import Croppa from 'vue-croppa';
 import axios from '@_public/axios';
 import router from './router';
 import store from './vuex/store';
@@ -18,6 +19,7 @@ Vue.config.productionTip = false;
 // locale.use(JA);
 
 Vue.use(ElemenetUi);
+Vue.use(Croppa, { componentName: 'croppa' });
 
 Vue.prototype.$axios = axios;
 
