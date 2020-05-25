@@ -583,7 +583,7 @@ export default {
             if (type === 'edit') {
                 params.ID = this.$route.params.id;
             } else {
-                params['Salary'] = [{
+                params['Salaries'] = [{
                     PJSalary: Number(this.form.PJSalary.toString().replace(/,/g, '')),
                     BaseSalary: Number(this.form.BaseSalary.toString().replace(/,/g, '')),
                     Comment: this.form.SComment,

@@ -539,7 +539,7 @@ export default {
                 EmployeeID: this.form['employeeId'],
                 SalesPersonID: this.form['salespersonId'],
                 BusinessFlow: this.form.businessFlow,
-                // Ningetsu: this.form.ningetsu
+                Ningetsu: this.form.ningetsu
             };
             let url = '/api/contract/api_createcontract';
             if (this.$route.params.id) {
@@ -561,7 +561,7 @@ export default {
             this.$axios({
                 method: 'POST',
                 url,
-                params: formData,
+                params,
                 custom: {
                     loading,
                     vm: this
