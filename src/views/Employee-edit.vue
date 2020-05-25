@@ -274,7 +274,7 @@
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
-import { priceToNumber, priceToString, formatTime } from '@_public/utils';
+import { priceToString, formatTime } from '@_public/utils';
 
 export default {
     components: {
@@ -570,10 +570,10 @@ export default {
                 'SalePriceTo': Number(this.form.salePriceTo.toString().replace(/,/g, '')) || 0,
                 'Travel': this.form.travel || '',
                 'ExpectPJ': this.form.expectPJ || '',
-                'Comment': this.form.comment || '',
-                'BaseSalary': priceToNumber(this.form.BaseSalary),
-                'PJSalary': priceToNumber(this.form.PJSalary),
-                'SComment': this.form.SComment
+                'Comment': this.form.comment || ''
+                // 'BaseSalary': priceToNumber(this.form.BaseSalary),
+                // 'PJSalary': priceToNumber(this.form.PJSalary),
+                // 'SComment': this.form.SComment
             };
             if (this.form.teamMembers instanceof Array) {
                 params.TeamMembers = this.form.teamMembers.map(item => ({teamID: item.id}));
@@ -583,9 +583,11 @@ export default {
             if (type === 'edit') {
                 params.ID = this.$route.params.id;
             } else {
-                params['Salary.PJSalary'] = Number(this.form.PJSalary.toString().replace(/,/g, ''));
-                params['Salary.BaseSalary'] = Number(this.form.BaseSalary.toString().replace(/,/g, ''));
-                params['Salary.Comment'] = this.form.SComment;
+                params['Salary'] = [{
+                    PJSalary: Number(this.form.PJSalary.toString().replace(/,/g, '')),
+                    BaseSalary: Number(this.form.BaseSalary.toString().replace(/,/g, '')),
+                    Comment: this.form.SComment,
+                }];
             }
             return params;
         },

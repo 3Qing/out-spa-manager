@@ -1,7 +1,7 @@
 <template>
     <main-wrapper class="contract-sign">
         <div slot="header" class="main-header">
-            <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id !== 'new' ? '修改' : '提交'}}</el-button>
+            <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
             <el-button v-if="!isDisplay" @click="resetForm('form')" size="small" type="danger">重置</el-button>
             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
         </div>
@@ -331,7 +331,7 @@ export default {
             if (to.query.display) {
                 vm.isDisplay = true;
             }
-            if (to.params.id && to.params.id !== 'new') {
+            if (to.params.id) {
                 vm.getData(vm.isDisplay);
             }
             // /api/Contract/api_getcontractfordisplay
@@ -522,7 +522,6 @@ export default {
             this.$refs[formName].resetFields();
         },
         submit() {
-            const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
             const params = {
                 ID: 0,
                 Title: this.form.title || '',
@@ -540,25 +539,29 @@ export default {
                 EmployeeID: this.form['employeeId'],
                 SalesPersonID: this.form['salespersonId'],
                 BusinessFlow: this.form.businessFlow,
-                Ningetsu: this.form.ningetsu
+                // Ningetsu: this.form.ningetsu
             };
-            let url = '/api/Contract/api_createcontract';
-            if (this.$route.params.id !== 'new') {
+            let url = '/api/contract/api_createcontract';
+            if (this.$route.params.id) {
                 params.ID = this.$route.params.id;
-                url = '/api/Contract/api_updatecontract';
+                url = '/api/contract/api_updatecontract';
             }
             const formData = new FormData();
             for (let key in params) {
                 formData.append(key, params[key]);
             }
-            formData.append('Ningetsu', this.form.ningetsu);
+            if (this.form.ningetsu) {
+                this.form.ningetsu.forEach((item, i) => {
+                    formData.append(`Ningetsu[${i}]`, item);
+                });
+            } else {
+                formData.append('Ningetsu', '');
+            }
+            const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
             this.$axios({
                 method: 'POST',
                 url,
-                params,
-                // headers: {
-                //     'content-Type': 'multipart/form-data'
-                // },
+                params: formData,
                 custom: {
                     loading,
                     vm: this
@@ -566,7 +569,7 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    if (this.$route.params.id === 'new') {
+                    if (!this.$route.params.id) {
                         this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
                     } else {
                         this.getData();

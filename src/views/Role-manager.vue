@@ -1,6 +1,7 @@
 <template>
     <main-wrapper class="role-manager">
         <div style="text-align: right">
+            <el-button type="danger" size="mini" @click="delRole">删除角色</el-button>
             <el-button type="warning" size="mini" @click="copyRole">ロールコピー</el-button>
             <el-button type="primary" size="mini" @click="newHandler">{{isNew ? '取消新增' : '新增角色'}}</el-button>
         </div>
@@ -438,7 +439,37 @@ export default {
                             message: '拷贝成功'
                         });
                         this.getRoleList();
-                        // this.close();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
+        },
+        delRole() {
+            this.$confirm('是否删除角色', '删除', {}).then(() => {
+                const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+                this.$axios({
+                    url: '/api/Role/api_deleterole',
+                    params: {
+                        roleid: this.form.id
+                    }
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.form = {
+                            id: '',
+                            Title: '',
+                            TeamID: [],
+                            action: []
+                        };
+                        this.getRoleList();
                     } else {
                         this.$message({
                             type: 'error',

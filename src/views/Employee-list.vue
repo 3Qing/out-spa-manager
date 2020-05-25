@@ -288,11 +288,11 @@ export default {
             if (item.action === 'act_employeeupdate') {
                 return 'el-icon-edit-outline';
             } else if (item.action === 'act_employeeleave') {
-                return 'el-icon-money';
-            } else if (item.action === 'act_revisesalary') {
                 return 'el-icon-user';
-            } else {
+            } else if (item.action === 'act_revisesalary') {
                 return 'el-icon-money';
+            } else {
+                return 'el-icon-user';
             }
         },
         getColor(item) {
@@ -355,19 +355,21 @@ export default {
                     FromDate: this.salary.FromDate,
                     PJSalary: Number(this.salary.PJSalary) || 0,
                     BaseSalary: Number(this.salary.BaseSalary) || 0,
-                    Comment: this.salary.Comment
+                    Comment: this.salary.Comment || ''
                 },
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
+                loading.close();
                 if (res.code === 0) {
                     this.$message({
                         type: 'success',
                         message: '提交成功'
                     });
-                    this.vislble2 = false;
+                    this.visilble2 = false;
                     this.getData();
                 } else {
                     this.$message({

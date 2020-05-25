@@ -24,25 +24,33 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
+                            <el-form-item label="公司简称">
+                                <p v-if="isDisplay">{{form.imG_Prefix}}</p>
+                                <el-input v-model="form.imG_Prefix" :maxlength="4" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
                             <el-form-item label="所在地" prop="address">
                                 <p v-if="isDisplay">{{form.address}}</p>
                                 <el-input v-model="form.address" v-else></el-input>
                             </el-form-item>
                         </el-col>
+                    </el-row>
+                    <el-row>
                         <el-col :span="12">
                             <el-form-item label="電話">
                                 <p v-if="isDisplay">{{form.phone}}</p>
                                 <el-input v-model="form.phone" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
-                    </el-row>
-                    <el-row>
                         <el-col :span="12">
                             <el-form-item label="Fax">
                                 <p v-if="isDisplay">{{form.fax}}</p>
                                 <el-input v-model="form.fax" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
+                    </el-row>
+                    <el-row>
                         <el-col :span="12">
                             <el-form-item label="銀行口座名義人">
                                 <p v-if="isDisplay">{{form.accountOwner}}</p>
@@ -120,6 +128,7 @@ export default {
                 address: '',
                 phone: '',
                 fax: '',
+                imG_Prefix: '',
                 accountOwner: '',
                 userName: '',
                 userPassword: '',
@@ -137,6 +146,8 @@ export default {
         next(vm => {
             if (to.params.id) {
                 vm.getData();
+                vm.getLogo();
+                vm.getTouhon();
                 vm.rules = {
                     title: [{
                         required: true, message: '请输入会社名', trigger: 'blur'
@@ -166,10 +177,10 @@ export default {
                         required: true, message: '请输入管理者パスワード', trigger: 'blur'
                     }],
                 };
-                vm.$nextTick(() => {
-                    vm.reset();
-                });
             }
+            vm.$nextTick(() => {
+                vm.reset();
+            });
             if (to.query.display) {
                 vm.isDisplay = true;
                 vm.getLogo();
@@ -183,9 +194,11 @@ export default {
     methods: {
         getLogo() {
             this.$axios({
-                url: '/api/Company/api_getcompanylogoimg'
+                url: '/api/Company/api_getcompanylogoimg',
+                params: {
+                    companyid: this.$route.params.id
+                }
             }).then(res => {
-                console.log(res);
                 fileToBase64(res).then(result => {
                     this.form.logoImage = result;
                 });
@@ -193,9 +206,11 @@ export default {
         },
         getTouhon() {
             this.$axios({
-                url: '/api/Company/api_getcompanytouhonimg'
+                url: '/api/Company/api_getcompanytouhonimg',
+                params: {
+                    companyid: this.$route.params.id
+                }
             }).then(res => {
-                console.log(res);
                 fileToBase64(res).then(result => {
                     this.form.touhonImage = result;
                 });
@@ -211,8 +226,10 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    const data = res.data || {};
-                    this.form = data;
+                    if (res.data) {
+                        const data = res.data || {};
+                        this.form = data;
+                    }
                 }
             });
         },
@@ -235,6 +252,7 @@ export default {
                         Address: this.form.address || '',
                         Phone: this.form.phone || '',
                         Fax: this.form.fax || '',
+                        IMG_Prefix: this.form.imG_Prefix || '',
                         AccountOwner: this.form.accountOwner || '',
                         'user.Name': this.form.userName || '',
                         'user.Password': this.form.userPassword || '',

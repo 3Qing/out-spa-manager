@@ -369,9 +369,9 @@ export default {
                             const tmp = {};
                             for (let key in baseProjects) {
                                 if (key !== 'fromDate' || key !== 'toDate') {
-                                    if (key === 'ID' && !item[key]) {
-                                        continue;
-                                    }
+                                    // if (key === 'ID' && !item[key]) {
+                                    //     continue;
+                                    // }
                                     tmp[key] = item[key];
                                 }
                             }
@@ -490,7 +490,7 @@ export default {
                             return;
                         }
                         params.ID = this.form.id;
-                        params['employee.ID'] = this.$route.params.epId || this.employeeID;
+                        params['employeeID'] = this.$route.params.epId || this.employeeID;
                         delete params.projects;
 
                         params.projects = this.form.projects && this.form.projects.map(item => {

@@ -38,6 +38,7 @@ import PositionList from '@views/Position';
 import CompanyEdit from '@views/Company-edit';
 import CompanyList from '@views/Company-list';
 import ACDocOCR from '@views/AC-doc-OCR';
+import TaskManager from '@views/Task-manager';
 
 Vue.use(Router);
 
@@ -70,7 +71,7 @@ const router = new Router({
         name: 'ContractEdit',
         component: ContractSign
     }, {
-        path: '/contract/new',
+        path: '/contractnew',
         name: 'ContractNew',
         component: ContractSign
     }, {
@@ -213,6 +214,10 @@ const router = new Router({
         path: '/acdococr',
         name: 'ACDocOCR',
         component: ACDocOCR
+    }, {
+        path: '/taskmanager',
+        name: 'TaskManager',
+        component: TaskManager
     }
     ]
 });

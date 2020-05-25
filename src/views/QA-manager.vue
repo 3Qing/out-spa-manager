@@ -15,7 +15,7 @@
                 type="primary"
                 @click="doCreate"
             >新規追加</el-button>
-            <el-button type="primary" size="mini" @click="showDialog = true">标签管理</el-button>
+            <el-button type="primary" size="mini" @click="showDialog = true" v-if="hasUpdateAu">标签管理</el-button>
         </el-form>
         <el-table size="mini" :data="tableData" @row-click="rowClick" border>
             <el-table-column label="番号" width="100px">
@@ -34,10 +34,9 @@
                     <span>{{formatTime(scope.row.updateTime)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="180px">
+            <el-table-column label="操作" width="180px" v-if="hasUpdateAu">
                 <template slot-scope="scope">
                     <el-button
-                        v-if="hasUpdateAu"
                         size="mini"
                         type="warning"
                         @click="doEdit(scope.row)"
