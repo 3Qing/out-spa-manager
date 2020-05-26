@@ -521,6 +521,40 @@ export default {
         resetForm(formName) {
             this.$refs[formName].resetFields();
         },
+        toFormData(val) {
+            let formData = new FormData();
+            for (let i in val) {
+                isArray(val[i], i);
+            }
+            function isArray(array, key) {
+                if (array == undefined || typeof array == "function") {
+                    return false;
+                }
+                if (typeof array != "object") {
+                    formData.append(key, array);
+                } else if (array instanceof Array) {
+                    if (array.length == 0) {
+                        formData.append(`${key}`, "");
+                    } else {
+                        for (let i in array) {
+                            for (let j in array[i]) {
+                                isArray(array[i][j], `${key}[${i}].${j}`);
+                            }
+                        }
+                    }
+                } else {
+                    let arr = Object.keys(array);
+                    if (arr.indexOf("uid") == -1) {
+                        for (let j in array) {
+                            isArray(array[j], `${key}.${j}`);
+                        }
+                    } else {
+                        formData.append(`${key}`, array);
+                    }
+                }
+            }
+            return formData;
+        },
         submit() {
             const params = {
                 ID: 0,
@@ -530,16 +564,16 @@ export default {
                 ToDate: this.form.toDate,
                 PaymentTermID: this.form['paymenttermId'],
                 UnitPrice: priceToNumber(this.form.unitPrice),
-                HoursFrom: this.form.hoursFrom,
-                HoursTo: this.form.hoursTo,
+                HoursFrom: Number(this.form.hoursFrom),
+                HoursTo: Number(this.form.hoursTo),
                 CalculateUnit: this.form.calculateUnit,
                 OverTimePrice: priceToNumber(this.form.overTimePrice),
                 UnderTimePrice: priceToNumber(this.form.underTimePrice),
                 CustomerID: this.form['customerId'],
                 EmployeeID: this.form['employeeId'],
                 SalesPersonID: this.form['salespersonId'],
-                BusinessFlow: this.form.businessFlow,
-                Ningetsu: this.form.ningetsu
+                BusinessFlow: this.form.businessFlow
+                // Ningetsu: this.form.ningetsu
             };
             let url = '/api/contract/api_createcontract';
             if (this.$route.params.id) {
@@ -551,9 +585,10 @@ export default {
                 formData.append(key, params[key]);
             }
             if (this.form.ningetsu) {
-                this.form.ningetsu.forEach((item, i) => {
-                    formData.append(`Ningetsu[${i}]`, item);
-                });
+                // this.form.ningetsu.forEach((item, i) => {
+                //     formData.append(`Ningetsu[${i}]`, item);
+                // });
+                formData.append('Ningetsu', JSON.stringify(this.form.ningetsu || []));
             } else {
                 formData.append('Ningetsu', '');
             }
@@ -562,7 +597,7 @@ export default {
             this.$axios({
                 method: 'POST',
                 url,
-                params,
+                params: formData,
                 custom: {
                     loading,
                     vm: this
