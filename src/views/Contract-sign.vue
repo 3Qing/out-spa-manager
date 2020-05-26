@@ -557,6 +557,7 @@ export default {
             } else {
                 formData.append('Ningetsu', '');
             }
+            console.log('params', params, formData);
             const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
             this.$axios({
                 method: 'POST',

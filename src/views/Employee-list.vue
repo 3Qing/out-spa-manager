@@ -25,15 +25,15 @@
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData" border>
+                <el-table-column fixed label="社員番号" prop="employeeNo" width="100px"></el-table-column>
+                <el-table-column fixed label="就職タイプ" prop="type" width="100px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="所属部門" prop="teamName" width="80px"></el-table-column>
-                <el-table-column label="社員番号" prop="employeeNo" width="100px"></el-table-column>
-                <el-table-column label="就職タイプ" prop="type" width="100px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="氏名" prop="name" show-overflow-tooltip></el-table-column>
                 <el-table-column label="年齢" prop="age" width="60px"></el-table-column>
                 <el-table-column label="性別" prop="sex" width="60px"></el-table-column>
                 <el-table-column label="国籍" prop="nationality" width="80px"></el-table-column>
                 <el-table-column label="最寄駅" prop="station" show-overflow-tooltip></el-table-column>
-                <el-table-column label="モジュール" prop="mainSkill" show-overflow-tooltip></el-table-column>
+                <el-table-column label="スキル" prop="mainSkill" show-overflow-tooltip></el-table-column>
                 <el-table-column label="認定資格" prop="certificates"></el-table-column>
                 <el-table-column label="経験年数" prop="expYears" width="100px"></el-table-column>
                 <el-table-column label="ポジション" prop="position" show-overflow-tooltip></el-table-column>
@@ -163,6 +163,11 @@ export default {
         ...mapGetters(['IS_H5', 'TEAMS'])
     },
     methods: {
+        // 千分位字符格式化
+        thousandFormat(num) {
+            var reg = /\d{1,3}(?=(\d{3})+$)/g;
+            return (num + '').replace(reg, '$&,');
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: '社員一覧データ取得中...' });
             let url = '/api/Employee/api_getemployeelist';
@@ -272,9 +277,9 @@ export default {
                 this.salary = {
                     empeeid: scope.row.id,
                     FromDate: '',
-                    PJSalary: Number(scope.row.projectSalary) || 0,
+                    PJSalary: this.thousandFormat(Number(scope.row.projectSalary)) || 0,
                     BaseSalary: Number(scope.row.baseSalary) || 0,
-                    Comment: scope.row.comment
+                    Comment: ''
                 };
                 this.visilble2 = true;
             } else {
