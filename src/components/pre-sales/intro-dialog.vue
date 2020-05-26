@@ -2,44 +2,35 @@
     <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" @close="close">
         <el-form label-width="130px" size="mini">
             <el-row v-if="!IS_H5">
-                <el-col :span="12">
-                    <el-form-item label="英語姓">
+                <el-col :span="12" class="width50">
+                    <el-form-item label="*英語姓名">
                         <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="英語名">
                         <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
                     </el-form-item>
                 </el-col>
-            </el-row>
-            <el-form-item label="英語姓" v-if="IS_H5">
-                <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="英語名" v-if="IS_H5">
-                <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-row v-if="!IS_H5">
-                <el-col :span="12">
-                    <el-form-item label="姓" prop="firstName">
+                <el-col :span="12" class="width50">
+                    <el-form-item label="*汉字姓名">
                         <el-input v-model="form.firstName" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="名" prop="lastName">
                         <el-input v-model="form.lastName" :maxlength="20"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-form-item label="姓" prop="firstName" v-if="IS_H5">
-                <el-input v-model="form.firstName" :maxlength="20"></el-input>
+            <!-- <el-form-item label="英語姓" v-if="IS_H5">
+                <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="名" prop="lastName" v-if="IS_H5">
-                <el-input v-model="form.lastName" :maxlength="20"></el-input>
-            </el-form-item>
+            <el-form-item label="英語名" v-if="IS_H5">
+                <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
+            </el-form-item> -->
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="生日" prop="birthday">
+                    <el-form-item label="*性别" prop="sex">
+                        <el-select v-model="form.sex">
+                            <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="*生日" prop="birthday">
                         <el-date-picker
                             v-model="form.birthday"
                             type="date"
@@ -47,93 +38,31 @@
                             value-format="yyyy-MM-dd"></el-date-picker>
                     </el-form-item>
                 </el-col>
-                <el-col :span="12">
-                    <el-form-item label="国籍" prop="nationality">
-                        <el-input v-model="form.nationality" :maxlength="10"></el-input>
-                    </el-form-item>
-                </el-col>
             </el-row>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="城市" prop="liveCity">
-                        <el-input v-model="form.liveCity" :maxlength="10"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="主要技能" prop="mainSkill">
-                        <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="性别" prop="sex">
-                        <el-select v-model="form.sex">
-                            <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="开始营业日期" prop="salesFromDate">
-                        <el-date-picker
-                            v-model="form.salesFromDate"
-                            type="date"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd"></el-date-picker>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="稼働可能开始日" prop="avaiableDate">
-                        <el-date-picker
-                            v-model="form.avaiableDate"
-                            type="date"
-                            format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd"></el-date-picker>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="状态">
-                        <el-select v-model="form.status">
-                            <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.text"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item label="提案文">
-                <el-input v-model="form.proposeText" type="textarea" :rows="12" :maxlength="250"></el-input>
+            <!-- <el-form-item label="姓" prop="firstName" v-if="IS_H5">
+                <el-input v-model="form.firstName" :maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="备注">
-                <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="250"></el-input>
-            </el-form-item>
+            <el-form-item label="名" prop="lastName" v-if="IS_H5">
+                <el-input v-model="form.lastName" :maxlength="20"></el-input>
+            </el-form-item> -->
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="最低人件费金额">
-                        <el-input v-model.number="form.costFrom"></el-input>
+                    <el-form-item label="*国籍" prop="nationality">
+                        <el-select v-model="form.nationality">
+                            <el-option v-for="item in countryTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                        <!-- <el-input v-model="form.nationality" :maxlength="10"></el-input> -->
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="最高人件费金额">
-                        <el-input v-model.number="form.costTo"></el-input>
+                    <el-form-item label="来日年数" prop="jpYears">
+                        <el-input v-model="form.jpYears" :maxlength="2"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="最低提案金额">
-                        <el-input v-model.number="form.salesFrom"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="最高提案金额">
-                        <el-input v-model.number="form.salesTo"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="工作开始日">
+                    <el-form-item label="*工作开始日">
                         <el-date-picker
                             v-model="form.startWorkDate"
                             type="date"
@@ -142,7 +71,82 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="简历附件存储路径">
+                    <el-form-item label="*居住城市" prop="liveCity">
+                        <el-select v-model="form.liveCity">
+                            <el-option v-for="item in cityTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                        <!-- <el-input v-model="form.liveCity" :maxlength="10"></el-input> -->
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="*营业开始日" prop="salesFromDate">
+                        <el-date-picker
+                            v-model="form.salesFromDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="*稼働开始日" prop="avaiableDate">
+                        <el-date-picker
+                            v-model="form.avaiableDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="候选人类型">
+                        <el-select v-model="form.employeeType">
+                            <el-option v-for="item in peopleTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="营业状态">
+                        <el-select v-model="form.status">
+                            <el-option v-for="item in allStatus" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item label="*提案文">
+                <el-input v-model="form.proposeText" type="textarea" :rows="12" :maxlength="250"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="250"></el-input>
+            </el-form-item>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="主要技能" prop="mainSkill">
+                        <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="*人件费范围">
+                        <el-input v-model.number="form.costFrom"></el-input>
+                        <el-input class="marginLeft30" v-model.number="form.costTo"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="*提案金额范围">
+                        <el-input v-model.number="form.salesFrom"></el-input>
+                        <el-input class="marginLeft30" v-model.number="form.salesTo"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <el-form-item label="简历附件">
                         <upload
                             :opt="{ btnText: '上传附件', accept: 'application/pdf', show: false, showIcon: true }"
                             @upload="uploadFile"></upload>
@@ -174,13 +178,13 @@ export default {
                 furigana_LastName: '',
                 firstName: '',
                 lastName: '',
-                birthday: '',
+                birthday: '1985-01-01',
                 nationality: '',
                 liveCity: '',
                 mainSkill: '',
                 sex: '',
-                salesFromDate: '',
-                avaiableDate: '',
+                salesFromDate: new Date(),
+                avaiableDate: this.nextMonth,
                 status: '',
                 proposeText: '',
                 comment: '',
@@ -189,7 +193,9 @@ export default {
                 salesFrom: '',
                 salesTo: '',
                 startWorkDate: '',
-                attachResume: ''
+                attachResume: '',
+                employeeType: '',
+                jpYears: 1
             },
             sexs: [{
                 label: '男', value: true
@@ -198,14 +204,23 @@ export default {
             }],
             showDate: false,
             visible: false,
-            callback: null
+            callback: null,
+            cityTypeArr: [],
+            peopleTypeArr: [],
+            countryTypeArr: []
         };
     },
     computed: {
         ...mapGetters(['IS_H5'])
     },
     mounted() {
+        let date = new Date();
+        let years = date.getFullYear();
+        let nextMonth = years + '-' + Number(date.getMonth()+2) + '-01';
+        this.nextMonth = nextMonth;
         this.getSelect();
+        this.cityType();
+        this.countryType();
         this.$root.$off('SHOW_INTRO_DIALOG');
         this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false }) => {
             if (data) {
@@ -220,6 +235,33 @@ export default {
         });
     },
     methods: {
+        // 城市列表
+        cityType() {
+            this.$axios({
+                url: '/api/Candidate/api_cityforselect'
+            }).then(res => {
+                console.log('city', res);
+                this.cityTypeArr = res.data;
+            });
+        },
+        // 国籍列表
+        countryType() {
+            this.$axios({
+                url: '/api/Candidate/api_nationalityforselect'
+            }).then(res => {
+                console.log('country', res);
+                this.countryTypeArr = res.data;
+            });
+        },
+        // 候选人列表
+        getSelect() {
+            this.$axios({
+                url: '/api/Candidate/api_candidatetypeforselect'
+            }).then(res => {
+                console.log('people', res);
+                this.peopleTypeArr = res.data;
+            });
+        },
         close() {
             this.visible = false;
             this.form = {
@@ -227,13 +269,13 @@ export default {
                 furigana_LastName: '',
                 firstName: '',
                 lastName: '',
-                birthday: '',
+                birthday: '1985-01-01',
                 nationality: '',
                 liveCity: '',
                 mainSkill: '',
                 sex: '',
-                salesFromDate: '',
-                avaiableDate: '',
+                salesFromDate: new Date(),
+                avaiableDate: this.nextMonth,
                 status: '',
                 proposeText: '',
                 comment: '',
@@ -242,15 +284,10 @@ export default {
                 salesFrom: '',
                 salesTo: '',
                 startWorkDate: '',
-                attachResume: ''
+                attachResume: '',
+                employeeType: '',
+                jpYears: 1
             };
-        },
-        getSelect() {
-            this.$axios({
-                url: '/api/Candidate/api_candidatetypeforselect'
-            }).then(res => {
-                console.log(res);
-            });
         },
         createProposeText(data) {
             this.$axios({
@@ -340,4 +377,8 @@ export default {
     }
 };
 </script>
-
+<style lang="less">
+    .marginLeft30{
+        margin-left: 30px;
+    }
+</style>
