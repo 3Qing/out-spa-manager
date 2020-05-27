@@ -11,6 +11,7 @@
             <el-button size="mini" type="primary" @click="showIntroDialog('add')">新規登録</el-button>
         </el-form>
         <el-table :data="tableData" size="small" :cell-class-name="cellClassName">
+            <el-table-column label="氏名" fixed prop="name"></el-table-column>
             <el-table-column label="営業可否">
                 <template slot-scope="scope">
                     <div>{{transformText(scope.row, 'avaiable')}}</div>
@@ -22,27 +23,26 @@
                     <div>{{transformText(scope.row, 'status')}}</div>
                 </template>
             </el-table-column>
-            <el-table-column label="氏名" prop="name"></el-table-column>
             <el-table-column label="国籍" prop="nationality"></el-table-column>
             <el-table-column label="性別" prop="sex"></el-table-column>
             <el-table-column label="所属" prop="employeeType" width="100px" show-overflow-tooltip></el-table-column>
             <el-table-column label="ポジション" prop="position" width="100px" show-overflow-tooltip></el-table-column>
             <el-table-column label="モジュール" prop="mainSkill" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="技術能力" prop="comment" show-overflow-tooltip></el-table-column>
             <el-table-column label="認定資格" prop="certificates"></el-table-column>
-            <el-table-column label="SAP経験年数" prop="expYears"></el-table-column>
-            <el-table-column label="来日年数" prop="jpYears"></el-table-column>
+            <el-table-column label="経験年数" prop="expYears"></el-table-column>
             <el-table-column label="日本語" prop="jpLang" show-overflow-tooltip></el-table-column>
             <el-table-column label="英語" prop="enLang" show-overflow-tooltip></el-table-column>
             <el-table-column label="単価" prop="salesPrice"></el-table-column>
+            <el-table-column label="案件名" prop="curPJ" show-overflow-tooltip></el-table-column>
+            <el-table-column label="顧客" prop="curPJCustomer" show-overflow-tooltip></el-table-column>
+            <el-table-column label="契約終了日" prop="curPJEndDate" width="120px"></el-table-column>
+            <!-- <el-table-column label="技術能力" prop="comment" show-overflow-tooltip></el-table-column>
+            <el-table-column label="来日年数" prop="jpYears"></el-table-column>
             <el-table-column label="最寄駅" prop="station" show-overflow-tooltip></el-table-column>
             <el-table-column label="出張条件" prop="travel" show-overflow-tooltip></el-table-column>
             <el-table-column label="アサイン中案件">
-                <el-table-column label="案件名" prop="curPJ" show-overflow-tooltip></el-table-column>
-                <el-table-column label="顧客" prop="curPJCustomer" show-overflow-tooltip></el-table-column>
-                <el-table-column label="契約終了日" prop="curPJEndDate" width="120px"></el-table-column>
-            </el-table-column>
-            <el-table-column label="提案文" width="70px">
+            </el-table-column> -->
+            <el-table-column label="提案文" fixed="right" width="70px">
                 <template slot-scope="scope">
                     <el-popover
                         v-if="!!scope.row.proposeText"
@@ -217,19 +217,20 @@ export default {
                         return '';
                 }
             } else if (columnIndex === 2) {
-                if (!this.avaiable) {
-                    switch (Number(row.status)) {
-                        case 1:
-                            return 'bg-success';
-                        case 2:
-                        case 4:
-                            return 'bg-warning';
-                        case 3:
-                            return 'bg-danger';
-                        default:
-                            return '';
-                    }
+                console.log(this.avaiable);
+                // if (!this.avaiable) {
+                switch (Number(row.status)) {
+                    case 1:
+                        return 'bg-success';
+                    case 2:
+                    case 4:
+                        return 'bg-warning';
+                    case 3:
+                        return 'bg-danger';
+                    default:
+                        return '';
                 }
+                // }
             }
         },
         transformText(row, field) {

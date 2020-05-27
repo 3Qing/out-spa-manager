@@ -244,12 +244,12 @@ export default {
                 jpLangLevel: '',
                 enLangLevel: '',
                 certificates: [{
-                    ID: '',
+                    id: '',
                     title: '',
                     passDate: ''
                 }],
                 projects: [{
-                    ID: '',
+                    id: '',
                     time: '',
                     projectName: '',
                     position: '',
@@ -347,7 +347,9 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
+                    console.log(data);
                     const baseForm = JSON.parse(JSON.stringify(this.form));
+                    console.log(baseForm);
                     const baseProjects = { ...baseForm.projects[0] };
                     const baseCerts = { ...baseForm.certificates[0] };
                     const projects = data.projects || [];
@@ -392,6 +394,7 @@ export default {
                             return tmp;
                         })
                     });
+                    console.log(this.form);
                 } else {
                     this.$message({
                         type: 'error',
@@ -509,7 +512,9 @@ export default {
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: '正在提交信息中...' });
+            console.log(params);
             this.$axios({
+                formData: true,
                 method: 'POST',
                 url: '/api/Resume/api_updateresume',
                 params,

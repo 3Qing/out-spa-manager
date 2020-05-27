@@ -248,12 +248,12 @@ export default {
                 title: '',
                 content: '',
                 'employeeId': '',
-                fromDate: '',
-                toDate: '',
+                fromDate: this.nextMonthFirstDay(),
+                toDate: this.nextMonthLastDay(),
                 'paymenttermId': '',
                 unitPrice: '',
-                hoursFrom: '',
-                hoursTo: '',
+                hoursFrom: 140,
+                hoursTo: 180,
                 overTimePrice: '',
                 underTimePrice: '',
                 calculateUnit: '',
@@ -323,7 +323,9 @@ export default {
             personMonthArr: [],
             dialogLoading: false,
             isDisplay: false,
-            cashflows: []
+            cashflows: [],
+            nextMonth1: '',
+            nextMonth2: ''
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -375,6 +377,48 @@ export default {
             } else {
                 callback(new Error('请选择结束时间'));
             }
+        },
+        // 下个月的第一天
+        nextMonthFirstDay() {
+            var time = new Date();
+            var year = time.getFullYear();
+            var month = time.getMonth() + 2;
+            if (month > 12) {
+                month = month - 12;
+                year = year + 1;
+            }
+            var day = 1;
+            return year + '-' + month + '-' + day;
+        },
+        // 下个月的最后一天
+        nextMonthLastDay() {
+            var time = new Date();
+            var year = time.getFullYear();
+            var month = time.getMonth() + 2;
+            if (month > 12) {
+                month = month - 12;
+                year = year + 1;
+            }
+            var day = this.nextMonthDay(year, month);
+            return year + '-' + month + '-' + day;
+        },
+        nextMonthDay(year, month) {//判断每月多少天
+            var day31 = [1, 3, 5, 7, 8, 10, 12];
+            var day30 = [4, 6, 9, 11];
+            if (day31.indexOf(month) > -1) {
+                return 31;
+            } else if (day30.indexOf(month) > -1) {
+                return 30;
+            } else {
+                if (this.isLeapYear(year)) {
+                    return 29;
+                } else {
+                    return 28;
+                }
+            }
+        },
+        isLeapYear(year) {//判断是否为闰年
+            return (year % 4 == 0) && (year % 100 != 0 || year % 400 == 0);
         },
         // 作业时间校验
         hoursChange(val, old) {

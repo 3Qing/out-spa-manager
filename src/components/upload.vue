@@ -7,7 +7,7 @@
                 :accept="opt.accept"
                 @change="beforeUpload">
             <p v-if="!opt.showIcon">{{opt.btnText}}</p>
-            <i v-else class="iconfont icon-upload"></i>
+            <i v-else style="font-size:17px;" class="iconfont icon-icon-test2"></i>
         </div>
         <div class="upload-preview" v-if="filename && opt.show">
             <i class="el-icon-document"></i>

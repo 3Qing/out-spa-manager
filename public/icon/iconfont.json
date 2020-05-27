@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "8776842",
+      "name": "search",
+      "font_class": "icon-test1",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "8776877",
+      "name": "upload",
+      "font_class": "icon-test2",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
       "icon_id": "5321591",
       "name": "Excel",
       "font_class": "Excel",
