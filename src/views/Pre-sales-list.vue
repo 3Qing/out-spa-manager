@@ -217,7 +217,7 @@ export default {
                         return '';
                 }
             } else if (columnIndex === 2) {
-                console.log(this.avaiable);
+                // console.log(this.avaiable);
                 // if (!this.avaiable) {
                 switch (Number(row.status)) {
                     case 1:

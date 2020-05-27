@@ -7,16 +7,17 @@
             <el-button type="primary" size="mini" @click="handleEdit({id: 'new'})">新規登録</el-button>
         </div>
         <el-table :data="tableData" size="small" border>
-            <el-table-column label="No" prop="estimationNo" width="100px"></el-table-column>
-            <el-table-column label="作成日付" prop="pubDate" width="120px">
-                <template slot-scope="scope">
-                    <span>{{formatTime(scope.row.pubDate)}}</span>
-                </template>
-            </el-table-column>
+            <el-table-column label="No" prop="estimationNo" width="130px"></el-table-column>
             <el-table-column label="得意先名称" prop="customerTitle"></el-table-column>
             <el-table-column label="商機（案件）名" prop="opportunityTitle" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <span>{{scope.row.opportunityTitle || '-'}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="担当者" prop="salesPerson" width="100px"></el-table-column>
+            <el-table-column label="作成日付" prop="pubDate" width="100px">
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.pubDate)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="下载" width="100px">
@@ -27,7 +28,7 @@
             </el-table-column>
             <el-table-column label="アクション" width="140px" fixed="right">
                 <template slot-scope="scope">
-                    <el-tooltip effect="dark" content="显示" placement="top-start">
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="handleEdit(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="预览" placement="top-start">
@@ -113,6 +114,7 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
+                    console.log(res.data);
                     const data = res.data || {};
                     this.tableData = data.data || [];
                     this.total = data.total || 0;

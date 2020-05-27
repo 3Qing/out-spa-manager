@@ -69,10 +69,10 @@
             <el-table-column label="注文書原本" width="140px">
                 <template slot-scope="scope">
                     <el-tooltip v-if="scope.row.paperReceived" effect="dark" content="预览" placement="top-start">
-                        <i style="font-size:18px;" class="iconfont icon-icon-test1 link" color="warning" @click="previewHandle(scope)"></i>
+                        <i style="font-size:18px;position:relative;top:1px;" class="iconfont icon-icon-test1 link" color="warning" @click="previewHandle(scope)"></i>
                     </el-tooltip>
                     <el-tooltip v-if="scope.row.paperReceived" effect="dark" content="下载" placement="top-start">
-                        <i style="font-size:18px;" class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row)"></i>
+                        <i style="font-size:18px;position:relative;top:1px;" class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip v-if="scope.row.paperReceived" effect="dark" content="再ｱｯﾌﾟﾛｰﾄﾞ" placement="top-start">
                         <upload

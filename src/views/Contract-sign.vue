@@ -6,36 +6,36 @@
             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
         </div>
         <div class="content">
-            <el-row>
+            <el-row v-if="!isDisplay">
                 <el-col :span="12">
                     <el-form ref="form" :model="form" label-width="110px" :rules="isDisplay ? {} : rules" label-suffix=":">
                         <el-form-item label="注文名称" prop="title">
-                            <p v-if="isDisplay">{{form.title || '-'}}</p>
-                            <el-input v-model="form.title" size="small" v-else></el-input>
+                            <!-- <p v-if="isDisplay">{{form.title || '-'}}</p> -->
+                            <el-input v-model="form.title" size="small"></el-input>
                         </el-form-item>
                         <el-form-item label="注文内容" prop="content">
-                            <p v-if="isDisplay">{{form.content || '-'}}</p>
-                            <el-input v-model="form.content" type="textarea" :rows="3" size="small" v-else></el-input>
+                            <!-- <p v-if="isDisplay">{{form.content || '-'}}</p> -->
+                            <el-input v-model="form.content" type="textarea" :rows="3" size="small"></el-input>
                         </el-form-item>
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="契約期間" prop="fromDate">
-                                    <p v-if="isDisplay">{{form.fromDate}}</p>
-                                    <el-date-picker placeholder="开始时间" v-else v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                    <!-- <p v-if="isDisplay">{{form.fromDate}}</p> -->
+                                    <el-date-picker placeholder="开始时间" v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="" prop="toDate">
-                                    <p v-if="isDisplay">{{form.toDate}}</p>
-                                    <el-date-picker placeholder="结束时间" v-else v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                    <!-- <p v-if="isDisplay">{{form.toDate}}</p> -->
+                                    <el-date-picker placeholder="结束时间" v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="作業時間範囲">
-                                    <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p>
-                                    <el-input placeholder="开始时间" v-model="form.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}" v-else></el-input>
+                                    <!-- <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p> -->
+                                    <el-input placeholder="开始时间" v-model="form.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
                                     <div class="err">{{erroeMsg}}</div>
                                 </el-form-item>
                             </el-col>
@@ -48,16 +48,16 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="得意先" prop="customerId">
-                                    <p v-if="isDisplay">{{getContent(form['customerId'], customerList, 'id', 'title')}}</p>
-                                    <el-select v-else v-model="form['customerId']" size="small" @change="changeCustomer">
+                                    <!-- <p v-if="isDisplay">{{getContent(form['customerId'], customerList, 'id', 'title')}}</p> -->
+                                    <el-select v-model="form['customerId']" size="small" @change="changeCustomer">
                                         <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="支払サイト" prop="paymenttermId">
-                                    <p v-if="isDisplay">{{form['paymenttermId']}}</p>
-                                    <el-select v-else v-model="form['paymenttermId']" size="small">
+                                    <!-- <p v-if="isDisplay">{{form['paymenttermId']}}</p> -->
+                                    <el-select v-model="form['paymenttermId']" size="small">
                                         <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -66,14 +66,14 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="単価" prop="unitPrice">
-                                    <p v-if="isDisplay">{{form.unitPrice}}</p>
-                                    <el-input v-model="form.unitPrice" size="small" @input="handlePrice" @blur="calculateOverTimePrice" v-else></el-input>
+                                    <!-- <p v-if="isDisplay">{{form.unitPrice}}</p> -->
+                                    <el-input v-model="form.unitPrice" size="small" @input="handlePrice" @blur="calculateOverTimePrice"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="精算単位" prop="calculateUnit">
-                                    <p v-if="isDisplay">{{getContent(form.calculateUnit, unit, 'value', 'label')}}</p>
-                                    <el-select v-else v-model="form.calculateUnit" size="small">
+                                    <!-- <p v-if="isDisplay">{{getContent(form.calculateUnit, unit, 'value', 'label')}}</p> -->
+                                    <el-select v-model="form.calculateUnit" size="small">
                                         <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -82,23 +82,22 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="超過精算単価" prop="overTimePrice">
-                                    <p v-if="isDisplay">{{form.overTimePrice}}</p>
-                                    <el-input v-model="form.overTimePrice" size="small" v-else></el-input>
+                                    <!-- <p v-if="isDisplay">{{form.overTimePrice}}</p> -->
+                                    <el-input v-model="form.overTimePrice" size="small"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="控除精算単価" prop="underTimePrice">
-                                    <p v-if="isDisplay">{{form.underTimePrice}}</p>
-                                    <el-input v-model="form.underTimePrice" size="small" v-else></el-input>
+                                    <!-- <p v-if="isDisplay">{{form.underTimePrice}}</p> -->
+                                    <el-input v-model="form.underTimePrice" size="small"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="作業担当" prop="employeeId">
-                                    <p v-if="isDisplay">{{getContent(form['employeeId'], workList, 'id', 'name')}}</p>
+                                    <!-- <p v-if="isDisplay">{{getContent(form['employeeId'], workList, 'id', 'name')}}</p> -->
                                     <el-select
-                                        v-else
                                         v-model="form['employeeId']"
                                         filterable
                                         remote
@@ -112,16 +111,16 @@
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="営業担当" prop="salespersonId">
-                                    <p v-if="isDisplay">{{form['salespersonId']}}</p>
-                                    <el-select v-else v-model="form['salespersonId']" size="small">
+                                    <!-- <p v-if="isDisplay">{{form['salespersonId']}}</p> -->
+                                    <el-select v-model="form['salespersonId']" size="small">
                                         <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-form-item label="商流備考" prop="businessFlow">
-                            <p v-if="isDisplay">{{form.businessFlow}}</p>
-                            <el-input v-model="form.businessFlow" size="small" type="textarea" v-else></el-input>
+                            <!-- <p v-if="isDisplay">{{form.businessFlow}}</p> -->
+                            <el-input v-model="form.businessFlow" size="small" type="textarea"></el-input>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -129,6 +128,53 @@
                     <div class="top"></div>
                 </el-col>
             </el-row>
+            <div class="bottom" v-if="isDisplay">
+                <el-table size="small" :data="forms" border>
+                    <el-table-column label="注文名称" prop="title" width="100px">
+                        <!-- <template slot-scope="scope">
+                            <span>{{formatTime(scope.row.fromDate)}}</span>
+                        </template> -->
+                    </el-table-column>
+                    <el-table-column label="注文内容" prop="content" width="100px"></el-table-column>
+                    <el-table-column label="契約期間">
+                         <template slot-scope="scope">
+                            <span>{{formatTime(scope.row.fromDate)}}</span>~
+                            <span>{{formatTime(scope.row.toDate)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="作業時間範囲">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.hoursFrom}}</span>~
+                            <span>{{scope.row.hoursTo}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="得意先">
+                        <template slot-scope="scope">
+                            <span>{{getContent(scope.row.customerId, customerList, 'id', 'title')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="支払サイト">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.paymenttermId}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="単価" prop="unitPrice"></el-table-column>
+                    <el-table-column label="精算単位">
+                        <template slot-scope="scope">
+                            <span>{{getContent(scope.row.calculateUnit, unit, 'value', 'label')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="超過精算単価" prop="overTimePrice"></el-table-column>
+                    <el-table-column label="控除精算単価" prop="underTimePrice"></el-table-column>
+                    <el-table-column label="作業担当">
+                        <template slot-scope="scope">
+                            <span>{{getContent(scope.row.employeeId, workList, 'id', 'name')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="営業担当" prop="salespersonId"></el-table-column>
+                    <el-table-column label="商流備考" prop="businessFlow"></el-table-column>
+                </el-table>
+            </div>
             <div class="bottom" v-if="isDisplay">
                 <el-table size="small" :data="cashflows" border>
                     <el-table-column label="fromDate" prop="fromDate" width="100px">
@@ -243,6 +289,7 @@ export default {
     },
     data() {
         return {
+            forms: [],
             loading: false,
             form: {
                 title: '',
@@ -479,9 +526,17 @@ export default {
                         form['customerId'] = data.customerID;
                     }
                     if (data.cashflows) {
-                        this.cashflows = data.cashflows || [];
+                        if(data.cashflows.length > 0) {
+                            let nuing = (data.cashflows[0].ningetsu / 100).toFixed(2);
+                            data.cashflows[0].ningetsu = nuing;
+                            this.cashflows = data.cashflows;
+                        } else {
+                            this.cashflows = [];
+                        }
                     }
                     this.form = form;
+                    this.forms = [form];
+                    console.log(this.forms);
                 } else {
                     this.$message({
                         type: 'error',
