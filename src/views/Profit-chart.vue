@@ -61,6 +61,28 @@
             <div class="chart-wrapper" :style="{height: `${height}px`}">
                 <div ref="line"></div>
             </div>
+            <el-table class="mt20" :data="totalprofit" size="mini" :height="height" v-if="height">
+                <el-table-column label="稼働人月" >
+                    <template slot-scope="scope">
+                        <span>{{scope.row.onPJPersons / 100}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="待機人月" >
+                    <template slot-scope="scope">
+                        <span>{{scope.row.benchPersons / 100}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="平均利益/人" >
+                    <template slot-scope="scope">
+                        <span>{{((scope.row.sales - scope.row.humanCost) / scope.row.onPJPersons * 100).toFixed(2)}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="平均利益率" >
+                    <template slot-scope="scope">
+                        <span>{{((scope.row.sales - scope.row.humanCost) / scope.row.sales).toFixed(2)}}</span>
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
     </main-wrapper>
 </template>
@@ -86,7 +108,8 @@ export default {
             tableData: [],
             maxSales: 0,
             maxMargin: 0,
-            height: 0
+            height: 0,
+            totalprofit: []
         };
     },
     computed: {
@@ -99,7 +122,7 @@ export default {
         this.period = moment(new Date()).format('YYYYMM');
         this.changePeriod();
         this.getTeam();
-        this.height = (wHeight - hHeight - fHeight - 70) / 2;
+        this.height = (wHeight - hHeight - fHeight - 70) / 3;
     },
     methods: {
         getTeam() {
@@ -124,9 +147,12 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.profitsbyemp || [];
+                    this.totalprofit = data.totalprofits || [];
                     const totalprofits = data.totalprofits || [];
                     let sales = [];
                     let margin = [];
+                    let humanCost = [];
+                    let benchCost = [];
                     this.tableData.forEach(item => {
                         if (item.profits) {
                             item.profits.forEach(cell => {
@@ -142,6 +168,8 @@ export default {
                     totalprofits.forEach(item => {
                         sales.push(item.sales);
                         margin.push(item.margin);
+                        humanCost.push(item.humanCost);
+                        benchCost.push(item.benchCost);
                     });
                     this.yAxis = [ {
                         label: '利益額',
@@ -149,6 +177,12 @@ export default {
                     }, {
                         label: '売上額',
                         data: sales
+                    }, {
+                        label: '人件费',
+                        data: humanCost
+                    }, {
+                        label: '待機代',
+                        data: benchCost
                     } ];
                     this.$nextTick(() => {
                         this.initLine();
@@ -161,15 +195,36 @@ export default {
             chart.clear();
             const series = [];
             this.yAxis.forEach((item, i) => {
+                let colors = '';
+                let numLine = 1;
+                switch (i) {
+                    case 0:
+                        colors = '#45BE87';
+                        numLine = 3;
+                        break;
+                    case 1:
+                        colors = '#E6A23C';
+                        numLine = 3;
+                        break;
+                    case 2:
+                        colors = '#1473B7';
+                        numLine = 1;
+                        break;
+                    case 3:
+                        colors = '#DB414E';
+                        numLine = 1;
+                        break;
+                }
                 series.push({
                     name: item.label,
                     type: 'line',
                     data: item.data,
                     itemStyle: {
-                        color: i === 0 ? '#45BE87' : '#E6A23C'
+                        color: colors
                     },
                     lineStyle: {
-                        color: i === 0 ? '#45BE87' : '#E6A23C'
+                        color: colors,
+                        width: numLine
                     }
                 });
             });
@@ -179,8 +234,8 @@ export default {
                 },
                 grid: {
                     top: '20px',
-                    left: '3%',
-                    right: '4%',
+                    left: '0',
+                    right: '3%',
                     bottom: '3%',
                     containLabel: true
                 },
@@ -316,6 +371,9 @@ export default {
             top: 0;
             text-indent: 50%;
         }
+    }
+    .mt20{
+        margin-top: 20px;
     }
 }
 </style>

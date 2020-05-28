@@ -31,7 +31,6 @@
                 v-model="employeeids"
                 multiple
                 size="mini"
-                collapse-tags
                 clearable>
                 <el-option
                     v-for="item in employees"
@@ -43,7 +42,7 @@
             <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row v-if="show">
-            <el-col :span="8">
+            <el-col :span="14">
                 <el-form size="mini" label-width="120px" :model="data" ref="form" :rules="rules" class="blackColor">
                     <el-row>
                         <el-col :span="12">
@@ -77,31 +76,28 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="納期" prop="submitDate">
+                            <el-form-item label="契约期间" prop="dates">
                                 <el-date-picker
-                                    v-model="data.submitDate"
-                                    type="date"
+                                    v-model="dates"
+                                    type="daterange"
                                     value-format="yyyy-MM-dd"
                                     format="yyyy-MM-dd"
-                                    placeholder="日付">
+                                    range-separator="~"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期">
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="契约期间" prop="submitDate">
-                                <el-date-picker
-                                    v-model="data.submitDate"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    format="yyyy-MM-dd"
-                                    placeholder="日付">
-                                </el-date-picker>
+                            <el-form-item label="作业时间" prop="fromhours">
+                                <el-input v-model="fromhours" size="mini" style="width:60px"></el-input>-
+                                <el-input v-model="tohours" size="mini" style="width:60px"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="作业时间" prop="submitDate">
+                            <el-form-item label="納期" prop="submitDate">
                                 <el-date-picker
                                     v-model="data.submitDate"
                                     type="date"
@@ -295,7 +291,7 @@ export default {
                     const data = res.data || {};
                     data.amount = priceToString(priceToNumber(data.amount));
                     data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
-                    this.data = { ...data };
+                    console.log(data);
                     if (this.data.items && this.data.items.length) {
                         this.tableData = data.items.map(item => {
                             const tmp = { ...item };

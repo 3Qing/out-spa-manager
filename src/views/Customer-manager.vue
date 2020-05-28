@@ -5,11 +5,11 @@
                 <el-select v-model="bptype" placeholder="取引先タイプ" @change="changeHandler">
                     <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.value"></el-option>
                 </el-select>
+                <el-button type="primary" size="mini" @click="newHandler" style="margin-left:20px; margin-bottom: 10px;">新規登録</el-button>
             </el-form-item>
         </el-form>
         <div class="main-content">
             <div class="left">
-                <el-button type="primary" size="mini" @click="newHandler" style="margin-bottom: 10px;">新規登録</el-button>
                 <el-table size="mini" :data="tableData" @row-click="rowClickHandler" border>
                     <el-table-column label="取引先番号" prop="id" width="100px"></el-table-column>
                     <el-table-column label="名称" prop="title" show-overflow-tooltip></el-table-column>
