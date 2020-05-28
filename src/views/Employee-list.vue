@@ -26,9 +26,9 @@
         <div class="table-wrapper">
             <el-table size="small" :data="tableData" border>
                 <el-table-column fixed label="社員番号" prop="employeeNo" width="100px"></el-table-column>
-                <el-table-column fixed label="就職タイプ" prop="type" width="100px" show-overflow-tooltip></el-table-column>
+                <el-table-column fixed label="氏名" prop="name" show-overflow-tooltip></el-table-column>
+                <el-table-column label="就職タイプ" prop="type" width="100px" show-overflow-tooltip></el-table-column>
                 <el-table-column label="所属部門" prop="teamName" width="80px"></el-table-column>
-                <el-table-column label="氏名" prop="name" show-overflow-tooltip></el-table-column>
                 <el-table-column label="年齢" prop="age" width="60px"></el-table-column>
                 <el-table-column label="性別" prop="sex" width="60px"></el-table-column>
                 <el-table-column label="国籍" prop="nationality" width="80px"></el-table-column>

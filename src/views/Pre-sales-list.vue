@@ -280,7 +280,6 @@ export default {
             }
         },
         showIntroDialog(type, data) {
-            console.log(data);
             this.$root.$emit('SHOW_INTRO_DIALOG', {
                 data: type === 'add' ? null : data,
                 showDate: true,

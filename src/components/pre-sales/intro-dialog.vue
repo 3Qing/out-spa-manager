@@ -1,15 +1,15 @@
 <template>
     <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" @close="close">
-        <el-form label-width="130px" size="mini">
+        <el-form label-width="130px" size="mini" ref="form" :model="form" :rules="rules" class='blackColor'>
             <el-row v-if="!IS_H5">
                 <el-col :span="12" class="width50">
-                    <el-form-item label="*英語姓名">
+                    <el-form-item label="英語姓名" prop='furigana_FirstName'>
                         <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
                         <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12" class="width50">
-                    <el-form-item label="*汉字姓名">
+                    <el-form-item label="汉字姓名" prop='firstName'>
                         <el-input v-model="form.firstName" :maxlength="20"></el-input>
                         <el-input v-model="form.lastName" :maxlength="20"></el-input>
                     </el-form-item>
@@ -23,14 +23,14 @@
             </el-form-item> -->
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="*性别" prop="sex">
+                    <el-form-item label="性别" prop="sex">
                         <el-select v-model="form.sex">
                             <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="*生日" prop="birthday">
+                    <el-form-item label="生日" prop="birthday">
                         <el-date-picker
                             v-model="form.birthday"
                             type="date"
@@ -47,7 +47,7 @@
             </el-form-item> -->
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="*国籍" prop="nationality">
+                    <el-form-item label="国籍" prop="nationality">
                         <el-select v-model="form.nationality">
                             <el-option v-for="item in countryTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
                         </el-select>
@@ -55,14 +55,19 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="来日年数" prop="jpYears">
-                        <el-input v-model="form.jpYears" :maxlength="2"></el-input>
+                    <el-form-item label="来日年数" prop="arriveJPDate">
+                        <!-- <el-input v-model="form.arriveJPDate" :maxlength="2"></el-input> -->
+                        <el-date-picker
+                            v-model="form.arriveJPDate"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="*工作开始日">
+                    <el-form-item label="工作开始日" prop="startWorkDate">
                         <el-date-picker
                             v-model="form.startWorkDate"
                             type="date"
@@ -71,7 +76,7 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="*居住城市" prop="liveCity">
+                    <el-form-item label="居住城市" prop="liveCity">
                         <el-select v-model="form.liveCity">
                             <el-option v-for="item in cityTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
                         </el-select>
@@ -81,7 +86,7 @@
             </el-row>
             <el-row>
                 <el-col :span="12">
-                    <el-form-item label="*营业开始日" prop="salesFromDate">
+                    <el-form-item label="营业开始日" prop="salesFromDate">
                         <el-date-picker
                             v-model="form.salesFromDate"
                             type="date"
@@ -90,7 +95,7 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="*稼働开始日" prop="avaiableDate">
+                    <el-form-item label="稼働开始日" prop="avaiableDate">
                         <el-date-picker
                             v-model="form.avaiableDate"
                             type="date"
@@ -102,7 +107,7 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="候选人类型">
-                        <el-select v-model="form.employeeType">
+                        <el-select v-model="form.type">
                             <el-option v-for="item in peopleTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
                         </el-select>
                     </el-form-item>
@@ -115,7 +120,7 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-form-item label="*提案文">
+            <el-form-item label="提案文" prop='proposeText'>
                 <el-input v-model="form.proposeText" type="textarea" :rows="12" :maxlength="250"></el-input>
             </el-form-item>
             <el-form-item label="备注">
@@ -130,7 +135,7 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="*人件费范围">
+                    <el-form-item label="人件费范围" prop='costFrom'>
                         <el-input v-model.number="form.costFrom"></el-input>
                         <el-input class="marginLeft30" v-model.number="form.costTo"></el-input>
                     </el-form-item>
@@ -138,18 +143,20 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="*提案金额范围">
+                    <el-form-item label="提案金额范围" prop='salesFrom'>
                         <el-input v-model.number="form.salesFrom"></el-input>
                         <el-input class="marginLeft30" v-model.number="form.salesTo"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
-                <el-col :span="12">
+                <el-col :span="24">
                     <el-form-item label="简历附件">
                         <upload
-                            :opt="{ btnText: '上传附件', accept: 'application/pdf', show: false, showIcon: true }"
+                            ref="child"
+                            :opt="{ btnText: '上传附件', accept: 'application', show: true, showIcon: true }"
                             @upload="uploadFile"></upload>
+                        <!-- <span class="fl">{{form.attachResume}}</span> -->
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -182,10 +189,10 @@ export default {
                 nationality: '',
                 liveCity: '',
                 mainSkill: '',
-                sex: '',
+                sex: true,
                 salesFromDate: new Date(),
                 avaiableDate: this.nextMonth,
-                status: '',
+                status: 0,
                 proposeText: '',
                 comment: '',
                 costFrom: '',
@@ -195,7 +202,53 @@ export default {
                 startWorkDate: '',
                 attachResume: '',
                 employeeType: '',
-                jpYears: 1
+                arriveJPDate: '',
+                jpYears: 1,
+                type: ''
+            },
+            rules:{
+                furigana_FirstName: [{
+                    required: true, message: '请填写英文第一个名字！'
+                }],
+                furigana_LastName: [{
+                    required: true, message: '请填写英文第二个名字！'
+                }],
+                firstName: [{
+                    required: true, message: '请填写汉字第一个名字！'
+                }],
+                lastName: [{
+                    required: true, message: '请填写汉字第二个名字！'
+                }],
+                sex: [{
+                    required: true, message: '请选择性别！'
+                }],
+                birthday: [{
+                    required: true, message: '请填写出生日期！'
+                }],
+                nationality: [{
+                    required: true, message: '请选择国籍！'
+                }],
+                startWorkDate: [{
+                    required: true, message: '请填写工作开始日期！'
+                }],
+                liveCity: [{
+                    required: true, message: '请选择居住城市！'
+                }],
+                salesFromDate: [{
+                    required: true, message: '请填写营业开始日！'
+                }],
+                avaiableDate: [{
+                    required: true, message: '请填写稼働开始日！'
+                }],
+                proposeText: [{
+                    required: true, message: '请填写提案文！'
+                }],
+                costFrom: [{
+                    required: true, message: '请填写人件费范围！'
+                }],
+                salesFrom: [{
+                    required: true, message: '请填写提案金额范围！'
+                }]
             },
             sexs: [{
                 label: '男', value: true
@@ -242,6 +295,7 @@ export default {
             }).then(res => {
                 console.log('city', res);
                 this.cityTypeArr = res.data;
+                this.form.liveCity = this.cityTypeArr[0].text;
             });
         },
         // 国籍列表
@@ -249,8 +303,9 @@ export default {
             this.$axios({
                 url: '/api/Candidate/api_nationalityforselect'
             }).then(res => {
-                console.log('country', res);
+                console.log('country', res, res.data[0].text);
                 this.countryTypeArr = res.data;
+                this.form.nationality = this.countryTypeArr[0].text;
             });
         },
         // 候选人列表
@@ -260,23 +315,23 @@ export default {
             }).then(res => {
                 console.log('people', res);
                 this.peopleTypeArr = res.data;
+                this.form.type = this.peopleTypeArr[0].id;
             });
         },
         close() {
-            this.visible = false;
             this.form = {
                 furigana_FirstName: '',
                 furigana_LastName: '',
                 firstName: '',
                 lastName: '',
                 birthday: '1985-01-01',
-                nationality: '',
-                liveCity: '',
+                nationality: this.countryTypeArr[0].text,
+                liveCity: this.cityTypeArr[0].text,
                 mainSkill: '',
-                sex: '',
+                sex: true,
                 salesFromDate: new Date(),
                 avaiableDate: this.nextMonth,
-                status: '',
+                status: 0,
                 proposeText: '',
                 comment: '',
                 costFrom: '',
@@ -284,10 +339,15 @@ export default {
                 salesFrom: '',
                 salesTo: '',
                 startWorkDate: '',
+                arriveJPDate: '',
                 attachResume: '',
                 employeeType: '',
-                jpYears: 1
+                jpYears: 1,
+                type: this.peopleTypeArr[0].id
             };
+            this.$refs.child.clearUpload();
+            this.$refs.form.resetFields();
+            this.visible = false;
         },
         createProposeText(data) {
             this.$axios({
@@ -322,51 +382,63 @@ export default {
             });
         },
         submit() {
-            const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
-            const params = {
-                Furigana_FirstName: this.form.furigana_FirstName,
-                Furigana_LastName: this.form.furigana_LastName,
-                FirstName: this.form.firstName,
-                LastName: this.form.lastName,
-                Type: this.form.type,
-                Birthday: this.form.birthday,
-                Nationality: this.form.nationality,
-                LiveCity: this.form.liveCity,
-                Sex: this.form.sex,
-                SalesFromDate: this.form.salesFromDate,
-                Comment: this.form.comment,
-                CostFrom: this.form.costFrom,
-                CostTo: this.form.costTo,
-                SalesFrom: this.form.salesFrom,
-                SalesTo: this.form.salesTo,
-                MainSkill: this.form.mainSkill,
-                StartWorkDate: this.form.startWorkDate,
-                AttachResume: this.form.attachResume,
-                AvaiableDate: this.form.avaiableDate,
-                ProposeText: this.form.proposeText,
-                Status: this.form.status || 1,
-                ID: this.form.id || 0
-            };
-            
-            this.$axios({
-                method: 'POST',
-                url: '/api/Candidate/api_updatecandidate',
-                params,
-                custom: {
-                    loading,
-                    vm: this
-                },
-                formData: true
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.callback && this.callback();
-                    this.close();
+            this.$refs.form.validate(valid => {
+                if (valid) {
+                    const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
+                    const params = {
+                        Furigana_FirstName: this.form.furigana_FirstName,
+                        Furigana_LastName: this.form.furigana_LastName,
+                        FirstName: this.form.firstName,
+                        LastName: this.form.lastName,
+                        Type: this.form.type,
+                        Birthday: this.form.birthday,
+                        Nationality: this.form.nationality,
+                        LiveCity: this.form.liveCity,
+                        Sex: this.form.sex,
+                        SalesFromDate: this.form.salesFromDate,
+                        Comment: this.form.comment,
+                        CostFrom: this.form.costFrom,
+                        CostTo: this.form.costTo,
+                        SalesFrom: this.form.salesFrom,
+                        SalesTo: this.form.salesTo,
+                        MainSkill: this.form.mainSkill,
+                        StartWorkDate: this.form.startWorkDate,
+                        ArriveJPDate: this.form.arriveJPDate,
+                        AttachResume: this.form.attachResume,
+                        AvaiableDate: this.form.avaiableDate,
+                        ProposeText: this.form.proposeText,
+                        Status: this.form.status || 1,
+                        ID: this.form.id || 0
+                    };
+                    console.log(params);
+                    this.$axios({
+                        method: 'POST',
+                        url: '/api/Candidate/api_updatecandidate',
+                        params,
+                        custom: {
+                            loading,
+                            vm: this
+                        },
+                        formData: true
+                    }).then(res => {
+                        this.$refs.child.clearUpload();
+                        this.$refs.form.resetFields();
+                        loading.close();
+                        if (res && res.code === 0) {
+                            this.callback && this.callback();
+                            this.close();
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                showClose: true,
+                                message: res.message ? res.message : '接口开小差了，没有返回信息'
+                            });
+                        }
+                    });
                 } else {
                     this.$message({
-                        type: 'error',
-                        showClose: true,
-                        message: res.message ? res.message : '接口开小差了，没有返回信息'
+                        type: 'warning',
+                        message: '有信息未填写'
                     });
                 }
             });

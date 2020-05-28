@@ -39,48 +39,96 @@
                     :label="item.name"
                     :value="item.id"></el-option>
             </el-select>
-            <el-button type="primary" size="mini" @click="getInitEstimation">見積書初期化</el-button>
+            <el-button type="primary" size="mini" @click="getInitEstimation">見積書保存</el-button>
             <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row v-if="show">
-            <el-col :span="12">
-                <el-form size="mini" label-width="100px" :model="data" ref="form" :rules="rules">
-                    <el-form-item label="得意先" class="first-item" prop="customerTitle">
-                        <el-input v-model="data.customerTitle"></el-input>
-                    </el-form-item>
-                    <el-form-item label="タイトル" prop="title">
-                        <el-input v-model="data.title"></el-input>
-                    </el-form-item>
-                    <el-form-item label="見積合計金額" prop="amount">
-                        <el-input v-model="data.amount" @input="handlePrice"></el-input>
-                    </el-form-item>
-                    <el-form-item label="納期" prop="submitDate">
-                        <el-date-picker
-                            v-model="data.submitDate"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            format="yyyy-MM-dd"
-                            placeholder="日付">
-                        </el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="納入場所" prop="submitLocation">
-                        <el-input v-model="data.submitLocation"></el-input>
-                    </el-form-item>
-                    <el-form-item label="納品物" prop="submitDocuments">
-                        <el-input v-model="data.submitDocuments"></el-input>
-                    </el-form-item>
-                    <el-form-item label="支払サイト" prop="paymentTermID">
-                        <el-select v-model="data.paymentTermID">
-                            <el-option
-                                v-for="item in pays"
-                                :key="item.id"
-                                :label="item.title"
-                                :value="item.id"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="有効期間" prop="validityPeriod">
-                        <el-input v-model="data.validityPeriod"></el-input>
-                    </el-form-item>
+            <el-col :span="8">
+                <el-form size="mini" label-width="120px" :model="data" ref="form" :rules="rules" class="blackColor">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="タイトル" prop="title">
+                                <el-input v-model="data.title"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="見積合計金額" prop="amount">
+                                <el-input v-model="data.amount" @input="handlePrice"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="得意先" class="first-item" prop="customerTitle">
+                                <el-input v-model="data.customerTitle"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="支払サイト" prop="paymentTermID">
+                                <el-select v-model="data.paymentTermID">
+                                    <el-option
+                                        v-for="item in pays"
+                                        :key="item.id"
+                                        :label="item.title"
+                                        :value="item.id"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="納期" prop="submitDate">
+                                <el-date-picker
+                                    v-model="data.submitDate"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    format="yyyy-MM-dd"
+                                    placeholder="日付">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="契约期间" prop="submitDate">
+                                <el-date-picker
+                                    v-model="data.submitDate"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    format="yyyy-MM-dd"
+                                    placeholder="日付">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="作业时间" prop="submitDate">
+                                <el-date-picker
+                                    v-model="data.submitDate"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    format="yyyy-MM-dd"
+                                    placeholder="日付">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="納入場所" prop="submitLocation">
+                                <el-input v-model="data.submitLocation"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="納品物" prop="submitDocuments">
+                                <el-input v-model="data.submitDocuments"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="有効期間" prop="validityPeriod">
+                                <el-input v-model="data.validityPeriod"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
                 </el-form>
             </el-col>
             <el-col :span="12"></el-col>

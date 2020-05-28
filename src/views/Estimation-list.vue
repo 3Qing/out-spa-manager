@@ -20,8 +20,9 @@
                     <span>{{formatTime(scope.row.pubDate)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="下载" width="100px">
+            <el-table-column label="下载" width="120px">
                 <template slot-scope="scope">
+                    <i class="iconfont icon-chengyi_pc_preview oper-icon" color="primary" @click="previewHandle(scope)"></i>
                     <i class="icon-PDF iconfont oper-icon" color="danger" @click="downloadFile(scope.row, 0, 'pdf')"></i>
                     <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadFile(scope.row, 1, 'xlsx')"></i>
                 </template>
@@ -30,9 +31,6 @@
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="handleEdit(scope.row)"></i>
-                    </el-tooltip>
-                    <el-tooltip effect="dark" content="预览" placement="top-start">
-                        <i class="iconfont icon-chengyi_pc_preview oper-icon" color="primary" @click="previewHandle(scope)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="删除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="handleDel(scope)"></i>
