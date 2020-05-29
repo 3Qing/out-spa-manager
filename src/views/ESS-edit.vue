@@ -336,7 +336,8 @@ export default {
         },
         formatTime(row, field) {
             if (row[field]) {
-                return moment(new Date(row[field])).format('HH:mm');
+                // return moment(new Date(row[field])).format('HH:mm');
+                return row[field].substring(11, 16);
             }
             return '';
         },

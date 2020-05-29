@@ -61,25 +61,10 @@
             <div class="chart-wrapper" :style="{height: `${height}px`}">
                 <div ref="line"></div>
             </div>
-            <el-table class="mt20" :data="totalprofit" size="mini" :height="height" v-if="height">
-                <el-table-column label="稼働人月" >
-                    <template slot-scope="scope">
-                        <span>{{scope.row.onPJPersons / 100}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="待機人月" >
-                    <template slot-scope="scope">
-                        <span>{{scope.row.benchPersons / 100}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="平均利益/人" >
-                    <template slot-scope="scope">
-                        <span>{{((scope.row.sales - scope.row.humanCost) / scope.row.onPJPersons * 100).toFixed(2)}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="平均利益率" >
-                    <template slot-scope="scope">
-                        <span>{{((scope.row.sales - scope.row.humanCost) / scope.row.sales).toFixed(2)}}</span>
+            <el-table class="mt20" :data="format(totalprofit)"  size="mini" :height="height" v-if="height">
+                <el-table-column v-for="(item, index) in totalprofit[0]" :key="index" :label="item">
+                    <template scope="scope">
+                        <span>{{scope.row[index]}}</span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -109,6 +94,7 @@ export default {
             maxSales: 0,
             maxMargin: 0,
             height: 0,
+            totallabel: [],
             totalprofit: []
         };
     },
@@ -125,6 +111,9 @@ export default {
         this.height = (wHeight - hHeight - fHeight - 70) / 3;
     },
     methods: {
+        format(data) {
+            return data.slice(1, data.length);
+        },
         getTeam() {
             this.$axios({
                 url: '/api/Team/api_teamsforselect'
@@ -147,7 +136,23 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.profitsbyemp || [];
-                    this.totalprofit = data.totalprofits || [];
+                    const totalpro = data.totalprofits || [];
+                    let arr1 = ['稼働人月'];
+                    let arr2 = ['待機人月'];
+                    let arr3 = ['平均利益/人'];
+                    let arr4 = ['平均利益率'];
+                    let arr5 = ['名称'];
+                    let arr6 = [];
+                    totalpro.forEach((item) => {
+                        arr1.push(item.onPJPersons / 100);
+                        arr2.push(item.benchPersons / 100);
+                        arr3.push(((item.sales - item.humanCost) / item.onPJPersons * 100).toFixed(2));
+                        arr4.push(((item.sales - item.humanCost) / item.sales).toFixed(2));
+                        arr5.push(item.fromDate.substring(0, 7).replace('-', '年')+'月');
+                    });
+                    arr6 = [arr5, arr1, arr2, arr3, arr4];
+                    console.log(arr6.slice(1, arr6.length));
+                    this.totalprofit = arr6;
                     const totalprofits = data.totalprofits || [];
                     let sales = [];
                     let margin = [];

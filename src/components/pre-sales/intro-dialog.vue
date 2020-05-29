@@ -136,16 +136,16 @@
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="人件费范围" prop='costFrom'>
-                        <el-input v-model.number="form.costFrom"></el-input>
-                        <el-input class="marginLeft30" v-model.number="form.costTo"></el-input>
+                        <el-input v-model.number="form.costFrom" type='number'></el-input>
+                        <el-input class="marginLeft30" v-model.number="form.costTo" type='number'></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="提案金额范围" prop='salesFrom'>
-                        <el-input v-model.number="form.salesFrom"></el-input>
-                        <el-input class="marginLeft30" v-model.number="form.salesTo"></el-input>
+                        <el-input v-model.number="form.salesFrom" type='number'></el-input>
+                        <el-input class="marginLeft30" v-model.number="form.salesTo" type='number'></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -168,6 +168,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import Upload from '@components/upload';
+import moment from 'moment';
 export default {
     props: {
         allStatus: {
@@ -190,7 +191,7 @@ export default {
                 liveCity: '',
                 mainSkill: '',
                 sex: true,
-                salesFromDate: new Date(),
+                salesFromDate: this.month,
                 avaiableDate: this.nextMonth,
                 status: 0,
                 proposeText: '',
@@ -207,6 +208,9 @@ export default {
                 type: ''
             },
             rules:{
+                mainSkill: [{
+                    required: true, message: '请填写主要技能！'
+                }],
                 furigana_FirstName: [{
                     required: true, message: '请填写英文第一个名字！'
                 }],
@@ -260,7 +264,9 @@ export default {
             callback: null,
             cityTypeArr: [],
             peopleTypeArr: [],
-            countryTypeArr: []
+            countryTypeArr: [],
+            month: '',
+            nextMonth: ''
         };
     },
     computed: {
@@ -271,6 +277,9 @@ export default {
         let years = date.getFullYear();
         let nextMonth = years + '-' + Number(date.getMonth()+2) + '-01';
         this.nextMonth = nextMonth;
+        this.month = moment(new Date()).format('YYYY-MM-DD');
+        this.form.salesFromDate = this.month;
+        this.form.avaiableDate = this.nextMonth;
         this.getSelect();
         this.cityType();
         this.countryType();
@@ -329,7 +338,7 @@ export default {
                 liveCity: this.cityTypeArr[0].text,
                 mainSkill: '',
                 sex: true,
-                salesFromDate: new Date(),
+                salesFromDate: this.month,
                 avaiableDate: this.nextMonth,
                 status: 0,
                 proposeText: '',
@@ -384,57 +393,78 @@ export default {
         submit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
-                    const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
-                    const params = {
-                        Furigana_FirstName: this.form.furigana_FirstName,
-                        Furigana_LastName: this.form.furigana_LastName,
-                        FirstName: this.form.firstName,
-                        LastName: this.form.lastName,
-                        Type: this.form.type,
-                        Birthday: this.form.birthday,
-                        Nationality: this.form.nationality,
-                        LiveCity: this.form.liveCity,
-                        Sex: this.form.sex,
-                        SalesFromDate: this.form.salesFromDate,
-                        Comment: this.form.comment,
-                        CostFrom: this.form.costFrom,
-                        CostTo: this.form.costTo,
-                        SalesFrom: this.form.salesFrom,
-                        SalesTo: this.form.salesTo,
-                        MainSkill: this.form.mainSkill,
-                        StartWorkDate: this.form.startWorkDate,
-                        ArriveJPDate: this.form.arriveJPDate,
-                        AttachResume: this.form.attachResume,
-                        AvaiableDate: this.form.avaiableDate,
-                        ProposeText: this.form.proposeText,
-                        Status: this.form.status || 1,
-                        ID: this.form.id || 0
-                    };
-                    console.log(params);
-                    this.$axios({
-                        method: 'POST',
-                        url: '/api/Candidate/api_updatecandidate',
-                        params,
-                        custom: {
-                            loading,
-                            vm: this
-                        },
-                        formData: true
-                    }).then(res => {
-                        this.$refs.child.clearUpload();
-                        this.$refs.form.resetFields();
-                        loading.close();
-                        if (res && res.code === 0) {
-                            this.callback && this.callback();
-                            this.close();
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                showClose: true,
-                                message: res.message ? res.message : '接口开小差了，没有返回信息'
-                            });
-                        }
-                    });
+                    if (this.form.furigana_LastName === '') {
+                        this.$message({
+                            type: 'warning',
+                            message: '请填写英文第二个名字'
+                        });
+                    } else if (this.form.lastName === ''){
+                        this.$message({
+                            type: 'warning',
+                            message: '请填写汉字第二个名字'
+                        });
+                    } else if (this.form.costTo === ''){
+                        this.$message({
+                            type: 'warning',
+                            message: '请填写人件费范围'
+                        });
+                    } else if (this.form.salesTo === ''){
+                        this.$message({
+                            type: 'warning',
+                            message: '请填写提案金额范围'
+                        });
+                    } else {
+                        const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
+                        const params = {
+                            Furigana_FirstName: this.form.furigana_FirstName,
+                            Furigana_LastName: this.form.furigana_LastName,
+                            FirstName: this.form.firstName,
+                            LastName: this.form.lastName,
+                            Type: this.form.type,
+                            Birthday: this.form.birthday,
+                            Nationality: this.form.nationality,
+                            LiveCity: this.form.liveCity,
+                            Sex: this.form.sex,
+                            SalesFromDate: this.form.salesFromDate,
+                            Comment: this.form.comment,
+                            CostFrom: this.form.costFrom,
+                            CostTo: this.form.costTo,
+                            SalesFrom: this.form.salesFrom,
+                            SalesTo: this.form.salesTo,
+                            MainSkill: this.form.mainSkill,
+                            StartWorkDate: this.form.startWorkDate,
+                            ArriveJPDate: this.form.arriveJPDate,
+                            AttachResume: this.form.attachResume,
+                            AvaiableDate: this.form.avaiableDate,
+                            ProposeText: this.form.proposeText,
+                            Status: this.form.status || 1,
+                            ID: this.form.id || 0
+                        };
+                        this.$axios({
+                            method: 'POST',
+                            url: '/api/Candidate/api_updatecandidate',
+                            params,
+                            custom: {
+                                loading,
+                                vm: this
+                            },
+                            formData: true
+                        }).then(res => {
+                            this.$refs.child.clearUpload();
+                            this.$refs.form.resetFields();
+                            loading.close();
+                            if (res && res.code === 0) {
+                                this.callback && this.callback();
+                                this.close();
+                            } else {
+                                this.$message({
+                                    type: 'error',
+                                    showClose: true,
+                                    message: res.message ? res.message : '接口开小差了，没有返回信息'
+                                });
+                            }
+                        });
+                    }
                 } else {
                     this.$message({
                         type: 'warning',

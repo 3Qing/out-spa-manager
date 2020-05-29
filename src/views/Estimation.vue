@@ -38,7 +38,7 @@
                     :label="item.name"
                     :value="item.id"></el-option>
             </el-select>
-            <el-button type="primary" size="mini" @click="getInitEstimation">見積書保存</el-button>
+            <el-button type="primary" size="mini" @click="getInitEstimation">{{texts}}</el-button>
             <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row v-if="show">
@@ -189,6 +189,7 @@ export default {
     },
     data() {
         return {
+            texts: '見積書初期化',
             dates: [],
             fromhours: '140',
             tohours: '180',
@@ -286,12 +287,13 @@ export default {
                 },
                 formData: true
             }).then(res => {
+                this.texts = '見積書保存';
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     data.amount = priceToString(priceToNumber(data.amount));
                     data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
-                    console.log(data);
+                    this.data = { ...data };
                     if (this.data.items && this.data.items.length) {
                         this.tableData = data.items.map(item => {
                             const tmp = { ...item };

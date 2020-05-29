@@ -129,12 +129,62 @@
                 </el-col>
             </el-row>
             <div class="bottom" v-if="isDisplay">
-                <el-table size="small" :data="forms" border>
-                    <el-table-column label="注文名称" prop="title" width="100px">
-                        <!-- <template slot-scope="scope">
-                            <span>{{formatTime(scope.row.fromDate)}}</span>
-                        </template> -->
-                    </el-table-column>
+                <ul>
+                    <li>
+                        <span>注文名称</span>
+                        <span>{{form.title}}</span>
+                    </li>
+                    <li>
+                        <span>注文内容</span>
+                        <span>{{form.content}}</span>
+                    </li>
+                    <li>
+                        <span>契約期間</span>
+                        <span>{{formatTime(form.fromDate)}}~{{formatTime(form.toDate)}}</span>
+                    </li>
+                    <li>
+                        <span>作業時間範囲</span>
+                        <span>{{form.hoursFrom}}~{{form.hoursTo}}</span>
+                    </li>
+                    <li>
+                        <span>得意先</span>
+                        <span>{{getContent(form.customerId, customerList, 'id', 'title')}}</span>
+                    </li>
+                    <li>
+                        <span>支払サイト</span>
+                        <span>{{form.paymenttermId}}</span>
+                    </li>
+                    <li>
+                        <span>単価</span>
+                        <span>{{form.unitPrice}}</span>
+                    </li>
+                    <li>
+                        <span>精算単位</span>
+                        <span>{{getContent(form.calculateUnit, unit, 'value', 'label')}}</span>
+                    </li>
+                    <li>
+                        <span>超過精算単価</span>
+                        <span>{{form.overTimePrice}}</span>
+                    </li>
+                    <li>
+                        <span>控除精算単価</span>
+                        <span>{{form.underTimePrice}}</span>
+                    </li>
+                    <li>
+                        <span>作業担当</span>
+                        <span>{{getContent(form.employeeId, workList, 'id', 'name')}}</span>
+                    </li>
+                    <li class="lis">
+                        <span>営業担当</span>
+                        <span>{{form.salespersonId}}</span>
+                    </li>
+                    <li>
+                        <span>商流備考</span>
+                        <span>{{form.businessFlow}}</span>
+                    </li>
+                </ul>
+                <!-- <el-table size="small" :data="forms" border>
+                    <el-table-column label="注文名称" prop="title" width="100px"></el-table-column>
                     <el-table-column label="注文内容" prop="content" width="100px"></el-table-column>
                     <el-table-column label="契約期間">
                          <template slot-scope="scope">
@@ -173,7 +223,7 @@
                     </el-table-column>
                     <el-table-column label="営業担当" prop="salespersonId"></el-table-column>
                     <el-table-column label="商流備考" prop="businessFlow"></el-table-column>
-                </el-table>
+                </el-table> -->
             </div>
             <div class="bottom" v-if="isDisplay">
                 <el-table size="small" :data="cashflows" border>
@@ -289,7 +339,6 @@ export default {
     },
     data() {
         return {
-            forms: [],
             loading: false,
             form: {
                 title: '',
@@ -535,8 +584,6 @@ export default {
                         }
                     }
                     this.form = form;
-                    this.forms = [form];
-                    console.log(this.forms);
                 } else {
                     this.$message({
                         type: 'error',
@@ -861,6 +908,36 @@ export default {
     }
     .bottom {
         margin-top: 20px;
+        ul{
+            width: 800px;
+            overflow: hidden;
+            // height: 280px;
+            border: 1px solid #EBEEF5;
+            border-top: none;
+            li{
+                width: 50%;
+                float: left;
+                height: 50px;
+                line-height: 50px;
+                border-top: 1px solid #EBEEF5;
+                span{
+                    color: #606266;
+                    float: left;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                }
+                span:first-child{
+                    width: 145px;
+                    background-color: #F5F7FA;
+                }
+                span:last-child{
+                    width: 250px;
+                }
+            }
+            .lis{
+                border-bottom: 1px solid #EBEEF5;
+            }
+        }
     }
 }
 .preview-form {
