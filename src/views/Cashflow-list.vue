@@ -124,7 +124,7 @@ export default {
             employees: [],
             tableData: [],
             page: 1,
-            pageSize: 10,
+            pageSize: 15,
             total: 0,
             visible: false,
             show: false,
@@ -210,9 +210,10 @@ export default {
             this.getList();
         },
         actionHandler(item, row) {
-            if (item.ID === 'act_createinvoice') {
+            console.log(item, row);
+            if (item.id === 'act_createinvoice') {
                 this.createInvoice(row);
-            } else if (item.ID === 'act_confirmtimesheet') {
+            } else if (item.id === 'act_confirmtimesheet') {
                 this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
                     id: row.cfid,
                     type: 'confirm',
@@ -220,7 +221,7 @@ export default {
                         this.getList();
                     }
                 });
-            } else if (item.ID === 'act_canceltimesheet') {
+            } else if (item.id === 'act_canceltimesheet') {
                 this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
                     id: row.cfid,
                     type: 'cancel',

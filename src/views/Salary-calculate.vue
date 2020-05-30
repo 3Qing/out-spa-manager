@@ -105,7 +105,7 @@ export default {
             empeeid: '',
             // employeeid: '',
             page: 1,
-            pageSize: 10,
+            pageSize: 15,
             total: 0,
             // employees: [],
             tableData: [],

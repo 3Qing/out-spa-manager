@@ -5,9 +5,9 @@
             <el-button type="danger" size="small" @click="resetForm" v-if="!isDisplay">リセット</el-button>
             <el-button size="small" @click="$router.back()">リターン</el-button>
         </div>
-        <el-row>
-            <el-col :span="12">
-                <el-form size="small" label-width="130px" ref="form" :model="isDisplay ? {} : form" :rules="isDisplay ? {} : rules" label-suffix=":">
+        <el-row class="minwidth">
+            <el-col :span="16">
+                <el-form size="small" label-width="130px" ref="form" :model="isDisplay ? {} : form" :rules="isDisplay ? {} : rules">
                     <el-form-item label="就職タイプ" prop="employeeTypeID">
                         <p v-if="isDisplay">{{getContent(form.employeeTypeID, employeeTypes, 'id', 'title')}}</p>
                         <el-select v-model="form.employeeTypeID" v-else>
@@ -16,23 +16,23 @@
                     </el-form-item>
                     <el-row v-if="!IS_H5">
                         <el-col :span="12">
-                            <el-form-item label="姓（フリガナ）">
+                            <el-form-item label="姓（フリガナ）" prop="furigana_FirstName">
                                 <p v-if="isDisplay">{{form.furigana_FirstName}}</p>
                                 <el-input v-model="form.furigana_FirstName" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="名（フリガナ）">
+                            <el-form-item label="名（フリガナ）" prop="furigana_LastName">
                                 <p v-if="isDisplay">{{form.furigana_LastName}}</p>
                                 <el-input v-model="form.furigana_LastName" :maxlength="20" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="姓（フリガナ）" v-if="IS_H5">
+                    <el-form-item label="姓（フリガナ）" v-if="IS_H5" prop="furigana_FirstName">
                         <p v-if="isDisplay">{{form.furigana_FirstName}}</p>
                         <el-input v-model="form.furigana_FirstName" :maxlength="20" v-else></el-input>
                     </el-form-item>
-                    <el-form-item label="名（フリガナ）" v-if="IS_H5">
+                    <el-form-item label="名（フリガナ）" v-if="IS_H5" prop="furigana_LastName">
                         <p v-if="isDisplay">{{form.furigana_LastName}}</p>
                         <el-input v-model="form.furigana_LastName" :maxlength="20" v-else></el-input>
                     </el-form-item>
@@ -92,9 +92,15 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="国籍" prop="nationality">
+                            <!-- <el-form-item label="国籍" prop="nationality">
                                 <p v-if="isDisplay">{{form.nationality}}</p>
                                 <el-input v-model="form.nationality" :maxlength="10" v-else></el-input>
+                            </el-form-item> -->
+                            <el-form-item label="国籍" prop="nationality">
+                                <p v-if="isDisplay">{{form.nationality}}</p>
+                                <el-select v-else v-model="form.nationality">
+                                    <el-option v-for="item in countryTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -183,17 +189,17 @@
                     </el-form-item>
                     <el-row v-if="!isEdit">
                         <el-col :span="12">
-                            <el-form-item label="绩效工资" :class="[emptyTip && 'error-input']">
+                            <el-form-item label="绩效工资" prop="PJSalary" :class="[emptyTip && 'error-input']">
                                 <p v-if="isDisplay">{{priceToString(form.PJSalary)}}</p>
-                                <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')" v-else></el-input>
-                                <p color="danger" v-if="emptyTip">请填写绩效工资或基本工资</p>
+                                <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')" @blur="validSalePrice('PJSalary')" v-else></el-input>
+                                <p color="danger" v-if="emptyTip">绩效工资不低于基本工资</p>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="基本工资" :class="[emptyTip && 'error-input']">
+                            <el-form-item label="基本工资" prop="BaseSalary" :class="[emptyTip && 'error-input']">
                                 <p v-if="isDisplay">{{priceToString(form.BaseSalary)}}</p>
-                                <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')" v-else></el-input>
-                                <p color="danger" v-if="emptyTip">请填写基本工资或绩效工资</p>
+                                <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')" @blur="validSalePrice('BaseSalary')" v-else></el-input>
+                                <p color="danger" v-if="emptyTip">绩效工资不低于基本工资</p>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -203,7 +209,7 @@
                     </el-form-item>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="提案単価" :class="[errorTip && 'error-input']">
+                            <el-form-item label="提案単価" prop="salePriceFrom" :class="[errorTip && 'error-input']">
                                 <p v-if="isDisplay">{{priceToString(form.salePriceFrom)}}~{{priceToString(form.salePriceTo)}}</p>
                                 <el-input @input="formatPrice('salePriceFrom')" @blur="validSalePrice('salePriceFrom')" v-model="form.salePriceFrom" v-else></el-input>
                                 <p color="danger" v-if="errorTip">提案単価範囲が不正です！</p>
@@ -282,6 +288,7 @@ export default {
     },
     data() {
         return {
+            countryTypeArr: [],
             form: {
                 employeeTypeID: '',
                 name: '',
@@ -310,6 +317,24 @@ export default {
                 comment: ''
             },
             rules: {
+                salePriceFrom: [{
+                    required: true, message: '请输入提案単価', trigger: 'blur'
+                }],
+                PJSalary: [{
+                    required: true, message: '请输入绩效工资', trigger: 'blur'
+                }],
+                startWorkDate: [{
+                    required: true, message: '请输入经验年数', trigger: 'blur'
+                }],
+                positionID: [{
+                    required: true, message: '请输入', trigger: 'blur'
+                }],
+                furigana_FirstName: [{
+                    required: true, message: '请输入姓', trigger: 'blur'
+                }],
+                furigana_LastName: [{
+                    required: true, message: '请输入名', trigger: 'blur'
+                }],
                 employeeTypeID: [{
                     required: true, message: '请选择就职类型', trigger: 'blur'
                 }],
@@ -329,7 +354,7 @@ export default {
                     required: true, message: '请选择生日', trigger: 'blur'
                 }],
                 nationality: [{
-                    required: true, message: '请输入国籍', trigger: 'blur'
+                    required: true, message: '请选择国籍', trigger: 'blur'
                 }],
                 station: [{
                     required: true, message: '请输入最近车站', trigger: 'blur'
@@ -381,6 +406,7 @@ export default {
                 vm.getData();
             }
             vm.getTeams();
+            vm.countryType();
             vm.getEmployeeTypes();
             vm.getPositions();
             vm.getCertificates();
@@ -424,6 +450,9 @@ export default {
             form.startWorkDate = data.startWorkDate && formatTime(data.startWorkDate);
             form.arriveJPDate = data.arriveJPDate && formatTime(data.arriveJPDate);
             form.certificates = data.certificates && data.certificates.map(item => item.certificateID);
+            if (form.jpLangCert === 0) {
+                form.jpLangCert = '';
+            }
             // if (data.salaries && data.salaries.length) {
             //     const sales = data.salaries[0];
             //     form.PJSalary = sales.pjSalary;
@@ -441,6 +470,14 @@ export default {
                 if (res && res.code === 0) {
                     this.teams = res.data || [];
                 }
+            });
+        },
+        // 国籍列表
+        countryType() {
+            this.$axios({
+                url: '/api/Candidate/api_nationalityforselect'
+            }).then(res => {
+                this.countryTypeArr = res.data;
             });
         },
         // 就职类型
@@ -475,6 +512,7 @@ export default {
         },
         validSalePrice() {
             this.errorTip = false;
+            this.emptyTip = false;
             if (this.form.salePriceFrom && this.form.salePriceTo) {
                 let priceFrom = this.form.salePriceFrom.replace(/,/g, '');
                 let priceTo = this.form.salePriceTo.replace(/,/g, '');
@@ -485,6 +523,17 @@ export default {
                 }
             } else {
                 this.errorTip = false;
+            }
+            if (this.form.PJSalary && this.form.BaseSalary) {
+                let priceFrom = this.form.PJSalary.replace(/,/g, '');
+                let priceTo = this.form.BaseSalary.replace(/,/g, '');
+                if (Number(priceFrom) > Number(priceTo)) {
+                    this.emptyTip = true;
+                } else {
+                    this.emptyTip = false;
+                }
+            } else {
+                this.emptyTip = false;
             }
         },
         formatPrice(key) {
@@ -541,6 +590,7 @@ export default {
             });
         },
         getSubmitParams(type) {
+            this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
             let params = {
                 'Certificates': this.form.certificates.map(item => ({
                     certificateID: item,
@@ -562,8 +612,8 @@ export default {
                 'MainSkill': this.form.mainSkill,
                 'StartWorkDate': this.form.startWorkDate,
                 'PositionID': this.form.positionID,
-                'ArriveJPDate': this.form.arriveJPDate,
-                'JPLangCert': this.form.jpLangCert || '',
+                'ArriveJPDate': this.form.arriveJPDate || moment(new Date()).format('YYYY-MM-DD'),
+                'JPLangCert': this.form.jpLangCert || 0,
                 'JPLangComt': this.form.jpLangComt || '',
                 'ENLangComt': this.form.enLangComt || '',
                 'SalePriceFrom': Number(this.form.salePriceFrom.toString().replace(/,/g, '')) || 0,
@@ -589,9 +639,11 @@ export default {
                     Comment: this.form.SComment,
                 }];
             }
+            console.log(params);
             return params;
         },
         submit(formData, api) {
+            console.log(formData, api);
             const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
             this.$axios({
                 method: 'POST',
@@ -642,6 +694,9 @@ export default {
 
 <style lang="less">
 .employee-edit {
+    .minwidth{
+        min-width: 1200px;
+    }
     .el-form {
         .el-form-item {
             margin-bottom: 20px;

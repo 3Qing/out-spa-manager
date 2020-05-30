@@ -48,8 +48,8 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="得意先" prop="customerId">
-                                    <!-- <p v-if="isDisplay">{{getContent(form['customerId'], customerList, 'id', 'title')}}</p> -->
-                                    <el-select v-model="form['customerId']" size="small" @change="changeCustomer">
+                                    <p v-if='$route.params.id'>{{getContent(form['customerId'], customerList, 'id', 'title')}}</p>
+                                    <el-select v-else v-model="form['customerId']" size="small" @change="changeCustomer">
                                         <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -96,8 +96,9 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="作業担当" prop="employeeId">
-                                    <!-- <p v-if="isDisplay">{{getContent(form['employeeId'], workList, 'id', 'name')}}</p> -->
+                                    <p v-if='$route.params.id'>{{getContent(form['employeeId'], workList, 'id', 'name')}}</p>
                                     <el-select
+                                        v-else
                                         v-model="form['employeeId']"
                                         filterable
                                         remote
@@ -132,11 +133,11 @@
                 <ul>
                     <li>
                         <span>注文名称</span>
-                        <span>{{form.title}}</span>
+                        <span :title='form.title'>{{form.title}}</span>
                     </li>
                     <li>
                         <span>注文内容</span>
-                        <span>{{form.content}}</span>
+                        <span :title='form.content'>{{form.content}}</span>
                     </li>
                     <li>
                         <span>契約期間</span>
@@ -148,7 +149,7 @@
                     </li>
                     <li>
                         <span>得意先</span>
-                        <span>{{getContent(form.customerId, customerList, 'id', 'title')}}</span>
+                        <span :title="getContent(form.customerId, customerList, 'id', 'title')">{{getContent(form.customerId, customerList, 'id', 'title')}}</span>
                     </li>
                     <li>
                         <span>支払サイト</span>
@@ -909,7 +910,7 @@ export default {
     .bottom {
         margin-top: 20px;
         ul{
-            width: 800px;
+            width: 900px;
             overflow: hidden;
             // height: 280px;
             border: 1px solid #EBEEF5;
@@ -931,7 +932,10 @@ export default {
                     background-color: #F5F7FA;
                 }
                 span:last-child{
-                    width: 250px;
+                    width: 300px;
+                    overflow:hidden;  /*超过部分不显示*/
+                    text-overflow:ellipsis;  /*超过部分用点点表示*/
+                    white-space:nowrap; /*不换行*/
                 }
             }
             .lis{

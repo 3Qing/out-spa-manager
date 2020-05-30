@@ -3,6 +3,7 @@
         custom-class="opport-dialog"
         :visible.sync="visible"
         :title="form.id ? '编辑' : '新增'"
+        :close-on-click-modal="dialog"
         @close="close">
         <el-form size="mini" label-width="120px" :model="form" :rules="rules" ref="form">
             <el-form-item label="商家标签" prop="tags">
@@ -69,11 +70,13 @@ import moment from 'moment';
 export default {
     props: {
         allStatus: {
-            type: Array
+            type: Array,
+            required: true
         }
     },
     data() {
         return {
+            dialog: false,
             visible: false,
             form: {
                 tags: [],
@@ -159,7 +162,8 @@ export default {
                 title: '',
                 content: '',
                 pubDate: '',
-                closeDate: ''
+                closeDate: '',
+                status: 0
             };
         },
         submit() {

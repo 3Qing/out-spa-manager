@@ -87,16 +87,20 @@
                         @upload="uploadFile"></upload> -->
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="100px" fixed="right">
+            <el-table-column label="操作" width="130px" fixed="right">
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" content="显示" placement="top-start">
                         <i class="el-icon-view oper-icon" color="success" @click="toEdit(scope.row, 'display')"></i>
                     </el-tooltip>
-                    <el-tooltip effect="dark" content="编辑" placement="top-start" v-if="scope.row.editable">
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="toEdit(scope.row)"></i>
                     </el-tooltip>
-                    <el-tooltip effect="dark" content="更新" placement="top-start" v-if="scope.row.extendable">
+                    <el-tooltip effect="dark" content="更新" placement="top-start">
                         <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
+                    </el-tooltip>
+                    <!-- v-if="scope.row.editable" -->
+                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
                     </el-tooltip>
                 </template>
             </el-table-column>
@@ -366,6 +370,34 @@ export default {
                 };
             }
             this.$router.push(params);
+        },
+        // 删除合同
+        deletes(row) {
+            console.log(row);
+            this.$axios({
+                url: '/api/Contract/api_deletecontract',
+                params: {
+                    contractid: row.id
+                }
+            }).then(res => {
+                this.$message({
+                    type: 'success',
+                    message: res.message
+                });
+                this.getData();
+            });
+            // this.$confirm('此操作将永久删除该合同, 是否继续?', '提示', {
+            //     confirmButtonText: '确定',
+            //     cancelButtonText: '取消',
+            //     type: 'warning'
+            // }).then(() => {
+                
+            // }).catch(() => {
+            //     this.$message({
+            //         type: 'info',
+            //         message: '已取消删除'
+            //     });
+            // });
         },
         formatNingetsu(scope) {
             const personMonthArr = [...this.personMonthArr];

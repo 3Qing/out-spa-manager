@@ -98,7 +98,7 @@ export default {
                 label: '成功終了', val: 9
             }],
             page: 1,
-            pageSize: 10,
+            pageSize: 15,
             total: 0,
             loading: false,
             allName: [],

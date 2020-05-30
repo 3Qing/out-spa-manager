@@ -2,6 +2,7 @@
     <main-wrapper class="estimation-wrapper">
         <div class="main-header" slot="header">
             <el-date-picker
+                :disabled="isSave"
                 v-model="dates"
                 value-format="yyyy-MM-dd"
                 format="yyyy-MM-dd"
@@ -11,16 +12,16 @@
                 end-placeholder="終了日"
                 size="mini">
             </el-date-picker>
-            <el-input v-model="fromhours" size="mini" style="width:100px"></el-input>
-            <el-input v-model="tohours" size="mini" style="width:100px"></el-input>
-            <el-select v-model="customerid" size="mini" clearable>
+            <el-input :disabled="isSave" v-model="fromhours" size="mini" style="width:100px"></el-input>
+            <el-input :disabled="isSave" v-model="tohours" size="mini" style="width:100px"></el-input>
+            <el-select v-model="customerid" size="mini" clearable :disabled="isSave">
                 <el-option
                     v-for="item in customers"
                     :key="item.id"
                     :label="item.title"
                     :value="item.id"></el-option>
             </el-select>
-            <el-select v-model="opportunityid" size="mini" clearable>
+            <el-select v-model="opportunityid" size="mini" clearable :disabled="isSave">
                 <el-option
                     v-for="item in opports"
                     :key="item.id"
@@ -28,6 +29,7 @@
                     :value="item.id"></el-option>
             </el-select>
             <el-select
+                :disabled="isSave"
                 v-model="employeeids"
                 multiple
                 size="mini"
@@ -59,7 +61,14 @@
                     <el-row>
                         <el-col :span="12">
                             <el-form-item label="得意先" class="first-item" prop="customerTitle">
-                                <el-input v-model="data.customerTitle"></el-input>
+                                <!-- <el-input v-model="data.customerTitle"></el-input> -->
+                                <el-select v-model="customerid" size="mini" clearable>
+                                    <el-option
+                                        v-for="item in customers"
+                                        :key="item.id"
+                                        :label="item.title"
+                                        :value="item.id"></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -144,7 +153,7 @@
             </el-table-column>
             <el-table-column label="人月" width="160px">
                 <template slot-scope="scope">
-                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="1"></el-input-number>
+                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="10"></el-input-number>
                 </template>
             </el-table-column>
             <el-table-column label="単価" width="140px">
@@ -189,6 +198,7 @@ export default {
     },
     data() {
         return {
+            isSave: false,
             texts: '見積書初期化',
             dates: [],
             fromhours: '140',
@@ -288,6 +298,7 @@ export default {
                 formData: true
             }).then(res => {
                 this.texts = '見積書保存';
+                this.isSave = true;
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
@@ -328,7 +339,11 @@ export default {
                     this.fromhours = data.fromHours;
                     this.tohours = data.toHours;
                     this.customerid = data.customerID;
-                    this.opportunityid = data.opportunityID;
+                    if(data.opportunityID === 0){
+                        this.opportunityid = '';
+                    } else {
+                        this.opportunityid = data.opportunityID;
+                    }
                     if (data.items && data.items.length) {
                         this.tableData = data.items.map(item => {
                             const tmp = { ...item };

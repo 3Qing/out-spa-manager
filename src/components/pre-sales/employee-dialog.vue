@@ -62,7 +62,7 @@ export default {
         return {
             visible: false,
             page: 1,
-            pageSize: 10,
+            pageSize: 15,
             total: 0,
             tableData: []
         };

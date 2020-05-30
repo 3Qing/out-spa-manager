@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "792316",
+      "name": "people-8-个人",
+      "font_class": "people",
+      "unicode": "e685",
+      "unicode_decimal": 59013
+    },
+    {
+      "icon_id": "1043811",
+      "name": "history",
+      "font_class": "history",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
       "icon_id": "8776842",
       "name": "search",
       "font_class": "icon-test1",

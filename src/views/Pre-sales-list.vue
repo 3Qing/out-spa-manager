@@ -11,18 +11,18 @@
             <el-button size="mini" type="primary" @click="showIntroDialog('add')">新規登録</el-button>
         </el-form>
         <el-table :data="tableData" size="small" :cell-class-name="cellClassName">
-            <el-table-column label="氏名" fixed prop="name"></el-table-column>
-            <el-table-column label="営業可否">
+            <el-table-column label="氏名" fixed prop="name" width="120px"></el-table-column>
+            <el-table-column label="入場可能日" prop="avaiableDates" width="120px"></el-table-column>
+            <!-- <el-table-column label="営業可否">
                 <template slot-scope="scope">
                     <div>{{transformText(scope.row, 'avaiable')}}</div>
                 </template>
-            </el-table-column>
-            <el-table-column label="入場可能日" prop="avaiableDate" width="120px"></el-table-column>
-            <el-table-column label="営業状態" show-overflow-tooltip>
+            </el-table-column> -->
+            <!-- <el-table-column label="営業状態" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <div>{{transformText(scope.row, 'status')}}</div>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column label="国籍" prop="nationality"></el-table-column>
             <el-table-column label="性別" prop="sex"></el-table-column>
             <el-table-column label="所属" prop="employeeType" width="100px" show-overflow-tooltip></el-table-column>
@@ -98,7 +98,7 @@ export default {
             tip: '',
             total: 0,
             page: 1,
-            pageSize: 20,
+            pageSize: 15,
             options: [{
                 label: '营业中', val: true,
             }, {
@@ -145,6 +145,15 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.data || [];
+                    this.tableData.forEach((item) => {
+                        let differ = new Date(item.avaiableDate) - new Date();
+                        let differrence = differ / (1000 * 60 * 60 * 24);
+                        if (differrence <= 0) {
+                            item.avaiableDates = '即日';
+                        } else {
+                            item.avaiableDates = item.avaiableDate;
+                        }
+                    });
                     this.total = data.total;
                 }
             });
@@ -206,78 +215,76 @@ export default {
         },
         cellClassName({ row, columnIndex }) {
             if (columnIndex === 0) {
-                switch (Number(row.avaiable)) {
-                    case 1:
-                        return 'bg-success';
-                    case 2:
-                        return 'bg-info';
-                    case 3:
-                        return 'bg-warning';
-                    default:
-                        return '';
+                let differ = new Date(row.avaiableDate) - new Date();
+                let differrence = differ / (1000 * 60 * 60 * 24);
+                if (differrence <= 30 && differrence > 0) {
+                    return 'bg-warning';
                 }
-            } else if (columnIndex === 2) {
-                // console.log(this.avaiable);
-                // if (!this.avaiable) {
-                switch (Number(row.status)) {
-                    case 1:
-                        return 'bg-success';
-                    case 2:
-                    case 4:
-                        return 'bg-warning';
-                    case 3:
-                        return 'bg-danger';
-                    default:
-                        return '';
+                if (differrence > 30) {
+                    return 'bg-success';
                 }
-                // }
+                if (differrence <= 0) {
+                    return 'bg-danger';
+                }
+            } else if (columnIndex === 1) {
+                let differ = new Date(row.avaiableDate) - new Date();
+                let differrence = differ / (1000 * 60 * 60 * 24);
+                if (differrence <= 30 && differrence > 0) {
+                    return 'bg-warning';
+                }
+                if (differrence > 30) {
+                    return 'bg-success';
+                }
+                if (differrence <= 0) {
+                    return 'bg-danger';
+                }
             }
         },
         transformText(row, field) {
-            if (field === 'avaiable') {
+            // if (field === 'avaiable') {
+            //     switch (Number(row[field])) {
+            //         case 1:
+            //             return '可能';
+            //         case 2:
+            //             return '不可';
+            //         case 3:
+            //             return '要確認';
+            //         default:
+            //             return '';
+            //     }
+            // } else {
+            if (this.avaiable) {
                 switch (Number(row[field])) {
                     case 1:
-                        return '可能';
+                        return '営業開始';
                     case 2:
-                        return '不可';
+                        return '提案のみ';
                     case 3:
-                        return '要確認';
+                        return '並行面談中';
+                    case 4:
+                        return '取消';
+                    case 5:
+                        return '失敗終了';
+                    case 6:
+                        return '成功終了';
                     default:
                         return '';
                 }
             } else {
-                if (this.avaiable) {
-                    switch (Number(row[field])) {
-                        case 1:
-                            return '営業開始';
-                        case 2:
-                            return '提案のみ';
-                        case 3:
-                            return '並行面談中';
-                        case 4:
-                            return '取消';
-                        case 5:
-                            return '失敗終了';
-                        case 6:
-                            return '成功終了';
-                        default:
-                            return '';
-                    }
-                } else {
-                    switch (Number(row[field])) {
-                        case 1:
-                            return '稼働中';
-                        case 2:
-                            return '間もなく待機';
-                        case 3:
-                            return '待機中';
-                        case 4:
-                            return '営業中';
-                        default:
-                            return '';
-                    }
+                switch (Number(row[field])) {
+                    case 1:
+                        return '稼働中';
+                    case 2:
+                        return '間もなく待機';
+                    case 3:
+                        return '待機中';
+                    case 4:
+                        return '営業中';
+                    default:
+                        return '';
                 }
             }
+            // }
         },
         showIntroDialog(type, data) {
             this.$root.$emit('SHOW_INTRO_DIALOG', {

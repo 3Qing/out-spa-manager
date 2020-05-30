@@ -63,7 +63,7 @@
             </div>
             <el-table class="mt20" :data="format(totalprofit)"  size="mini" :height="height" v-if="height">
                 <el-table-column v-for="(item, index) in totalprofit[0]" :key="index" :label="item">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <span>{{scope.row[index]}}</span>
                     </template>
                 </el-table-column>
@@ -146,12 +146,11 @@ export default {
                     totalpro.forEach((item) => {
                         arr1.push(item.onPJPersons / 100);
                         arr2.push(item.benchPersons / 100);
-                        arr3.push(((item.sales - item.humanCost) / item.onPJPersons * 100).toFixed(2));
-                        arr4.push(((item.sales - item.humanCost) / item.sales).toFixed(2));
+                        arr3.push(parseInt(((item.sales * 10000 - item.humanCost) / item.onPJPersons * 100)));
+                        arr4.push(((item.sales - item.humanCost / 10000) / item.sales).toFixed(2));
                         arr5.push(item.fromDate.substring(0, 7).replace('-', '年')+'月');
                     });
                     arr6 = [arr5, arr1, arr2, arr3, arr4];
-                    console.log(arr6.slice(1, arr6.length));
                     this.totalprofit = arr6;
                     const totalprofits = data.totalprofits || [];
                     let sales = [];
@@ -173,8 +172,8 @@ export default {
                     totalprofits.forEach(item => {
                         sales.push(item.sales);
                         margin.push(item.margin);
-                        humanCost.push(item.humanCost);
-                        benchCost.push(item.benchCost);
+                        humanCost.push(parseInt(item.humanCost / 10000));
+                        benchCost.push(parseInt(item.benchCost / 10000));
                     });
                     this.yAxis = [ {
                         label: '利益額',

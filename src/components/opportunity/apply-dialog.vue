@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible="visible" @close="close">
+    <el-dialog :visible="visible" @close="close" :close-on-click-modal="dialog">
         <el-form size="mini" label-width="80px">
             <el-form-item label="候选人">
                 <el-select
@@ -35,6 +35,7 @@ export default {
     },
     data() {
         return {
+            dialog: false,
             curId: '',
             form: {
                 candidateid: '',
@@ -97,6 +98,7 @@ export default {
                         type: 'success',
                         message: '提交成功'
                     });
+                    this.$emit('close');
                 } else {
                     this.$message({
                         type: 'warning',

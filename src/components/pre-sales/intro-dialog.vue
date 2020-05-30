@@ -1,5 +1,5 @@
 <template>
-    <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" @close="close">
+    <el-dialog custom-class="intro-dialog" :title="form.id ? '介绍文编辑' : '介绍文新增'" :visible.sync="visible" :close-on-click-modal="dialog" @close="close">
         <el-form label-width="130px" size="mini" ref="form" :model="form" :rules="rules" class='blackColor'>
             <el-row v-if="!IS_H5">
                 <el-col :span="12" class="width50">
@@ -121,7 +121,7 @@
                 </el-col>
             </el-row>
             <el-form-item label="提案文" prop='proposeText'>
-                <el-input v-model="form.proposeText" type="textarea" :rows="12" :maxlength="250"></el-input>
+                <el-input v-model="form.proposeText" type="textarea" :rows="20" :maxlength="250"></el-input>
             </el-form-item>
             <el-form-item label="备注">
                 <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="250"></el-input>
@@ -154,9 +154,10 @@
                     <el-form-item label="简历附件">
                         <upload
                             ref="child"
-                            :opt="{ btnText: '上传附件', accept: 'application', show: true, showIcon: true }"
-                            @upload="uploadFile"></upload>
-                        <!-- <span class="fl">{{form.attachResume}}</span> -->
+                            :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: true, showIcon: true }"
+                            @upload="uploadFile">
+                            </upload>
+                        <span class="fl" v-if='trus'>{{form.attachResume}}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -181,6 +182,8 @@ export default {
     },
     data() {
         return {
+            trus: true,
+            dialog: false,
             form: {
                 furigana_FirstName: '',
                 furigana_LastName: '',
@@ -214,14 +217,8 @@ export default {
                 furigana_FirstName: [{
                     required: true, message: '请填写英文第一个名字！'
                 }],
-                furigana_LastName: [{
-                    required: true, message: '请填写英文第二个名字！'
-                }],
                 firstName: [{
                     required: true, message: '请填写汉字第一个名字！'
-                }],
-                lastName: [{
-                    required: true, message: '请填写汉字第二个名字！'
                 }],
                 sex: [{
                     required: true, message: '请选择性别！'
@@ -284,7 +281,8 @@ export default {
         this.cityType();
         this.countryType();
         this.$root.$off('SHOW_INTRO_DIALOG');
-        this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false }) => {
+        this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false}) => {
+            this.trus = true;
             if (data) {
                 if (!showDate) {
                     this.createProposeText(data);
@@ -390,6 +388,14 @@ export default {
                 }
             });
         },
+        getContent(val, arr, key, field) {
+            for (let item of arr) {
+                if (item[key] === val) {
+                    return item[field];
+                }
+            }
+            return '-';
+        },
         submit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
@@ -415,6 +421,7 @@ export default {
                         });
                     } else {
                         const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
+                        this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
                         const params = {
                             Furigana_FirstName: this.form.furigana_FirstName,
                             Furigana_LastName: this.form.furigana_LastName,
@@ -473,8 +480,20 @@ export default {
                 }
             });
         },
+        handleChange(file) {
+            this.fileList = [file];
+            console.log(this.fileList);
+            // const isLt5M = file.size / 1024 / 1024 < 5;
+            // if (!isLt5M) {
+            //     this.$message.error('上传头像图片大小不能超过 5MB!');
+            // } else {
+            // }
+            // this.fileList = fileList.push(file);
+        },
         uploadFile({ file }) {
+            this.trus = false;
             this.form.attachResume = file;
+            console.log(file);
         }
     }
 };
@@ -482,5 +501,10 @@ export default {
 <style lang="less">
     .marginLeft30{
         margin-left: 30px;
+    }
+    .fl{
+        position: absolute;
+        top: 0px;
+        left: 45px;
     }
 </style>

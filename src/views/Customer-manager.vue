@@ -135,7 +135,7 @@ export default {
             }],
             tableData: [],
             page: 1,
-            pageSize: 10,
+            pageSize: 15,
             total: 0,
             showFields: {
                 address1: '住所（番地まで）',

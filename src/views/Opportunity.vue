@@ -25,14 +25,32 @@
                     <span>{{(scope.row.customerID > 0 ? scope.row.formalCustomer : scope.row.temporaryCustomer) || '-'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="提案次数" prop="salesCaseCnt" width="120px"></el-table-column>
-            <el-table-column label="营业担当" prop="salesPerson" width="120px"></el-table-column>
-            <el-table-column label="操作" width="260px">
+            <el-table-column label="提案次数" width="120px">
                 <template slot-scope="scope">
+                    <span>{{scope.row.salesCaseCnt}}</span>
+                    <el-tooltip class="leftTip" effect="dark" content="提案履歴" placement="top-start" v-if='scope.row.salesCaseCnt > 0'>
+                        <i class="icon-history iconfont oper-icon" color="success" @click="handleTip(scope.row)"></i>
+                    </el-tooltip>
+                </template>  
+            </el-table-column>
+            <el-table-column label="营业担当" prop="salesPerson" width="120px"></el-table-column>
+            <el-table-column label="操作" width="100px">
+                <template slot-scope="scope">
+                    <el-tooltip effect="dark" content="提案" placement="top-start">
+                        <i class="icon-people iconfont oper-icon" color="success" @click="handleAction(scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                        <i class="el-icon-edit-outline oper-icon" color="warning" @click="showDialog(2, scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="deleteHandler(scope)"></i>
+                    </el-tooltip>
+                </template>
+                <!-- <template slot-scope="scope">
                     <el-button type="primary" size="mini" @click="handleAction(scope.row)">提案</el-button>
                     <el-button type="warning" size="mini" @click="showDialog(2, scope.row)">编辑</el-button>
                     <el-button type="danger" size="mini" @click="deleteHandler(scope)">删除</el-button>
-                </template>
+                </template> -->
             </el-table-column>
         </el-table>
         <el-pagination
@@ -48,6 +66,11 @@
             :data="curData"
             @close="showApply = false"
             @update="getData"></apply-dialog>
+        <tian-dialog
+            :visible="tianApply"
+            :data="tianArr"
+            @close="tianApply = false"
+            @update="getData"></tian-dialog>
     </main-wrapper>
 </template>
 
@@ -58,17 +81,19 @@ import { formatTime } from '@_public/utils';
 import OpportDialog from '@components/opportunity/dialog';
 import TagDialog from '@/components/opportunity/tag-dialog';
 import ApplyDialog from '@components/opportunity/apply-dialog';
+import TianDialog from '@components/opportunity/tian-dialog';
 export default {
     components: {
         MainWrapper,
         OpportDialog,
         TagDialog,
-        ApplyDialog
+        ApplyDialog,
+        TianDialog
     },
     data() {
         return {
             page: 1,
-            pageSize: 10,
+            pageSize: 15,
             total: 0,
             tableData: [],
             tags: [],
@@ -85,16 +110,18 @@ export default {
             }],
             visibleDialog: false,
             curData: {},
+            tianArr: [],
             opportStatus: [],
-            showApply: false
+            showApply: false,
+            tianApply: false
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            vm.getOpportStatus();
             vm.getData();
             vm.getTags();
             vm.getCustomer();
-            vm.getOpportStatus();
         });
     },
     computed: {
@@ -139,6 +166,7 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.opportStatus = res.data || [];
+                    console.log(this.opportStatus);
                 }
             });
         },
@@ -206,6 +234,20 @@ export default {
         handleAction(data) {
             this.showApply = true;
             this.curData = { ...data };
+        },
+        // 提案历史
+        handleTip(data) {
+            this.$axios({
+                url: '/api/Opportunity/api_getapplyhistorybyoppo',
+                params: {
+                    oppoid: data.id
+                }
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.tianApply = true;
+                    this.tianArr = res.data;
+                }
+            });
         }
     }
 };
@@ -217,6 +259,11 @@ export default {
         .el-button {
             margin-left: 10px;
         }
+    }
+    .leftTip{
+        margin-left: 15px;
+        position: relative;
+        top: 2px;
     }
 }
 </style>

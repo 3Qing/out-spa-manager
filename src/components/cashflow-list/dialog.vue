@@ -41,7 +41,7 @@ export default {
         confirm() {
             const loading = this.$loading({ lock: true, text: '正在承认请求书' });
             this.$axios({
-                url: '/api/approvetimesheet',
+                url: '/api/Timesheet/api_approvetimesheet',
                 params: {
                     cfid: this.id
                 },
