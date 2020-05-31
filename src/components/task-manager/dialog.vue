@@ -123,7 +123,19 @@ export default {
     },
     mounted() {
         this.$root.$off('SHOW_TASK_DIALOG');
-        this.$root.$on('SHOW_TASK_DIALOG', ({ data = null, callback = null, edit = true }) => {
+        this.$root.$on('SHOW_TASK_DIALOG', ({ data = null, callback = null, edit = true, news = false }) => {
+            console.log(news);
+            if(news){
+                this.form = {
+                    atyType: '',
+                    candidateID: '',
+                    opportunityID: '',
+                    atyDate: '',
+                    atyMinutes: '',
+                    atyLocation: '',
+                    atyPurpose: ''
+                };
+            }
             this.curTime = moment(new Date().getTime()).hour(10).minutes(0).format('YYYY-MM-DD HH:mm');
             this.getCandidate();
             this.getOpportunit();

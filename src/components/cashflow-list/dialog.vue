@@ -65,7 +65,7 @@ export default {
         cancel() {
             const loading = this.$loading({ lock: true, text: '正在取消承认请求书' });
             this.$axios({
-                url: '/api/canceltimesheetapprove',
+                url: '/api/Invoice/api_cancelinvoice',
                 params: {
                     cfid: this.id
                 },

@@ -47,7 +47,11 @@
             </el-table-column>
             <el-table-column label="注文単価・円（税抜）" prop="contractSales" show-overflow-tooltip></el-table-column>
             <el-table-column label="見込売掛金">
-                <el-table-column label="売掛金額・円（税込）" prop="planCollectSales" show-overflow-tooltip></el-table-column>
+                <el-table-column label="売掛金額・円（税込）" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span>{{thousandFormat(scope.row.planCollectSales)}}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="予定回収日" prop="planCollectDate" width="100px">
                     <template slot-scope="scope">
                         <span>{{formatTime(scope.row.planCollectDate)}}</span>
@@ -55,7 +59,11 @@
                 </el-table-column>
             </el-table-column>
             <el-table-column label="実際売掛金">
-                <el-table-column label="実際回収額・円" prop="actualCollectSales" show-overflow-tooltip></el-table-column>
+                <el-table-column label="実際回収額・円" prop="actualCollectSales" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span>{{thousandFormat(scope.row.actualCollectSales)}}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="実際回収日" prop="actualCollectDate" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>{{formatTime(scope.row.actualCollectDate)}}</span>
@@ -63,20 +71,47 @@
                 </el-table-column>
             </el-table-column>
             <el-table-column label="コスト">
-                <el-table-column label="人件費・円" prop="projectSalary" show-overflow-tooltip></el-table-column>
-                <el-table-column label="交通代・円" prop="travelFare" show-overflow-tooltip></el-table-column>
+                <el-table-column label="人件費・円" prop="projectSalary" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span>{{thousandFormat(scope.row.projectSalary)}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="交通代・円" prop="travelFare" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span>{{thousandFormat(scope.row.travelFare)}}</span>
+                    </template>
+                </el-table-column>
             </el-table-column>
-            <el-table-column label="粗利・円" prop="profit" show-overflow-tooltip></el-table-column>
-            <el-table-column label="請求書番号" width="120px" prop="invoiceNo" show-overflow-tooltip></el-table-column>
-            <el-table-column label="アクション" width="350px" fixed="right">
+            <el-table-column label="粗利・円" prop="profit" show-overflow-tooltip>
                 <template slot-scope="scope">
+                        <span>{{thousandFormat(scope.row.profit)}}</span>
+                    </template>
+            </el-table-column>
+            <el-table-column label="請求書番号" width="120px" prop="invoiceNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="アクション" width="100px" fixed="right">
+                <template slot-scope="scope">
+                    <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.actions"
+                        :key="item.id" :content="item.title">
+                        <i v-if="item.id==='act_collectsales'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                        <i v-if="item.id==='act_displaytimesheet'" class="icon-approve iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                        <i v-if="item.id==='act_createinvoice'" class="icon-Invoice iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                        <i v-if="item.id==='act_canceltimesheet'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                    </el-tooltip>
+                    <!-- <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="handleDel(scope)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="拷贝" placement="top-start">
+                        <i class="el-icon-document-copy oper-icon" color="info" @click="handleCopy(scope)"></i>
+                    </el-tooltip> -->
+                </template>
+                <!-- <template slot-scope="scope">
                     <el-button
                         type="primary"
                         v-for="item in scope.row.actions"
                         size="mini"
                         @click="actionHandler(item, scope.row)"
                         :key="item.id">{{item.title}}</el-button>
-                </template>
+                </template> -->
             </el-table-column>
         </el-table>
         <el-pagination
@@ -156,6 +191,11 @@ export default {
                 }
             });
         },
+        // 千分位字符格式化
+        thousandFormat(num) {
+            var reg = /\d{1,3}(?=(\d{3})+$)/g;
+            return (num + '').replace(reg, '$&,');
+        },
         // 従業員
         getEmployees(keyword = '') {
             this.loading = true;
@@ -210,7 +250,7 @@ export default {
             this.getList();
         },
         actionHandler(item, row) {
-            console.log(item, row);
+            console.log(item.id, row);
             if (item.id === 'act_createinvoice') {
                 this.createInvoice(row);
             } else if (item.id === 'act_confirmtimesheet') {
@@ -229,7 +269,7 @@ export default {
                         this.getList();
                     }
                 });
-            } else if (item.ID === 'act_displaytimesheet') {
+            } else if (item.id === 'act_displaytimesheet') {
                 this.curRow = { ...row };
                 this.show = true;
             }
@@ -238,7 +278,7 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在创建请求书番号' });
             this.$axios({
                 method: 'POST',
-                url: `/api/createinvoice`,
+                url: `/api/Invoice/api_createinvoice`,
                 params: {
                     cfids: [row.cfid]
                 },

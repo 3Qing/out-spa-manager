@@ -43,19 +43,19 @@
             <el-button type="primary" size="mini" @click="toEdit({id: 'new'})" style="margin-left: 20px;">新建登録</el-button>
         </div>
         <el-table size="small" :data="tableData">
-            <el-table-column label="注文番号" width="120px">
+            <el-table-column label="注文番号" width="130px">
                 <template slot-scope="scope">
                     <div>{{scope.row.contractNo || '-'}}</div>
                 </template>
             </el-table-column>
-            <el-table-column label="名称" prop="contractTitle" show-overflow-tooltip></el-table-column>
-            <el-table-column label="取引先" prop="customerTitle" show-overflow-tooltip></el-table-column>
-            <el-table-column label="開始日" prop="fromDate" show-overflow-tooltip>
+            <el-table-column width="150px" label="名称" prop="contractTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column width="160px" label="取引先" prop="vendorTitle" show-overflow-tooltip></el-table-column>
+            <el-table-column width="95px" label="開始日" prop="fromDate" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.fromDate)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="終了日" prop="toDate" show-overflow-tooltip>
+            <el-table-column width="95px" label="終了日" prop="toDate" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.toDate)}}</span>
                 </template>
@@ -67,7 +67,7 @@
             <el-table-column label="控除精算・円/時間" prop="underTimePrice"></el-table-column>
             <el-table-column label="作業担当" prop="employeeName" show-overflow-tooltip></el-table-column>
             <el-table-column label="営業担当" prop="salesName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="注文書原本" width="180px">
+            <el-table-column label="注文書原本" width="140px">
                 <template slot-scope="scope">
                     <el-button
                         v-if="scope.row.paperReceived"
@@ -77,19 +77,25 @@
                     <upload
                         class="info-btn"
                         v-if="scope.row.paperReceived"
-                        :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
+                        :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
                         @upload="uploadFile"></upload>
                     <upload
                         class="danger-btn"
                         v-if="!scope.row.paperReceived"
-                        :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false }"
+                        :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
                         @upload="uploadFile"></upload>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="160px">
+            <el-table-column label="操作" width="130px" fixed="right">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.row.editable" type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
-                    <el-button v-if="scope.row.extendable" size="mini" @click="showDialog(scope.row)">更新</el-button>
+                    <!-- <el-button type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
+                    <el-button size="mini" @click="showDialog(scope.row)">更新</el-button> -->
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                        <i class="el-icon-edit-outline oper-icon" color="warning" @click="toEdit(scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="更新" placement="top-start">
+                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>

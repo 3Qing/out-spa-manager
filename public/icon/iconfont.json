@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1388101",
+      "name": "cancel",
+      "font_class": "cancel",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "7275294",
+      "name": "Invoice",
+      "font_class": "Invoice",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    },
+    {
+      "icon_id": "10909285",
+      "name": "approve",
+      "font_class": "approve",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
       "icon_id": "792316",
       "name": "people-8-个人",
       "font_class": "people",

@@ -11,7 +11,7 @@
             </div>
             <div class="right fr">
                 <el-table :data="tableData" height="100%" border>
-                    <el-table-column v-for="(item, i) in columns" :key="item.name" min-width="180px">
+                    <el-table-column v-for="(item, i) in columns" :key="item.name" min-width="170px">
                         <template slot="header">
                             <div v-if="i === 0"></div>
                             <div v-else>{{item.name}}</div>
@@ -23,7 +23,7 @@
                                     v-for="(cell, j) in scope.row[item.prop]"
                                     :key="j"
                                     class="cell-success task-cell link"
-                                    :style="getStyle(cell)"
+                                    :style="getStyle(cell,scope.row[item.prop])"
                                     @click="cellClick(cell)"
                                     >{{cell.atyPurpose}}</span>
                             </div>
@@ -118,9 +118,18 @@ export default {
             const tableData = [];
             for (let i = 0; i < length; i++) {
                 const HH = String(i).padStart(2, '0');
+                // console.log(HH);
+                // const o = {
+                //     label: `${HH}:00`
+                // };
                 const o = {
-                    label: `${HH}:00`
+                    label: ''
                 };
+                if (i >=0 && i<12) {
+                    o.label = '午前' + i + '时';
+                } else {
+                    o.label = '午后' + i + '时';
+                }
                 if (tmp[HH]) {
                     for (let key in tmp[HH]) {
                         o[key] = tmp[HH][key];
@@ -173,6 +182,7 @@ export default {
         },
         newHandle() {
             this.$root.$emit('SHOW_TASK_DIALOG', {
+                news: true,
                 callback: () => {
                     this.getData();
                 }
@@ -188,9 +198,9 @@ export default {
                 }
             });
         },
-        getStyle(item) {
+        getStyle(item, arr) {
             return {
-                height: `${item.height}%`,
+                height: `(${item.height}%)/(${arr.length})`,
                 top: `${item.top}%`
             };
         }
@@ -210,10 +220,13 @@ export default {
         height: 100%;
     }
     .left {
-        width: 300px;
+        width: 250px;
+        height: 300px;
         .wh_container {
+            height: 300px;
             box-shadow: 0 0 5px 5px #f8f8f8;
             .wh_content_all {
+                height: 300px;
                 background-color: transparent;
                 .wh_jiantou1, .wh_jiantou2 {
                     border-color: #999;
@@ -244,8 +257,8 @@ export default {
         }
     }
     .right {
-        margin-left: 30px;
-        width: calc(100% - 330px);
+        // margin-left: 30px;
+        width: calc(100% - 260px);
         height: calc(100% - 40px);
         .cell-info {
             // padding-right: 15px;
@@ -288,7 +301,7 @@ export default {
                 text-align: center;
                 min-width: 60px;
                 & + .task-cell {
-                    margin-left: 10px;
+                    // margin-left: 10px;
                 }
             }
         }

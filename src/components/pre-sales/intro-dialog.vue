@@ -422,6 +422,7 @@ export default {
                     } else {
                         const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
                         this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
+                        console.log(this.form.status);
                         const params = {
                             Furigana_FirstName: this.form.furigana_FirstName,
                             Furigana_LastName: this.form.furigana_LastName,
@@ -444,7 +445,7 @@ export default {
                             AttachResume: this.form.attachResume,
                             AvaiableDate: this.form.avaiableDate,
                             ProposeText: this.form.proposeText,
-                            Status: this.form.status || 1,
+                            Status: this.form.status,
                             ID: this.form.id || 0
                         };
                         this.$axios({
