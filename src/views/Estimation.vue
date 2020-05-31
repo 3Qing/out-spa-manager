@@ -60,9 +60,9 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="得意先" class="first-item" prop="customerTitle">
+                            <el-form-item label="得意先" class="first-item" prop="customerID">
                                 <!-- <el-input v-model="data.customerTitle"></el-input> -->
-                                <el-select v-model="customerid" size="mini" clearable>
+                                <el-select v-model="data.customerID" size="mini" clearable>
                                     <el-option
                                         v-for="item in customers"
                                         :key="item.id"
@@ -214,7 +214,7 @@ export default {
             show: false,
             tableData: [],
             rules: {
-                customerTitle: [{
+                customerID: [{
                     required: true, message: '得意先を指定してください！', trigger: 'blur'
                 }],
                 title: [{
@@ -250,6 +250,8 @@ export default {
                 const monthEndDate = new Date(year, month + 1, 0);
                 vm.dates = [ moment(monthStartDate).format('YYYY-MM-DD'), moment(monthEndDate).format('YYYY-MM-DD') ];
             } else {
+                vm.isSave = true;
+                vm.texts = '見積書保存';
                 vm.getData();
             }
             vm.getCustomer();
@@ -305,6 +307,7 @@ export default {
                     data.amount = priceToString(priceToNumber(data.amount));
                     data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
                     this.data = { ...data };
+                    console.log(this.data);
                     if (this.data.items && this.data.items.length) {
                         this.tableData = data.items.map(item => {
                             const tmp = { ...item };
@@ -436,7 +439,7 @@ export default {
                 if (valid) {
                     const params = {
                         Comment: this.data.comment,
-                        CustomerID: this.customerid,
+                        CustomerID: this.data.customerID,
                         OpportunityID: this.opportunityid || 0,
                         PaymentTermID: this.data.paymentTermID || 0,
                         SubmitDate: this.data.submitDate,

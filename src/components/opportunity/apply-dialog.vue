@@ -104,6 +104,7 @@ export default {
                         type: 'warning',
                         message: res.message
                     });
+                    this.$emit('close');
                 }
             });
         }

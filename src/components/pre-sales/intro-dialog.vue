@@ -121,10 +121,10 @@
                 </el-col>
             </el-row>
             <el-form-item label="提案文" prop='proposeText'>
-                <el-input v-model="form.proposeText" type="textarea" :rows="20" :maxlength="250"></el-input>
+                <el-input v-model="form.proposeText" type="textarea" :rows="16" :maxlength="500"></el-input>
             </el-form-item>
             <el-form-item label="备注">
-                <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="250"></el-input>
+                <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="300"></el-input>
             </el-form-item>
             <el-row>
                 <el-col :span="12">
@@ -154,10 +154,10 @@
                     <el-form-item label="简历附件">
                         <upload
                             ref="child"
-                            :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: true, showIcon: true }"
+                            :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: trus, showIcon: true }"
                             @upload="uploadFile">
                             </upload>
-                        <span class="fl" v-if='trus'>{{form.attachResume}}</span>
+                        <span class="flop" v-if='trus === false'>{{form.attachResume}}</span>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -182,7 +182,7 @@ export default {
     },
     data() {
         return {
-            trus: true,
+            trus: false,
             dialog: false,
             form: {
                 furigana_FirstName: '',
@@ -282,7 +282,7 @@ export default {
         this.countryType();
         this.$root.$off('SHOW_INTRO_DIALOG');
         this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false}) => {
-            this.trus = true;
+            this.trus = false;
             if (data) {
                 if (!showDate) {
                     this.createProposeText(data);
@@ -480,20 +480,16 @@ export default {
                 }
             });
         },
-        handleChange(file) {
-            this.fileList = [file];
-            console.log(this.fileList);
-            // const isLt5M = file.size / 1024 / 1024 < 5;
-            // if (!isLt5M) {
-            //     this.$message.error('上传头像图片大小不能超过 5MB!');
-            // } else {
-            // }
-            // this.fileList = fileList.push(file);
-        },
         uploadFile({ file }) {
-            this.trus = false;
-            this.form.attachResume = file;
-            console.log(file);
+            if (file) {
+                const isLt5M = file.size / 1024 / 1024 < 5;
+                if (!isLt5M) {
+                    this.$message.error('上传简历大小不能超过 5MB!');
+                } else {
+                    this.trus = true;
+                    this.form.attachResume = file;
+                }
+            }
         }
     }
 };
@@ -502,7 +498,7 @@ export default {
     .marginLeft30{
         margin-left: 30px;
     }
-    .fl{
+    .flop{
         position: absolute;
         top: 0px;
         left: 45px;
