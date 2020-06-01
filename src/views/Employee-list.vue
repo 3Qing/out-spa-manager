@@ -110,12 +110,64 @@
                 <el-button type="primary" size="mini" @click="confirmSalary">确定</el-button>
             </div>
         </el-dialog>
+        <!-- 異動 -->
+        <el-dialog :visible.sync="visilbleBoole" title="異動">
+            <el-form size="mini" label-width="100px">
+                <el-form-item>
+                    <el-radio-group v-model="avaiable" @change="changeRadio">
+                        <el-radio :label="true">異動</el-radio>
+                        <el-radio :label="false">退職</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="現在部門">
+                    <el-date-picker
+                        style="width:200px;"
+                        :disabled=dis
+                        v-model="jobObj.teamFromDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                    <el-input :disabled=dis style="width:200px;margin-left:20px;" v-model="jobObj.teamName"></el-input>
+                    <el-input :disabled=dis style="width:200px;margin-left:20px;" v-model="jobObj.teamLeader"></el-input>
+                </el-form-item>
+                <el-form-item label="異動部門" v-if="avaiable">
+                    <el-date-picker
+                        style="width:200px;"
+                        v-model="teamFromdate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                    <el-select style="width:200px;margin-left:20px;" v-model="teamFromid" placeholder="部門" clearable>
+                        <el-option v-for="item in TEAMS" :key="item.id" :label="item.teamName" :value="item.id">
+                    </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="退職日付" v-if="!avaiable">
+                    <el-date-picker
+                        style="width:200px;"
+                        v-model="teamTodate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="異動理由" v-if="avaiable">
+                    <el-input type="textarea" v-model="teamFromReason" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="退職理由" v-if="!avaiable">
+                    <el-input type="textarea" v-model="teamToReason" :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmSubmit">确定</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
+import moment from 'moment';
 
 export default {
     components: {
@@ -123,6 +175,13 @@ export default {
     },
     data() {
         return {
+            teamFromdate: '',
+            teamFromid: '',
+            teamTodate: '',
+            teamToReason: '',
+            teamFromReason: '',
+            dis: true,
+            avaiable: true,
             form: {
                 teamid: '',
                 employeetype: '',
@@ -142,13 +201,15 @@ export default {
             leavedate: '',
             vislble: false,
             visilble2: false,
+            visilbleBoole: false,
             salary: {
                 empeeid: '',
                 FromDate: '',
                 PJSalary: '',
                 BaseSalary: '',
                 Comment: ''
-            }
+            },
+            jobObj: {}
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -283,10 +344,13 @@ export default {
                 };
                 this.visilble2 = true;
             } else {
-                this.$message({
-                    type: 'warning',
-                    message: '該当機能は構築中'
-                });
+                this.jobObj = scope.row;
+                this.teamFromdate = moment(new Date()).format('YYYY-MM-01');
+                this.teamFromid = '';
+                this.teamFromReason = '';
+                this.teamTodate = moment(new Date()).format('YYYY-MM-01');
+                this.teamToReason = '';
+                this.visilbleBoole = true;
             }
         },
         getClass(item) {
@@ -309,6 +373,76 @@ export default {
                 return 'danger';
             } else {
                 return 'primary';
+            }
+        },
+        // changeRadio
+        changeRadio() {
+            const _this = this;
+            _this.avaiable = !!_this.avaiable;
+            _this.teamFromdate = moment(new Date()).format('YYYY-MM-01');
+            _this.teamFromid = '';
+            _this.teamFromReason = '';
+            _this.teamTodate = moment(new Date()).format('YYYY-MM-01');
+            _this.teamToReason = '';
+        },
+        // 異動提交
+        confirmSubmit() {
+            // teamFromdate: '',
+            // teamFromid: '',
+            // teamTodate: '',
+            // teamToReason: '',
+            // teamFromReason: '',
+            const _this = this;
+            const loading = _this.$loading({ lock: true, text: '正在提交数据中' });
+            if (_this.avaiable) {
+                _this.$axios({
+                    url: '/api/employee/api_transferemployee',
+                    params: {
+                        empeeid: _this.jobObj.id,
+                        teamid: _this.teamFromid,
+                        fromdate: _this.teamFromdate,
+                        comment: _this.teamFromReason
+                    }
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        _this.$message({
+                            type: 'success',
+                            message: '提交成功'
+                        });
+                        _this.visilbleBoole = false;
+                        _this.getData();
+                    } else {
+                        _this.$message({
+                            type: 'error',
+                            message: res ? res.message : '接口开小差了，没有返回信息'
+                        });
+                    }
+                });
+            } else {
+                _this.$axios({
+                    url: '/api/Employee/api_employeeleave',
+                    params: {
+                        empeeid: _this.jobObj.id,
+                        leavedate: _this.teamTodate,
+                        comment: _this.teamToReason
+                    }
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        _this.$message({
+                            type: 'success',
+                            message: '提交成功'
+                        });
+                        _this.visilbleBoole = false;
+                        _this.getData();
+                    } else {
+                        _this.$message({
+                            type: 'error',
+                            message: res ? res.message : '接口开小差了，没有返回信息'
+                        });
+                    }
+                });
             }
         },
         confirmLeave() {
