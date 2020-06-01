@@ -11,7 +11,7 @@
             </div>
             <div class="right fr">
                 <el-table :data="tableData" height="100%" border>
-                    <el-table-column v-for="(item, i) in columns" :key="item.name" :min-width="i===0?'45px':'170px'">
+                    <el-table-column v-for="(item, i) in columns" :key="item.name" :min-width="i===0?'70px':'170px'">
                         <template slot="header">
                             <div v-if="i === 0"></div>
                             <div v-else>{{item.name}}</div>

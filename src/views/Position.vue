@@ -6,6 +6,7 @@
         <el-table size="small" :data="tableData" border>
             <el-table-column label="ID" prop="id" width="100px"></el-table-column>
             <el-table-column label="岗位名称" prop="title"></el-table-column>
+            <el-table-column label="岗位类型" prop="typeName"></el-table-column>
             <el-table-column label="操作" width="100px">
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" content="编辑" placement="top-start">
@@ -21,6 +22,13 @@
             <el-form :model="data" ref="form" :rules="rules" label-width="80px">
                 <el-form-item label="岗位名称" prop="title">
                     <el-input v-model="data.title" size="mini" :maxlength="20"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位类型" prop="typeName">
+                    <el-select
+                        v-model="data.typeName"
+                        size="small">
+                        <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer">
@@ -40,13 +48,18 @@ export default {
     data() {
         return {
             tableData: [],
+            workList: [],
             visible: false,
             data: {
                 id: '',
-                title: ''
+                title: '',
+                typeName: ''
             },
             rules: {
                 title: [{
+                    required: true, trigger: 'blur'
+                }],
+                typeName: [{
                     required: true, trigger: 'blur'
                 }]
             }
@@ -54,18 +67,39 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            vm.getJob();
             vm.getData();
         });
     },
     methods: {
+        getContent(val, arr, key, field) {
+            console.log(arr);
+            for (let item of arr) {
+                if (item[key] === val) {
+                    return item[field];
+                }
+            }
+            return '-';
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取信息中' });
             this.$axios({
-                url: '/api/Position/api_positionsforselect'
+                url: '/api/Position/api_getpositionlist'
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
                     this.tableData = res.data || [];
+                    console.log(res.data);
+                }
+            });
+        },
+        getJob() {
+            this.$axios({
+                url: '/api/Position/api_positiontypesforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.workList = res.data;
+                    console.log(res.data);
                 }
             });
         },
@@ -104,16 +138,20 @@ export default {
             this.visible = false;
             this.data = {
                 id: '',
-                title: ''
+                title: '',
+                typeName: ''
             };
             this.$refs.form.resetFields();
         },
         submit() {
             this.$refs.form.validate(valid => {
+                
                 if (valid) {
+                    console.log(this.getContent(this.data.typeName, this.workList, 'id', 'text'));
                     const params = {
                         ID: this.data.id || 0,
-                        Title: this.data.title || ''
+                        Title: this.data.title || '',
+                        Type: this.data.typeName
                     };
         
                     const loading = this.$loading({ lock: true, text: '正在提交信息中' });

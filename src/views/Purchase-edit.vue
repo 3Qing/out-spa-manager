@@ -1,38 +1,45 @@
 <template>
     <main-wrapper class="contract-sign">
+        <div slot="header" class="main-header">
+            <el-button type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
+            <el-button @click="resetForm('form')" size="small">重置</el-button>
+            <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
+        </div>
         <div class="content">
             <el-row>
                 <el-col :span="12">
-                    <el-form ref="form" :model="form" label-width="110px" :rules="rules">
-                        <el-form-item label="注文名称" prop="title">
-                            <el-input v-model="form.title" size="small"></el-input>
-                        </el-form-item>
-                        <el-form-item label="内容" prop="content">
-                            <el-input v-model="form.content" size="small"></el-input>
-                        </el-form-item>
-                        <el-form-item label="作業担当" prop="empeeid">
-                            <el-select
-                                v-model="form['employee.id']"
-                                filterable
-                                remote
-                                reserve-keyword
-                                :remote-method="remoteMethod"
-                                :loading="loading"
-                                size="small">
-                                <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="開始期間" prop="fromDate">
-                            <el-date-picker v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="終了期間" prop="toDate">
-                            <el-date-picker v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
-                        </el-form-item>
-                        <el-form-item label="支払サイト" prop="paymentterm">
-                            <el-select v-model="form['paymentterm.id']" size="small">
-                                <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
-                            </el-select>
-                        </el-form-item>
+                    <!-- <el-form ref="form" :model="form" label-width="110px" :rules="rules">
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="作業担当" prop="empeeid">
+                                    <el-select
+                                        v-model="form['employee.id']"
+                                        filterable
+                                        remote
+                                        reserve-keyword
+                                        :remote-method="remoteMethod"
+                                        :loading="loading"
+                                        size="small">
+                                        <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="開始期間" prop="fromDate">
+                                    <el-date-picker v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">    
+                                <el-form-item label="終了期間" prop="toDate">
+                                    <el-date-picker v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="支払サイト" prop="paymentterm">
+                                    <el-select v-model="form['paymentterm.id']" size="small">
+                                        <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
                         <el-form-item label="単価" prop="unitPrice">
                             <el-input v-model="form.unitPrice" size="small" @input="handlePrice"></el-input>
                         </el-form-item>
@@ -67,7 +74,7 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="供应商">
-                            <el-select v-model="form.vendorid">
+                            <el-select v-model="vendorid">
                                 <el-option
                                     v-for="item in vendors"
                                     :label="item.title"
@@ -82,6 +89,117 @@
                             <el-button type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
                             <el-button @click="resetForm('form')" size="small">重置</el-button>
                             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
+                        </el-form-item>
+                    </el-form> -->
+                    <el-form ref="form" :model="form" label-width="110px" :rules="rules">
+                        <el-form-item label="注文名称" prop="title">
+                            <el-input v-model="form.title" size="small"></el-input>
+                        </el-form-item>
+                        <el-form-item label="注文内容" prop="content">
+                            <el-input v-model="form.content" type="textarea" :rows="3" size="small"></el-input>
+                        </el-form-item>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="契約期間" prop="fromDate">
+                                    <!-- <p v-if="isDisplay">{{form.fromDate}}</p> -->
+                                    <el-date-picker placeholder="开始时间" v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="" prop="toDate">
+                                    <!-- <p v-if="isDisplay">{{form.toDate}}</p> -->
+                                    <el-date-picker placeholder="结束时间" v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item class="is-required" label="作業時間範囲">
+                                    <!-- <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p> -->
+                                    <el-input placeholder="开始时间" v-model="form.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                                    <div class="err">{{erroeMsg}}</div>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="">
+                                    <el-input placeholder="结束时间" v-model="form.hoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="供应商" prop="vendorid">
+                                    <el-select v-model="vendorid">
+                                        <el-option
+                                            v-for="item in vendors"
+                                            :label="item.title"
+                                            :value="item.id"
+                                            :key="item.id"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="支払サイト" prop="paymentterm">
+                                    <el-select v-model="form['paymentterm.id']" size="small">
+                                        <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="単価" prop="unitPrice">
+                                    <!-- <p v-if="isDisplay">{{form.unitPrice}}</p> -->
+                                    <el-input v-model="form.unitPrice" size="small" @input="handlePrice"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="精算単位" prop="calculateUnit">
+                                    <el-select v-model="form.calculateUnit" size="small">
+                                        <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="超過精算単価" prop="overTimePrice">
+                                    <!-- <p v-if="isDisplay">{{form.overTimePrice}}</p> -->
+                                    <el-input v-model="form.overTimePrice" size="small"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="控除精算単価" prop="underTimePrice">
+                                    <!-- <p v-if="isDisplay">{{form.underTimePrice}}</p> -->
+                                    <el-input v-model="form.underTimePrice" size="small"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item class="is-required" label="作業担当">
+                                    <el-select
+                                        v-model="form['employee.id']"
+                                        filterable
+                                        remote
+                                        reserve-keyword
+                                        :remote-method="remoteMethod"
+                                        :loading="loading"
+                                        size="small">
+                                        <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item class="is-required" label="営業担当" prop="salesperson">
+                                    <el-select v-model="form['salesperson.id']" size="small">
+                                        <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item label="商流備考" prop="businessFlow">
+                            <el-input v-model="form.businessFlow" size="small" type="textarea"></el-input>
                         </el-form-item>
                     </el-form>
                 </el-col> 
@@ -156,6 +274,7 @@
 </template>
 
 <script>
+// const querystring = require('querystring');
 import MainWrapper from '@components/main-wrapper';
 import { priceToString, priceToNumber, formatTime } from '@_public/utils';
 
@@ -165,6 +284,7 @@ export default {
     },
     data() {
         return {
+            vendorid: '',
             loading: false,
             form: {
                 title: '',
@@ -173,15 +293,16 @@ export default {
                 fromDate: '',
                 toDate: '',
                 'paymentterm.id': '',
-                unitPrice: '',
-                hoursFrom: '',
-                hoursTo: '',
-                overTimePrice: '',
-                underTimePrice: '',
+                unitPrice: null,
+                hoursFrom: null,
+                hoursTo: null,
+                overTimePrice: null,
+                underTimePrice: null,
                 calculateUnit: '',
                 'salesperson.id': '',
                 businessFlow: '',
-                ningetsu: ''
+                ningetsu: '',
+                vendorid: ''
             },
             unit: [
                 {
@@ -198,6 +319,15 @@ export default {
                 }
             ],
             rules: {
+                calculateUnit: [
+                    { required: true, message: '请输入精算单位', trigger: 'blur' }
+                ],
+                paymentterm: [
+                    { required: true, message: '请选择供应商', trigger: 'blur' }
+                ],
+                vendorid: [
+                    { required: true, message: '请选择供应商', trigger: 'blur' }
+                ],
                 title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
                 ],
@@ -408,43 +538,53 @@ export default {
         },
         submit() {
             const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
-            const params = new FormData();
+            const params = {};
             for (let key in this.form) {
                 if (key === 'employee.id') {
-                    params.append('employeeID', this.form[key]);
+                    params.employeeID = this.form[key];
                 } else if (key === 'paymentterm.id') {
-                    params.append('paymentTermID', this.form[key]);
+                    params.paymentTermID = this.form[key];
                 } else if (key === 'salesperson.id') {
-                    params.append('salesPersonID', this.form[key]);
+                    params.salesPersonID = this.form[key];
                 } else if (key === 'customer.id') {
-                    params.append('customerID', this.form[key]);
+                    params.customerID = this.form[key];
                 } else if (key === 'unitPrice') {
-                    params.append('unitPrice', priceToNumber(this.form[key]));
-                } else if (key !== 'ningetsu') {
-                    params.append(key, this.form[key]);
+                    params.unitPrice = Number(priceToNumber(this.form[key]));
+                } else if (key === 'hoursFrom') {
+                    params.hoursFrom = Number(this.form[key]);
+                } else if (key === 'hoursTo') {
+                    params.hoursTo = Number(this.form[key]);
+                } else if (key === 'overTimePrice') {
+                    params.overTimePrice = Number(this.form[key]);
+                } else if (key === 'underTimePrice') {
+                    params.underTimePrice = Number(this.form[key]);
+                } else {
+                    params[key] = this.form[key];
                 }
             }
-            if (this.form.ningetsu) {
-                this.form.ningetsu.forEach((item, index) => {
-                    params.append(`ningetsu[${index}]`, item);
-                });
-            } else {
-                params.append('ningetsu', '');
-            }
+            params.vendorTitle = this.formatLabel(this.vendorid, 'vendor');
+            // if (this.form.ningetsu) {
+            //     this.form.ningetsu.forEach((item, index) => {
+            //         params.append(`ningetsu[${index}]`, item);
+            //     });
+            // } else {
+            //     params.append('ningetsu', '');
+            // }
+            console.log(params);
             let url = '/api/PurchaseOrder/api_createpocontract';
             if (this.$route.params.id !== 'new') {
-                params.append('id', this.$route.params.id);
+                params.id = this.$route.params.id;
                 url = '/api/PurchaseOrder/api_updatepocontract';
             } else {
-                params.append('id', 0);
+                params.id = 0;
             }
             this.$axios({
                 method: 'POST',
                 url,
-                params,
                 headers: {
-                    'content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
+                params: params,
                 custom: {
                     loading,
                     vm: this
