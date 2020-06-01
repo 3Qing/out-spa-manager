@@ -250,7 +250,6 @@ export default {
             this.getList();
         },
         actionHandler(item, row) {
-            console.log(item.id, row);
             if (item.id === 'act_createinvoice') {
                 this.createInvoice(row);
             } else if (item.id === 'act_confirmtimesheet') {
@@ -282,6 +281,7 @@ export default {
                 params: {
                     cfids: [row.cfid]
                 },
+                formData: true,
                 custom: {
                     loading,
                     vm: this

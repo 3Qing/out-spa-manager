@@ -130,6 +130,24 @@ body {
     .task-manager .el-table tbody tr:hover>td {
         background-color: transparent !important
     }
+    .task-manager .el-table th:first-child{
+        // visibility: hidden;
+    }
+    .task-manager .el-table tr td:first-child{
+        border: none;
+        border-right: 1px solid #EBEEF5;
+        width: 100px !important;
+        .cell{
+            position: relative;
+            span{
+                position: absolute;
+                top: -29px;
+            }
+        }
+        .cell:first-child{
+            span:first-child{}
+        }
+    }
     .intro-dialog {
         .el-dialog__body {
             padding-top: 10px;

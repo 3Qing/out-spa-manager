@@ -11,7 +11,7 @@
             </div>
             <div class="right fr">
                 <el-table :data="tableData" height="100%" border>
-                    <el-table-column v-for="(item, i) in columns" :key="item.name" min-width="170px">
+                    <el-table-column v-for="(item, i) in columns" :key="item.name" :min-width="i===0?'45px':'170px'">
                         <template slot="header">
                             <div v-if="i === 0"></div>
                             <div v-else>{{item.name}}</div>
@@ -92,6 +92,7 @@ export default {
             }
             this.$nextTick(() => {
                 this.columns = columns;
+                console.log(columns);
                 this.getData();
             });
         },
@@ -116,7 +117,7 @@ export default {
                 tmp[HH][date].push(item);
             });
             const tableData = [];
-            for (let i = 0; i < length; i++) {
+            for (let i = -1; i < length; i++) {
                 const HH = String(i).padStart(2, '0');
                 // console.log(HH);
                 // const o = {
@@ -125,6 +126,9 @@ export default {
                 const o = {
                     label: ''
                 };
+                if(i===-1){
+                    o.label = '';
+                }
                 if (i >=0 && i<12) {
                     o.label = '午前' + i + '时';
                 } else {
@@ -137,7 +141,9 @@ export default {
                 }
                 tableData.push(o);
             }
+            tableData[0].label = '';
             this.tableData = tableData;
+            console.log(this.tableData);
             this.$nextTick(() => {
                 document.querySelector('.el-table__body-wrapper').scrollTop = 9 * 60;
             });
@@ -310,7 +316,7 @@ export default {
             position: absolute;
             height: 20px;
             top: 10px;
-            right: 20px;
+            right: 12px;
         }
         
         .el-table thead th:first-of-type:after {
@@ -318,23 +324,23 @@ export default {
             position: absolute;
             height: 20px;
             bottom: 10px;
-            left: 20px;
+            left: 12px;
         }
         
         .el-table thead th:first-of-type .cell {
             position: absolute;
             top: 0;
             left: 0;
-            width: 260px;
+            width: 110px;
             height: 2px;
             background-color: #EBEEF5;
             display: block;
             text-align: center;
-            transform: rotate(21deg);
+            transform: rotate(42deg);
             transform-origin: top left;
-            -ms-transform: rotate(21deg);
+            -ms-transform: rotate(42deg);
             -ms-transform-origin: top left;
-            -webkit-transform: rotate(21deg);
+            -webkit-transform: rotate(42deg);
             -webkit-transform-origin: top left;
         }
     }

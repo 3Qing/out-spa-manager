@@ -421,8 +421,8 @@ export default {
                         });
                     } else {
                         const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
-                        this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
-                        console.log(this.form.status);
+                        // this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
+                        console.log(this.form.nationality);
                         const params = {
                             Furigana_FirstName: this.form.furigana_FirstName,
                             Furigana_LastName: this.form.furigana_LastName,
