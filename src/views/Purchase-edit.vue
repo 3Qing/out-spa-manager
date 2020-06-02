@@ -128,8 +128,8 @@
                         </el-row>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="供应商" prop="vendorid">
-                                    <el-select v-model="vendorid">
+                                <el-form-item class="is-required" label="供应商">
+                                    <el-select v-model="form.vendorid" @change="changeCustomer">
                                         <el-option
                                             v-for="item in vendors"
                                             :label="item.title"
@@ -139,7 +139,7 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="支払サイト" prop="paymentterm">
+                                <el-form-item class="is-required" label="支払サイト">
                                     <el-select v-model="form['paymentterm.id']" size="small">
                                         <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
@@ -284,18 +284,17 @@ export default {
     },
     data() {
         return {
-            vendorid: '',
             loading: false,
             form: {
                 title: '',
                 content: '',
                 'employee.id': '',
-                fromDate: '',
-                toDate: '',
+                fromDate: this.nextMonthFirstDay(),
+                toDate: this.nextMonthLastDay(),
                 'paymentterm.id': '',
                 unitPrice: null,
-                hoursFrom: null,
-                hoursTo: null,
+                hoursFrom: 140,
+                hoursTo: 180,
                 overTimePrice: null,
                 underTimePrice: null,
                 calculateUnit: '',
@@ -323,10 +322,10 @@ export default {
                     { required: true, message: '请输入精算单位', trigger: 'blur' }
                 ],
                 paymentterm: [
-                    { required: true, message: '请选择供应商', trigger: 'blur' }
+                    { required: true, message: '请选择支払サイト' }
                 ],
                 vendorid: [
-                    { required: true, message: '请选择供应商', trigger: 'blur' }
+                    { required: true, message: '请选择供应商'}
                 ],
                 title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
@@ -509,13 +508,21 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid && !this.erroeMsg) {
-                    if (this.$route.params.id) {
-                        this.getPersonMonth();
+                    if (this.form.vendorid === ''){
+                        this.$message.warning('请选择供应商');
+                    } else if (this.form['salesperson.id'] === ''){
+                        this.$message.warning('请选择営業担当');
+                    } else if (this.form['employee.id'] === '') {
+                        this.$message.warning('请选择作業担当');
                     } else {
-                        if (this.completeMonth()) {
+                        if (this.$route.params.id) {
                             this.getPersonMonth();
                         } else {
-                            this.submit();
+                            if (this.completeMonth()) {
+                                this.getPersonMonth();
+                            } else {
+                                this.submit();
+                            }
                         }
                     }
                 } else {
@@ -562,15 +569,14 @@ export default {
                     params[key] = this.form[key];
                 }
             }
-            params.vendorTitle = this.formatLabel(this.vendorid, 'vendor');
-            // if (this.form.ningetsu) {
-            //     this.form.ningetsu.forEach((item, index) => {
-            //         params.append(`ningetsu[${index}]`, item);
+            params.ningetsu = JSON.stringify(params.ningetsu || []);
+            // if (params.ningetsu) {
+            //     params.ningetsu.forEach((item, index) => {
+                    
             //     });
             // } else {
             //     params.append('ningetsu', '');
             // }
-            console.log(params);
             let url = '/api/PurchaseOrder/api_createpocontract';
             if (this.$route.params.id !== 'new') {
                 params.id = this.$route.params.id;
@@ -578,22 +584,22 @@ export default {
             } else {
                 params.id = 0;
             }
+            console.log(params);
             this.$axios({
                 method: 'POST',
                 url,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                params: params,
+                params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
                     if (this.$route.params.id === 'new') {
-                        this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
+                        // this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
+                        this.$router.back();
                     } else {
                         this.getData();
                     }
@@ -680,6 +686,56 @@ export default {
         },
         handlePrice() {
             this.form.unitPrice = priceToString(priceToNumber(this.form.unitPrice)); 
+        },
+        // 供应商判断
+        changeCustomer() {
+            for (let item of this.vendors) {
+                if (item.id === this.form.vendorid) {
+                    this.form['paymentterm.id'] = item.paymentTermID;
+                }
+            }
+        },
+        // 下个月的第一天
+        nextMonthFirstDay() {
+            var time = new Date();
+            var year = time.getFullYear();
+            var month = time.getMonth() + 2;
+            if (month > 12) {
+                month = month - 12;
+                year = year + 1;
+            }
+            var day = 1;
+            return year + '-' + month + '-' + day;
+        },
+        // 下个月的最后一天
+        nextMonthLastDay() {
+            var time = new Date();
+            var year = time.getFullYear();
+            var month = time.getMonth() + 2;
+            if (month > 12) {
+                month = month - 12;
+                year = year + 1;
+            }
+            var day = this.nextMonthDay(year, month);
+            return year + '-' + month + '-' + day;
+        },
+        nextMonthDay(year, month) {//判断每月多少天
+            var day31 = [1, 3, 5, 7, 8, 10, 12];
+            var day30 = [4, 6, 9, 11];
+            if (day31.indexOf(month) > -1) {
+                return 31;
+            } else if (day30.indexOf(month) > -1) {
+                return 30;
+            } else {
+                if (this.isLeapYear(year)) {
+                    return 29;
+                } else {
+                    return 28;
+                }
+            }
+        },
+        isLeapYear(year) {//判断是否为闰年
+            return (year % 4 == 0) && (year % 100 != 0 || year % 400 == 0);
         }
     }
 };

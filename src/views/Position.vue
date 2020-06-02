@@ -147,7 +147,9 @@ export default {
             this.$refs.form.validate(valid => {
                 
                 if (valid) {
-                    console.log(this.getContent(this.data.typeName, this.workList, 'id', 'text'));
+                    if(typeof(this.data.typeName) === 'string'){
+                        this.data.typeName = this.getContent(this.data.typeName, this.workList, 'text', 'id');
+                    }
                     const params = {
                         ID: this.data.id || 0,
                         Title: this.data.title || '',
