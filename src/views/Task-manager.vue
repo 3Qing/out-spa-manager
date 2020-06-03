@@ -9,7 +9,7 @@
                 <Calendar
                     @choseDay="clickDay"></Calendar>
             </div>
-            <div class="right fr">
+            <div class="right fr" >
                 <el-table :data="tableData" height="100%" border>
                     <el-table-column v-for="(item, i) in columns" :key="item.name" :min-width="i===0?'70px':'170px'">
                         <template slot="header">
@@ -53,7 +53,8 @@ export default {
             owntask: true,
             columns: [],
             tableData: [],
-            curTime: ''
+            curTime: '',
+            isTrue: true
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -63,6 +64,12 @@ export default {
     },
     computed: {
         ...mapGetters([ 'GET_LOADING' ])
+    },
+    mounted() {
+        // if(this.tableData > 0) {
+        //     location.reload();
+        // }
+        // console.log('111');
     },
     methods: {
         initTable(val) {
@@ -92,12 +99,11 @@ export default {
             }
             this.$nextTick(() => {
                 this.columns = columns;
-                console.log(columns);
                 this.getData();
             });
         },
         formatData(data) {
-            const length = 24;
+            const length = 25;
             const tmp = {};
             data.forEach(item => {
                 const time = moment(new Date(item.atyDate).getTime()).format('MM-DD|HH:mm');
@@ -204,10 +210,11 @@ export default {
                 }
             });
         },
-        getStyle(item, arr) {
+        getStyle(item) {
+            const itop = item.top - 25 + '%';
             return {
-                height: `(${item.height}%)/(${arr.length})`,
-                top: `${item.top}%`
+                height: `(${item.height}%)`,
+                top: itop
             };
         }
     }
@@ -242,7 +249,10 @@ export default {
                 }
                 .wh_item_date {
                     color: #333;
-                    border-radius: 100px;
+                    border-radius: 50%;
+                    height: 30px;
+                    width: 30px;
+                    line-height: 30px;
                     &.wh_other_dayhide {
                         color: #ccc;
                     }

@@ -5,7 +5,7 @@
             <el-button v-else size="mini" type="warning" @click="beforeSubmit">変更</el-button>
             <el-button class="fr" size="mini" @click="$router.back()">リターン</el-button>
         </div>
-        <el-form size="mini" label-width="90px" ref="form" :model="form" :rules="rules">
+        <el-form size="mini" label-width="100px" ref="form" :model="form" :rules="rules">
             <el-row v-if="!IS_H5">
                 <el-col :span="8">
                     <el-form-item label="大学" prop="schoolName">
@@ -47,33 +47,22 @@
             <el-form-item label="得意技術" prop="masterSkills">
                 <el-input type="textarea" :rows="2" v-model="form.masterSkills"></el-input>
             </el-form-item>
-            <el-form-item label="" class="ms-wrapper">
+            <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="ms-wrapper">
+                <div slot="label">
+                    <i class="el-icon-delete pointer" color="danger" @click="deleteDe(i)"></i>得意分野{{item.id}}
+                </div>
                 <el-row :gutter="10">
-                    <el-col :span="6">
-                        <p class="text-align">得意分野1</p>
-                        <div><el-input v-model="form.mS01_Title" placeholder="タイトル" @input="inputHandler(1)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS01_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(1)"></el-input></div>
-                        <p v-if="tip1" color="danger">タイトルと内容を入力してください！</p>
-                    </el-col>
-                    <el-col :span="6">
-                        <p class="text-align">得意分野2</p>
-                        <div><el-input v-model="form.mS02_Title" placeholder="タイトル" @input="inputHandler(2)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS02_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(2)"></el-input></div>
-                        <p v-if="tip2" color="danger">タイトルと内容を入力してください！</p>
-                    </el-col>
-                    <el-col :span="6">
-                        <p class="text-align">得意分野3</p>
-                        <div><el-input v-model="form.mS03_Title" placeholder="タイトル" @input="inputHandler(3)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS03_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(3)"></el-input></div>
-                        <p v-if="tip3" color="danger">タイトルと内容を入力してください！</p>
-                    </el-col>
-                    <el-col :span="6">
-                        <p class="text-align">得意分野4</p>
-                        <div><el-input v-model="form.mS04_Title" placeholder="タイトル" @input="inputHandler(4)"></el-input></div>
-                        <div class="mt-10"><el-input v-model="form.mS04_Content" type="textarea" :rows="2" placeholder="内容" @input="inputHandler(4)"></el-input></div>
-                        <p v-if="tip4" color="danger">タイトルと内容を入力してください！</p>
+                    <el-col :span="12">
+                        <div class="tel1">
+                            <el-input class="tel2" v-model="item['mS0'+item.id+'_Title']" placeholder="タイトル" @input="inputHandler(item.id)"></el-input>
+                            <el-input class="tel3" v-model="item['mS0'+item.id+'_Content']" placeholder="内容" @input="inputHandler(item.id)"></el-input>
+                        </div>
+                        <p v-if="`tip${item.id}` === true" color="danger">タイトルと内容を入力してください！</p>
                     </el-col>
                 </el-row>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" size="mini" v-if='msTitles.length<4' @click="addDe(msTitles.length)">得意追加</el-button>
             </el-form-item>
             <el-row>
                 <el-col :span="12">
@@ -226,8 +215,13 @@ export default {
     },
     data() {
         return {
+            msTitles: [{
+                id: 1,
+                mS01_Title: '',
+                mS01_Content: ''
+            }],
             form: {
-                id: '',
+                id: 0,
                 schoolName: '',
                 major: '',
                 graduateDate: '',
@@ -244,12 +238,12 @@ export default {
                 jpLangLevel: '',
                 enLangLevel: '',
                 certificates: [{
-                    id: '',
+                    id: 0,
                     title: '',
                     passDate: ''
                 }],
                 projects: [{
-                    id: '',
+                    id: 0,
                     time: '',
                     projectName: '',
                     position: '',
@@ -347,7 +341,33 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
-                    console.log(data);
+                    let msTitle = [];
+                    let obj1 = {
+                        id: 1,
+                        mS01_Title: data.mS01_Title,
+                        mS01_Content: data.mS01_Content
+                    };
+                    let obj2 = {
+                        id: 2,
+                        mS02_Title: data.mS02_Title,
+                        mS02_Content: data.mS02_Content
+                    };
+                    let obj3 = {
+                        id: 3,
+                        mS03_Title: data.mS03_Title,
+                        mS03_Content: data.mS03_Content
+                    };
+                    let obj4 = {
+                        id: 4,
+                        mS04_Title: data.mS04_Title,
+                        mS04_Content: data.mS04_Content
+                    };
+                    msTitle.push(obj1);
+                    msTitle.push(obj2);
+                    msTitle.push(obj3);
+                    msTitle.push(obj4);
+                    this.msTitles = msTitle;
+                    console.log(this.msTitles);
                     const baseForm = JSON.parse(JSON.stringify(this.form));
                     console.log(baseForm);
                     const baseProjects = { ...baseForm.projects[0] };
@@ -445,7 +465,7 @@ export default {
                     });
                     if (count === this.form.projects.length) {
                         const params = {
-                            ID: (this.form.id && Number(this.form.id)) || '',
+                            ID: (this.form.id && Number(this.form.id)) || 0,
                             schoolName: this.form.schoolName || '',
                             major: this.form.major || '',
                             graduateDate: (this.form.graduateDate && `${this.form.graduateDate}-01`) || '',
@@ -575,8 +595,64 @@ export default {
                 passDate: ''
             });
         },
+        addDe(row) {
+            var rowd = row + 1;
+            var title = 'mS0'+ rowd +'_Title';
+            var content = 'mS0'+ rowd +'_Content';
+            this.msTitles.push({
+                id: rowd,
+                [`${title}`]: '',
+                [`${content}`]: '',
+            });
+            this.msTitles.forEach((item) => {
+                if(item.id === 1){
+                    this.form.mS01_Title = item.mS01_Title;
+                    this.form.mS01_Content = item.mS01_Content;
+                } else if (item.id === 2){
+                    this.form.mS02_Title = item.mS02_Title;
+                    this.form.mS02_Content = item.mS02_Content;
+                } else if (item.id === 3){
+                    this.form.mS03_Title = item.mS03_Title;
+                    this.form.mS03_Content = item.mS03_Content;
+                } else if (item.id === 4){
+                    this.form.mS04_Title = item.mS04_Title;
+                    this.form.mS04_Content = item.mS04_Content;
+                }
+            });
+        },
         deleteCerts(i) {
             this.form.certificates.splice(i, 1);
+        },
+        deleteDe(i) {
+            this.msTitles.splice(i, 1);
+            if (i === 0) {
+                this.form.mS01_Title = '';
+                this.form.mS01_Content = '';
+            } else if (i === 1){
+                this.form.mS02_Title = '';
+                this.form.mS02_Content = '';
+            } else if (i === 2){
+                this.form.mS03_Title = '';
+                this.form.mS03_Content = '';
+            } else if (i === 3){
+                this.form.mS04_Title = '';
+                this.form.mS04_Content = '';
+            }
+            this.msTitles.forEach((item) => {
+                if(item.id === 1){
+                    this.form.mS01_Title = item.mS01_Title;
+                    this.form.mS01_Content = item.mS01_Content;
+                } else if (item.id === 2){
+                    this.form.mS02_Title = item.mS02_Title;
+                    this.form.mS02_Content = item.mS02_Content;
+                } else if (item.id === 3){
+                    this.form.mS03_Title = item.mS03_Title;
+                    this.form.mS03_Content = item.mS03_Content;
+                } else if (item.id === 4){
+                    this.form.mS04_Title = item.mS04_Title;
+                    this.form.mS04_Content = item.mS04_Content;
+                }
+            });
         }
     }
 };
@@ -621,6 +697,18 @@ export default {
     .pointer {
         cursor: pointer;
         margin-right: 5px;
+    }
+    .tel1{
+        overflow: hidden;
+        .tel2{
+            width: 20%;
+            float: left;
+        }
+        .tel3{
+            width: 70%;
+            float: left;
+            margin-left: 20px;
+        }
     }
 }
 </style>

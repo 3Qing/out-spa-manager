@@ -708,7 +708,7 @@ export default {
             });
         },
         getSubmitParams(type) {
-            this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
+            // this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
             let params = {
                 'Certificates': this.form.certificates.map(item => ({
                     certificateID: item,

@@ -54,7 +54,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="見積合計金額" prop="amount">
-                                <el-input v-model="data.amount" @input="handlePrice"></el-input>
+                                <el-input :disabled=disab v-model="data.amount" @input="handlePrice"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -153,7 +153,7 @@
             </el-table-column>
             <el-table-column label="人月" width="160px">
                 <template slot-scope="scope">
-                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="10" :min="0" @change="handleChange"></el-input-number>
+                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="10" :min="0" @change="handleChange(scope)"></el-input-number>
                 </template>
             </el-table-column>
             <el-table-column label="単価" width="140px">
@@ -163,7 +163,7 @@
             </el-table-column>
             <el-table-column label="金額" width="100px">
                 <template slot-scope="scope">
-                    <span>{{priceToString(scope.row.amount || 0)}}</span>
+                    <span>{{scope.row.amount}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="備考">
@@ -198,6 +198,8 @@ export default {
     },
     data() {
         return {
+            disab: true,
+            totals: 0,
             isSave: false,
             texts: '見積書初期化',
             dates: [],
@@ -305,6 +307,7 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     data.amount = priceToString(priceToNumber(data.amount));
+                    this.totals = priceToString(priceToNumber(data.amount));
                     data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
                     this.data = { ...data };
                     console.log(this.data);
@@ -334,6 +337,7 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     data.amount = priceToString(priceToNumber(data.amount));
+                    this.totals = priceToString(priceToNumber(data.amount));
                     this.data = { ...data };
                     this.dates = [
                         moment(new Date(data.fromDate).getTime()).format('YYYY-MM-DD'),
@@ -398,22 +402,31 @@ export default {
             });
         },
         // 计数器
-        handleChange(value) {
-            console.log(value, this.tableData);
+        handleChange(scope) {
+            const tableData = this.tableData.map(item => ({ ...item }));
+            tableData[scope.$index].ningetsu = scope.row.ningetsu;
+            tableData[scope.$index].amount = priceToString(priceToNumber(scope.row.unitPrice) * scope.row.ningetsu);
+            this.tableData = tableData;
+            let total = 0;
+            tableData.forEach(item => {
+                total += priceToNumber(item.amount) || 0;
+            });
+            this.totals = total;
         },
         // 合计
         getSummaries(p) {
-            const { columns, data } = p;
+            const { columns } = p;
             const sum = [];
-            let total = 0;
-            data.forEach(item => {
-                total += (item.amount && Number(item.amount)) || 0;
-            });
+            // let total = 0;
+            // data.forEach(item => {
+            //     total += (item.amount && Number(item.amount)) || 0;
+            // });
+            // console.log(total);
             columns.forEach((item, index) => {
                 if (index === 3) {
                     sum[index] = '合計：';
                 } else if (index === 4) {
-                    sum[index] = priceToString(total);
+                    sum[index] = priceToString(priceToNumber(this.totals));
                 } else {
                     sum[index] = '';
                 }
@@ -433,7 +446,13 @@ export default {
         handleInput(scope) {
             const tableData = this.tableData.map(item => ({ ...item }));
             tableData[scope.$index].unitPrice = priceToString(priceToNumber(scope.row.unitPrice));
+            tableData[scope.$index].amount = priceToString(priceToNumber(scope.row.unitPrice) * scope.row.ningetsu);
             this.tableData = tableData;
+            let total = 0;
+            tableData.forEach(item => {
+                total += priceToNumber(item.amount) || 0;
+            });
+            this.totals = total;
         },
         handlePrice() {
             this.data.amount = priceToString(priceToNumber(this.data.amount));
@@ -455,11 +474,11 @@ export default {
                         ToDate: this.dates[1],
                         FromHours: this.fromhours,
                         ToHours: this.tohours,
-                        Amount: priceToNumber(this.data.amount),
+                        Amount: priceToNumber(this.totals),
                         Items: this.tableData.map(item => ({
                             ID: item.id,
                             EmployeeID: item.employeeID,
-                            Amount: item.amount || 0,
+                            Amount: priceToNumber(item.amount) || 0,
                             Comment: item.comment || '',
                             Ningetsu: Number(item.ningetsu || 0) * 100,
                             UnitPrice: priceToNumber(item.unitPrice)
