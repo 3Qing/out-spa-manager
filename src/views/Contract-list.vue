@@ -80,6 +80,13 @@
                             :opt="{ btnText: '', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
                             @upload="uploadFile"></upload>
                     </el-tooltip>
+                    <el-tooltip v-if="!scope.row.paperReceived" effect="dark" content="再ｱｯﾌﾟﾛｰﾄﾞ" placement="top-start">
+                        <upload
+                            class="info-btn"
+                            style="position:relative;left:-23px;"
+                            :opt="{ btnText: '', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
+                            @upload="uploadFile"></upload>
+                    </el-tooltip>
                     <!-- <upload
                         class="danger-btn"
                         v-if="!scope.row.paperReceived"
@@ -373,31 +380,29 @@ export default {
         },
         // 删除合同
         deletes(row) {
-            console.log(row);
-            this.$axios({
-                url: '/api/Contract/api_deletecontract',
-                params: {
-                    contractid: row.id
-                }
-            }).then(res => {
-                this.$message({
-                    type: 'success',
-                    message: res.message
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/Contract/api_deletecontract',
+                    params: {
+                        contractid: row.id
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getData();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
                 });
-                this.getData();
-            });
-            // this.$confirm('此操作将永久删除该合同, 是否继续?', '提示', {
-            //     confirmButtonText: '确定',
-            //     cancelButtonText: '取消',
-            //     type: 'warning'
-            // }).then(() => {
-                
-            // }).catch(() => {
-            //     this.$message({
-            //         type: 'info',
-            //         message: '已取消删除'
-            //     });
-            // });
+            }).catch(() => {});
         },
         formatNingetsu(scope) {
             const personMonthArr = [...this.personMonthArr];

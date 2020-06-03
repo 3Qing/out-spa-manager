@@ -147,7 +147,7 @@ export default {
                         arr1.push(item.onPJPersons / 100);
                         arr2.push(item.benchPersons / 100);
                         arr3.push(parseInt(((item.sales * 10000 - item.humanCost) / item.onPJPersons * 100)));
-                        arr4.push(((item.sales - item.humanCost / 10000) / item.sales).toFixed(2));
+                        arr4.push(((item.sales - item.humanCost / 10000) / item.sales).toFixed(2) * 100 + '%');
                         arr5.push(item.fromDate.substring(0, 7).replace('-', '年')+'月');
                     });
                     arr6 = [arr5, arr1, arr2, arr3, arr4];

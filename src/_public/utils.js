@@ -33,6 +33,7 @@ export function formatTime(time) {
 
 // 下载文件
 export function apiDownloadFile({ vm, url, filename }) {
+    const loading = vm.$loading({ lock: true, text: '正在获取数据中...' });
     vm.$axios({
         url,
         headers: {
@@ -41,6 +42,7 @@ export function apiDownloadFile({ vm, url, filename }) {
         responseType: 'blob'
     }).then(res => {
         if (res) {
+            loading.close();
             const fileReader = new FileReader();
             fileReader.readAsDataURL(res);
             fileReader.onload = event => {

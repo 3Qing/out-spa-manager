@@ -153,7 +153,7 @@
             </el-table-column>
             <el-table-column label="人月" width="160px">
                 <template slot-scope="scope">
-                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="10"></el-input-number>
+                    <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="10" :min="0" @change="handleChange"></el-input-number>
                 </template>
             </el-table-column>
             <el-table-column label="単価" width="140px">
@@ -396,6 +396,10 @@ export default {
                     this.pays = res.data || [];
                 }
             });
+        },
+        // 计数器
+        handleChange(value) {
+            console.log(value, this.tableData);
         },
         // 合计
         getSummaries(p) {
