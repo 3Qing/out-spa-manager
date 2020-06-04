@@ -69,6 +69,7 @@
         <tian-dialog
             :visible="tianApply"
             :data="tianArr"
+            :opport="opportStatus"
             @close="tianApply = false"
             @update="getData"></tian-dialog>
     </main-wrapper>

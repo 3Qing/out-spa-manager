@@ -1,38 +1,6 @@
 <template>
     <el-dialog :visible="visible" @close="close" title="提案履歴">
-        <el-table :data="data" size="small" border>
-            <el-table-column type="expand">
-                <template slot-scope="props">
-                    <el-form label-position="left" inline class="demo-table-expand">
-                        <el-form-item label="">
-                            <el-input v-model="props.row.name" type="textarea" :rows="3"></el-input>
-                        </el-form-item>
-                        <el-form-item label="2020-06-04 18:00">
-                            <el-input class="input" v-model="props.row.name" ></el-input>
-                            <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
-                                <i class="el-icon-delete oper-icon" color="danger" @click="deletes(props.row)"></i>
-                            </el-tooltip>
-                        </el-form-item>
-                        <el-form-item label="2020-06-04 19:00">
-                            <el-input class="input" v-model="props.row.name" ></el-input>
-                            <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
-                                <i class="el-icon-delete oper-icon" color="danger" @click="deletes(props.row)"></i>
-                            </el-tooltip>
-                            <el-tooltip class="flot flot1" effect="dark" content="添加" placement="top-start">
-                                <i class="el-icon-plus oper-icon" color="primary" @click="showDialog(props.row)"></i>
-                            </el-tooltip>
-                        </el-form-item>
-                        <el-form-item label="提案状态">
-                            <el-select size="mini" v-model="states">
-                                <el-option v-for="item in docTypes" :key="item.type" :label="item.text" :value="item.type"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="">
-                            <el-button size="small" type="primary">保存</el-button>
-                        </el-form-item>
-                    </el-form>
-                </template>
-                </el-table-column>
+        <el-table ref="table" :data="data" size="small" border>
             <el-table-column label="Name" prop="name" show-overflow-tooltip></el-table-column>
             <el-table-column label="CreateDate" prop="createDate" show-overflow-tooltip>
                 <template slot-scope="scope">
@@ -40,25 +8,61 @@
                 </template>
             </el-table-column>
             <el-table-column label="SalesPerson" prop="salesPerson" show-overflow-tooltip></el-table-column>
+            <el-table-column label="" width="40">
+                <template slot-scope="scope">
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                        <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, 1)"></i>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+            <el-table-column type="expand" width="1">
+                <template slot-scope="props">
+                    <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="">
+                            <el-input v-model="content" type="textarea" :rows="3"></el-input>
+                        </el-form-item>
+                        <el-form-item class="lid" v-for='(item,index) in salesCaseItems' :key='index' :label="item.updateTime">
+                            <el-input class="input" v-model="item.content" ></el-input>
+                            <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
+                                <i class="el-icon-delete oper-icon" color="danger" @click="deletes(index)"></i>
+                            </el-tooltip>
+                            <el-tooltip v-if='(index+1) === salesCaseItems.length' class="flot flot1" effect="dark" content="添加" placement="top-start">
+                                <i class="el-icon-plus oper-icon" color="primary" @click="adds"></i>
+                            </el-tooltip>
+                        </el-form-item>
+                        <el-form-item label="提案状态">
+                            <el-select size="mini" v-model="props.row.status">
+                                <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="">
+                            <el-button size="small" type="primary" @click='save(props.row)'>保存</el-button>
+                        </el-form-item>
+                    </el-form>
+                </template>
+            </el-table-column>
         </el-table>
     </el-dialog>
 </template>
 
 <script>
+import moment from 'moment';
 export default {
     props: {
         visible: {
             type: Boolean,
             default: false,
         },
-        data: Array
+        data: Array,
+        opport: Array,
     },
     data() {
         return {
-            states: 0,
-            docTypes: [{
-                type: 0,
-                text: '已提案'
+            ids: 1,
+            content: '',
+            salesCaseItems: [{
+                content: '',
+                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
             }]
         };
     },
@@ -67,6 +71,72 @@ export default {
     methods: {
         close() {
             this.$emit('close');
+        },
+        // 展开
+        toogleExpand(row) {
+            let $table = this.$refs.table;
+            this.data.map((item) => {
+                if (row.id != item.id) {
+                    $table.toggleRowExpansion(item, false);
+                }
+            });
+            const loading = this.$loading({ lock: true, text: '正在加载...' });
+            this.$axios({
+                url: '/api/Opportunity/api_getsalescaseinfo',
+                params: {
+                    scid: row.id
+                }
+            }).then(res => {
+                loading.close();
+                $table.toggleRowExpansion(row);
+                let datas = {};
+                if (res && res.code === 0) {
+                    datas = res.data;
+                }
+                this.data.forEach((item) => {
+                    if(item.id === datas.id) {
+                        this.content = datas.content;
+                        if (datas.salesCaseItems.length>0) {
+                            datas.salesCaseItems.forEach((i) => {
+                                i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
+                            });
+                            this.salesCaseItems = datas.salesCaseItems;
+                        }
+                    }
+                });
+            });
+        },
+        // 添加
+        adds() {
+            this.salesCaseItems.push({
+                content: '',
+                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+            });
+        },
+        // 删除
+        deletes(i) {
+            this.salesCaseItems.splice(i, 1);
+        },
+        // 保存
+        save(row) {
+            const loading = this.$loading({ lock: true, text: '正在保存...' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/SalesCase/api_updatesalescase',
+                params: {
+                    id: row.id,
+                    content: this.content,
+                    Status: row.status,
+                    SalesCaseItems: this.salesCaseItems
+                },
+                formData: true
+            }).then(res => {
+                loading.close();
+                this.$message({
+                    type: 'success',
+                    message: res ? res.message : '接口开小差了，没有返回信息'
+                });
+            });
         }
     }
 };
@@ -81,11 +151,13 @@ export default {
     .input{
         float: left;
         width: 465px;
+        height: 30px;
+        line-height: 30px;
     }
     .flot{
         // float: left;
         position: absolute;
-        top: 10px;
+        top: 5px;
         margin-left: 10px;
     }
     .flot1{
@@ -100,6 +172,6 @@ export default {
     margin-right: 0;
     margin-bottom: 0;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 10px;
   }
 </style>
