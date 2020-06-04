@@ -10,10 +10,10 @@
                     @choseDay="clickDay"></Calendar>
             </div>
             <div class="right fr" >
-                <el-table :data="tableData" height="100%" border>
-                    <el-table-column v-for="(item, i) in columns" :key="item.name" :min-width="i===0?'70px':'170px'">
+                <el-table :data="tableData" height="100%" border :summary-method="getSummaries" :show-summary=showSu>
+                    <el-table-column v-for="(item, index) in columns" :key="item.name" :min-width="index===0?'70px':'170px'">
                         <template slot="header">
-                            <div v-if="i === 0"></div>
+                            <div v-if="index === 0"></div>
                             <div v-else>{{item.name}}</div>
                         </template>
                         <template slot-scope="scope">
@@ -50,6 +50,7 @@ export default {
     },
     data() {
         return {
+            showSu: true,
             owntask: true,
             columns: [],
             tableData: [],
@@ -66,8 +67,9 @@ export default {
         ...mapGetters([ 'GET_LOADING' ])
     },
     mounted() {
+        // this.$router.go(0);
         // if(this.tableData > 0) {
-        //     location.reload();
+        // location.reload();
         // }
         // console.log('111');
     },
@@ -191,6 +193,15 @@ export default {
         },
         clickDay(data) {
             this.initTable(data);
+        },
+        getSummaries(param) {
+            const { columns } = param;
+            columns.forEach((column, index) => {
+                if (index === 0) {
+                    column.id = 'el-table_1_column_1';
+                }
+            });
+            return columns;
         },
         newHandle() {
             this.$root.$emit('SHOW_TASK_DIALOG', {

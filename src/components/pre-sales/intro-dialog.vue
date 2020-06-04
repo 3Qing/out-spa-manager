@@ -157,7 +157,8 @@
                             :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: trus, showIcon: true }"
                             @upload="uploadFile">
                             </upload>
-                        <span class="flop" v-if='trus === false'>{{form.attachResume}}</span>
+                        <span class="flop" v-if='trus === false && form.attachResume !== null'>履歴書</span>
+                        <i v-if='trus === false && form.attachResume !== null' class="flor iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResume)"></i>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -190,8 +191,8 @@ export default {
                 firstName: '',
                 lastName: '',
                 birthday: '1985-01-01',
-                nationality: '',
-                liveCity: '',
+                nationality: 0,
+                liveCity: 0,
                 mainSkill: '',
                 sex: true,
                 salesFromDate: this.month,
@@ -302,7 +303,7 @@ export default {
             }).then(res => {
                 console.log('city', res);
                 this.cityTypeArr = res.data;
-                this.form.liveCity = this.cityTypeArr[0].text;
+                this.form.liveCity = this.cityTypeArr[0].id;
             });
         },
         // 国籍列表
@@ -312,7 +313,7 @@ export default {
             }).then(res => {
                 console.log('country', res, res.data[0].text);
                 this.countryTypeArr = res.data;
-                this.form.nationality = this.countryTypeArr[0].text;
+                this.form.nationality = this.countryTypeArr[0].id;
             });
         },
         // 候选人列表
@@ -332,8 +333,8 @@ export default {
                 firstName: '',
                 lastName: '',
                 birthday: '1985-01-01',
-                nationality: this.countryTypeArr[0].text,
-                liveCity: this.cityTypeArr[0].text,
+                nationality: this.countryTypeArr[0].id,
+                liveCity: this.cityTypeArr[0].id,
                 mainSkill: '',
                 sex: true,
                 salesFromDate: this.month,
@@ -422,7 +423,7 @@ export default {
                     } else {
                         const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
                         // this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
-                        console.log(this.form.nationality);
+                        console.log(this.form.liveCity);
                         const params = {
                             Furigana_FirstName: this.form.furigana_FirstName,
                             Furigana_LastName: this.form.furigana_LastName,
@@ -431,7 +432,7 @@ export default {
                             Type: this.form.type,
                             Birthday: this.form.birthday,
                             Nationality: this.form.nationality,
-                            LiveCity: this.form.liveCity,
+                            LiveCity: Number(this.form.liveCity),
                             Sex: this.form.sex,
                             SalesFromDate: this.form.salesFromDate,
                             Comment: this.form.comment,
@@ -491,6 +492,32 @@ export default {
                     this.form.attachResume = file;
                 }
             }
+        },
+        // 下载简历
+        downloads(ids) {
+            const loading = this.$loading({ lock: true, text: '正在下载...' });
+            this.$axios({
+                url: '/api/Candidate/api_downloadcandidateresume',
+                params: {
+                    filename: ids
+                }
+            }).then(res => {
+                if (res && res.code === 0) {
+                    loading.close();
+                    this.$message({
+                        type: 'sucess',
+                        message: '下载成功'
+                    });
+                } else {
+                    loading.close();
+                    this.$message({
+                        type: 'error',
+                        showClose: true,
+                        message: res.message ? res.message : '下载过慢，请稍后再试'
+                    });
+                }
+            });
+            console.log(ids);
         }
     }
 };
@@ -503,5 +530,10 @@ export default {
         position: absolute;
         top: 0px;
         left: 45px;
+    }
+    .flor{
+        position: absolute;
+        top: 0px;
+        left: 100px;
     }
 </style>

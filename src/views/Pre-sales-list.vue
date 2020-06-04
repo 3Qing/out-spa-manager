@@ -54,9 +54,14 @@
                     </el-popover>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="60px">
+            <el-table-column label="操作" fixed="right" width="80px">
                 <template slot-scope="scope">
-                    <i class="el-icon-edit-outline oper-icon" color="warning" @click="showIntroDialog('edit', scope.row)"></i>
+                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                        <i class="el-icon-edit-outline oper-icon" color="warning" @click="showIntroDialog('edit', scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -239,6 +244,32 @@ export default {
                     return 'bg-danger';
                 }
             }
+        },
+        // 删除按钮
+        deletes(row) {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/Candidate/api_deletecandidate',
+                    params: {
+                        id: row.id
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getData();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
         },
         transformText(row, field) {
             // if (field === 'avaiable') {

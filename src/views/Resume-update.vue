@@ -47,7 +47,7 @@
             <el-form-item label="得意技術" prop="masterSkills">
                 <el-input type="textarea" :rows="2" v-model="form.masterSkills"></el-input>
             </el-form-item>
-            <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="ms-wrapper">
+            <!-- <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="ms-wrapper">
                 <div slot="label">
                     <i class="el-icon-delete pointer" color="danger" @click="deleteDe(i)"></i>得意分野{{item.id}}
                 </div>
@@ -60,9 +60,24 @@
                         <p v-if="`tip${item.id}` === true" color="danger">タイトルと内容を入力してください！</p>
                     </el-col>
                 </el-row>
+            </el-form-item> -->
+            <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="ms-wrapper">
+                <div slot="label">
+                    <i class="el-icon-delete pointer" color="danger" @click="deleteDe(i)"></i>得意分野
+                </div>
+                <el-row :gutter="10">
+                    <el-col :span="12">
+                        <div class="tel1">
+                            <el-input class="tel2" v-model="item['mS0_Title']" placeholder="タイトル" @input="inputHandler(i+1)"></el-input>
+                            <el-input class="tel3" v-model="item['mS0_Content']" placeholder="内容" @input="inputHandler(i+1)"></el-input>
+                        </div>
+                        <p v-if="`tip${i+1}` === true" color="danger">タイトルと内容を入力してください！</p>
+                    </el-col>
+                </el-row>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" size="mini" v-if='msTitles.length<4' @click="addDe(msTitles.length)">得意追加</el-button>
+                <el-button type="primary" size="mini" v-if='msTitles.length<4' @click="addDe(msTitles.length)">得意分野追加</el-button>
+                <el-button type="info" size="mini" v-else >得意分野追加</el-button>
             </el-form-item>
             <el-row>
                 <el-col :span="12">
@@ -216,9 +231,9 @@ export default {
     data() {
         return {
             msTitles: [{
-                id: 1,
-                mS01_Title: '',
-                mS01_Content: ''
+                id: 'v1',
+                mS0_Title: '',
+                mS0_Content: ''
             }],
             form: {
                 id: 0,
@@ -342,30 +357,65 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     let msTitle = [];
-                    let obj1 = {
-                        id: 1,
-                        mS01_Title: data.mS01_Title,
-                        mS01_Content: data.mS01_Content
-                    };
-                    let obj2 = {
-                        id: 2,
-                        mS02_Title: data.mS02_Title,
-                        mS02_Content: data.mS02_Content
-                    };
-                    let obj3 = {
-                        id: 3,
-                        mS03_Title: data.mS03_Title,
-                        mS03_Content: data.mS03_Content
-                    };
-                    let obj4 = {
-                        id: 4,
-                        mS04_Title: data.mS04_Title,
-                        mS04_Content: data.mS04_Content
-                    };
-                    msTitle.push(obj1);
-                    msTitle.push(obj2);
-                    msTitle.push(obj3);
-                    msTitle.push(obj4);
+                    if(data.mS01_Title!==null || data.mS01_Content!==null){
+                        let obj1 = {
+                            id: 'v1',
+                            mS0_Title: data.mS01_Title,
+                            mS0_Content: data.mS01_Content
+                        };
+                        msTitle.push(obj1);
+                    }
+                    if(data.mS02_Title!==null || data.mS02_Content!==null){
+                        let obj2 = {
+                            id: 'v2',
+                            mS0_Title: data.mS02_Title,
+                            mS0_Content: data.mS02_Content
+                        };
+                        msTitle.push(obj2);
+                    }
+                    if(data.mS03_Title!==null || data.mS03_Content!==null){
+                        let obj3 = {
+                            id: 'v3',
+                            mS0_Title: data.mS03_Title,
+                            mS0_Content: data.mS03_Content
+                        };
+                        msTitle.push(obj3);
+                    }
+                    if(data.mS04_Title!==null || data.mS04_Content!==null){
+                        let obj4 = {
+                            id: 'v4',
+                            mS0_Title: data.mS04_Title,
+                            mS0_Content: data.mS04_Content
+                        };
+                        msTitle.push(obj4);
+                    }
+                    if(data.mS01_Title===null&&data.mS01_Content===null&&data.mS02_Title===null&&data.mS02_Content===null&&data.mS03_Title===null&&data.mS03_Content===null&&data.mS04_Title===null&&data.mS04_Content===null){
+                        let obj = {
+                            id: 'v1',
+                            mS0_Title: '',
+                            mS0_Content: ''
+                        };
+                        msTitle.push(obj);
+                    }
+                    // let obj2 = {
+                    //     id: 2,
+                    //     mS02_Title: data.mS02_Title,
+                    //     mS02_Content: data.mS02_Content
+                    // };
+                    // let obj3 = {
+                    //     id: 3,
+                    //     mS03_Title: data.mS03_Title,
+                    //     mS03_Content: data.mS03_Content
+                    // };
+                    // let obj4 = {
+                    //     id: 4,
+                    //     mS04_Title: data.mS04_Title,
+                    //     mS04_Content: data.mS04_Content
+                    // };
+                    
+                    // msTitle.push(obj2);
+                    // msTitle.push(obj3);
+                    // msTitle.push(obj4);
                     this.msTitles = msTitle;
                     console.log(this.msTitles);
                     const baseForm = JSON.parse(JSON.stringify(this.form));
@@ -523,6 +573,7 @@ export default {
                             tmp.toDate = (item.time && `${item.time[1]}-01`) || '';
                             tmp.position = item.position || '';
                             tmp.modules = item.modules || '';
+                            tmp.projectDesc = item.projectDesc || '';
                             return tmp;
                         });
                         this.submit(params);
@@ -581,12 +632,20 @@ export default {
         inputHandler(type) {
             if (type === 1) {
                 this.tip1 = false;
+                this.form.mS01_Title = this.msTitles[0].mS0_Title;
+                this.form.mS01_Content = this.msTitles[0].mS0_Content;
             } else if (type === 2) {
                 this.tip2 = false;
+                this.form.mS02_Title = this.msTitles[1].mS0_Title;
+                this.form.mS02_Content = this.msTitles[1].mS0_Content;
             } else if (type === 3) {
                 this.tip3 = false;
-            } else {
+                this.form.mS03_Title = this.msTitles[2].mS0_Title;
+                this.form.mS03_Content = this.msTitles[2].mS0_Content;
+            } else if (type === 4) {
                 this.tip4 = false;
+                this.form.mS04_Title = this.msTitles[3].mS0_Title;
+                this.form.mS04_Content = this.msTitles[3].mS0_Content;
             }
         },
         addCert() {
@@ -596,28 +655,19 @@ export default {
             });
         },
         addDe(row) {
+            // var rowd = row + 1;
+            // var title = 'mS0'+ rowd +'_Title';
+            // var content = 'mS0'+ rowd +'_Content';
+            // this.msTitles.push({
+            //     id: rowd,
+            //     [`${title}`]: '',
+            //     [`${content}`]: '',
+            // });
             var rowd = row + 1;
-            var title = 'mS0'+ rowd +'_Title';
-            var content = 'mS0'+ rowd +'_Content';
             this.msTitles.push({
-                id: rowd,
-                [`${title}`]: '',
-                [`${content}`]: '',
-            });
-            this.msTitles.forEach((item) => {
-                if(item.id === 1){
-                    this.form.mS01_Title = item.mS01_Title;
-                    this.form.mS01_Content = item.mS01_Content;
-                } else if (item.id === 2){
-                    this.form.mS02_Title = item.mS02_Title;
-                    this.form.mS02_Content = item.mS02_Content;
-                } else if (item.id === 3){
-                    this.form.mS03_Title = item.mS03_Title;
-                    this.form.mS03_Content = item.mS03_Content;
-                } else if (item.id === 4){
-                    this.form.mS04_Title = item.mS04_Title;
-                    this.form.mS04_Content = item.mS04_Content;
-                }
+                id: 'v'+rowd,
+                mS0_Title: '',
+                mS0_Content: '',
             });
         },
         deleteCerts(i) {
@@ -638,19 +688,19 @@ export default {
                 this.form.mS04_Title = '';
                 this.form.mS04_Content = '';
             }
-            this.msTitles.forEach((item) => {
-                if(item.id === 1){
-                    this.form.mS01_Title = item.mS01_Title;
-                    this.form.mS01_Content = item.mS01_Content;
-                } else if (item.id === 2){
-                    this.form.mS02_Title = item.mS02_Title;
-                    this.form.mS02_Content = item.mS02_Content;
-                } else if (item.id === 3){
-                    this.form.mS03_Title = item.mS03_Title;
-                    this.form.mS03_Content = item.mS03_Content;
-                } else if (item.id === 4){
-                    this.form.mS04_Title = item.mS04_Title;
-                    this.form.mS04_Content = item.mS04_Content;
+            this.msTitles.forEach((item,i) => {
+                if(i === 0){
+                    this.form.mS01_Title = item.mS0_Title;
+                    this.form.mS01_Content = item.mS0_Content;
+                } else if (i === 1){
+                    this.form.mS02_Title = item.mS0_Title;
+                    this.form.mS02_Content = item.mS0_Content;
+                } else if (i === 2){
+                    this.form.mS03_Title = item.mS0_Title;
+                    this.form.mS03_Content = item.mS0_Content;
+                } else if (i === 3){
+                    this.form.mS04_Title = item.mS0_Title;
+                    this.form.mS04_Content = item.mS0_Content;
                 }
             });
         }

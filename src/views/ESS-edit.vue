@@ -27,6 +27,7 @@
                             style="width: 100px"
                             placeholder="開始"
                             v-model="scope.row.amFromTime"
+                            @change='elhandlechange'
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
@@ -38,6 +39,7 @@
                             style="width: 100px"
                             placeholder="終了"
                             v-model="scope.row.amToTime"
+                            @change='elhandlechange'
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
@@ -58,6 +60,7 @@
                             size="mini"
                             style="width: 100px"
                             placeholder="開始"
+                            @change='elhandlechange'
                             v-model="scope.row.pmFromTime"
                             :picker-options="{
                                 start: '00:00',
@@ -69,6 +72,7 @@
                             size="mini"
                             style="width: 100px"
                             placeholder="終了"
+                            @change='elhandlechange'
                             v-model="scope.row.pmToTime"
                             :picker-options="{
                                 start: '00:00',
@@ -303,6 +307,25 @@ export default {
                     }
                 }
             });
+        },
+        timeDate(obj1, obj2) {
+            const demo1 = '2020/06/01 '+obj1;
+            const demo2 = '2020/06/01 '+obj2;
+            let date1 = new Date(demo1);
+            let date2 = new Date(demo2);
+            let s1 = date1.getTime();
+            let s2 = date2.getTime();
+            let total = (s2 - s1)/1000/60;
+            return total;
+        },
+        elhandlechange() {
+            let totals = 0;
+            this.worktimes.forEach((item) => {
+                totals += (Number(this.timeDate(item.amFromTime, item.amToTime)) + Number(this.timeDate(item.pmFromTime, item.pmToTime)));
+            });
+            let hours = parseInt(totals/60);
+            let minhours = (totals/60 - parseInt(totals/60)) * 60;
+            this.total = `${hours}時間${minhours}分`;
         },
         upload({ file, opt }) {
             if (file) {
