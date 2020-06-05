@@ -54,7 +54,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="見積合計金額" prop="amount">
-                                <el-input :disabled=disab v-model="data.amount" @input="handlePrice"></el-input>
+                                <el-input :disabled=disab v-model="totals" @input="handlePrice"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -163,7 +163,7 @@
             </el-table-column>
             <el-table-column label="金額" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.amount}}</span>
+                    <span>{{priceToString(priceToNumber(scope.row.amount))}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="備考">
@@ -310,7 +310,6 @@ export default {
                     this.totals = priceToString(priceToNumber(data.amount));
                     data.submitDate = moment(data.submitDate).format('YYYY-MM-DD');
                     this.data = { ...data };
-                    console.log(this.data);
                     if (this.data.items && this.data.items.length) {
                         this.tableData = data.items.map(item => {
                             const tmp = { ...item };
@@ -411,7 +410,7 @@ export default {
             tableData.forEach(item => {
                 total += priceToNumber(item.amount) || 0;
             });
-            this.totals = total;
+            this.totals = priceToString(total);
         },
         // 合计
         getSummaries(p) {
@@ -452,7 +451,7 @@ export default {
             tableData.forEach(item => {
                 total += priceToNumber(item.amount) || 0;
             });
-            this.totals = total;
+            this.totals = priceToString(total);
         },
         handlePrice() {
             this.data.amount = priceToString(priceToNumber(this.data.amount));

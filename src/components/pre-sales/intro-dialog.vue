@@ -157,8 +157,8 @@
                             :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: trus, showIcon: true }"
                             @upload="uploadFile">
                             </upload>
-                        <span class="flop" v-if='trus === false && form.attachResume !== null'>履歴書</span>
-                        <i v-if='trus === false && form.attachResume !== null' class="flor iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResume)"></i>
+                        <span class="flop" v-if='form.id&&trus === false && form.attachResume !== null'>履歴書</span>
+                        <i v-if='form.id&&trus === false && form.attachResume !== null' class="flor iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResume)"></i>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -171,6 +171,7 @@
 import { mapGetters } from 'vuex';
 import Upload from '@components/upload';
 import moment from 'moment';
+import { apiDownloadFile } from '@_public/utils';
 export default {
     props: {
         allStatus: {
@@ -495,29 +496,11 @@ export default {
         },
         // 下载简历
         downloads(ids) {
-            const loading = this.$loading({ lock: true, text: '正在下载...' });
-            this.$axios({
-                url: '/api/Candidate/api_downloadcandidateresume',
-                params: {
-                    filename: ids
-                }
-            }).then(res => {
-                if (res && res.code === 0) {
-                    loading.close();
-                    this.$message({
-                        type: 'sucess',
-                        message: '下载成功'
-                    });
-                } else {
-                    loading.close();
-                    this.$message({
-                        type: 'error',
-                        showClose: true,
-                        message: res.message ? res.message : '下载过慢，请稍后再试'
-                    });
-                }
+            apiDownloadFile({
+                vm: this,
+                url: `/api/Candidate/api_downloadcandidateresume?filename=${ids}`,
+                filename: ids
             });
-            console.log(ids);
         }
     }
 };

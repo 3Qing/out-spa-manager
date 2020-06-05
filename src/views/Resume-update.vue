@@ -61,12 +61,12 @@
                     </el-col>
                 </el-row>
             </el-form-item> -->
-            <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="ms-wrapper">
+            <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="msg ms-wrapper">
                 <div slot="label">
                     <i class="el-icon-delete pointer" color="danger" @click="deleteDe(i)"></i>得意分野
                 </div>
-                <el-row :gutter="10">
-                    <el-col :span="12">
+                <el-row>
+                    <el-col :span="24">
                         <div class="tel1">
                             <el-input class="tel2" v-model="item['mS0_Title']" placeholder="タイトル" @input="inputHandler(i+1)"></el-input>
                             <el-input class="tel3" v-model="item['mS0_Content']" placeholder="内容" @input="inputHandler(i+1)"></el-input>
@@ -751,13 +751,13 @@ export default {
     .tel1{
         overflow: hidden;
         .tel2{
-            width: 20%;
+            width: 30%;
             float: left;
         }
         .tel3{
-            width: 70%;
-            float: left;
-            margin-left: 20px;
+            width: calc(70% - 20px);
+            float: right;
+            // margin-left: 20px;
         }
     }
 }

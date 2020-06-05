@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible="visible" @close="close" title="提案履歴">
+    <el-dialog class="tian" :visible="visible" @close="close" title="提案履歴">
         <el-table ref="table" :data="data" size="small" border>
             <el-table-column label="Name" prop="name" show-overflow-tooltip></el-table-column>
             <el-table-column label="CreateDate" prop="createDate" show-overflow-tooltip>
@@ -30,7 +30,7 @@
                                 <i class="el-icon-plus oper-icon" color="primary" @click="adds"></i>
                             </el-tooltip>
                         </el-form-item>
-                        <el-form-item label="提案状态">
+                        <el-form-item class="lid" label="提案状态">
                             <el-select size="mini" v-model="props.row.status">
                                 <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
                             </el-select>
@@ -150,7 +150,7 @@ export default {
     }
     .input{
         float: left;
-        width: 465px;
+        width: 486px;
         height: 30px;
         line-height: 30px;
     }

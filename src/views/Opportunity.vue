@@ -69,7 +69,7 @@
         <tian-dialog
             :visible="tianApply"
             :data="tianArr"
-            :opport="opportStatus"
+            :opport="oppStatus"
             @close="tianApply = false"
             @update="getData"></tian-dialog>
     </main-wrapper>
@@ -113,6 +113,7 @@ export default {
             curData: {},
             tianArr: [],
             opportStatus: [],
+            oppStatus: [],
             showApply: false,
             tianApply: false
         };
@@ -120,6 +121,7 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getOpportStatus();
+            vm.getStatus();
             vm.getData();
             vm.getTags();
             vm.getCustomer();
@@ -168,6 +170,15 @@ export default {
                 if (res && res.code === 0) {
                     this.opportStatus = res.data || [];
                     console.log(this.opportStatus);
+                }
+            });
+        },
+        getStatus() {
+            this.$axios({
+                url: '/api/SalesCase/api_salescasestatusforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.oppStatus = res.data || [];
                 }
             });
         },

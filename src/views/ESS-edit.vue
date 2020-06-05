@@ -27,7 +27,7 @@
                             style="width: 100px"
                             placeholder="開始"
                             v-model="scope.row.amFromTime"
-                            @change='elhandlechange'
+                            @change='elhandlechange(scope.row)'
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
@@ -39,7 +39,7 @@
                             style="width: 100px"
                             placeholder="終了"
                             v-model="scope.row.amToTime"
-                            @change='elhandlechange'
+                            @change='elhandlechange(scope.row)'
                             :picker-options="{
                                 start: '00:00',
                                 step: '00:15',
@@ -318,14 +318,51 @@ export default {
             let total = (s2 - s1)/1000/60;
             return total;
         },
-        elhandlechange() {
+        elhandlechange(row) {
+            console.log(row);
             let totals = 0;
             this.worktimes.forEach((item) => {
+                if (item.amFromTime === null) {
+                    item.amFromTime = '00:00';
+                } else if (item.amToTime === null){
+                    item.amToTime = '00:00';
+                } else if (item.pmFromTime === null){
+                    item.pmFromTime = '00:00';
+                } else if (item.pmToTime === null){
+                    item.pmToTime = '00:00';
+                }
+                if (item.amFromTime === '00:00' && item.amToTime !== '00:00' || item.amFromTime === null) {
+                    item.amFromTime = '00:00';
+                    this.$message({
+                        type: 'warning',
+                        message: '请填写完整午前作業時間或清除'
+                    });
+                } else if (item.amFromTime !== '00:00' && item.amToTime === '00:00' || item.amToTime === null) {
+                    item.amToTime = '00:00';
+                    this.$message({
+                        type: 'warning',
+                        message: '请填写完整午前作業時間或清除'
+                    });
+                } else if (item.pmFromTime === '00:00' && item.pmToTime !== '00:00' || item.pmFromTime === null) {
+                    item.pmFromTime = '00:00';
+                    this.$message({
+                        type: 'warning',
+                        message: '请填写完整午后作業時間或清除'
+                    });
+                } else if (item.pmFromTime !== '00:00' && item.pmToTime === '00:00' || item.pmToTime === null) {
+                    item.pmToTime = '00:00';
+                    this.$message({
+                        type: 'warning',
+                        message: '请填写完整午后作業時間或清除'
+                    });
+                }
                 totals += (Number(this.timeDate(item.amFromTime, item.amToTime)) + Number(this.timeDate(item.pmFromTime, item.pmToTime)));
             });
             let hours = parseInt(totals/60);
             let minhours = (totals/60 - parseInt(totals/60)) * 60;
-            this.total = `${hours}時間${minhours}分`;
+            if (!isNaN(hours)) {
+                this.total = `${hours}時間${minhours}分`;
+            }
         },
         upload({ file, opt }) {
             if (file) {
