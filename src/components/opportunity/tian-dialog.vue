@@ -190,7 +190,7 @@ export default {
     font-size: 0;
     .input{
         float: left;
-        width: 521px;
+        width: 530px;
         height: 30px;
         line-height: 30px;
     }

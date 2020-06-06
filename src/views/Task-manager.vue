@@ -34,7 +34,6 @@
             </div>
         </div>
         <task-dialog></task-dialog>
-        <task-dialog1></task-dialog1>
     </main-wrapper>
 </template>
 
@@ -43,14 +42,12 @@ import MainWrapper from '@components/main-wrapper';
 import Calendar from 'vue-calendar-component';
 import moment from 'moment';
 import TaskDialog from '@components/task-manager/dialog';
-import TaskDialog1 from '@components/task-manager/dialog1';
 import { mapGetters } from 'vuex';
 export default {
     components: {
         MainWrapper,
         Calendar,
         TaskDialog,
-        TaskDialog1
     },
     data() {
         return {
@@ -230,30 +227,57 @@ export default {
         //     });
         // },
         // 添加日程
-        handleClick(row) {
-            let dater1 = Number(row.label.replace(/[^0-9]/ig, ""));
-            let dater2 = Number(row.label.replace(/[^0-9]/ig, "")) + 1;
-            if (dater1<10) {
-                dater1 = '0' + dater1;
-            }
-            if (dater2<10) {
-                dater2 = '0' + dater2;
-            }
-            let objs = {
-                dateFrom: moment(new Date()).format(`YYYY-MM-DD ${dater1}:00`),
-                dateTo: moment(new Date()).format(`YYYY-MM-DD ${dater2}:00`)
-            };
-            this.$root.$emit('SHOW_TASK_DIALOG1', {
-                news: true,
-                objs,
-                callback: () => {
-                    this.getData();
+        handleClick(row, col) {
+            console.log(col.id, this.columns);
+            if (col.id !== 'el-table_1_column_1') {
+                let mins = '';
+                if (col.id === 'el-table_1_column_2') {
+                    mins = this.columns[1].prop;
+                } else if (col.id === 'el-table_1_column_3') {
+                    mins = this.columns[2].prop;
+                } else if (col.id === 'el-table_1_column_4') {
+                    mins = this.columns[3].prop;
+                } else if (col.id === 'el-table_1_column_5') {
+                    mins = this.columns[4].prop;
+                } else if (col.id === 'el-table_1_column_6') {
+                    mins = this.columns[5].prop;
+                } else if (col.id === 'el-table_1_column_7') {
+                    mins = this.columns[6].prop;
+                } else if (col.id === 'el-table_1_column_8') {
+                    mins = this.columns[7].prop;
                 }
-            });
+                let dater1 = Number(row.label.replace(/[^0-9]/ig, ""));
+                let dater2 = Number(row.label.replace(/[^0-9]/ig, "")) + 1;
+                if (dater1<10) {
+                    dater1 = '0' + dater1;
+                }
+                if (dater2<10) {
+                    dater2 = '0' + dater2;
+                }
+                let objs = {
+                    dateFrom: moment(new Date()).format(`YYYY-${mins} ${dater1}:00`),
+                    dateTo: moment(new Date()).format(`YYYY-${mins} ${dater2}:00`),
+                    content: '',
+                    atyType: [],
+                    candidateID: '',
+                    opportunityID: '',
+                    atyLocation: '',
+                    atyPurpose: ''
+                };
+                this.$root.$emit('SHOW_TASK_DIALOG', {
+                    news: true,
+                    objs,
+                    callback: () => {
+                        this.getData();
+                    }
+                });
+            }
+            
         },
         cellClick(data) {
             console.log(data);
-            this.$root.$emit('SHOW_TASK_DIALOG1', {
+            this.$root.$emit('SHOW_TASK_DIALOG', {
+                news: false,
                 data,
                 edit: false,
                 callback: () => {
@@ -272,9 +296,9 @@ export default {
             }
         },
         getStyle(item, j) {
-            const ileft = j * 60 + 'px';
+            const ileft = j * 20 + 'px';
             const itop = item.top + '%';
-            const iw = j*60 +'px';
+            const iw = j*20 +'px';
             const iwidth = `calc(100% - ${iw})`;
             const zIndex = 99 + j;
             return {

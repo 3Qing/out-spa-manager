@@ -2,13 +2,17 @@
     <el-dialog :visible.sync="visible" :close="close" :title="!edit ? '查看' : form.id ? '编辑' : '新增'">
         <el-switch v-if="form.id" v-model="edit" inactive-text="查看" active-text="编辑" class="status-btn"></el-switch>
         <el-form size="mini" label-width="120px" :model="form" ref="form" :rules="edit ? rules : {}" label-suffix=":">
-            <el-form-item label="营业活动" prop="atyType">
-                <el-select v-model="form.atyType" v-if="edit">
-                    <el-option v-for="item in atyTypes" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                </el-select>
-                <p v-else>{{getContent(form.atyType, atyTypes, 'value', 'label')}}</p>
+            <el-form-item label="" prop="atyPurpose" label-width="0px">
+                <el-input v-if="edit" v-model="form.atyPurpose" placeholder="标题"></el-input>
+                <p v-else>{{form.atyPurpose}}</p>
             </el-form-item>
-            <el-form-item label="候选人" prop="candidateID" v-if="form.atyType === 0">
+            <el-form-item label="" label-width="0px">
+                <el-checkbox-group v-if="edit" v-model="form.atyType" size="mini" :max="1" >
+                    <el-checkbox-button v-for="(item, i) in atyTypes" :label="item.value" :key="i">{{item.label}}</el-checkbox-button>
+                </el-checkbox-group>
+                <p v-else>{{getContent(form.atyType[0], atyTypes, 'value', 'label')}}</p>
+            </el-form-item>
+            <el-form-item label="" prop="candidateID" v-if="form.atyType[0] === 0" label-width="0px">
                 <el-select
                     v-if="edit"
                     v-model="form.candidateID"
@@ -22,35 +26,44 @@
                 </el-select>
                 <p v-else>{{getContent(form.candidateID, candidates, 'id', 'name')}}</p>
             </el-form-item>
-            <el-form-item label="商机" prop="opportunityID" v-if="form.atyType === 0">
+            <el-form-item label="" prop="opportunityID" v-if="form.atyType[0] === 0" label-width="0px">
                 <el-select v-model="form.opportunityID" v-if="edit">
                     <el-option v-for="item in opportunits" :key="item.id" :label="item.text" :value="item.id"></el-option>
                 </el-select>
                 <p v-else>{{getContent(form.opportunityID, opportunits, 'id', 'text')}}</p>
             </el-form-item>
-            <el-form-item label="任务开始时间" prop="atyDate">
+            <el-form-item label="" label-width="0px">
                 <el-date-picker
                     v-if="edit"
-                    v-model="form.atyDate"
+                    v-model="form.atyFromTime"
                     type="datetime"
                     value-format="yyyy-MM-dd HH:mm"
                     format="yyyy-MM-dd HH:mm"
                     :default-value="curTime"></el-date-picker>
-                <span v-else>{{form.atyDate}}</span>
+                <span v-if="edit"> - </span>
+                <span v-else>{{form.atyFromTime}} 至 </span>
+                <el-date-picker
+                    v-if="edit"
+                    v-model="form.atyToTime"
+                    type="datetime"
+                    value-format="yyyy-MM-dd HH:mm"
+                    format="yyyy-MM-dd HH:mm"
+                    :default-value="curTime"></el-date-picker>
+                <span v-else>{{form.atyToTime}}</span>
             </el-form-item>
-            <el-form-item label="面试时长" prop="atyMinutes">
+            <!-- <el-form-item label="面试时长" prop="atyMinutes">
                 <el-input v-if="edit" v-model.number="form.atyMinutes">
                     <span slot="suffix">分钟</span>
                 </el-input>
                 <span v-else>{{form.atyMinutes}}分钟</span>
-            </el-form-item>
-            <el-form-item label="地点" prop="atyLocation">
-                <el-input v-if="edit" v-model="form.atyLocation" :maxlength="50"></el-input>
+            </el-form-item> -->
+            <el-form-item label="" prop="atyLocation" label-width="0px">
+                <el-input v-if="edit" placeholder="地点" v-model="form.atyLocation" :maxlength="50"></el-input>
                 <span v-else>{{form.atyLocation}}</span>
             </el-form-item>
-            <el-form-item label="任务描述" prop="atyPurpose">
-                <el-input v-if="edit" v-model="form.atyPurpose" type="textarea" :maxlength="200" :row="3"></el-input>
-                <p v-else>{{form.atyPurpose}}</p>
+            <el-form-item label="" prop="content" label-width="0px">
+                <el-input v-if="edit" class="atyPurpose" placeholder="描述" v-model="form.content" type="textarea" :maxlength="200"></el-input>
+                <p v-else>{{form.content}}</p>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -75,15 +88,19 @@ export default {
                 label: '其他', value: 2
             }],
             form: {
-                atyType: '',
+                content: '',
+                atyType: [],
                 candidateID: '',
                 opportunityID: '',
-                atyDate: '',
-                atyMinutes: '',
+                atyFromTime: '',
+                atyToTime: '',
                 atyLocation: '',
                 atyPurpose: ''
             },
             rules: {
+                atyPurpose: [{
+                    required: true, message: '请输入标题', trigger: 'blur'
+                }],
                 atyType: [{
                     required: true, message: '请选择营业活动', trigger: 'blur'
                 }],
@@ -93,11 +110,8 @@ export default {
                 opportunityID: [{
                     required: true, message: '请选择商机', trigger: 'blur'
                 }],
-                atyDate: [{
-                    required: true, message: '请选择任务开始时间', trigger: 'blur'
-                }],
-                atyMinutes: [{
-                    required: true, message: '请选择面试时长', trigger: 'blur'
+                content: [{
+                    required: true, message: '请输入描述', trigger: 'blur'
                 }],
                 atyLocation: [{
                     required: true, message: '请输入地点', trigger: 'blur'
@@ -123,15 +137,16 @@ export default {
     },
     mounted() {
         this.$root.$off('SHOW_TASK_DIALOG');
-        this.$root.$on('SHOW_TASK_DIALOG', ({ data = null, callback = null, edit = true, news = false }) => {
+        this.$root.$on('SHOW_TASK_DIALOG', ({ data = null, callback = null, edit = true, news = false , objs = {}}) => {
             console.log(news);
             if(news){
                 this.form = {
-                    atyType: '',
+                    content: '',
+                    atyType: [],
                     candidateID: '',
                     opportunityID: '',
-                    atyDate: '',
-                    atyMinutes: '',
+                    atyFromTime: objs.dateFrom,
+                    atyToTime: objs.dateTo,
                     atyLocation: '',
                     atyPurpose: ''
                 };
@@ -141,7 +156,9 @@ export default {
             this.getOpportunit();
             if (data) {
                 const form = { ...data };
-                form.atyDate = moment(new Date(form.atyDate).getTime()).format('YYYY-MM-DD HH:mm');
+                form.atyFromTime = moment(new Date(form.atyFromTime).getTime()).format('YYYY-MM-DD HH:mm');
+                form.atyToTime = moment(new Date(form.atyToTime).getTime()).format('YYYY-MM-DD HH:mm');
+                form.atyType = [form.atyType];
                 this.form = form;
             }
             this.edit = edit;
@@ -191,15 +208,20 @@ export default {
         },
         beforeSubmit() {
             const params = {
-                AtyType: this.form.atyType,
+                AtyType: this.form.atyType[0],
                 CandidateID: this.form.candidateID || 0,
                 OpportunityID: this.form.opportunityID || 0,
-                AtyDate: this.form.atyDate,
-                AtyMinutes: this.form.atyMinutes,
+                AtyFromTime: this.form.atyFromTime,
+                AtyToTime: this.form.atyToTime,
                 AtyLocation: this.form.atyLocation,
-                AtyPurpose: this.form.atyPurpose
+                AtyPurpose: this.form.atyPurpose,
+                Content: this.form.content
             };
-            this.submit(params);
+            this.$refs.form.validate(valid => {
+                if (valid) {
+                    this.submit(params);
+                }
+            });
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: this.POST_LOADING });

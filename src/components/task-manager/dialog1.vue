@@ -7,7 +7,7 @@
                 <p v-else>{{form.atyPurpose}}</p>
             </el-form-item>
             <el-form-item label="" label-width="0px">
-                <el-checkbox-group v-if="edit" v-model="form.atyType" size="mini" :max="1" @change="changeHandler">
+                <el-checkbox-group v-if="edit" v-model="form.atyType" size="mini" :max="1" >
                     <el-checkbox-button v-for="(item, i) in atyTypes" :label="item.value" :key="i">{{item.label}}</el-checkbox-button>
                 </el-checkbox-group>
                 <p v-else>{{getContent(form.atyType[0], atyTypes, 'value', 'label')}}</p>
@@ -167,9 +167,6 @@ export default {
         });
     },
     methods: {
-        changeHandler(val) {
-            console.log(val);
-        },
         reset() {
             this.$nextTick(() => {
                 this.$refs.form.resetFields();
