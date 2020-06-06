@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "754206",
+      "name": "apply_people",
+      "font_class": "applypeople",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "14284207",
+      "name": "history",
+      "font_class": "KHCFDC_chakanlishibanben",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
       "icon_id": "122722",
       "name": "add",
       "font_class": "add",
@@ -32,20 +46,6 @@
       "font_class": "approve",
       "unicode": "e60b",
       "unicode_decimal": 58891
-    },
-    {
-      "icon_id": "792316",
-      "name": "people-8-个人",
-      "font_class": "people",
-      "unicode": "e685",
-      "unicode_decimal": 59013
-    },
-    {
-      "icon_id": "1043811",
-      "name": "history",
-      "font_class": "history",
-      "unicode": "e60c",
-      "unicode_decimal": 58892
     },
     {
       "icon_id": "8776842",

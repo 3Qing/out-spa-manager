@@ -1,13 +1,31 @@
 <template>
     <main-wrapper class="opportunity-wrapper">
         <div class="main-header" slot="header">
-            <el-select v-model="status" size="mini" style="margin-left: 10px;" @change="changeHandle">
-                <el-option v-for="(item, i) in opportStatus" :key="i" :label="item.text" :value="item.id"></el-option>
-            </el-select>
-            <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
-            <el-button type="primary" size="mini" @click="showTagDialog">标签管理</el-button>
+            <el-form slot="header" class="main-header" size="mini" inline>
+                <el-form-item>
+                    <el-checkbox-group v-model="tag" size="mini" @change="changeHandler">
+                        <el-checkbox-button v-for="(item, i) in tags" :label="item.id" :key="i">{{item.tagName}}</el-checkbox-button>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item>
+                    <el-select v-model="status" size="mini" style="margin-left: 10px;" @change="changeHandle">
+                        <el-option v-for="(item, i) in opportStatus" :key="i" :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" size="mini" @click="showTagDialog">标签管理</el-button>
+                </el-form-item>
+            </el-form>
         </div>
         <el-table :data="tableData" size="small" border>
+            <el-table-column label="番号" width="100px">
+                <template slot-scope="scope">
+                    <span>{{scope.$index + 1}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="标题" prop="title" show-overflow-tooltip></el-table-column>
             <!-- <el-table-column label="内容" prop="content" show-overflow-tooltip></el-table-column> -->
             <el-table-column label="发布日期" prop="pubDate" width="140px">
@@ -29,7 +47,7 @@
                 <template slot-scope="scope">
                     <span>{{scope.row.salesCaseCnt}}</span>
                     <el-tooltip class="leftTip" effect="dark" content="提案履歴" placement="top-start" v-if='scope.row.salesCaseCnt > 0'>
-                        <i class="icon-history iconfont oper-icon" color="success" @click="handleTip(scope.row)"></i>
+                        <i class="icon-KHCFDC_chakanlishibanben iconfont oper-icon" color="success" @click="handleTip(scope.row)"></i>
                     </el-tooltip>
                 </template>  
             </el-table-column>
@@ -37,7 +55,7 @@
             <el-table-column label="操作" width="100px">
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" content="提案" placement="top-start">
-                        <i class="icon-people iconfont oper-icon" color="success" @click="handleAction(scope.row)"></i>
+                        <i class="icon-applypeople iconfont oper-icon" color="success" @click="handleAction(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="showDialog(2, scope.row)"></i>
@@ -70,6 +88,7 @@
             :visible="tianApply"
             :data="tianArr"
             :opport="oppStatus"
+            :deletetrues="deletetrue"
             @close="tianApply = false"
             @update="getData"></tian-dialog>
     </main-wrapper>
@@ -97,9 +116,11 @@ export default {
             pageSize: 15,
             total: 0,
             tableData: [],
+            tag: [],
             tags: [],
             customers: [],
             status: 0,
+            deletetrue: false,
             allStatus: [{
                 label: '进行中', value: 0
             }, {
@@ -121,10 +142,10 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.getOpportStatus();
-            vm.getStatus();
-            vm.getData();
             vm.getTags();
+            vm.getStatus();
             vm.getCustomer();
+            vm.getData();
         });
     },
     computed: {
@@ -136,24 +157,32 @@ export default {
             this.page = page;
             this.getData();
         },
+        changeHandler() {
+            this.page = 1;
+            this.getData();
+        },
         getData() {
+            let params = {
+                tagids: this.tag,
+                status: this.status,
+                page: this.page,
+                pagesize:  this.pageSize
+            };
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
+                method: 'POST',
                 url: '/api/Opportunity/api_getopportunitylist',
-                params: {
-                    status: this.status,
-                    page: this.page,
-                    pagesize:  this.pageSize
-                },
+                params,
                 custom: {
                     loading,
                     vm: this
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
-                    this.tableData = data.oppolist || [];
+                    this.tableData = data.list || [];
                     this.total = data.total || 0;
                 } else {
                     this.$message({
@@ -188,6 +217,7 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.tags = res.data || [];
+                    console.log(res.data);
                 }
             });
         },

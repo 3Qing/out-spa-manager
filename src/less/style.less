@@ -108,6 +108,11 @@ textarea {
 }
 
 body {
+    .atyPurpose{
+        textarea{
+            height: 150px;
+        }
+    }
     .msg{
         .el-col{
             padding: 0 !important;
@@ -135,7 +140,7 @@ body {
     .demo-table-expand {
         font-size: 0;
         textarea {
-            width: 625px;
+            width: 705px;
         }
         input{
             height: 30px;
@@ -191,7 +196,10 @@ body {
 		.width50 {
 			.el-input {
 				width: 110px !important;
-			}
+            }
+            .el-form-item__error{
+                width: 110px !important;
+            }
 		}
     }
     .candition-dialog {
@@ -242,6 +250,9 @@ body {
     .tian{
         .el-dialog {
             width: 800px;
+            .el-table__expanded-cell[class*=cell]{
+               padding: 20px 25px; 
+            }
         }
     }
     .update-dialog {

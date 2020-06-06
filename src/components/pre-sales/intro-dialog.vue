@@ -3,16 +3,28 @@
         <el-form label-width="130px" size="mini" ref="form" :model="form" :rules="rules" class='blackColor'>
             <el-row v-if="!IS_H5">
                 <el-col :span="12" class="width50">
-                    <el-form-item label="英語姓名" prop='furigana_FirstName'>
-                        <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
-                        <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
-                    </el-form-item>
+                    <el-col :span="6">
+                        <el-form-item label="英語姓名" prop='furigana_FirstName'>
+                            <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6" class="width25" label-width="0px">
+                        <el-form-item label="" prop='furigana_LastName'>
+                            <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
+                        </el-form-item>
+                    </el-col>
                 </el-col>
                 <el-col :span="12" class="width50">
-                    <el-form-item label="汉字姓名" prop='firstName'>
-                        <el-input v-model="form.firstName" :maxlength="20"></el-input>
-                        <el-input v-model="form.lastName" :maxlength="20"></el-input>
-                    </el-form-item>
+                    <el-col :span="6">
+                        <el-form-item label="汉字姓名" prop='firstName'>
+                            <el-input v-model="form.firstName" :maxlength="20"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6" class="width25" label-width="0px">
+                        <el-form-item label="" prop='lastName'>
+                            <el-input v-model="form.lastName" :maxlength="20"></el-input>
+                        </el-form-item>
+                    </el-col>
                 </el-col>
             </el-row>
             <!-- <el-form-item label="英語姓" v-if="IS_H5">
@@ -135,18 +147,30 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="人件费范围" prop='costFrom'>
-                        <el-input v-model.number="form.costFrom" type='number'></el-input>
-                        <el-input class="marginLeft30" v-model.number="form.costTo" type='number'></el-input>
-                    </el-form-item>
+                    <el-col :span="12">
+                        <el-form-item label="人件费范围" prop='costFrom'>
+                            <el-input v-model.number="form.costFrom" type='number'></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="" prop='costTo' label-width="0px">
+                            <el-input v-model.number="form.costTo" type='number'></el-input>
+                        </el-form-item>
+                    </el-col>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="提案金额范围" prop='salesFrom'>
-                        <el-input v-model.number="form.salesFrom" type='number'></el-input>
-                        <el-input class="marginLeft30" v-model.number="form.salesTo" type='number'></el-input>
-                    </el-form-item>
+                    <el-col :span="12">
+                        <el-form-item label="提案金额范围" prop='salesFrom'>
+                            <el-input v-model.number="form.salesFrom" type='number'></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="" prop='salesTo' label-width="0px">
+                            <el-input v-model.number="form.salesTo" type='number'></el-input>
+                        </el-form-item>
+                    </el-col>
                 </el-col>
             </el-row>
             <el-row>
@@ -157,7 +181,7 @@
                             :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: trus, showIcon: true }"
                             @upload="uploadFile">
                             </upload>
-                        <span class="flop" v-if='form.id&&trus === false && form.attachResume !== null'>履歴書</span>
+                        <span class="flop" v-if='form.id&&trus === false && form.attachResume !== null'>{{form.attachResumeFileName}}</span>
                         <i v-if='form.id&&trus === false && form.attachResume !== null' class="flor iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResume)"></i>
                     </el-form-item>
                 </el-col>
@@ -217,10 +241,16 @@ export default {
                     required: true, message: '请填写主要技能！'
                 }],
                 furigana_FirstName: [{
-                    required: true, message: '请填写英文第一个名字！'
+                    required: true, message: '请填写英文名字！'
+                }],
+                furigana_LastName: [{
+                    required: true, message: '请填写英文名字！'
                 }],
                 firstName: [{
-                    required: true, message: '请填写汉字第一个名字！'
+                    required: true, message: '请填写汉字名字！'
+                }],
+                lastName: [{
+                    required: true, message: '请填写汉字名字！'
                 }],
                 sex: [{
                     required: true, message: '请选择性别！'
@@ -249,7 +279,13 @@ export default {
                 costFrom: [{
                     required: true, message: '请填写人件费范围！'
                 }],
+                costTo: [{
+                    required: true, message: '请填写人件费范围！'
+                }],
                 salesFrom: [{
+                    required: true, message: '请填写提案金额范围！'
+                }],
+                salesTo: [{
                     required: true, message: '请填写提案金额范围！'
                 }]
             },
@@ -401,80 +437,58 @@ export default {
         submit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
-                    if (this.form.furigana_LastName === '') {
-                        this.$message({
-                            type: 'warning',
-                            message: '请填写英文第二个名字'
-                        });
-                    } else if (this.form.lastName === ''){
-                        this.$message({
-                            type: 'warning',
-                            message: '请填写汉字第二个名字'
-                        });
-                    } else if (this.form.costTo === ''){
-                        this.$message({
-                            type: 'warning',
-                            message: '请填写人件费范围'
-                        });
-                    } else if (this.form.salesTo === ''){
-                        this.$message({
-                            type: 'warning',
-                            message: '请填写提案金额范围'
-                        });
-                    } else {
-                        const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
-                        // this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
-                        console.log(this.form.liveCity);
-                        const params = {
-                            Furigana_FirstName: this.form.furigana_FirstName,
-                            Furigana_LastName: this.form.furigana_LastName,
-                            FirstName: this.form.firstName,
-                            LastName: this.form.lastName,
-                            Type: this.form.type,
-                            Birthday: this.form.birthday,
-                            Nationality: this.form.nationality,
-                            LiveCity: Number(this.form.liveCity),
-                            Sex: this.form.sex,
-                            SalesFromDate: this.form.salesFromDate,
-                            Comment: this.form.comment,
-                            CostFrom: this.form.costFrom,
-                            CostTo: this.form.costTo,
-                            SalesFrom: this.form.salesFrom,
-                            SalesTo: this.form.salesTo,
-                            MainSkill: this.form.mainSkill,
-                            StartWorkDate: this.form.startWorkDate,
-                            ArriveJPDate: this.form.arriveJPDate,
-                            AttachResume: this.form.attachResume,
-                            AvaiableDate: this.form.avaiableDate,
-                            ProposeText: this.form.proposeText,
-                            Status: this.form.status,
-                            ID: this.form.id || 0
-                        };
-                        this.$axios({
-                            method: 'POST',
-                            url: '/api/Candidate/api_updatecandidate',
-                            params,
-                            custom: {
-                                loading,
-                                vm: this
-                            },
-                            formData: true
-                        }).then(res => {
-                            this.$refs.child.clearUpload();
-                            this.$refs.form.resetFields();
-                            loading.close();
-                            if (res && res.code === 0) {
-                                this.callback && this.callback();
-                                this.close();
-                            } else {
-                                this.$message({
-                                    type: 'error',
-                                    showClose: true,
-                                    message: res.message ? res.message : '接口开小差了，没有返回信息'
-                                });
-                            }
-                        });
-                    }
+                    const loading = this.$loading({ lock: true, text: '正在提交候选人信息...' });
+                    // this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
+                    console.log(this.form.liveCity);
+                    const params = {
+                        Furigana_FirstName: this.form.furigana_FirstName,
+                        Furigana_LastName: this.form.furigana_LastName,
+                        FirstName: this.form.firstName,
+                        LastName: this.form.lastName,
+                        Type: this.form.type,
+                        Birthday: this.form.birthday,
+                        Nationality: this.form.nationality,
+                        LiveCity: Number(this.form.liveCity),
+                        Sex: this.form.sex,
+                        SalesFromDate: this.form.salesFromDate,
+                        Comment: this.form.comment,
+                        CostFrom: this.form.costFrom,
+                        CostTo: this.form.costTo,
+                        SalesFrom: this.form.salesFrom,
+                        SalesTo: this.form.salesTo,
+                        MainSkill: this.form.mainSkill,
+                        StartWorkDate: this.form.startWorkDate,
+                        ArriveJPDate: this.form.arriveJPDate,
+                        AttachResume: this.form.attachResume,
+                        AvaiableDate: this.form.avaiableDate,
+                        ProposeText: this.form.proposeText,
+                        Status: this.form.status,
+                        ID: this.form.id || 0
+                    };
+                    this.$axios({
+                        method: 'POST',
+                        url: '/api/Candidate/api_updatecandidate',
+                        params,
+                        custom: {
+                            loading,
+                            vm: this
+                        },
+                        formData: true
+                    }).then(res => {
+                        this.$refs.child.clearUpload();
+                        this.$refs.form.resetFields();
+                        loading.close();
+                        if (res && res.code === 0) {
+                            this.callback && this.callback();
+                            this.close();
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                showClose: true,
+                                message: res.message ? res.message : '接口开小差了，没有返回信息'
+                            });
+                        }
+                    });
                 } else {
                     this.$message({
                         type: 'warning',
@@ -491,6 +505,7 @@ export default {
                 } else {
                     this.trus = true;
                     this.form.attachResume = file;
+
                 }
             }
         },
@@ -506,6 +521,9 @@ export default {
 };
 </script>
 <style lang="less">
+    .width25{
+        margin-left: 16px;
+    }
     .marginLeft30{
         margin-left: 30px;
     }

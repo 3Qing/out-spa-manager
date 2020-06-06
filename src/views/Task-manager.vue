@@ -1,7 +1,7 @@
 <template>
     <main-wrapper class="task-manager">
         <div class="main-header" slot="header">
-            <el-button size="mini" type="primary" @click="newHandle">新增</el-button>
+            <!-- <el-button size="mini" type="primary" @click="newHandle">新增</el-button> -->
             <el-switch v-model="owntask" inactive-text="所有人" active-text="仅自己" @change="getData" style="margin-left: 20px;"></el-switch>
         </div>
         <div class="clearfix">
@@ -10,7 +10,7 @@
                     @choseDay="clickDay"></Calendar>
             </div>
             <div class="right fr" >
-                <el-table :data="tableData" height="100%" border :summary-method="getSummaries" :show-summary=showSu>
+                <el-table :data="tableData" height="100%" border :summary-method="getSummaries" :show-summary=showSu @cell-click='handleClick'>
                     <el-table-column v-for="(item, index) in columns" :key="item.name" :min-width="index===0?'70px':'170px'">
                         <template slot="header">
                             <div v-if="index === 0"></div>
@@ -23,16 +23,18 @@
                                     v-for="(cell, j) in scope.row[item.prop]"
                                     :key="j"
                                     class="cell-success task-cell link"
-                                    :style="getStyle(cell,scope.row[item.prop])"
+                                    :style="getStyle(cell,j,scope.row[item.prop])"
                                     @click="cellClick(cell)"
                                     >{{cell.atyPurpose}}</span>
                             </div>
                         </template>
                     </el-table-column>
                 </el-table>
+                <!-- <div v-show='isDialog' class="divDialog"></div> -->
             </div>
         </div>
         <task-dialog></task-dialog>
+        <task-dialog1></task-dialog1>
     </main-wrapper>
 </template>
 
@@ -41,12 +43,14 @@ import MainWrapper from '@components/main-wrapper';
 import Calendar from 'vue-calendar-component';
 import moment from 'moment';
 import TaskDialog from '@components/task-manager/dialog';
+import TaskDialog1 from '@components/task-manager/dialog1';
 import { mapGetters } from 'vuex';
 export default {
     components: {
         MainWrapper,
         Calendar,
-        TaskDialog
+        TaskDialog,
+        TaskDialog1
     },
     data() {
         return {
@@ -92,9 +96,9 @@ export default {
                     });
                 } else {
                     const fmt = moment(curTime).add(i, 'days').format('MM-DD|E');
-                    const date = fmt.split('|')[0];
+                    const date = fmt.substring(0,5);
                     columns.push({
-                        name: `${date} ${this.formatWeek(fmt.split('|')[1])}`,
+                        name: `${date} ${this.formatWeek(fmt.substring(6,7))}`,
                         prop: `${date}`
                     });
                 }
@@ -104,16 +108,30 @@ export default {
                 this.getData();
             });
         },
+        timeDate(obj1, obj2) {
+            let date1 = new Date(obj1);
+            let date2 = new Date(obj2);
+            let s1 = date1.getTime();
+            let s2 = date2.getTime();
+            let total = (s2 - s1)/1000/60;
+            return total;
+        },
         formatData(data) {
             const length = 25;
             const tmp = {};
+            console.log(data);
             data.forEach(item => {
-                const time = moment(new Date(item.atyDate).getTime()).format('MM-DD|HH:mm');
-                const [ date, startTime ] = time.split('|');
+                const time = moment(new Date(item.atyFromTime).getTime()).format('MM-DD|HH:mm');
+                // console.log(time);
+                // const [ date, startTime ] = time.split('|');
+                const date = time.substring(0,5);
+                const startTime = time.substring(6,11);
                 const HH = startTime.split(':')[0].toString().padStart(2, '0');
                 const mm = startTime.split(':')[1];
+
                 const top = parseInt((Number(mm) / 40) * 100);
-                const height = parseInt(((Number(mm) + item.atyMinutes) / 60) * 100);
+                const height = parseInt(((Number(mm) + this.timeDate(item.atyFromTime, item.atyToTime)) / 60) * 100);
+                console.log(height);
                 if (!tmp[HH]) {
                     tmp[HH] = {};
                 }
@@ -151,7 +169,6 @@ export default {
             }
             tableData[0].label = '';
             this.tableData = tableData;
-            console.log(this.tableData);
             this.$nextTick(() => {
                 document.querySelector('.el-table__body-wrapper').scrollTop = 9 * 60;
             });
@@ -191,6 +208,7 @@ export default {
                 this.formatData(data);
             });
         },
+        // 时间点击
         clickDay(data) {
             this.initTable(data);
         },
@@ -203,9 +221,31 @@ export default {
             });
             return columns;
         },
-        newHandle() {
-            this.$root.$emit('SHOW_TASK_DIALOG', {
+        // newHandle() {
+        //     this.$root.$emit('SHOW_TASK_DIALOG', {
+        //         news: true,
+        //         callback: () => {
+        //             this.getData();
+        //         }
+        //     });
+        // },
+        // 添加日程
+        handleClick(row) {
+            let dater1 = Number(row.label.replace(/[^0-9]/ig, ""));
+            let dater2 = Number(row.label.replace(/[^0-9]/ig, "")) + 1;
+            if (dater1<10) {
+                dater1 = '0' + dater1;
+            }
+            if (dater2<10) {
+                dater2 = '0' + dater2;
+            }
+            let objs = {
+                dateFrom: moment(new Date()).format(`YYYY-MM-DD ${dater1}:00`),
+                dateTo: moment(new Date()).format(`YYYY-MM-DD ${dater2}:00`)
+            };
+            this.$root.$emit('SHOW_TASK_DIALOG1', {
                 news: true,
+                objs,
                 callback: () => {
                     this.getData();
                 }
@@ -213,19 +253,36 @@ export default {
         },
         cellClick(data) {
             console.log(data);
-            this.$root.$emit('SHOW_TASK_DIALOG', {
+            this.$root.$emit('SHOW_TASK_DIALOG1', {
                 data,
                 edit: false,
                 callback: () => {
                     this.getData();
                 }
             });
+            this.cancelBubble();
         },
-        getStyle(item) {
-            const itop = item.top - 25 + '%';
+        // 阻止事件触发
+        cancelBubble(e) {
+            let evt = e ? e : window.event;
+            if(evt.stopPropagation) {
+                evt.stopPropagation();
+            } else {
+                evt.cancelBubble = true;
+            }
+        },
+        getStyle(item, j) {
+            const ileft = j * 60 + 'px';
+            const itop = item.top + '%';
+            const iw = j*60 +'px';
+            const iwidth = `calc(100% - ${iw})`;
+            const zIndex = 99 + j;
             return {
-                height: `(${item.height}%)`,
-                top: itop
+                width: iwidth,
+                height: `${item.height}%`,
+                top: itop,
+                left: ileft,
+                'z-index': zIndex
             };
         }
     }
@@ -264,6 +321,7 @@ export default {
                     height: 30px;
                     width: 30px;
                     line-height: 30px;
+                    font-size: 14px;
                     &.wh_other_dayhide {
                         color: #ccc;
                     }
@@ -285,6 +343,7 @@ export default {
     }
     .right {
         // margin-left: 30px;
+        position: relative;
         width: calc(100% - 260px);
         height: calc(100% - 40px);
         .cell-info {
@@ -292,9 +351,13 @@ export default {
             background-color: rgb(233, 233, 235) !important;
         }
         .cell-success {
-            color: #606266;
+            color: white;
             // padding-right: 15px;
-            background-color: rgba(69, 190, 135, 0.4) !important;
+            background-color: rgba(69, 190, 135, 0.8) !important;
+            box-sizing: border-box;
+            padding: 3px;
+            border: 1px solid white;
+            line-height: 18px;
         }
         .cell-warning {
             color: #606266;
@@ -317,16 +380,19 @@ export default {
                 }
             }
             .task-cell-wrapper {
+                position: relative;
                 height: 100%;
             }
             .task-cell {
                 display: inline-block;
                 vertical-align: bottom;
                 // padding: 8px 4px;
-                position: relative;
-                border-radius: 4px;
+                position: absolute;
+                border-radius: 5px;
                 text-align: center;
+                width: 100%;
                 min-width: 60px;
+                text-align: left;
                 & + .task-cell {
                     // margin-left: 10px;
                 }
