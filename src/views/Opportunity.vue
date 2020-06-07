@@ -198,7 +198,6 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.opportStatus = res.data || [];
-                    console.log(this.opportStatus);
                 }
             });
         },
@@ -217,7 +216,6 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.tags = res.data || [];
-                    console.log(res.data);
                 }
             });
         },
@@ -235,7 +233,6 @@ export default {
             this.getData();
         },
         showDialog(type, row) {
-            console.log(row);
             this.$root.$emit('SHOW_OPPORT_DIALOG', {
                 data: type === 2 ? row : null,
                 tags: this.tags,

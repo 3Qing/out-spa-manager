@@ -181,8 +181,10 @@
                             :opt="{ btnText: '上传附件', accept: 'application/pdf,application/msword,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', show: trus, showIcon: true }"
                             @upload="uploadFile">
                             </upload>
-                        <span class="flop" v-if='form.id&&trus === false && form.attachResume !== null'>{{form.attachResumeFileName}}</span>
-                        <i v-if='form.id&&trus === false && form.attachResume !== null' class="flor iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResume)"></i>
+                        <span class="flop" v-if='form.id&&trus === false && form.attachResume !== null'>
+                            {{form.attachResumeFileName}}
+                            <i class="iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResumeFileName, form.id)"></i>
+                        </span>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -510,10 +512,10 @@ export default {
             }
         },
         // 下载简历
-        downloads(ids) {
+        downloads(ids, id) {
             apiDownloadFile({
                 vm: this,
-                url: `/api/Candidate/api_downloadcandidateresume?filename=${ids}`,
+                url: `/api/Candidate/api_downloadcandidateresume?filename=${id}`,
                 filename: ids
             });
         }

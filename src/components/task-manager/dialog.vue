@@ -1,18 +1,18 @@
 <template>
-    <el-dialog :visible.sync="visible" :close="close" :title="!edit ? '查看' : form.id ? '编辑' : '新增'">
+    <el-dialog class="borderDialog" :visible.sync="visible" :close="close" :title="!edit ? '查看' : form.id ? '编辑' : '新增'">
         <el-switch v-if="form.id" v-model="edit" inactive-text="查看" active-text="编辑" class="status-btn"></el-switch>
-        <el-form size="mini" label-width="120px" :model="form" ref="form" :rules="edit ? rules : {}" label-suffix=":">
+        <el-form size="mini" label-width="120px" :model="form" ref="form" label-suffix=":">
             <el-form-item label="" prop="atyPurpose" label-width="0px">
                 <el-input v-if="edit" v-model="form.atyPurpose" placeholder="标题"></el-input>
                 <p v-else>{{form.atyPurpose}}</p>
             </el-form-item>
             <el-form-item label="" label-width="0px">
-                <el-checkbox-group v-if="edit" v-model="form.atyType" size="mini" :max="1" >
-                    <el-checkbox-button v-for="(item, i) in atyTypes" :label="item.value" :key="i">{{item.label}}</el-checkbox-button>
-                </el-checkbox-group>
-                <p v-else>{{getContent(form.atyType[0], atyTypes, 'value', 'label')}}</p>
+                <el-radio-group v-if="edit" v-model="form.atyType">
+                    <el-radio v-for="(item, i) in atyTypes" :label="item.value" :key="i">{{item.label}}</el-radio>
+                </el-radio-group>
+                <p v-else>{{getContent(form.atyType, atyTypes, 'value', 'label')}}</p>
             </el-form-item>
-            <el-form-item label="" prop="candidateID" v-if="form.atyType[0] === 0" label-width="0px">
+            <el-form-item label="" prop="candidateID" v-if="form.atyType === 0" label-width="0px">
                 <el-select
                     v-if="edit"
                     v-model="form.candidateID"
@@ -26,7 +26,7 @@
                 </el-select>
                 <p v-else>{{getContent(form.candidateID, candidates, 'id', 'name')}}</p>
             </el-form-item>
-            <el-form-item label="" prop="opportunityID" v-if="form.atyType[0] === 0" label-width="0px">
+            <el-form-item label="" prop="opportunityID" v-if="form.atyType === 0" label-width="0px">
                 <el-select v-model="form.opportunityID" v-if="edit">
                     <el-option v-for="item in opportunits" :key="item.id" :label="item.text" :value="item.id"></el-option>
                 </el-select>
@@ -89,33 +89,13 @@ export default {
             }],
             form: {
                 content: '',
-                atyType: [],
+                atyType: '',
                 candidateID: '',
                 opportunityID: '',
                 atyFromTime: '',
                 atyToTime: '',
                 atyLocation: '',
                 atyPurpose: ''
-            },
-            rules: {
-                atyPurpose: [{
-                    required: true, message: '请输入标题', trigger: 'blur'
-                }],
-                atyType: [{
-                    required: true, message: '请选择营业活动', trigger: 'blur'
-                }],
-                candidateID: [{
-                    required: true, message: '请选择候选人', trigger: 'blur'
-                }],
-                opportunityID: [{
-                    required: true, message: '请选择商机', trigger: 'blur'
-                }],
-                content: [{
-                    required: true, message: '请输入描述', trigger: 'blur'
-                }],
-                atyLocation: [{
-                    required: true, message: '请输入地点', trigger: 'blur'
-                }]
             },
             callback: null,
             edit: true,
@@ -126,11 +106,11 @@ export default {
         };
     },
     watch: {
-        edit: function(val) {
-            if (val) {
-                this.reset();
-            }
-        }
+        // edit: function() {
+        //     if (this.edit === false) {
+        //         this.reset();
+        //     }
+        // }
     },
     computed: {
         ...mapGetters([ 'POST_LOADING' ])
@@ -138,11 +118,10 @@ export default {
     mounted() {
         this.$root.$off('SHOW_TASK_DIALOG');
         this.$root.$on('SHOW_TASK_DIALOG', ({ data = null, callback = null, edit = true, news = false , objs = {}}) => {
-            console.log(news);
             if(news){
                 this.form = {
                     content: '',
-                    atyType: [],
+                    atyType: '',
                     candidateID: '',
                     opportunityID: '',
                     atyFromTime: objs.dateFrom,
@@ -158,7 +137,6 @@ export default {
                 const form = { ...data };
                 form.atyFromTime = moment(new Date(form.atyFromTime).getTime()).format('YYYY-MM-DD HH:mm');
                 form.atyToTime = moment(new Date(form.atyToTime).getTime()).format('YYYY-MM-DD HH:mm');
-                form.atyType = [form.atyType];
                 this.form = form;
             }
             this.edit = edit;
@@ -168,9 +146,9 @@ export default {
     },
     methods: {
         reset() {
-            this.$nextTick(() => {
-                this.$refs.form.resetFields();
-            });
+            this.$refs.form.resetFields();
+            // this.$nextTick(() => {
+            // });
         },
         close() {
             this.reset();
@@ -208,7 +186,7 @@ export default {
         },
         beforeSubmit() {
             const params = {
-                AtyType: this.form.atyType[0],
+                AtyType: this.form.atyType,
                 CandidateID: this.form.candidateID || 0,
                 OpportunityID: this.form.opportunityID || 0,
                 AtyFromTime: this.form.atyFromTime,
@@ -217,11 +195,34 @@ export default {
                 AtyPurpose: this.form.atyPurpose,
                 Content: this.form.content
             };
-            this.$refs.form.validate(valid => {
-                if (valid) {
-                    this.submit(params);
-                }
-            });
+            if (this.form.atyPurpose === '') {
+                this.$message({
+                    type: 'warning',
+                    message: '请输入标题'
+                });
+            } else if (this.form.atyType === '') {
+                this.$message({
+                    type: 'warning',
+                    message: '请选择营业活动'
+                });
+            } else if (this.form.atyLocation === '') {
+                this.$message({
+                    type: 'warning',
+                    message: '请输入地点'
+                });
+            } else if (this.form.content === '') {
+                this.$message({
+                    type: 'warning',
+                    message: '请输入描述'
+                });
+            } else {
+                this.submit(params);
+            }
+            // this.$refs.form.validate(valid => {
+            //     if (valid) {
+            //         this.submit(params);
+            //     }
+            // });
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: this.POST_LOADING });
