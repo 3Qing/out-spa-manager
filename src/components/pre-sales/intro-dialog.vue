@@ -183,7 +183,7 @@
                             </upload>
                         <span class="flop" v-if='form.id&&trus === false && form.attachResume !== null'>
                             {{form.attachResumeFileName}}
-                            <i class="iconfont icon-icon-test link" color="primary" @click="downloads(form.attachResumeFileName, form.id)"></i>
+                            <i class="iconfont icon-icon-test link mrl" color="primary" @click="downloads(form.attachResumeFileName, form.id)"></i>
                         </span>
                     </el-form-item>
                 </el-col>
@@ -515,7 +515,7 @@ export default {
         downloads(ids, id) {
             apiDownloadFile({
                 vm: this,
-                url: `/api/Candidate/api_downloadcandidateresume?filename=${id}`,
+                url: `/api/Candidate/api_downloadcandidateresume?id=${id}`,
                 filename: ids
             });
         }
@@ -534,9 +534,7 @@ export default {
         top: 0px;
         left: 45px;
     }
-    .flor{
-        position: absolute;
-        top: 0px;
-        left: 100px;
+    .mrl{
+        margin-left: 8px;
     }
 </style>
