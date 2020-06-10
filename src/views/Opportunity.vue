@@ -13,6 +13,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
+                    <el-select v-model="customersId" size="mini" style="margin-left: 10px;" @change="changeHandle">
+                        <el-option v-for="(item, i) in customers" :key="i" :label="item.title" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
                     <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
                 </el-form-item>
                 <el-form-item>
@@ -20,10 +25,20 @@
                 </el-form-item>
             </el-form>
         </div>
-        <el-table :data="tableData" size="small" border>
+        <el-table :data="tableData" size="small" border :cell-class-name="cellClassName" @row-dblclick='showTag'>
             <el-table-column label="番号" width="100px">
                 <template slot-scope="scope">
                     <span>{{scope.$index + 1}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="提案状态" prop="saleStatusText" width="140px">
+                <template slot-scope="scope">
+                    <span>{{scope.row.saleStatusText}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="项目地" prop="location" width="140px">
+                <template slot-scope="scope">
+                    <span>{{getContent(scope.row.location, adressArr)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="标题" prop="title" show-overflow-tooltip></el-table-column>
@@ -33,11 +48,11 @@
                     <span>{{formatTime(scope.row.pubDate)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="关闭日期" prop="closeDate" width="140px">
+            <!-- <el-table-column label="关闭日期" prop="closeDate" width="140px">
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.closeDate)}}</span>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column label="客户姓名" width="140px" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <span>{{(scope.row.customerID > 0 ? scope.row.formalCustomer : scope.row.temporaryCustomer) || '-'}}</span>
@@ -46,17 +61,17 @@
             <el-table-column label="提案次数" width="120px">
                 <template slot-scope="scope">
                     <span>{{scope.row.salesCaseCnt}}</span>
-                    <el-tooltip class="leftTip" effect="dark" content="提案履歴" placement="top-start" v-if='scope.row.salesCaseCnt > 0'>
+                    <!-- <el-tooltip class="leftTip" effect="dark" content="提案履歴" placement="top-start" v-if='scope.row.salesCaseCnt > 0'>
                         <i class="icon-KHCFDC_chakanlishibanben iconfont oper-icon" color="success" @click="handleTip(scope.row)"></i>
-                    </el-tooltip>
+                    </el-tooltip> -->
                 </template>  
             </el-table-column>
             <el-table-column label="营业担当" prop="salesPerson" width="120px"></el-table-column>
-            <el-table-column label="操作" width="100px">
+            <el-table-column label="操作" width="70px">
                 <template slot-scope="scope">
-                    <el-tooltip effect="dark" content="提案" placement="top-start">
+                    <!-- <el-tooltip effect="dark" content="提案" placement="top-start">
                         <i class="icon-applypeople iconfont oper-icon" color="success" @click="handleAction(scope.row)"></i>
-                    </el-tooltip>
+                    </el-tooltip> -->
                     <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="showDialog(2, scope.row)"></i>
                     </el-tooltip>
@@ -77,7 +92,7 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <opport-dialog :allStatus="opportStatus"></opport-dialog>
+        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList"></opport-dialog>
         <tag-dialog :visible="visibleDialog" @close="visibleDialog = false" @updateTag="getTags"></tag-dialog>
         <apply-dialog
             :visible="showApply"
@@ -112,6 +127,7 @@ export default {
     },
     data() {
         return {
+            customersId: 0,
             page: 1,
             pageSize: 15,
             total: 0,
@@ -136,16 +152,20 @@ export default {
             opportStatus: [],
             oppStatus: [],
             showApply: false,
-            tianApply: false
+            tianApply: false,
+            adressArr: [],
+            jobsList: [] // 营业担当
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            vm.getAdress();
             vm.getOpportStatus();
             vm.getTags();
             vm.getStatus();
             vm.getCustomer();
             vm.getData();
+            vm.getJobsList();
         });
     },
     computed: {
@@ -161,12 +181,61 @@ export default {
             this.page = 1;
             this.getData();
         },
+        // 获取营业担当
+        getJobsList() {
+            this.$axios({
+                url: '/api/Employee/api_salespersonforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.jobsList = res.data || [];
+                    console.log(res.data);
+                }
+            });
+        },
+        // 获取地址函数
+        getAdress() {
+            this.$axios({
+                url: '/api/Candidate/api_cityforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.adressArr = res.data || [];
+                }
+            });
+        },
+        // 获取字段函数
+        getContent(id, arr) {
+            for (let item of arr) {
+                if (item.id === id) {
+                    return item.text;
+                }
+            }
+            return '-';
+        },
+        // 列表颜色
+        cellClassName({ row, columnIndex }) {
+            if (columnIndex === 1) {
+                if (row.saleStatus === 0) {
+                    return 'bg-danger';
+                }
+                if (row.saleStatus === 1) {
+                    return 'bg-warning';
+                }
+                if (row.saleStatus === 2) {
+                    return 'bg-info';
+                }
+                if (row.saleStatus === 3 || row.saleStatus === 4) {
+                    return 'bg-success';
+                }
+            }
+        },
         getData() {
+            // customersId
             let params = {
                 tagids: this.tag,
                 status: this.status,
                 page: this.page,
-                pagesize:  this.pageSize
+                pagesize:  this.pageSize,
+                customerid: this.customersId
             };
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -183,6 +252,7 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.list || [];
+                    console.log('tableData', data.list);
                     this.total = data.total || 0;
                 } else {
                     this.$message({
@@ -225,12 +295,24 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.customers = res.data || [];
+                    console.log(res.data);
                 }
             });
         },
         changeHandle() {
             this.page = 1;
             this.getData();
+        },
+        // 双击列表显示
+        showTag(row) {
+            this.$root.$emit('SHOW_OPPORT_DIALOG', {
+                data: row,
+                tags: this.tags,
+                customers: this.customers,
+                callback: () => {
+                    this.getData();
+                }
+            });
         },
         showDialog(type, row) {
             this.$root.$emit('SHOW_OPPORT_DIALOG', {
@@ -303,6 +385,22 @@ export default {
         margin-left: 15px;
         position: relative;
         top: 2px;
+    }
+    td.bg-danger {
+        color: #fff;
+        background-color: rgba(219, 65, 78, 0.78) !important;
+    }
+    td.bg-success {
+        color: #fff;
+        background-color: rgba(69, 190, 135, 0.78) !important;
+    }
+    td.bg-warning {
+        color: #fff;
+        background-color: rgba(230, 162, 60, 0.78) !important;
+    }
+    td.bg-info {
+        color: #fff;
+        background-color: #438fc5 !important;
     }
 }
 </style>

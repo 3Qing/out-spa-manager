@@ -45,7 +45,7 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="得意技術" prop="masterSkills">
-                <el-input type="textarea" :rows="2" v-model="form.masterSkills"></el-input>
+                <el-input type="textarea" :rows="6" maxlength="1000" show-word-limit v-model="form.masterSkills"></el-input>
             </el-form-item>
             <!-- <el-form-item v-for="(item,i) in msTitles" :key="item.id" label="" class="ms-wrapper">
                 <div slot="label">
@@ -116,7 +116,7 @@
                 <el-button type="primary" size="mini" @click="addCert">資格追加</el-button>
             </el-form-item>
             <el-form-item label="自己PR" prop="selfIntro">
-                <el-input v-model="form.selfIntro" type="textarea" :rows="3"></el-input>
+                <el-input v-model="form.selfIntro" type="textarea" :rows="6" maxlength="1000" show-word-limit></el-input>
             </el-form-item>
         </el-form>
         <el-form

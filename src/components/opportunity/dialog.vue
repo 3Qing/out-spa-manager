@@ -28,11 +28,16 @@
                     <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item label="营业担当">
+                <el-select v-model="form.salesPersonID">
+                    <el-option v-for="item in jobsLists" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item label="招聘标题" prop="title">
                 <el-input v-model="form.title"></el-input>
             </el-form-item>
             <el-form-item label="招聘内容" prop="content">
-                <el-input type="textarea" :rows="5" v-model="form.content"></el-input>
+                <el-input type="textarea" :rows="15" v-model="form.content"></el-input>
             </el-form-item>
             <el-row>
                 <el-col :span="12">
@@ -56,6 +61,54 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-form-item label="提案履歴">
+                <el-button type="primary" size="mini" @click="handleTip">提案</el-button>
+            </el-form-item>
+            <el-table ref="table" :data="form.salesCases" size="small" border v-if="isShow">
+                <el-table-column label="Name" prop="customerID" show-overflow-tooltip></el-table-column>
+                <el-table-column label="CreateDate" prop="createDate" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span>{{scope.row.createDate.substring(0,10)}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="salesPersonID" prop="salesPerson" show-overflow-tooltip></el-table-column>
+                <el-table-column label="操作" width="70">
+                    <template slot-scope="scope">
+                        <el-tooltip effect="dark" content="编辑" placement="top-start">
+                            <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, 1)"></i>
+                        </el-tooltip>
+                        <el-tooltip effect="dark" content="删除" placement="top-start">
+                            <i class="el-icon-delete oper-icon" color="danger" @click="deletetoogle(scope.row)"></i>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column type="expand" width="1">
+                    <template slot-scope="props">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                            <!-- <el-form-item label="">
+                                <el-input v-model="content" type="textarea" :rows="6"></el-input>
+                            </el-form-item> -->
+                            <el-form-item class="lid" v-for='(item,index) in salesCaseItems' :key='index' :label="item.updateTime">
+                                <el-input class="input" v-model="item.content" ></el-input>
+                                <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
+                                    <i class="el-icon-delete oper-icon" color="danger" @click="deletes(index)"></i>
+                                </el-tooltip>
+                                <el-tooltip v-if='(index+1) === salesCaseItems.length' class="flot flot1" effect="dark" content="添加" placement="top-start">
+                                    <i class="el-icon-plus oper-icon" color="primary" @click="adds"></i>
+                                </el-tooltip>
+                            </el-form-item>
+                            <el-form-item class="lid" label="提案状态">
+                                <el-select size="mini" v-model="props.row.status">
+                                    <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                                </el-select>
+                            </el-form-item>
+                            <!-- <el-form-item label="">
+                                <el-button size="small" type="primary" @click='save(props.row)'>保存</el-button>
+                            </el-form-item> -->
+                        </el-form>
+                    </template>
+                </el-table-column>
+            </el-table>
         </el-form>
         <div slot="footer">
             <el-button size="mini" @click="close">取消</el-button>
@@ -72,10 +125,19 @@ export default {
         allStatus: {
             type: Array,
             required: true
+        },
+        jobsLists: {
+            type: Array,
+            required: true
         }
     },
     data() {
         return {
+            salesCaseItems: [{
+                content: '',
+                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+            }],
+            isShow: false,
             dialog: false,
             visible: false,
             form: {
@@ -85,7 +147,8 @@ export default {
                 content: '',
                 pubDate: '',
                 closeDate: '',
-                status: 0
+                status: 0,
+                salesPersonID: ''
             },
             rules: {
                 title: [{
@@ -119,6 +182,7 @@ export default {
                 }
                 form.tags = [];
                 this.form = { ...form };
+                console.log(this.form);
                 this.getInfo(form);
                 this.edit = true;
             } else {
@@ -132,6 +196,9 @@ export default {
         });
     },
     methods: {
+        handleTip() {
+            this.isShow = !this.isShow;
+        },
         getInfo() {
             this.$axios({
                 url: '/api/Opportunity/api_getopportunitybyid',
@@ -155,6 +222,7 @@ export default {
         },
         close() {
             this.visible = false;
+            this.isShow = false;
             this.$refs.form.resetFields();
             this.form = {
                 tags: [],
@@ -163,7 +231,8 @@ export default {
                 content: '',
                 pubDate: '',
                 closeDate: '',
-                status: 0
+                status: 0,
+                salesPersonID: ''
             };
         },
         submit() {
@@ -177,8 +246,10 @@ export default {
                         PubDate: this.form.pubDate,
                         CloseDate: this.form.closeDate,
                         Status: this.form.status,
-                        CustomerID: this.form.customerID || 0
+                        CustomerID: this.form.customerID || 0,
+                        SalesPersonID: this.form.salesPersonID
                     };
+                    console.log(params);
                     if (!Number(this.form.customerID) && typeof this.form.customerID !== 'number') {
                         params.CustomerTitle = this.form.customerTitle;
                         params.CustomerID = 0;
@@ -214,6 +285,104 @@ export default {
         clearHandle() {
             this.form.customerTitle = '';
             this.form.customerID = '';
+        },
+        // 提案按钮点击
+        // 展开列表
+        toogleExpand(row) {
+            let $table = this.$refs.table;
+            this.form.salesCases.map((item) => {
+                if (row.id != item.id) {
+                    $table.toggleRowExpansion(item, false);
+                }
+            });
+            console.log(row, this.form.salesCases);
+            // const loading = this.$loading({ lock: true, text: '正在加载...' });
+            // this.$axios({
+            //     url: '/api/Opportunity/api_getsalescaseinfo',
+            //     params: {
+            //         scid: row.id
+            //     }
+            // }).then(res => {
+            //     loading.close();
+            //     $table.toggleRowExpansion(row);
+            //     let datas = {};
+            //     if (res && res.code === 0) {
+            //         datas = res.data;
+            //     }
+            //     this.data.forEach((item) => {
+            //         if(item.id === datas.id) {
+            //             this.content = datas.content;
+            //             if (datas.salesCaseItems.length>0) {
+            //                 datas.salesCaseItems.forEach((i) => {
+            //                     i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
+            //                 });
+            //                 this.salesCaseItems = datas.salesCaseItems;
+            //             }
+            //         }
+            //     });
+            // });
+        },
+        deletetoogle(row) {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/SalesCase/api_deletesalescase',
+                    params: {
+                        id: row.id
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.data.forEach((item, i) => {
+                            if(item.id === row.id) {
+                                this.data.splice(i, 1);
+                            }
+                        });
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.deletetrue = true;
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
+        },
+        // 添加
+        adds() {
+            this.salesCaseItems.push({
+                content: '',
+                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+            });
+        },
+        // 删除
+        deletes(i) {
+            this.salesCaseItems.splice(i, 1);
+        },
+        // 保存
+        save(row) {
+            const loading = this.$loading({ lock: true, text: '正在保存...' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/SalesCase/api_updatesalescase',
+                params: {
+                    id: row.id,
+                    content: this.content,
+                    Status: row.status,
+                    SalesCaseItems: this.salesCaseItems
+                },
+                formData: true
+            }).then(res => {
+                loading.close();
+                this.$message({
+                    type: 'success',
+                    message: res ? res.message : '接口开小差了，没有返回信息'
+                });
+            });
         }
     }
 };
