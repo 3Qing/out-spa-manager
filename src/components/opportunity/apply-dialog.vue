@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :visible="visible" @close="close" :close-on-click-modal="dialog">
+    <el-dialog :visible="visible" @close="close" class="tian" :close-on-click-modal="dialog">
         <el-form size="mini" label-width="80px">
             <el-form-item label="候选人">
                 <el-select

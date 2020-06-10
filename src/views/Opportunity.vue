@@ -79,11 +79,6 @@
                         <i class="el-icon-delete oper-icon" color="danger" @click="deleteHandler(scope)"></i>
                     </el-tooltip>
                 </template>
-                <!-- <template slot-scope="scope">
-                    <el-button type="primary" size="mini" @click="handleAction(scope.row)">提案</el-button>
-                    <el-button type="warning" size="mini" @click="showDialog(2, scope.row)">编辑</el-button>
-                    <el-button type="danger" size="mini" @click="deleteHandler(scope)">删除</el-button>
-                </template> -->
             </el-table-column>
         </el-table>
         <el-pagination
@@ -92,7 +87,7 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList"></opport-dialog>
+        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList" :opport="oppStatus"></opport-dialog>
         <tag-dialog :visible="visibleDialog" @close="visibleDialog = false" @updateTag="getTags"></tag-dialog>
         <apply-dialog
             :visible="showApply"
@@ -127,7 +122,7 @@ export default {
     },
     data() {
         return {
-            customersId: 0,
+            customersId: '',
             page: 1,
             pageSize: 15,
             total: 0,
@@ -188,7 +183,6 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.jobsList = res.data || [];
-                    console.log(res.data);
                 }
             });
         },
@@ -355,6 +349,7 @@ export default {
         handleAction(data) {
             this.showApply = true;
             this.curData = { ...data };
+            console.log(data);
         },
         // 提案历史
         handleTip(data) {

@@ -1,126 +1,155 @@
 <template>
-    <el-dialog
-        custom-class="opport-dialog"
-        :visible.sync="visible"
-        :title="form.id ? '编辑' : '新增'"
-        :close-on-click-modal="dialog"
-        @close="close">
-        <el-form size="mini" label-width="120px" :model="form" :rules="rules" ref="form">
-            <el-form-item label="商家标签" prop="tags">
-                <el-checkbox-group v-model="form.tags" size="mini">
-                    <el-checkbox-button v-for="item in tags" :label="item.id" :key="item.id">{{item.tagName}}</el-checkbox-button>
-                </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label="客户清单" prop="customerID">
-                <el-select
-                    v-model="form.customerID"
-                    placeholder="選択また入力"
-                    remote
-                    filterable
-                    clearable
-                    @clear="clearHandle"
-                    :remote-method="setCustomTitle">
-                    <el-option v-for="item in customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="商家状态">
-                <el-select v-model="form.status">
-                    <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="营业担当">
-                <el-select v-model="form.salesPersonID">
-                    <el-option v-for="item in jobsLists" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="招聘标题" prop="title">
-                <el-input v-model="form.title"></el-input>
-            </el-form-item>
-            <el-form-item label="招聘内容" prop="content">
-                <el-input type="textarea" :rows="15" v-model="form.content"></el-input>
-            </el-form-item>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="发布日期">
-                        <el-date-picker
-                            size="mini"
-                            placeholder="发布日期"
-                            v-model="form.pubDate"
-                            value-format="yyyy-MM-dd"
-                            value="yyyy-MM-dd"></el-date-picker>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                    <el-form-item label="关闭日期">
-                        <el-date-picker
-                            size="mini"
-                            placeholder="关闭日期"
-                            v-model="form.closeDate"
-                            value-format="yyyy-MM-dd"
-                            value="yyyy-MM-dd"></el-date-picker>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item label="提案履歴">
-                <el-button type="primary" size="mini" @click="handleTip">提案</el-button>
-            </el-form-item>
-            <el-table ref="table" :data="form.salesCases" size="small" border v-if="isShow">
-                <el-table-column label="Name" prop="customerID" show-overflow-tooltip></el-table-column>
-                <el-table-column label="CreateDate" prop="createDate" show-overflow-tooltip>
-                    <template slot-scope="scope">
-                        <span>{{scope.row.createDate.substring(0,10)}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="salesPersonID" prop="salesPerson" show-overflow-tooltip></el-table-column>
-                <el-table-column label="操作" width="70">
-                    <template slot-scope="scope">
-                        <el-tooltip effect="dark" content="编辑" placement="top-start">
-                            <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, 1)"></i>
-                        </el-tooltip>
-                        <el-tooltip effect="dark" content="删除" placement="top-start">
-                            <i class="el-icon-delete oper-icon" color="danger" @click="deletetoogle(scope.row)"></i>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-                <el-table-column type="expand" width="1">
-                    <template slot-scope="props">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                            <!-- <el-form-item label="">
-                                <el-input v-model="content" type="textarea" :rows="6"></el-input>
-                            </el-form-item> -->
-                            <el-form-item class="lid" v-for='(item,index) in salesCaseItems' :key='index' :label="item.updateTime">
-                                <el-input class="input" v-model="item.content" ></el-input>
-                                <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
-                                    <i class="el-icon-delete oper-icon" color="danger" @click="deletes(index)"></i>
-                                </el-tooltip>
-                                <el-tooltip v-if='(index+1) === salesCaseItems.length' class="flot flot1" effect="dark" content="添加" placement="top-start">
-                                    <i class="el-icon-plus oper-icon" color="primary" @click="adds"></i>
-                                </el-tooltip>
-                            </el-form-item>
-                            <el-form-item class="lid" label="提案状态">
-                                <el-select size="mini" v-model="props.row.status">
-                                    <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                                </el-select>
-                            </el-form-item>
-                            <!-- <el-form-item label="">
-                                <el-button size="small" type="primary" @click='save(props.row)'>保存</el-button>
-                            </el-form-item> -->
-                        </el-form>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-form>
-        <div slot="footer">
-            <el-button size="mini" @click="close">取消</el-button>
-            <el-button type="primary" size="mini" @click="submit">保存</el-button>
-        </div>
-    </el-dialog>
+    <div>
+        <el-dialog
+            class="tian"
+            custom-class="opport-dialog"
+            :visible.sync="visible"
+            :title="form.id ? '编辑' : '新增'"
+            :close-on-click-modal="dialog"
+            @close="close">
+            <el-form size="mini" label-width="120px" :model="form" :rules="rules" ref="form">
+                <el-form-item label="商家标签" prop="tags">
+                    <el-checkbox-group v-model="form.tags" size="mini">
+                        <el-checkbox-button v-for="item in tags" :label="item.id" :key="item.id">{{item.tagName}}</el-checkbox-button>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="客户清单" prop="customerID">
+                    <el-select
+                        v-model="form.customerID"
+                        placeholder="選択また入力"
+                        remote
+                        filterable
+                        clearable
+                        @clear="clearHandle"
+                        :remote-method="setCustomTitle">
+                        <el-option v-for="item in customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="商家状态">
+                    <el-select v-model="form.status">
+                        <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="营业担当">
+                    <el-select v-model="form.salesPersonID">
+                        <el-option v-for="item in jobsLists" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="招聘标题" prop="title">
+                    <el-input v-model="form.title"></el-input>
+                </el-form-item>
+                <el-form-item label="招聘内容" prop="content">
+                    <el-input type="textarea" :rows="15" v-model="form.content"></el-input>
+                </el-form-item>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="发布日期">
+                            <el-date-picker
+                                size="mini"
+                                placeholder="发布日期"
+                                v-model="form.pubDate"
+                                value-format="yyyy-MM-dd"
+                                value="yyyy-MM-dd"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="关闭日期">
+                            <el-date-picker
+                                size="mini"
+                                placeholder="关闭日期"
+                                v-model="form.closeDate"
+                                value-format="yyyy-MM-dd"
+                                value="yyyy-MM-dd"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-form-item label="">
+                    <el-button class="btnFlo" type="primary" size="mini" @click="submit">保存</el-button>
+                </el-form-item>
+                <p class="line"></p>
+                <el-form-item label="提案履歴" v-if='form.id'>
+                    <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button>
+                </el-form-item>
+                <el-table class="tabels" ref="table" :data="form.salesCases" size="small" border>
+                    <el-table-column label="Name" prop="name" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="CreateDate" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span>{{scope.row.createDate.substring(0,10)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="salesPerson" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span>{{getContent(scope.row.salesPersonID, jobsLists, 'jobsLists')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="提案情报" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span v-if='scope.row.salesCaseItems.length>0'>{{scope.row.salesCaseItems[scope.row.salesCaseItems.length - 1].content}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="提案状态" prop="status">
+                        <template slot-scope="scope">
+                            <span>{{getContent(scope.row.status, opport, 'opport')}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="70">
+                        <template slot-scope="scope">
+                            <el-tooltip effect="dark" content="编辑" placement="top-start">
+                                <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, form.salesCases)"></i>
+                            </el-tooltip>
+                            <el-tooltip effect="dark" content="删除" placement="top-start">
+                                <i class="el-icon-delete oper-icon" color="danger" @click="deletetoogle(scope.row)"></i>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                    <el-table-column type="expand" width="1">
+                        <template slot-scope="props">
+                            <el-form label-position="left" inline class="demo-table-expand">
+                                <!-- <el-form-item label="">
+                                    <el-input v-model="content" type="textarea" :rows="6"></el-input>
+                                </el-form-item> -->
+                                <el-form-item class="lid" v-for='(item,index) in props.row.salesCaseItems' :key='index' :label="item.updateTime">
+                                    <el-input class="input" v-model="item.content" ></el-input>
+                                    <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
+                                        <i class="el-icon-delete oper-icon" color="danger" @click="deletes(props.row.id, index)"></i>
+                                    </el-tooltip>
+                                    <el-tooltip v-if='(index+1) === props.row.salesCaseItems.length' class="flot flot1" effect="dark" content="添加" placement="top-start">
+                                        <i class="el-icon-plus oper-icon" color="primary" @click="adds(props.row.id)"></i>
+                                    </el-tooltip>
+                                </el-form-item>
+                                <el-form-item class="lid" label="提案状态">
+                                    <el-select size="mini" v-model="props.row.status">
+                                        <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-form-item label="">
+                    <el-button class="btnFlo" size="small" type="primary" @click='save()'>提案保存</el-button>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button size="mini" @click="close">取消</el-button>
+            </div>
+        </el-dialog>
+        <apply-dialog
+            :visible="showApply"
+            :data="curData"
+            @close="showApply = false">
+            </apply-dialog>
+    </div>
 </template>
 
 <script>
 import { formatTime } from '@_public/utils';
+import ApplyDialog from '@components/opportunity/apply-dialog';
 import moment from 'moment';
 export default {
+    components: {
+        ApplyDialog
+    },
     props: {
         allStatus: {
             type: Array,
@@ -129,15 +158,20 @@ export default {
         jobsLists: {
             type: Array,
             required: true
+        },
+        opport: {
+            type: Array,
+            required: true
         }
     },
     data() {
         return {
+            curData: {},
             salesCaseItems: [{
                 content: '',
                 updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
             }],
-            isShow: false,
+            showApply: false,
             dialog: false,
             visible: false,
             form: {
@@ -167,7 +201,8 @@ export default {
             edit: false,
             callback: null,
             tags: [],
-            customers: []
+            customers: [],
+            candidates: []
         };
     },
     mounted() {
@@ -182,7 +217,6 @@ export default {
                 }
                 form.tags = [];
                 this.form = { ...form };
-                console.log(this.form);
                 this.getInfo(form);
                 this.edit = true;
             } else {
@@ -196,8 +230,27 @@ export default {
         });
     },
     methods: {
-        handleTip() {
-            this.isShow = !this.isShow;
+        handleTip(data) {
+            this.showApply = true;
+            this.curData = { ...data };
+        },
+        // 获取字段函数
+        getContent(id, arr, arrName) {
+            if (arrName === 'opport') {
+                for (let item of arr) {
+                    if (item.id === id) {
+                        return item.text;
+                    }
+                }
+            }
+            if (arrName === 'jobsLists') {
+                for (let item of arr) {
+                    if (item.id === id) {
+                        return item.name;
+                    }
+                }
+            }
+            return '-';
         },
         getInfo() {
             this.$axios({
@@ -222,7 +275,6 @@ export default {
         },
         close() {
             this.visible = false;
-            this.isShow = false;
             this.$refs.form.resetFields();
             this.form = {
                 tags: [],
@@ -295,32 +347,21 @@ export default {
                     $table.toggleRowExpansion(item, false);
                 }
             });
-            console.log(row, this.form.salesCases);
-            // const loading = this.$loading({ lock: true, text: '正在加载...' });
-            // this.$axios({
-            //     url: '/api/Opportunity/api_getsalescaseinfo',
-            //     params: {
-            //         scid: row.id
-            //     }
-            // }).then(res => {
-            //     loading.close();
-            //     $table.toggleRowExpansion(row);
-            //     let datas = {};
-            //     if (res && res.code === 0) {
-            //         datas = res.data;
-            //     }
-            //     this.data.forEach((item) => {
-            //         if(item.id === datas.id) {
-            //             this.content = datas.content;
-            //             if (datas.salesCaseItems.length>0) {
-            //                 datas.salesCaseItems.forEach((i) => {
-            //                     i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
-            //                 });
-            //                 this.salesCaseItems = datas.salesCaseItems;
-            //             }
-            //         }
-            //     });
-            // });
+            $table.toggleRowExpansion(row);
+            this.form.salesCases.forEach((item) => {
+                if(item.id === row.id) {
+                    if (item.salesCaseItems.length>0) {
+                        item.salesCaseItems.forEach((i) => {
+                            i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
+                        });
+                    } else {
+                        item.salesCaseItems = [{
+                            content: '',
+                            updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+                        }];
+                    }
+                }
+            });
         },
         deletetoogle(row) {
             this.$confirm('是否删除', '删除', {
@@ -333,9 +374,9 @@ export default {
                     }
                 }).then(res => {
                     if (res && res.code === 0) {
-                        this.data.forEach((item, i) => {
+                        this.form.salesCases.forEach((item, i) => {
                             if(item.id === row.id) {
-                                this.data.splice(i, 1);
+                                this.form.salesCases.splice(i, 1);
                             }
                         });
                         this.$message({
@@ -353,29 +394,100 @@ export default {
             }).catch(() => {});
         },
         // 添加
-        adds() {
-            this.salesCaseItems.push({
-                content: '',
-                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+        adds(id) {
+            // this.salesCaseItems.push({
+            //     content: '',
+            //     updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM'),
+            //     salesCaseID: id
+            // });
+            this.form.salesCases.forEach((item) => {
+                if(item.id === id) {
+                    item.salesCaseItems.push({
+                        content: '',
+                        updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+                    });
+                }
             });
         },
         // 删除
-        deletes(i) {
-            this.salesCaseItems.splice(i, 1);
+        deletes(id, i) {
+            this.form.salesCases.forEach((item) => {
+                if(item.id === id) {
+                    item.salesCaseItems.splice(i, 1);
+                }
+            });
+            // this.salesCaseItems.splice(i, 1);
         },
+        // toFormData(val) {
+        //     let formData = new FormData();
+        //     for (let i in val) {
+        //         isArray(val[i], i);
+        //     }
+        //     function isArray(array, key) {
+        //         if (array == undefined || typeof array == "function") {
+        //             return false;
+        //         }
+        //         if (typeof array != "object") {
+        //             formData.append(key, array);
+        //         } else if (array instanceof Array) {
+        //             if (array.length == 0) {
+        //                 formData.append(`${key}`, "");
+        //             } else {
+        //                 for (let i in array) {
+        //                     for (let j in array[i]) {
+        //                         isArray(array[i][j], `${key}[${i}].${j}`);
+        //                     }
+        //                 }
+        //             }
+        //         } else {
+        //             let arr = Object.keys(array);
+        //             if (arr.indexOf("uid") == -1) {
+        //                 for (let j in array) {
+        //                     isArray(array[j], `${key}.${j}`);
+        //                 }
+        //             } else {
+        //                 formData.append(`${key}`, array);
+        //             }
+        //         }
+        //     }
+        //     return formData;
+        // },
         // 保存
-        save(row) {
+        save() {
+            console.log(this.form.salesCases);
+            let arra = this.form.salesCases;
+            let postData = new FormData();
+            arra.forEach( (item,  index)  =>  {
+                Object.keys(item).forEach( key  =>  {
+                    if (item[key] instanceof Array) {
+                        item[key].forEach((i, x) => {
+                            // console.log('1111111', i['content'], `arra[${index}][${key}][${x}][content]`);
+                            postData[`arra[${index}][${key}][${x}][content]`] = i['content'];
+                            postData[`arra[${index}][${key}][${x}][companyID]`] = i['companyID'];
+                            postData[`arra[${index}][${key}][${x}][id]`] = i['id'];
+                            postData[`arra[${index}][${key}][${x}][salesActivityID]`] = i['salesActivityID'];
+                            postData[`arra[${index}][${key}][${x}][salesCaseID]`] = i['salesCaseID'];
+                            postData[`arra[${index}][${key}][${x}][salesPersonID]`] = i['salesPersonID'];
+                            postData[`arra[${index}][${key}][${x}][updateTime]`] = i['updateTime'];
+                        });
+                    } else {
+                        postData[`arra[${index}][${key}]`] = item[key];
+                        // console.log(item[key], `arra[${index}][${key}]`);
+                    }
+                });
+            });
+            // salesCase.forEach((item) => {
+            //     item.salesCaseItems = JSON.stringify(item.salesCaseItems);
+            // });
+            // var salesCase = JSON.stringify(this.form.salesCases);
             const loading = this.$loading({ lock: true, text: '正在保存...' });
             this.$axios({
                 method: 'POST',
-                url: '/api/SalesCase/api_updatesalescase',
+                url: '/api/SalesCase/api_updatesalescases',
                 params: {
-                    id: row.id,
-                    content: this.content,
-                    Status: row.status,
-                    SalesCaseItems: this.salesCaseItems
-                },
-                formData: true
+                    salescases: postData
+                }
+                // formData: true
             }).then(res => {
                 loading.close();
                 this.$message({
@@ -395,5 +507,34 @@ export default {
             background-color: #f0f0f0;
         }
     }
+    .demo-table-expand {
+        font-size: 0;
+        .input{
+            float: left;
+            width: 553px;
+            height: 30px;
+            line-height: 30px;
+        }
+        .flot{
+            // float: left;
+            position: absolute;
+            top: 5px;
+            margin-left: 5px;
+        }
+        .flot1{
+            margin-left: 33px !important;
+        }
+  }
+  .line{
+      height: 1px;
+      border-top:1px dashed gray;
+      margin-bottom: 15px;
+  }
+  .tabels{
+      margin-bottom: 20px;
+  }
+  .btnFlo{
+      float: right;
+  }
 }
 </style>
