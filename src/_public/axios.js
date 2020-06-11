@@ -21,7 +21,16 @@ export default (params = {}) => {
                 params.params[key].forEach((item, i) => {
                     if (typeof item === 'object') {
                         for (let k in item) {
-                            formData.append(`${key}[${i}].${k}`, item[k]);
+                            if (item[k] instanceof Array) {
+                                for (let l in item[k]) {
+                                    for (let y in item[k][l]) {
+                                        // console.log(`${key}[${i}].${k}[${l}][${y}]`, item[k][l][y]);
+                                        formData.append(`${key}[${i}].${k}[${l}][${y}]`, item[k][l][y]);
+                                    }
+                                }
+                            } else {
+                                formData.append(`${key}[${i}].${k}`, item[k]);
+                            }
                         }
                     } else {
                         formData.append(`${key}[${i}]`, item);

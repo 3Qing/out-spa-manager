@@ -87,7 +87,7 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList" :opport="oppStatus"></opport-dialog>
+        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList" :opport="oppStatus" @update="getData"></opport-dialog>
         <tag-dialog :visible="visibleDialog" @close="visibleDialog = false" @updateTag="getTags"></tag-dialog>
         <apply-dialog
             :visible="showApply"

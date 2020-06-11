@@ -68,6 +68,7 @@ export default {
                 }
             });
         },
+        // 获取提案列表
         handleChange(val) {
             this.$set(this.form, 'candidateid', val);
         },

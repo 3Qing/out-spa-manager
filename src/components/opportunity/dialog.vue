@@ -63,14 +63,14 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="">
+                <el-form-item label="" v-if='form.id'>
                     <el-button class="btnFlo" type="primary" size="mini" @click="submit">保存</el-button>
                 </el-form-item>
                 <p class="line"></p>
                 <el-form-item label="提案履歴" v-if='form.id'>
                     <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button>
                 </el-form-item>
-                <el-table class="tabels" ref="table" :data="form.salesCases" size="small" border>
+                <el-table class="tabels" v-if='form.id' ref="table" :data="form.salesCases" size="small" border>
                     <el-table-column label="Name" prop="name" show-overflow-tooltip></el-table-column>
                     <el-table-column label="CreateDate" show-overflow-tooltip>
                         <template slot-scope="scope">
@@ -126,18 +126,20 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-form-item label="">
+                <el-form-item label="" v-if='form.id'>
                     <el-button class="btnFlo" size="small" type="primary" @click='save()'>提案保存</el-button>
                 </el-form-item>
             </el-form>
             <div slot="footer">
+                <el-button v-if='!form.id' class="btnFlo" type="primary" size="mini" @click="submit">保存</el-button>
                 <el-button size="mini" @click="close">取消</el-button>
             </div>
         </el-dialog>
         <apply-dialog
             :visible="showApply"
             :data="curData"
-            @close="showApply = false">
+            @close="showApply = false"
+            @update="getCandiList">
             </apply-dialog>
     </div>
 </template>
@@ -202,7 +204,8 @@ export default {
             callback: null,
             tags: [],
             customers: [],
-            candidates: []
+            candidates: [],
+            isShow: false
         };
     },
     mounted() {
@@ -228,8 +231,24 @@ export default {
             this.customers = customers;
             this.visible = true;
         });
+        this.getCandiList();
     },
     methods: {
+        // 获取提案列表
+        getCandiList() {
+            this.$axios({
+                url: '/api/Opportunity/api_getopportunitybyid',
+                params: {
+                    id: this.form.id
+                }
+            }).then(res => {
+                if (res && res.code === 0) {
+                    // this.candidates = res.data || [];
+                    this.form.salesCases = res.data.salesCases;
+                }
+                console.log(this.form);
+            });
+        },
         handleTip(data) {
             this.showApply = true;
             this.curData = { ...data };
@@ -274,6 +293,9 @@ export default {
             });
         },
         close() {
+            if (this.isShow) {
+                this.$emit('update');
+            }
             this.visible = false;
             this.$refs.form.resetFields();
             this.form = {
@@ -319,6 +341,7 @@ export default {
                     }).then(res => {
                         loading.close();
                         if (res && res.code === 0) {
+                            this.isShow = true;
                             this.$message({
                                 type: 'success',
                                 message: '保存成功'
@@ -374,6 +397,7 @@ export default {
                     }
                 }).then(res => {
                     if (res && res.code === 0) {
+                        this.isShow = true;
                         this.form.salesCases.forEach((item, i) => {
                             if(item.id === row.id) {
                                 this.form.salesCases.splice(i, 1);
@@ -418,78 +442,28 @@ export default {
             });
             // this.salesCaseItems.splice(i, 1);
         },
-        // toFormData(val) {
-        //     let formData = new FormData();
-        //     for (let i in val) {
-        //         isArray(val[i], i);
-        //     }
-        //     function isArray(array, key) {
-        //         if (array == undefined || typeof array == "function") {
-        //             return false;
-        //         }
-        //         if (typeof array != "object") {
-        //             formData.append(key, array);
-        //         } else if (array instanceof Array) {
-        //             if (array.length == 0) {
-        //                 formData.append(`${key}`, "");
-        //             } else {
-        //                 for (let i in array) {
-        //                     for (let j in array[i]) {
-        //                         isArray(array[i][j], `${key}[${i}].${j}`);
-        //                     }
-        //                 }
-        //             }
-        //         } else {
-        //             let arr = Object.keys(array);
-        //             if (arr.indexOf("uid") == -1) {
-        //                 for (let j in array) {
-        //                     isArray(array[j], `${key}.${j}`);
-        //                 }
-        //             } else {
-        //                 formData.append(`${key}`, array);
-        //             }
-        //         }
-        //     }
-        //     return formData;
-        // },
         // 保存
         save() {
-            console.log(this.form.salesCases);
             let arra = this.form.salesCases;
-            let postData = new FormData();
-            arra.forEach( (item,  index)  =>  {
-                Object.keys(item).forEach( key  =>  {
-                    if (item[key] instanceof Array) {
-                        item[key].forEach((i, x) => {
-                            // console.log('1111111', i['content'], `arra[${index}][${key}][${x}][content]`);
-                            postData[`arra[${index}][${key}][${x}][content]`] = i['content'];
-                            postData[`arra[${index}][${key}][${x}][companyID]`] = i['companyID'];
-                            postData[`arra[${index}][${key}][${x}][id]`] = i['id'];
-                            postData[`arra[${index}][${key}][${x}][salesActivityID]`] = i['salesActivityID'];
-                            postData[`arra[${index}][${key}][${x}][salesCaseID]`] = i['salesCaseID'];
-                            postData[`arra[${index}][${key}][${x}][salesPersonID]`] = i['salesPersonID'];
-                            postData[`arra[${index}][${key}][${x}][updateTime]`] = i['updateTime'];
-                        });
-                    } else {
-                        postData[`arra[${index}][${key}]`] = item[key];
-                        // console.log(item[key], `arra[${index}][${key}]`);
-                    }
+            arra.forEach((item) => {
+                item.createDate = moment(item.createDate).format('YYYY-MM-DD HH:MM');
+                item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:MM');
+                item.salesCaseItems.forEach((i) => {
+                    i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
                 });
             });
-            // salesCase.forEach((item) => {
-            //     item.salesCaseItems = JSON.stringify(item.salesCaseItems);
-            // });
-            // var salesCase = JSON.stringify(this.form.salesCases);
             const loading = this.$loading({ lock: true, text: '正在保存...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/SalesCase/api_updatesalescases',
                 params: {
-                    salescases: postData
-                }
-                // formData: true
+                    salescases: arra
+                },
+                formData: true
             }).then(res => {
+                this.isShow = true;
                 loading.close();
+                this.getCandiList();
                 this.$message({
                     type: 'success',
                     message: res ? res.message : '接口开小差了，没有返回信息'
