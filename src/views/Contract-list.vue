@@ -105,7 +105,6 @@
                     <el-tooltip effect="dark" content="更新" placement="top-start">
                         <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
                     </el-tooltip>
-                    <!-- v-if="scope.row.editable" -->
                     <el-tooltip effect="dark" content="删除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
                     </el-tooltip>

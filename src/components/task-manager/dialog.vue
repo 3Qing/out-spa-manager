@@ -68,6 +68,7 @@
         </el-form>
         <div slot="footer">
             <el-button size="mini" @click="close">取消</el-button>
+            <el-button size="mini" type="danger" v-if="form.id" @click="deletes">删除</el-button>
             <el-button size="mini" type="primary" @click="beforeSubmit">确认</el-button>
         </div>
     </el-dialog>
@@ -226,6 +227,9 @@ export default {
         },
         submit(params) {
             const loading = this.$loading({ lock: true, text: this.POST_LOADING });
+            if(this.form.id){
+                params.id = this.form.id;
+            }
             this.$axios({
                 method: 'POST',
                 url: '/api/SalesActivity/api_updatesalesactivity',
@@ -247,6 +251,33 @@ export default {
                     });
                 }
             });
+        },
+        // 删除
+        deletes() {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/SalesActivity/api_deletesalesactivity',
+                    params: {
+                        id: this.form.id
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.close();
+                        this.callback && this.callback();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
         },
         getContent(val, arr, key, field) {
             for (let item of arr) {

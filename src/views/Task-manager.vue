@@ -295,11 +295,10 @@ export default {
                 evt.cancelBubble = true;
             }
         },
-        getStyle(item, j) {
-            const ileft = j * 20 + 'px';
+        getStyle(item, j, arrLength) {
+            const ileft = j * (100 / arrLength.length) + '%';
             const itop = item.top + '%';
-            const iw = j*20 +'px';
-            const iwidth = `calc(100% - ${iw})`;
+            const iwidth = (100 / arrLength.length) + '%';
             const zIndex = 99 + j;
             return {
                 width: iwidth,

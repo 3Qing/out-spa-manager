@@ -176,12 +176,13 @@ export default {
                 });
             }).catch(() => {});
         },
+        // 预览
         previewHandle(scope) {
             imageFileToPreview({
                 vm: this,
                 url: '/api/Estimation/api_previewestimationfile',
                 params: {
-                    invid: scope.row.id
+                    id: scope.row.id
                 }
             });
         },

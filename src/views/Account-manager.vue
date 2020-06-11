@@ -18,9 +18,15 @@
                 </template>
             </el-table-column>
             <el-table-column label="財務諸表項目" prop="groupText"></el-table-column>
-            <el-table-column label="操作" width="120px">
+            <el-table-column label="操作" width="70px">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="warning" @click="dataChange('edit', scope.row)">变更</el-button>
+                    <!-- <el-button size="mini" type="warning" @click="dataChange('edit', scope.row)">变更</el-button> -->
+                    <el-tooltip effect="dark" content="变更" placement="top-start">
+                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="dataChange('edit', scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -123,6 +129,32 @@ export default {
                 console.log(this.curData);
             }
             this.visible = true;
+        },
+        // 删除
+        deletes(row) {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/ACAccount/api_deleteaccount',
+                    params: {
+                        account: row.accountID
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getAccount();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
         },
         getAccount() {
             this.$axios({

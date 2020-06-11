@@ -149,6 +149,16 @@ export default {
         },
         close() {
             this.$refs.form.resetFields();
+            this.form = {
+                id: '',
+                tags: [],
+                ask1: '',
+                ask2: '',
+                ask3: '',
+                answer: '',
+                importance: 0,
+                comment: ''
+            };
             this.visible = false;
         }
     }
