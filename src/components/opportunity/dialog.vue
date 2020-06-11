@@ -66,7 +66,7 @@
                 <el-form-item label="" v-if='form.id'>
                     <el-button class="btnFlo" type="primary" size="mini" @click="submit">保存</el-button>
                 </el-form-item>
-                <p class="line"></p>
+                <p class="line" v-if='form.id'></p>
                 <el-form-item label="提案履歴" v-if='form.id'>
                     <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button>
                 </el-form-item>
@@ -131,7 +131,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer">
-                <el-button v-if='!form.id' class="btnFlo" type="primary" size="mini" @click="submit">保存</el-button>
+                <el-button v-if='!form.id' type="primary" size="mini" @click="submit">保存</el-button>
                 <el-button size="mini" @click="close">取消</el-button>
             </div>
         </el-dialog>
