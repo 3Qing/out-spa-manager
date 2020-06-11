@@ -14,7 +14,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="备注">
-                <el-input v-model="form.comment" type="textarea" :rows="5"></el-input>
+                <el-input v-model="form.comment" type="textarea" :rows="1"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer">

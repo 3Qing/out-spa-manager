@@ -88,6 +88,9 @@ export default {
     computed: {
         ...mapGetters(['IS_H5'])
     },
+    mounted() {
+        console.log(this.docitems);
+    },
     methods: {
         formatContext(value, type) {
             if (type === 'doctype') {

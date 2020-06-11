@@ -13,7 +13,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-select v-model="customersId" size="mini" style="margin-left: 10px;" @change="changeHandle">
+                    <el-select v-model="customersId" clearable size="mini" style="margin-left: 10px;" @change="changeHandle">
                         <el-option v-for="(item, i) in customers" :key="i" :label="item.title" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -26,17 +26,17 @@
             </el-form>
         </div>
         <el-table :data="tableData" size="small" border :cell-class-name="cellClassName" @row-dblclick='showTag'>
-            <el-table-column label="番号" width="100px">
+            <el-table-column label="番号" width="50px">
                 <template slot-scope="scope">
                     <span>{{scope.$index + 1}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="提案状态" prop="saleStatusText" width="140px">
+            <el-table-column label="提案状态" prop="saleStatusText" width="100px">
                 <template slot-scope="scope">
                     <span>{{scope.row.saleStatusText}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="项目地" prop="location" width="140px">
+            <el-table-column label="项目地" prop="location" width="100px">
                 <template slot-scope="scope">
                     <span>{{getContent(scope.row.location, adressArr)}}</span>
                 </template>
@@ -58,7 +58,7 @@
                     <span>{{(scope.row.customerID > 0 ? scope.row.formalCustomer : scope.row.temporaryCustomer) || '-'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="提案次数" width="120px">
+            <el-table-column label="提案次数" width="70px">
                 <template slot-scope="scope">
                     <span>{{scope.row.salesCaseCnt}}</span>
                     <!-- <el-tooltip class="leftTip" effect="dark" content="提案履歴" placement="top-start" v-if='scope.row.salesCaseCnt > 0'>
@@ -87,7 +87,7 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList" :opport="oppStatus" @update="getData"></opport-dialog>
+        <opport-dialog :allStatus="opportStatus" :jobsLists="jobsList" :adressArrs="adressArr" :opport="oppStatus" @update="getData"></opport-dialog>
         <tag-dialog :visible="visibleDialog" @close="visibleDialog = false" @updateTag="getTags"></tag-dialog>
         <apply-dialog
             :visible="showApply"

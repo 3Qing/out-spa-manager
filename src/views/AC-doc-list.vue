@@ -24,10 +24,10 @@
         <el-row>
             <el-col :span="IS_H5 ? 24 : 13">
                 <el-table size="mini" :data="tableData" @row-click="rowClick" border>
-                    <el-table-column label="伝票番号" prop="DocNo"></el-table-column>
-                    <el-table-column label="伝票タイプ" prop="DocType"></el-table-column>
-                    <el-table-column label="転記日" prop="PostingDate"></el-table-column>
-                    <el-table-column label="テキスト" prop="Comment"></el-table-column>
+                    <el-table-column label="伝票番号" prop="docNo"></el-table-column>
+                    <el-table-column label="伝票タイプ" prop="docType"></el-table-column>
+                    <el-table-column label="転記日" prop="postingDate"></el-table-column>
+                    <el-table-column label="テキスト" prop="comment"></el-table-column>
                 </el-table>
                 <el-pagination
                     :current-page="page"
@@ -118,7 +118,7 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     this.form = res.data || {};
-                    this.items = res.data.items || [];
+                    this.items = res.data.docitems || [];
                 }
             });
         },
@@ -161,9 +161,10 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.data || [];
+                    console.log(this.tableData);
                     this.total = data.total;
                     if (this.tableData.length) {
-                        this.getDetailData(this.tableData[0].DocNo);
+                        this.getDetailData(this.tableData[0].docNo);
                     }
                 } else {
                     this.tableData = [];
@@ -187,7 +188,7 @@ export default {
             if (this.IS_H5) {
                 this.visible = true;
             }
-            this.getDetailData(row.DocNo);
+            this.getDetailData(row.docNo);
         }
     }
 };

@@ -146,7 +146,7 @@ export default {
                             type: 'success',
                             message: '删除成功'
                         });
-                        this.getAccount();
+                        this.getData();
                     } else {
                         this.$message({
                             type: 'error',

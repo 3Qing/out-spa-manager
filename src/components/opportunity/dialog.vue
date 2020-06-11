@@ -1,45 +1,65 @@
 <template>
     <div>
         <el-dialog
-            class="tian"
+            class="tian tians"
             custom-class="opport-dialog"
             :visible.sync="visible"
-            :title="form.id ? '编辑' : '新增'"
+            :title="form.id ? '' : '新增'"
             :close-on-click-modal="dialog"
             @close="close">
-            <el-form size="mini" label-width="120px" :model="form" :rules="rules" ref="form">
+            <el-form size="mini" label-width="80px" :model="form" :rules="rules" ref="form">
+                <el-form-item label="案件情報" v-if='form.id'>
+                    <!-- <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button> -->
+                </el-form-item>
                 <el-form-item label="商家标签" prop="tags">
                     <el-checkbox-group v-model="form.tags" size="mini">
                         <el-checkbox-button v-for="item in tags" :label="item.id" :key="item.id">{{item.tagName}}</el-checkbox-button>
                     </el-checkbox-group>
                 </el-form-item>
-                <el-form-item label="客户清单" prop="customerID">
-                    <el-select
-                        v-model="form.customerID"
-                        placeholder="選択また入力"
-                        remote
-                        filterable
-                        clearable
-                        @clear="clearHandle"
-                        :remote-method="setCustomTitle">
-                        <el-option v-for="item in customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="商家状态">
-                    <el-select v-model="form.status">
-                        <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="营业担当">
-                    <el-select v-model="form.salesPersonID">
-                        <el-option v-for="item in jobsLists" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="客户清单" prop="customerID">
+                            <el-select
+                                v-model="form.customerID"
+                                placeholder="選択また入力"
+                                remote
+                                filterable
+                                clearable
+                                @clear="clearHandle"
+                                :remote-method="setCustomTitle">
+                                <el-option v-for="item in customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="项目地">
+                            <el-select v-model="form.location">
+                                <el-option v-for="item in adressArrs" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item label="商家状态">
+                            <el-select v-model="form.status">
+                                <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="营业担当">
+                            <el-select v-model="form.salesPersonID">
+                                <el-option v-for="item in jobsLists" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <el-form-item label="招聘标题" prop="title">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
                 <el-form-item label="招聘内容" prop="content">
-                    <el-input type="textarea" :rows="15" v-model="form.content"></el-input>
+                    <el-input type="textarea" :rows="13" v-model="form.content"></el-input>
                 </el-form-item>
                 <el-row>
                     <el-col :span="12">
@@ -64,7 +84,7 @@
                     </el-col>
                 </el-row>
                 <el-form-item label="" v-if='form.id'>
-                    <el-button class="btnFlo" type="primary" size="mini" @click="submit">保存</el-button>
+                    <el-button class="btnFlo" type="primary" size="mini" @click="submit">案件保存</el-button>
                 </el-form-item>
                 <p class="line" v-if='form.id'></p>
                 <el-form-item label="提案履歴" v-if='form.id'>
@@ -130,8 +150,8 @@
                     <el-button class="btnFlo" size="small" type="primary" @click='save()'>提案保存</el-button>
                 </el-form-item>
             </el-form>
-            <div slot="footer">
-                <el-button v-if='!form.id' type="primary" size="mini" @click="submit">保存</el-button>
+            <div slot="footer" v-if='!form.id'>
+                <el-button type="primary" size="mini" @click="submit">保存</el-button>
                 <el-button size="mini" @click="close">取消</el-button>
             </div>
         </el-dialog>
@@ -164,6 +184,10 @@ export default {
         opport: {
             type: Array,
             required: true
+        },
+        adressArrs: {
+            type: Array,
+            required: true
         }
     },
     data() {
@@ -184,7 +208,8 @@ export default {
                 pubDate: '',
                 closeDate: '',
                 status: 0,
-                salesPersonID: ''
+                salesPersonID: '',
+                location: ''
             },
             rules: {
                 title: [{
@@ -211,6 +236,7 @@ export default {
     mounted() {
         this.$root.$off('SHOW_OPPORT_DIALOG');
         this.$root.$on('SHOW_OPPORT_DIALOG', ({ data = null, callback, tags = [], customers = [] }) => {
+            this.isShow = false;
             if (data) {
                 const form = { ...data };
                 form.pubDate = formatTime(form.pubDate);
@@ -229,6 +255,7 @@ export default {
             this.callback = callback;
             this.tags = tags;
             this.customers = customers;
+            console.log(customers);
             this.visible = true;
         });
         this.getCandiList();
@@ -306,7 +333,8 @@ export default {
                 pubDate: '',
                 closeDate: '',
                 status: 0,
-                salesPersonID: ''
+                salesPersonID: '',
+                location: ''
             };
         },
         submit() {
@@ -321,9 +349,9 @@ export default {
                         CloseDate: this.form.closeDate,
                         Status: this.form.status,
                         CustomerID: this.form.customerID || 0,
+                        Location: this.form.location,
                         SalesPersonID: this.form.salesPersonID
                     };
-                    console.log(params);
                     if (!Number(this.form.customerID) && typeof this.form.customerID !== 'number') {
                         params.CustomerTitle = this.form.customerTitle;
                         params.CustomerID = 0;
@@ -501,7 +529,7 @@ export default {
   }
   .line{
       height: 1px;
-      border-top:1px dashed gray;
+      border-top:1px dashed #EBEEF5;
       margin-bottom: 15px;
   }
   .tabels{
