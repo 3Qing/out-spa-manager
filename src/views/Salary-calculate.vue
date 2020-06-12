@@ -12,6 +12,7 @@
             <el-select
                 v-model="empeeid"
                 size="mini"
+                clearable
                 @change="changeDate"
                 placeholder="员工清单">
                 <el-option
@@ -55,7 +56,11 @@
                     <span>{{priceToString(scope.row.travelFare)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="その他費用" prop="" show-overflow-tooltip></el-table-column>
+            <el-table-column label="その他費用" prop="" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.expense)}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="所得税" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <span>{{priceToString(scope.row.incomeTax)}}</span>
@@ -64,14 +69,8 @@
             <el-table-column label="支払予定日" prop="dueDate" width="100px"></el-table-column>
             <el-table-column label="支給額" prop="payAmount"></el-table-column>
             <el-table-column label="実際支払日" prop="payedDate" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="アクション" min-width="50px" fixed="right">
+            <el-table-column label="アクション" min-width="70px" fixed="right">
                 <template slot-scope="scope">
-                    <!-- <el-button
-                        v-for="(item, i) in scope.row.actions"
-                        :key="item.id"
-                        :type="i === 0 ? 'warning' : 'primary'"
-                        @click="actionHandler(item, scope.row)"
-                        size="mini">{{item.title}}</el-button> -->
                     <el-tooltip
                         v-for="(item, i) in scope.row.actions"
                         :key="i"

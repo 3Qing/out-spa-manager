@@ -22,11 +22,11 @@
             </el-form-item>
         </el-form>
         <el-row>
-            <el-col :span="IS_H5 ? 24 : 13">
+            <el-col :span="IS_H5 ? 24 : 12">
                 <el-table size="mini" :data="tableData" @row-click="rowClick" border>
-                    <el-table-column label="伝票番号" prop="docNo"></el-table-column>
-                    <el-table-column label="伝票タイプ" prop="docType"></el-table-column>
-                    <el-table-column label="転記日" prop="postingDate"></el-table-column>
+                    <el-table-column label="伝票番号" prop="docNo" width="100px"></el-table-column>
+                    <el-table-column label="伝票タイプ" prop="docType" width="90px"></el-table-column>
+                    <el-table-column label="転記日" prop="postingDate" width="90px"></el-table-column>
                     <el-table-column label="テキスト" prop="comment"></el-table-column>
                 </el-table>
                 <el-pagination
@@ -36,7 +36,7 @@
                     :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
                     :total="total"></el-pagination>
             </el-col>
-            <el-col :span="10" :offset="1" v-if="!IS_H5">
+            <el-col :span="11" :offset="1" v-if="!IS_H5">
                 <card-item
                     :form="form"
                     :items="items"
@@ -103,25 +103,25 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
-        getDetailData(id) {
-            const loading = this.$loading({ lock: true, text: '正在获取数据' });
-            this.$axios({
-                url: '/api/ACDoc/api_getdocumentbyno',
-                params: {
-                    docno: id
-                },
-                custom: {
-                    loading,
-                    vm: this
-                }
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.form = res.data || {};
-                    this.items = res.data.docitems || [];
-                }
-            });
-        },
+        // getDetailData(id) {
+        //     const loading = this.$loading({ lock: true, text: '正在获取数据' });
+        //     this.$axios({
+        //         url: '/api/ACDoc/api_getdocumentbyno',
+        //         params: {
+        //             docno: id
+        //         },
+        //         custom: {
+        //             loading,
+        //             vm: this
+        //         }
+        //     }).then(res => {
+        //         loading.close();
+        //         if (res && res.code === 0) {
+        //             this.form = res.data || {};
+        //             this.items = res.data.docitems || [];
+        //         }
+        //     });
+        // },
         getSelectList() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -161,10 +161,11 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.data || [];
-                    console.log(this.tableData);
                     this.total = data.total;
                     if (this.tableData.length) {
-                        this.getDetailData(this.tableData[0].docNo);
+                        this.form = this.tableData[0] || {};
+                        this.items = this.tableData[0].items || [];
+                        console.log(this.form, this.items);
                     }
                 } else {
                     this.tableData = [];
@@ -188,7 +189,12 @@ export default {
             if (this.IS_H5) {
                 this.visible = true;
             }
-            this.getDetailData(row.docNo);
+            this.tableData.forEach((item) => {
+                if (row.docNo === item.docNo) {
+                    this.form = item || {};
+                    this.items = item.items || [];
+                }
+            });
         }
     }
 };

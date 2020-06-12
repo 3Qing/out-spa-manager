@@ -18,10 +18,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="mini" @click="showDialog(1)">新增</el-button>
+                    <el-button type="primary" size="mini" @click="showDialog(1)">新規登録</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="mini" @click="showTagDialog">标签管理</el-button>
+                    <el-button type="primary" size="mini" @click="showTagDialog">タグ管理</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -31,19 +31,19 @@
                     <span>{{scope.$index + 1}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="提案状态" prop="saleStatusText" width="100px">
+            <el-table-column label="提案状態" prop="saleStatusText" width="100px">
                 <template slot-scope="scope">
                     <span>{{scope.row.saleStatusText}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="项目地" prop="location" width="100px">
+            <el-table-column label="所在地" prop="location" width="100px">
                 <template slot-scope="scope">
                     <span>{{getContent(scope.row.location, adressArr)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="标题" prop="title" show-overflow-tooltip></el-table-column>
+            <el-table-column label="案件名" prop="title" show-overflow-tooltip></el-table-column>
             <!-- <el-table-column label="内容" prop="content" show-overflow-tooltip></el-table-column> -->
-            <el-table-column label="发布日期" prop="pubDate" width="140px">
+            <el-table-column label="発行日" prop="pubDate" width="140px">
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.pubDate)}}</span>
                 </template>
@@ -53,12 +53,12 @@
                     <span>{{formatTime(scope.row.closeDate)}}</span>
                 </template>
             </el-table-column> -->
-            <el-table-column label="客户姓名" width="140px" show-overflow-tooltip>
+            <el-table-column label="得意先" width="140px" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <span>{{(scope.row.customerID > 0 ? scope.row.formalCustomer : scope.row.temporaryCustomer) || '-'}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="提案次数" width="70px">
+            <el-table-column label="提案人数" width="70px">
                 <template slot-scope="scope">
                     <span>{{scope.row.salesCaseCnt}}</span>
                     <!-- <el-tooltip class="leftTip" effect="dark" content="提案履歴" placement="top-start" v-if='scope.row.salesCaseCnt > 0'>
@@ -66,16 +66,16 @@
                     </el-tooltip> -->
                 </template>  
             </el-table-column>
-            <el-table-column label="营业担当" prop="salesPerson" width="120px"></el-table-column>
-            <el-table-column label="操作" width="70px">
+            <el-table-column label="営業担当" prop="salesPerson" width="120px"></el-table-column>
+            <el-table-column label="アクション" width="70px">
                 <template slot-scope="scope">
                     <!-- <el-tooltip effect="dark" content="提案" placement="top-start">
                         <i class="icon-applypeople iconfont oper-icon" color="success" @click="handleAction(scope.row)"></i>
                     </el-tooltip> -->
-                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                    <el-tooltip effect="dark" content="編集" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="showDialog(2, scope.row)"></i>
                     </el-tooltip>
-                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                    <el-tooltip effect="dark" content="削除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deleteHandler(scope)"></i>
                     </el-tooltip>
                 </template>
@@ -133,11 +133,11 @@ export default {
             status: 0,
             deletetrue: false,
             allStatus: [{
-                label: '进行中', value: 0
+                label: '提案中', value: 0
             }, {
-                label: '成功', value: 1
+                label: '合格', value: 1
             }, {
-                label: '终止', value: 2
+                label: '見送り', value: 2
             }, {
                 label: '取消', value: 3
             }],
@@ -231,7 +231,7 @@ export default {
                 pagesize:  this.pageSize,
                 customerid: this.customersId
             };
-            const loading = this.$loading({ lock: true, text: '正在获取数据中' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/Opportunity/api_getopportunitylist',
@@ -251,7 +251,7 @@ export default {
                 } else {
                     this.$message({
                         type: 'error',
-                        message: res.message ? res.message : '接口开小差了，没有返回信息'
+                        message: res.message ? res.message : 'システム異常、再試行してください！'
                     });
                 }
             });
@@ -331,7 +331,7 @@ export default {
                     if (res && res.code === 0) {
                         this.$message({
                             type: 'success',
-                            message: '删除成功'
+                            message: '削除完了！'
                         });
                         this.getData();
                     } else {

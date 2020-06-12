@@ -11,14 +11,14 @@
                 <el-form-item label="案件情報" v-if='form.id'>
                     <!-- <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button> -->
                 </el-form-item>
-                <el-form-item label="商家标签" prop="tags">
+                <el-form-item label="案件タグ" prop="tags">
                     <el-checkbox-group v-model="form.tags" size="mini">
                         <el-checkbox-button v-for="item in tags" :label="item.id" :key="item.id">{{item.tagName}}</el-checkbox-button>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="客户清单" prop="customerID">
+                        <el-form-item label="得意先" prop="customerID">
                             <el-select
                                 v-model="form.customerID"
                                 placeholder="選択また入力"
@@ -32,7 +32,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="项目地">
+                        <el-form-item label="所在地">
                             <el-select v-model="form.location">
                                 <el-option v-for="item in adressArrs" :key="item.id" :label="item.text" :value="item.id"></el-option>
                             </el-select>
@@ -41,42 +41,42 @@
                 </el-row>
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="商家状态">
+                        <el-form-item label="案件状態">
                             <el-select v-model="form.status">
                                 <el-option v-for="item in allStatus" :key="item.id" :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="营业担当">
+                        <el-form-item label="営業担当">
                             <el-select v-model="form.salesPersonID">
                                 <el-option v-for="item in jobsLists" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="招聘标题" prop="title">
+                <el-form-item label="案件名称" prop="title">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
-                <el-form-item label="招聘内容" prop="content">
+                <el-form-item label="案件内容" prop="content">
                     <el-input type="textarea" :rows="13" v-model="form.content"></el-input>
                 </el-form-item>
                 <el-row>
                     <el-col :span="12">
-                        <el-form-item label="发布日期">
+                        <el-form-item label="募集開始日">
                             <el-date-picker
                                 size="mini"
-                                placeholder="发布日期"
+                                placeholder="募集開始日"
                                 v-model="form.pubDate"
                                 value-format="yyyy-MM-dd"
                                 value="yyyy-MM-dd"></el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="关闭日期">
+                        <el-form-item label="募集終了日">
                             <el-date-picker
                                 size="mini"
-                                placeholder="关闭日期"
+                                placeholder="募集終了日"
                                 v-model="form.closeDate"
                                 value-format="yyyy-MM-dd"
                                 value="yyyy-MM-dd"></el-date-picker>
@@ -91,33 +91,33 @@
                     <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button>
                 </el-form-item>
                 <el-table class="tabels" v-if='form.id' ref="table" :data="form.salesCases" size="small" border>
-                    <el-table-column label="Name" prop="name" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="CreateDate" show-overflow-tooltip>
+                    <el-table-column label="候補者" prop="name" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="提案日" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{scope.row.createDate.substring(0,10)}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="salesPerson" show-overflow-tooltip>
+                    <el-table-column label="営業担当" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{getContent(scope.row.salesPersonID, jobsLists, 'jobsLists')}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="提案情报" show-overflow-tooltip>
+                    <el-table-column label="最新情報" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span v-if='scope.row.salesCaseItems.length>0'>{{scope.row.salesCaseItems[scope.row.salesCaseItems.length - 1].content}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="提案状态" prop="status">
+                    <el-table-column label="提案状態" prop="status">
                         <template slot-scope="scope">
                             <span>{{getContent(scope.row.status, opport, 'opport')}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="70">
+                    <el-table-column label="アクション" width="70">
                         <template slot-scope="scope">
-                            <el-tooltip effect="dark" content="编辑" placement="top-start">
+                            <el-tooltip effect="dark" content="編集" placement="top-start">
                                 <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, form.salesCases)"></i>
                             </el-tooltip>
-                            <el-tooltip effect="dark" content="删除" placement="top-start">
+                            <el-tooltip effect="dark" content="削除" placement="top-start">
                                 <i class="el-icon-delete oper-icon" color="danger" @click="deletetoogle(scope.row)"></i>
                             </el-tooltip>
                         </template>
@@ -137,7 +137,7 @@
                                         <i class="el-icon-plus oper-icon" color="primary" @click="adds(props.row.id)"></i>
                                     </el-tooltip>
                                 </el-form-item>
-                                <el-form-item class="lid" label="提案状态">
+                                <el-form-item class="lid" label="提案状態">
                                     <el-select size="mini" v-model="props.row.status">
                                         <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
                                     </el-select>
@@ -213,16 +213,16 @@ export default {
             },
             rules: {
                 title: [{
-                    required: true, message: '请填写招聘标题'
+                    required: true, message: '案件名称を入力してください！'
                 }],
                 content: [{
-                    required: true, message: '请填写招聘内容'
+                    required: true, message: '案件内容を入力してください！'
                 }],
                 tags: [{
-                    required: true, message: '请选择标签'
+                    required: true, message: 'タグを選択してください！'
                 }],
                 customerID: [{
-                    required: true, message: '请选择客户'
+                    required: true, message: '得意先を指定してください！'
                 }]
             },
             edit: false,
@@ -356,7 +356,7 @@ export default {
                         params.CustomerTitle = this.form.customerTitle;
                         params.CustomerID = 0;
                     }
-                    const loading = this.$loading({ lock: true, text: '提交数据中' });
+                    const loading = this.$loading({ lock: true, text: 'データ提出中...' });
                     this.$axios({
                         method: 'POST',
                         url: '/api/Opportunity/api_updateopportunity',
@@ -372,7 +372,7 @@ export default {
                             this.isShow = true;
                             this.$message({
                                 type: 'success',
-                                message: '保存成功'
+                                message: '保存完了！'
                             });
                             this.close();
                             this.callback && this.callback();
@@ -415,7 +415,7 @@ export default {
             });
         },
         deletetoogle(row) {
-            this.$confirm('是否删除', '删除', {
+            this.$confirm('削除確認', '削除', {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
@@ -433,7 +433,7 @@ export default {
                         });
                         this.$message({
                             type: 'success',
-                            message: '删除成功'
+                            message: '削除完了！'
                         });
                         this.deletetrue = true;
                     } else {
@@ -480,7 +480,7 @@ export default {
                     i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
                 });
             });
-            const loading = this.$loading({ lock: true, text: '正在保存...' });
+            const loading = this.$loading({ lock: true, text: 'データ保存中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/SalesCase/api_updatesalescases',
@@ -494,7 +494,7 @@ export default {
                 this.getCandiList();
                 this.$message({
                     type: 'success',
-                    message: res ? res.message : '接口开小差了，没有返回信息'
+                    message: res ? res.message : 'システム異常、再試行してください！'
                 });
             });
         }

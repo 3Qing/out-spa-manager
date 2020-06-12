@@ -19,22 +19,32 @@
                 <span class="label">伝票タイプ:</span>
                 <span>{{form.docTypeText}}</span>
             </el-row>
-            <el-row :class="[!IS_H5 && 'row-wrapper']">
+            <el-row>
+                <el-col :span="10">
+                    <span class="label">テキスト:</span>
+                    <span>{{form.comment}}</span>
+                </el-col>
+                <el-col :span="10">
+                    <span class="label">登録者:</span>
+                    <span>{{form.ownerID}} {{form.ownerName}}</span>
+                </el-col>
+            </el-row>
+            <!-- <el-row :class="[!IS_H5 && 'row-wrapper']">
                 <el-col :span="24">
                     <span class="label">テキスト:</span>
                     <span>{{form.comment}}</span>
                 </el-col>
-            </el-row>
+            </el-row> -->
         </div>
-        <el-table size="mini" :data="docitems" border>
+        <el-table size="mini" :data="items" border>
             <el-table-column label="借貸" prop="drcr" width="80px">
                 <template slot-scope="scope">
                     <span>{{formatContext(scope.row.drcr, 'drcr')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="勘定コード" prop="accountText" width="100px">
+            <el-table-column label="勘定コード" prop="accountID" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.accountText || '-'}}</span>
+                    <span>{{scope.row.accountID || '-'}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="金額" prop="amount" width="100px">
@@ -54,7 +64,7 @@
             </el-table-column>
             <el-table-column label="仕入先">
                 <template slot-scope="scope">
-                    <span>{{scope.row.vendorid ||'-' }}</span>
+                    <span>{{scope.row.vendorTitle ||'-' }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="従業員" prop="employeeName">
@@ -76,7 +86,7 @@ import { mapGetters } from 'vuex';
 export default {
     props: {
         form: Object,
-        docitems: Array,
+        items: Array,
         drcr: Array,
         docTypes: Array,
         acCounts: Array,
@@ -89,7 +99,7 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     mounted() {
-        console.log(this.docitems);
+        console.log(this.items);
     },
     methods: {
         formatContext(value, type) {

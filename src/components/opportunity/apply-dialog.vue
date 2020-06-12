@@ -1,7 +1,7 @@
 <template>
     <el-dialog :visible="visible" @close="close" class="tian" :close-on-click-modal="dialog">
         <el-form size="mini" label-width="80px">
-            <el-form-item label="候选人">
+            <el-form-item label="候補者">
                 <el-select
                     v-model="form.candidateid"
                     remote
@@ -13,7 +13,7 @@
                     <el-option v-for="item in candidates" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="备注">
+            <el-form-item label="コメント">
                 <el-input v-model="form.comment" type="textarea" :rows="1"></el-input>
             </el-form-item>
         </el-form>
@@ -83,7 +83,7 @@ export default {
             };
         },
         submit() {
-            const loading = this.$loading({ lock: true, text: '正在提交信息中' });
+            const loading = this.$loading({ lock: true, text: 'データ提出中...' });
             this.$axios({
                 url: '/api/Opportunity/api_applyforopportunity',
                 params: {
@@ -97,7 +97,7 @@ export default {
                     this.$emit('update');
                     this.$message({
                         type: 'success',
-                        message: '提交成功'
+                        message: '提出成功！'
                     });
                     this.$emit('close');
                 } else {

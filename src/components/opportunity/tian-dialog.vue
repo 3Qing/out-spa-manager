@@ -8,12 +8,12 @@
                 </template>
             </el-table-column>
             <el-table-column label="SalesPerson" prop="salesPerson" show-overflow-tooltip></el-table-column>
-            <el-table-column label="操作" width="70">
+            <el-table-column label="アクション" width="70">
                 <template slot-scope="scope">
-                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                    <el-tooltip effect="dark" content="編集" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, 1)"></i>
                     </el-tooltip>
-                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                    <el-tooltip effect="dark" content="削除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deletetoogle(scope.row)"></i>
                     </el-tooltip>
                 </template>
@@ -26,14 +26,14 @@
                         </el-form-item>
                         <el-form-item class="lid" v-for='(item,index) in salesCaseItems' :key='index' :label="item.updateTime">
                             <el-input class="input" v-model="item.content" ></el-input>
-                            <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
+                            <el-tooltip class="flot" effect="dark" content="削除" placement="top-start">
                                 <i class="el-icon-delete oper-icon" color="danger" @click="deletes(index)"></i>
                             </el-tooltip>
-                            <el-tooltip v-if='(index+1) === salesCaseItems.length' class="flot flot1" effect="dark" content="添加" placement="top-start">
+                            <el-tooltip v-if='(index+1) === salesCaseItems.length' class="flot flot1" effect="dark" content="追加" placement="top-start">
                                 <i class="el-icon-plus oper-icon" color="primary" @click="adds"></i>
                             </el-tooltip>
                         </el-form-item>
-                        <el-form-item class="lid" label="提案状态">
+                        <el-form-item class="lid" label="提案状態">
                             <el-select size="mini" v-model="props.row.status">
                                 <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
                             </el-select>
@@ -93,7 +93,7 @@ export default {
                     $table.toggleRowExpansion(item, false);
                 }
             });
-            const loading = this.$loading({ lock: true, text: '正在加载...' });
+            const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
                 url: '/api/Opportunity/api_getsalescaseinfo',
                 params: {
@@ -120,7 +120,7 @@ export default {
             });
         },
         deletetoogle(row) {
-            this.$confirm('是否删除', '删除', {
+            this.$confirm('削除確認', '削除', {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
@@ -137,7 +137,7 @@ export default {
                         });
                         this.$message({
                             type: 'success',
-                            message: '删除成功'
+                            message: '削除完了！'
                         });
                         this.deletetrue = true;
                     } else {
@@ -162,7 +162,7 @@ export default {
         },
         // 保存
         save(row) {
-            const loading = this.$loading({ lock: true, text: '正在保存...' });
+            const loading = this.$loading({ lock: true, text: 'データ保存中...' });
             this.$axios({
                 method: 'POST',
                 url: '/api/SalesCase/api_updatesalescase',
@@ -177,7 +177,7 @@ export default {
                 loading.close();
                 this.$message({
                     type: 'success',
-                    message: res ? res.message : '接口开小差了，没有返回信息'
+                    message: res ? res.message : 'システム異常、再試行してください！'
                 });
             });
         }

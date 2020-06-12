@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-        title="标签管理"
+        title="タグ管理"
         custom-class="tag-dialog"
         ref="tagDialog"
         :visible="visible"
@@ -25,10 +25,10 @@
             v-if="inputVisible"
             v-model="newTagName"
             size="mini"
-            placeholder="回车保存"
+            placeholder="エンター保存"
             @keyup.enter.native="updateTag('add')">
         </el-input>
-        <el-button v-else class="button-new-tag" size="small" @click="inputVisible = true;newTagName = ''">新增</el-button>
+        <el-button v-else class="button-new-tag" size="small" @click="inputVisible = true;newTagName = ''">新規登録</el-button>
     </el-dialog>
 </template>
 
@@ -79,7 +79,7 @@ export default {
             });
         },
         deleteTag(tag) {
-            this.$confirm('是否删除', '删除', {
+            this.$confirm('削除確認', '削除', {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
@@ -91,7 +91,7 @@ export default {
                     if (res && res.code === 0) {
                         this.$message({
                             type: 'success',
-                            message: '删除成功'
+                            message: '削除完了！'
                         });
                         this.getTags();
                         this.$emit('updateTag');
