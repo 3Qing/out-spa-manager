@@ -40,7 +40,7 @@
                     :label="item.name"
                     :value="item.id"></el-option>
             </el-select>
-            <el-button type="primary" size="mini" @click="getInitEstimation">{{texts}}</el-button>
+            <el-button type="primary" size="mini" @click="clickSave">{{texts}}</el-button>
             <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row v-if="show">
@@ -182,9 +182,9 @@
             <span class="title">備考</span>
             <el-input v-model="data.comment" type="textarea" :rows="7"></el-input>
         </div>
-        <div class="text-center" v-if="show">
+        <!-- <div class="text-center" v-if="show">
             <el-button type="primary" size="mini" @click="beforeSubmit">見積書作成</el-button>
-        </div>
+        </div> -->
     </main-wrapper>
 </template>
 
@@ -266,6 +266,14 @@ export default {
         formatTime: formatTime,
         priceToString: priceToString,
         priceToNumber: priceToNumber,
+        // 保存按钮
+        clickSave() {
+            if (this.texts === '見積書初期化') {
+                this.getInitEstimation();
+            } else {
+                this.beforeSubmit();
+            }
+        },
         // 初始化报价单
         getInitEstimation() {
             if (this.dates.length !== 2

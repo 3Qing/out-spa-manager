@@ -9,9 +9,14 @@
         <el-table :data="tableData" size="small" border>
             <el-table-column label="No" prop="estimationNo" width="130px"></el-table-column>
             <el-table-column label="得意先名称" prop="customerTitle"></el-table-column>
-            <el-table-column label="商機（案件）名" prop="opportunityTitle" show-overflow-tooltip>
+            <el-table-column label="商機（案件）名" prop="title" show-overflow-tooltip>
                 <template slot-scope="scope">
-                    <span>{{scope.row.opportunityTitle || '-'}}</span>
+                    <span>{{scope.row.title || '-'}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="期间" width="200px">
+                <template slot-scope="scope">
+                    <span>{{formatTime(scope.row.fromDate)}} ~ {{formatTime(scope.row.toDate)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="担当者" prop="salesPerson" width="100px"></el-table-column>
@@ -27,7 +32,7 @@
                     <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadFile(scope.row, 1, 'xlsx')"></i>
                 </template>
             </el-table-column>
-            <el-table-column label="アクション" width="140px" fixed="right">
+            <el-table-column label="アクション" width="120px" fixed="right">
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="handleEdit(scope.row)"></i>
@@ -36,7 +41,7 @@
                         <i class="el-icon-delete oper-icon" color="danger" @click="handleDel(scope)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="拷贝" placement="top-start">
-                        <i class="el-icon-document-copy oper-icon" color="info" @click="handleCopy(scope)"></i>
+                        <i class="el-icon-document-copy oper-icon" color="success" @click="handleCopy(scope)"></i>
                     </el-tooltip>
                 </template>
             </el-table-column>
@@ -145,10 +150,11 @@ export default {
             this.getData();
         },
         downloadFile(row, type, ext) {
+            console.log(row);
             apiDownloadFile({
                 vm: this,
                 url: `/api/Estimation/api_downloadestimation?id=${row.id}&filetype=${type}`,
-                filename: `${Date.now()}.${ext}`
+                filename: `${row.customerTitle}${row.estimationNo}.${ext}`
             });
         },
         handleDel(scope) {

@@ -174,7 +174,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
-                    url: '​/api​/QA​/api_deleteqa',
+                    url: '/api/QA/api_deleteqa',
                     params: {
                         qaid: row.id
                     }

@@ -22,7 +22,7 @@
                 <template slot-scope="scope">
                     <!-- <el-button size="mini" type="warning" @click="dataChange('edit', scope.row)">变更</el-button> -->
                     <el-tooltip effect="dark" content="变更" placement="top-start">
-                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="dataChange('edit', scope.row)"></i>
+                        <i class="el-icon-edit-outline oper-icon" color="warning" @click="dataChange('edit', scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="删除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
@@ -94,7 +94,7 @@ export default {
                 'accountID': '',
                 'text': '',
                 'bspl': true,
-                'clearManagement': '',
+                'clearManagement': false,
                 'groupID': '',
             }
 
@@ -114,7 +114,7 @@ export default {
                     'accountID': '',
                     'text': '',
                     'bspl': true,
-                    'clearManagement': '',
+                    'clearManagement': false,
                     'groupID': ''
                 };
             } else {
@@ -124,9 +124,9 @@ export default {
                     'text': data.text,
                     'bspl': data.bspl,
                     'clearManagement': data.clearManagement,
-                    'groupID': data.GroupID
+                    'groupID': data.groupID
                 };
-                console.log(this.curData);
+                // console.log(this.curData);
             }
             this.visible = true;
         },
@@ -193,6 +193,9 @@ export default {
                 this.$message.warning('');
                 return false;
             }
+            if (this.curData.groupID === '') {
+                this.curData.groupID = 0;
+            }
             const params = {
                 AccountID: this.curData.accountID,
                 Text: this.curData.text,
@@ -200,6 +203,7 @@ export default {
                 ClearManagement: this.curData.clearManagement,
                 ACAccountGroupID: this.curData.groupID
             };
+            // console.log(params);
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
                 method: 'POST',

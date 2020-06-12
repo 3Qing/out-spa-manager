@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "8647422",
+      "name": "excel",
+      "font_class": "Excel",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "9923492",
+      "name": "word",
+      "font_class": "word",
+      "unicode": "e9d2",
+      "unicode_decimal": 59858
+    },
+    {
+      "icon_id": "11037733",
+      "name": "PDF",
+      "font_class": "PDF",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "3442182",
+      "name": "excel模板",
+      "font_class": "Excels",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
       "icon_id": "754206",
       "name": "apply_people",
       "font_class": "applypeople",
@@ -62,13 +90,6 @@
       "unicode_decimal": 58947
     },
     {
-      "icon_id": "5321591",
-      "name": "Excel",
-      "font_class": "Excel",
-      "unicode": "e637",
-      "unicode_decimal": 58935
-    },
-    {
       "icon_id": "8776878",
       "name": "download",
       "font_class": "icon-test",
@@ -92,14 +113,14 @@
     {
       "icon_id": "8765263",
       "name": "word",
-      "font_class": "word",
+      "font_class": "words",
       "unicode": "e641",
       "unicode_decimal": 58945
     },
     {
       "icon_id": "11614540",
       "name": "PDF",
-      "font_class": "PDF",
+      "font_class": "PDFs",
       "unicode": "e6b6",
       "unicode_decimal": 59062
     },
