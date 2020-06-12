@@ -13,19 +13,20 @@
                 v-model="empeeid"
                 size="mini"
                 @change="changeDate"
-                placeholder="客户清单">
+                placeholder="员工清单">
                 <el-option
                     v-for="item in customers"
                     :key="item.id"
-                    :label="item.title"
+                    :label="item.name"
                     :value="item.id">
                 </el-option>
             </el-select>
+            <el-button style="margin-left:40px;" type="primary" size="mini" @click="batchCalculation">批量计算工资</el-button>
         </div>
         <el-table size="mini" :data="tableData" border>
-            <el-table-column label="就職タイプ" prop="employeeType"></el-table-column>
-            <el-table-column label="社員番号" prop="employeeNo"></el-table-column>
-            <el-table-column label="名前" prop="employeeName"></el-table-column>
+            <el-table-column label="就職タイプ" prop="employeeType" show-overflow-tooltip width='110px' fixed="left"></el-table-column>
+            <el-table-column label="社員番号" prop="employeeNo" fixed="left"></el-table-column>
+            <el-table-column label="名前" prop="employeeName" width='90px' fixed="left"></el-table-column>
             <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="timesheetStatus">
                 <template slot-scope="scope">
                     <span>{{transformTimesheet(scope.row.timesheetStatus)}}</span>
@@ -34,23 +35,53 @@
             <el-table-column label="出勤日数" prop="actualWorkDays"></el-table-column>
             <el-table-column label="作業時間" prop="actualHours"></el-table-column>
             <el-table-column label="待機日数" prop="benchDays"></el-table-column>
-            <el-table-column label="ﾌﾟﾛｼﾞｪｸﾄ賃金" prop="projectSalary" width="120px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="待機代" prop="benchSalary" show-overflow-tooltip></el-table-column>
-            <el-table-column label="社会保険" prop="insurance" show-overflow-tooltip></el-table-column>
-            <el-table-column label="交通代" prop="travelFare" show-overflow-tooltip></el-table-column>
-            <el-table-column label="その他費用" prop="" show-overflow-tooltip></el-table-column>
-            <el-table-column label="所得税" prop="incomeTax" show-overflow-tooltip></el-table-column>
-            <el-table-column label="支払予定日" prop="dueDate" width="120px"></el-table-column>
-            <el-table-column label="支給額" prop="payAmount"></el-table-column>
-            <el-table-column label="実際支払日" prop="payedDate" width="120px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="アクション" min-width="240px">
+            <el-table-column label="ﾌﾟﾛｼﾞｪｸﾄ賃金" width="120px" show-overflow-tooltip>
                 <template slot-scope="scope">
-                    <el-button
+                    <span>{{priceToString(scope.row.projectSalary)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="待機代" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.benchSalary)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="社会保険" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.insurance)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="交通代" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.travelFare)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="その他費用" prop="" show-overflow-tooltip></el-table-column>
+            <el-table-column label="所得税" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.incomeTax)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="支払予定日" prop="dueDate" width="100px"></el-table-column>
+            <el-table-column label="支給額" prop="payAmount"></el-table-column>
+            <el-table-column label="実際支払日" prop="payedDate" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="アクション" min-width="50px" fixed="right">
+                <template slot-scope="scope">
+                    <!-- <el-button
                         v-for="(item, i) in scope.row.actions"
                         :key="item.id"
                         :type="i === 0 ? 'warning' : 'primary'"
                         @click="actionHandler(item, scope.row)"
-                        size="mini">{{item.title}}</el-button>
+                        size="mini">{{item.title}}</el-button> -->
+                    <el-tooltip
+                        v-for="(item, i) in scope.row.actions"
+                        :key="i"
+                        effect="dark"
+                        :content="item.title"
+                        placement="top-start">
+                        <i :class="[getClass(item), 'oper-icon']"
+                            :color="getColor(item)"
+                            @click="actionHandler(item, scope.row)"></i>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -95,6 +126,7 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
+import { formatTime, priceToString, priceToNumber } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -134,6 +166,9 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        priceToString: priceToString,
+        priceToNumber: priceToNumber,
+        formatTime: formatTime,
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -153,6 +188,7 @@ export default {
                 if (res && res.code === 0) {
                     const data = res.data || {};
                     this.tableData = data.data || [];
+                    console.log(data.data);
                     this.total = data.total;
                 } else {
                     this.tableData = [];
@@ -160,9 +196,34 @@ export default {
                 }
             });
         },
+        // 批量计算工资按钮
+        batchCalculation() {
+            const loading = this.$loading({ lock: true, text: '正在计算中...' });
+            this.$axios({
+                url: '/api/Salary/api_calculatesalarybybatch',
+                params: {
+                    period: this.period
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回'
+                    });
+                }
+            });
+        },
+        // 员工清单
         getCustomer() {
             this.$axios({
-                url: '/api/Customer/api_customersforselect'
+                url: '/api/Employee/api_employeesforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.customers = res.data || [];
@@ -271,6 +332,20 @@ export default {
                     });
                 }
             });
+        },
+        getClass(item) {
+            if (item.id === 'act_calculatesalary') {
+                return 'el-icon-money';
+            } else if (item.id === 'act_manualrevisesalary') {
+                return 'el-icon-edit-outline';
+            }
+        },
+        getColor(item) {
+            if (item.id === 'act_calculatesalary') {
+                return 'danger';
+            } else if (item.id === 'act_manualrevisesalary') {
+                return 'warning';
+            }
         }
     }
 };
