@@ -22,11 +22,11 @@
             </el-form-item>
         </el-form>
         <el-row>
-            <el-col :span="IS_H5 ? 24 : 12">
+            <el-col :span="IS_H5 ? 24 : 8">
                 <el-table size="mini" :data="tableData" @row-click="rowClick" border>
                     <el-table-column label="伝票番号" prop="docNo" width="100px"></el-table-column>
-                    <el-table-column label="伝票タイプ" prop="docType" width="90px"></el-table-column>
-                    <el-table-column label="転記日" prop="postingDate" width="90px"></el-table-column>
+                    <el-table-column label="伝票タイプ" prop="docType" width="100px"></el-table-column>
+                    <el-table-column label="転記日" prop="postingDate" width="100px"></el-table-column>
                     <el-table-column label="テキスト" prop="comment"></el-table-column>
                 </el-table>
                 <el-pagination
@@ -36,7 +36,7 @@
                     :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
                     :total="total"></el-pagination>
             </el-col>
-            <el-col :span="11" :offset="1" v-if="!IS_H5">
+            <el-col :span="15" :offset="1" v-if="!IS_H5">
                 <card-item
                     :form="form"
                     :items="items"

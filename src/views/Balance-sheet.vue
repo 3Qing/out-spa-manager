@@ -21,17 +21,45 @@
                 clearable
                 @change="changeEndTime">
             </el-date-picker>
-            <el-select placeholder="チーム" size="mini" v-model="form.teamid" @change="getData">
-                <el-option v-for="item in teams" :key="item.TeamID" :label="item.TeamName" :value="item.TeamID"></el-option>
+            <el-select placeholder="チーム" clearable size="mini" v-model="form.teamid" @change="getData">
+                <el-option v-for="item in teams" :key="item.id" :value="item.id" :label="item.teamName"></el-option>
             </el-select>
         </div>
-        <el-table :data="tableData" size="mini">
-            <el-table-column label="勘定科目" prop="Item" show-overflow-tooltip></el-table-column>
-            <el-table-column label="勘定コード" prop="Account"></el-table-column>
-            <el-table-column label="前期残高" prop="Carryforward"></el-table-column>
-            <el-table-column label="借方" prop="DRAmount"></el-table-column>
-            <el-table-column label="貸方" prop="CRAmount"></el-table-column>
-            <el-table-column label="残高" prop="Balance"></el-table-column>
+        <div class="content">
+            <span>{{company}}</span>
+            <span>累计期间：{{form.fromperiod}} - {{form.toperiod}}</span>
+        </div>
+        <el-table :data="tableData" size="mini" border>
+            <el-table-column label="勘定科目" prop="item" show-overflow-tooltip></el-table-column>
+            <el-table-column label="勘定コード" prop="account"></el-table-column>
+            <el-table-column label="前期残高">
+                <template slot-scope="scope">
+                    <span>
+                        {{priceToString(scope.row.carryforward) || 0}}
+                    </span>
+                </template>
+            </el-table-column>
+            <el-table-column label="借方">
+                <template slot-scope="scope">
+                    <span>
+                        {{priceToString(scope.row.drAmount) || 0}}
+                    </span>
+                </template>
+            </el-table-column>
+            <el-table-column label="貸方" >
+                <template slot-scope="scope">
+                    <span>
+                        {{priceToString(scope.row.crAmount) || 0}}
+                    </span>
+                </template>
+            </el-table-column>
+            <el-table-column label="残高">
+                <template slot-scope="scope">
+                    <span>
+                        {{priceToString(scope.row.balance) || 0}}
+                    </span>
+                </template>
+            </el-table-column>
         </el-table>
     </main-wrapper>
 </template>
@@ -39,12 +67,14 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
+import { priceToString } from '@_public/utils';
 export default {
     components: {
         MainWrapper
     },
     data() {
         return {
+            company: '',
             teams: [],
             form: {
                 fromperiod: '',
@@ -57,18 +87,22 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.form.fromperiod = moment(new Date()).format('YYYYMM');
+            vm.form.toperiod = moment(new Date()).format('YYYYMM');
+            vm.company = JSON.parse(sessionStorage.getItem('appInfo')).companyName;
             vm.getTeams();
         });
     },
     methods: {
+        priceToString: priceToString,
         getTeams() {
             this.$axios({
                 url: '/api/Team/api_teamsforselect'
             }).then(res => {
-                const data = res || [];
+                const data = res.data || [];
                 this.teams = data;
+                console.log(this.teams);
                 if (data.length === 1) {
-                    this.form.teamid = data[0].TeamID;
+                    this.form.teamid = data[0].id;
                 }
                 this.getData();
             });
@@ -76,7 +110,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
-                url: '/api/balancesheet',
+                url: '/api/ACBalance/api_balancesheet',
                 params: this.form,
                 custom: {
                     loading,
@@ -84,7 +118,6 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                console.log(res);
                 if (res && res.code === 0) {
                     this.tableData = res.data || [];
                 } else {
@@ -154,6 +187,17 @@ export default {
     }
     .el-select {
         margin-left: 2%;
+    }
+    .content{
+        padding: 0 2px;
+        height: 30px;
+        line-height: 20px;
+        span:first-child{
+            float: left;
+        }
+        span:last-child{
+            float: right;
+        }
     }
 }
 </style>

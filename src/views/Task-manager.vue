@@ -125,10 +125,10 @@ export default {
                 const startTime = time.substring(6,11);
                 const HH = startTime.split(':')[0].toString().padStart(2, '0');
                 const mm = startTime.split(':')[1];
-
-                const top = parseInt((Number(mm) / 40) * 100);
-                const height = parseInt(((Number(mm) + this.timeDate(item.atyFromTime, item.atyToTime)) / 60) * 100);
-                console.log(height);
+                // console.log(HH+':'+mm, this.timeDate(item.atyFromTime, item.atyToTime));
+                const top = parseInt((Number(mm) / 60) * 100);
+                const height = parseInt(this.timeDate(item.atyFromTime, item.atyToTime));
+                // console.log(height);
                 if (!tmp[HH]) {
                     tmp[HH] = {};
                 }
@@ -218,14 +218,6 @@ export default {
             });
             return columns;
         },
-        // newHandle() {
-        //     this.$root.$emit('SHOW_TASK_DIALOG', {
-        //         news: true,
-        //         callback: () => {
-        //             this.getData();
-        //         }
-        //     });
-        // },
         // 添加日程
         handleClick(row, col) {
             console.log(col.id, this.columns);
@@ -302,7 +294,7 @@ export default {
             const zIndex = 99 + j;
             return {
                 width: iwidth,
-                height: `${item.height}%`,
+                height: `${item.height}px`,
                 top: itop,
                 left: ileft,
                 'z-index': zIndex

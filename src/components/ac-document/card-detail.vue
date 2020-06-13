@@ -4,29 +4,29 @@
             <el-row v-if="!IS_H5">
                 <el-col :span="10">
                     <span class="label">転記日:</span>
-                    <span>{{form.postingDate}}</span>
+                    <span class="fonts">{{form.postingDate}}</span>
                 </el-col>
                 <el-col :span="10">
                     <span class="label">伝票タイプ:</span>
-                    <span>{{form.docTypeText}}</span>
+                    <span class="fonts">{{form.docTypeText}}</span>
                 </el-col>
             </el-row>
             <el-row v-if="IS_H5">
                 <span class="label">転記日:</span>
-                <span>{{form.postingDate}}</span>
+                <span class="fonts">{{form.postingDate}}</span>
             </el-row>
             <el-row v-if="IS_H5">
                 <span class="label">伝票タイプ:</span>
-                <span>{{form.docTypeText}}</span>
+                <span class="fonts">{{form.docTypeText}}</span>
             </el-row>
             <el-row>
                 <el-col :span="10">
                     <span class="label">テキスト:</span>
-                    <span>{{form.comment}}</span>
+                    <span class="fonts">{{form.comment}}</span>
                 </el-col>
                 <el-col :span="10">
                     <span class="label">登録者:</span>
-                    <span>{{form.ownerID}} {{form.ownerName}}</span>
+                    <span class="fonts">{{form.ownerID}} {{form.ownerName}}</span>
                 </el-col>
             </el-row>
             <!-- <el-row :class="[!IS_H5 && 'row-wrapper']">
@@ -152,6 +152,12 @@ export default {
     .label {
         display: inline-block;
         width: 80px;
+        color: #606266;
+        font-size: 12px;
+    }
+    .fonts {
+        color: #606266;
+        font-size: 12px;
     }
     .card-header {
         .el-input {

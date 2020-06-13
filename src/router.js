@@ -26,7 +26,6 @@ import ACDocDetail from '@views/AC-doc-detail';
 import AccountManager from '@views/Account-manager';
 import ACDocList from '@views/AC-doc-list';
 import ProfitChart from '@views/Profit-chart';
-import BalanceSheet from '@views/Balance-sheet';
 import CustomerManager from '@views/Customer-manager';
 import Opportunity from '@views/Opportunity';
 import Estimation from '@views/Estimation';
@@ -39,6 +38,10 @@ import CompanyEdit from '@views/Company-edit';
 import CompanyList from '@views/Company-list';
 import ACDocOCR from '@views/AC-doc-OCR';
 import TaskManager from '@views/Task-manager';
+import BalanceSheet from '@views/Balance-sheet';
+import FinReportCustomize from '@views/FinReportCustomize-list';
+import DocTypeManage from '@views/DocTypeManage-list';
+import OCRKeywordManage from '@views/OCRKeywordManage-list';
 
 Vue.use(Router);
 
@@ -218,6 +221,18 @@ const router = new Router({
         path: '/taskmanager',
         name: 'TaskManager',
         component: TaskManager
+    }, {
+        path: '/finReportCustomize',
+        name: 'FinReportCustomize',
+        component: FinReportCustomize
+    }, {
+        path: '/docTypeManage',
+        name: 'DocTypeManage',
+        component: DocTypeManage
+    }, {
+        path: '/OCRKeywordManage',
+        name: 'OCRKeywordManage',
+        component: OCRKeywordManage
     }
     ]
 });
