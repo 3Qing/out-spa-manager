@@ -80,7 +80,7 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    console.log(res);
+                    // console.log(res);
                     this.tableData = res.data || [];
                 } else {
                     this.$message({
@@ -140,6 +140,7 @@ export default {
                     const loading = this.$loading({ lock: true, text: '正在提交数据中' });
                     const url = '/api/ACDoc/api_updatedoctype';
                     this.$axios({
+                        method: 'POST',
                         url,
                         params: {
                             companyID: 0,

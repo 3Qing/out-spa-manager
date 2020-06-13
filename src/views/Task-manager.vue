@@ -116,7 +116,7 @@ export default {
         formatData(data) {
             const length = 25;
             const tmp = {};
-            console.log(data);
+            // console.log(data);
             data.forEach(item => {
                 const time = moment(new Date(item.atyFromTime).getTime()).format('MM-DD|HH:mm');
                 // console.log(time);
@@ -220,7 +220,7 @@ export default {
         },
         // 添加日程
         handleClick(row, col) {
-            console.log(col.id, this.columns);
+            // console.log(col.id, this.columns);
             if (col.id !== 'el-table_1_column_1') {
                 let mins = '';
                 if (col.id === 'el-table_1_column_2') {
@@ -267,7 +267,6 @@ export default {
             
         },
         cellClick(data) {
-            console.log(data);
             this.$root.$emit('SHOW_TASK_DIALOG', {
                 news: false,
                 data,

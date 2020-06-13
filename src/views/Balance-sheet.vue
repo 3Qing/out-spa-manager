@@ -100,7 +100,7 @@ export default {
             }).then(res => {
                 const data = res.data || [];
                 this.teams = data;
-                console.log(this.teams);
+                // console.log(this.teams);
                 if (data.length === 1) {
                     this.form.teamid = data[0].id;
                 }

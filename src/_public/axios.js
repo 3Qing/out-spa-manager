@@ -24,7 +24,6 @@ export default (params = {}) => {
                             if (item[k] instanceof Array) {
                                 for (let l in item[k]) {
                                     for (let y in item[k][l]) {
-                                        // console.log(`${key}[${i}].${k}[${l}][${y}]`, item[k][l][y]);
                                         formData.append(`${key}[${i}].${k}[${l}][${y}]`, item[k][l][y]);
                                     }
                                 }

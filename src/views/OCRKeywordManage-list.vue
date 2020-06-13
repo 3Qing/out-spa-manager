@@ -39,6 +39,12 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-pagination
+                :current-page="page"
+                :page-size="pageSize"
+                @current-change="changePn"
+                :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
+                :total="total"></el-pagination>
         </div>
         <el-dialog :visible.sync="vislble" :title="types === 1?'新增':'编辑'" @close='closeDialog'>
             <el-form size="mini" label-width="100px" :model="form" :rules="rules" ref="form">
@@ -82,6 +88,9 @@ export default {
     },
     data() {
         return {
+            page: 1,
+            pageSize: 15,
+            total: 0,
             types: 1,
             form: {
                 keyword: '',
@@ -142,9 +151,9 @@ export default {
                     }
                 }
                 return '-';
-            } else {
+            } else if (arrName === 'typeArray') {
                 for (let item of arr) {
-                    if (item.type === id) {
+                    if (item.id === id) {
                         return item.text;
                     }
                 }
@@ -158,7 +167,7 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.accountArray = res.data || [];
-                    console.log('111', res.data);
+                    // console.log('111', res.data);
                 }
             });
         },
@@ -169,7 +178,7 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.docArray = res.data || [];
-                    console.log('222', res.data);
+                    // console.log('222', res.data);
                 }
             });
         },
@@ -180,7 +189,7 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.typeArray = res.data || [];
-                    console.log('333', res.data);
+                    // console.log('333', res.data);
                 }
             });
         },
@@ -188,12 +197,19 @@ export default {
             const loading = this.$loading({ lock: true, text: '数据取得中...' });
             let url = '/api/OCRKeyword/api_getocrkeywordlist';
             this.$axios({
-                url
+                url,
+                params: {
+                    page: this.page,
+                    pagesize: this.pageSize
+                }
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
                     this.tableData = res.data.data || [];
+                    this.total = res.data.total;
                 } else {
+                    this.tableData = [];
+                    this.total = 0;
                     this.$message({
                         type: 'error',
                         showClose: true,
@@ -204,6 +220,10 @@ export default {
         },
         closeDialog() {
             this.$refs.form.resetFields();
+        },
+        changePn(page) {
+            this.page = page;
+            this.getData();
         },
         // 新增 编辑按钮
         addLogin(type, row) {
@@ -252,13 +272,13 @@ export default {
                 if (valid) {
                     // 保存
                     let params = {
-                        keyword: this.form.keyword,
-                        accountID: this.form.accountID,
-                        docType: this.form.docType,
-                        weight: this.form.weight,
+                        keyword: String(this.form.keyword),
+                        accountID: String(this.form.accountID),
+                        docType: String(this.form.docType),
+                        weight: Number(this.form.weight),
                         type: this.form.type,
                         id: 0,
-                        updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM:ss'),
+                        updateTime: moment(new Date()).format('YYYY-MM-DD'),
                         companyID: 0
                     };
                     const loading = this.$loading({ lock: true, text: '正在提交数据中' });
@@ -266,8 +286,7 @@ export default {
                     this.$axios({
                         method: 'POST',
                         url,
-                        params,
-                        formData: true
+                        params: params
                     }).then( res => {
                         loading.close();
                         if (res && res.code === 0) {

@@ -7,7 +7,7 @@
             :title="form.id ? '' : '新增'"
             :close-on-click-modal="dialog"
             @close="close">
-            <el-form size="mini" label-width="80px" :model="form" :rules="rules" ref="form">
+            <el-form size="mini" label-width="90px" :model="form" :rules="rules" ref="form">
                 <el-form-item label="案件情報" v-if='form.id'>
                     <!-- <el-button type="primary" size="mini" @click="handleTip(form)">提案</el-button> -->
                 </el-form-item>
@@ -112,7 +112,7 @@
                             <span>{{getContent(scope.row.status, opport, 'opport')}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="アクション" width="70">
+                    <el-table-column label="アクション" width="85px">
                         <template slot-scope="scope">
                             <el-tooltip effect="dark" content="編集" placement="top-start">
                                 <i class="el-icon-edit-outline oper-icon" color="warning" @click="toogleExpand(scope.row, form.salesCases)"></i>
