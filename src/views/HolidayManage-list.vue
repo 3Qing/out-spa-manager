@@ -2,33 +2,35 @@
     <main-wrapper class="finReport-list">
         <el-form class="main-header" slot="header" size="mini" inline>
             <el-form-item>
-                <el-radio-group v-model="avaiable" @change="changeHandle">
-                    <el-radio :label="true">貸借対照表</el-radio>
-                    <el-radio :label="false">損益表</el-radio>
-                </el-radio-group>
+                <el-date-picker
+                    v-model="dates"
+                    value-format="yyyy"
+                    format="yyyy"
+                    type="year"
+                    placeholder="选择年"
+                    @change='changeHandle'>
+                </el-date-picker>
                 <el-button class="update" size="mini" type="primary" @click="updateFile">更新</el-button>
             </el-form-item>
         </el-form>
         <div class="table-wrapper sosd">
             <el-table size="small" :data="tableData" border>
-                <el-table-column label="表示順番" prop="order">
+                <el-table-column label="祝日" prop="date" width="250px">
                     <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.order" ></el-input>
+                        <el-date-picker
+                            v-model="scope.row.date"
+                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd"
+                            :default-value=scos
+                            type="date"
+                            placeholder="选择日期"
+                            @change='isChangesel(scope.row.date)'>
+                        </el-date-picker>
                     </template> 
                 </el-table-column>
-                <el-table-column label="テキスト" prop="text" show-overflow-tooltip>
+                <el-table-column label="祝日名称" prop="title" show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.text" ></el-input>
-                    </template> 
-                </el-table-column>
-                <el-table-column label="表示階層" prop="level" show-overflow-tooltip>
-                    <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.level" ></el-input>
-                    </template> 
-                </el-table-column>
-                <el-table-column label="計算公式" prop="formula">
-                    <template slot-scope="scope">
-                        <el-input type="text" v-model="scope.row.formula" ></el-input>
+                        <el-input v-model="scope.row.title" ></el-input>
                     </template> 
                 </el-table-column>
                 <el-table-column label="操作" prop="title" show-overflow-tooltip width="70px">
@@ -57,12 +59,18 @@ export default {
     },
     data() {
         return {
-            avaiable: true,
-            tableData: []
+            dates: moment(new Date()).format('YYYY'),
+            tableData: [],
+            scos: ''
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            if (moment(new Date()).format('YYYY') === vm.dates) {
+                vm.scos = vm.dates + moment(new Date()).format('-MM-DD');
+            } else {
+                vm.scos = vm.dates + '-01-01';
+            }
             vm.getData();
         });
     },
@@ -72,11 +80,11 @@ export default {
     methods: {
         getData() {
             const loading = this.$loading({ lock: true, text: '数据取得中...' });
-            let url = '/api/ACBalance/api_getaccountgrplist';
+            let url = '/api/Holiday/api_getholidays';
             this.$axios({
                 url,
                 params: {
-                    bspl: this.avaiable
+                    year: this.dates
                 }
             }).then(res => {
                 loading.close();
@@ -84,10 +92,8 @@ export default {
                     this.tableData = res.data || [];
                     if (this.tableData.length === 0) {
                         let obj = {
-                            order: '',
-                            text: '',
-                            level: '',
-                            formula: ''
+                            date: '',
+                            title: ''
                         };
                         this.tableData.push(obj);
                     }
@@ -100,18 +106,45 @@ export default {
                 }
             });
         },
+        adds() {
+            let obj = {
+                date: '',
+                title: ''
+            };
+            this.tableData.push(obj);
+        },
+        deletes(i) {
+            this.tableData.splice(i, 1);
+        },
+        // 判断日期是否重复
+        isChangesel() {
+            var arr = this.tableData;
+            var find = false;
+            for (var i = 0; i < arr.length; i++) {
+                for (var j = i + 1; j < arr.length; j++) {
+                    if (moment(arr[i].date).format('YYYY-MM-DD') === moment(arr[j].date).format('YYYY-MM-DD')) { 
+                        find = true; 
+                        break;
+                    }
+                }
+                if (find) break;
+            }
+            if (find) {
+                this.$message({
+                    type: 'error',
+                    message: '日期重复，请重新选择！'
+                });
+            }
+        },
         // 更新按钮
         updateFile() {
-            this.tableData.forEach((item) => {
-                item.updateTime = moment(item.updateTime).format('YYYY-MM-DD');
-            });
             const loading = this.$loading({ lock: true, text: '数据更新中...' });
-            let url = '/api/ACBalance/api_updateaccountgrplist';
+            let url = '/api/Holiday/api_updateholidays';
             this.$axios({
                 method: 'POST',
                 url,
                 params: {
-                    acctgrps: this.tableData
+                    holidays: this.tableData
                 },
                 formData: true
             }).then(res => {
@@ -132,19 +165,12 @@ export default {
                 }
             });
         },
-        adds() {
-            let obj = {
-                order: '',
-                text: '',
-                level: '',
-                formula: ''
-            };
-            this.tableData.push(obj);
-        },
-        deletes(i) {
-            this.tableData.splice(i, 1);
-        },
         changeHandle() {
+            if (moment(new Date()).format('YYYY') === this.dates) {
+                this.scos = this.dates + moment(new Date()).format('-MM-DD');
+            } else {
+                this.scos = this.dates + '-01-01';
+            }
             this.getData();
         }
     }

@@ -2,33 +2,48 @@
     <main-wrapper class="finReport-list">
         <el-form class="main-header" slot="header" size="mini" inline>
             <el-form-item>
-                <el-radio-group v-model="avaiable" @change="changeHandle">
-                    <el-radio :label="true">貸借対照表</el-radio>
-                    <el-radio :label="false">損益表</el-radio>
-                </el-radio-group>
+                <el-date-picker
+                    v-model="dates"
+                    value-format="yyyy"
+                    format="yyyy"
+                    type="year"
+                    placeholder="选择年"
+                    @change='changeHandle'>
+                </el-date-picker>
                 <el-button class="update" size="mini" type="primary" @click="updateFile">更新</el-button>
             </el-form-item>
         </el-form>
         <div class="table-wrapper sosd">
             <el-table size="small" :data="tableData" border>
-                <el-table-column label="表示順番" prop="order">
+                <el-table-column label="別表番号" prop="tableNo" width="100px">
                     <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.order" ></el-input>
+                        <el-input type="number" v-model="scope.row.tableNo" ></el-input>
                     </template> 
                 </el-table-column>
-                <el-table-column label="テキスト" prop="text" show-overflow-tooltip>
+                <el-table-column label="別表名称" prop="tableNoName" width="200px" show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.text" ></el-input>
+                        <el-input v-model="scope.row.tableNoName" ></el-input>
                     </template> 
                 </el-table-column>
-                <el-table-column label="表示階層" prop="level" show-overflow-tooltip>
+                <el-table-column label="課税範囲" show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.level" ></el-input>
+                        <el-input style="width:50%" type="number" @blur='isedit' v-model="scope.row.fromAmount" ></el-input>
+                        <el-input style="width:50%" type="number" @blur='isedit' v-model="scope.row.toAmount" ></el-input>
                     </template> 
                 </el-table-column>
-                <el-table-column label="計算公式" prop="formula">
+                <el-table-column label="課税率・控除率" prop="percent" width="150px">
                     <template slot-scope="scope">
-                        <el-input type="text" v-model="scope.row.formula" ></el-input>
+                        <el-input type="number" v-model="scope.row.percent" ></el-input>
+                    </template> 
+                </el-table-column>
+                <el-table-column label="追加控除額" prop="additionalAmout" width="300px">
+                    <template slot-scope="scope">
+                        <el-input type="number" v-model="scope.row.additionalAmout" ></el-input>
+                    </template> 
+                </el-table-column>
+                <el-table-column label="四捨五入ルール" prop="roundRule" width="150px">
+                    <template slot-scope="scope">
+                        <el-input type="number" v-model="scope.row.roundRule" ></el-input>
                     </template> 
                 </el-table-column>
                 <el-table-column label="操作" prop="title" show-overflow-tooltip width="70px">
@@ -50,6 +65,7 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import moment from 'moment';
+import { priceToString, priceToNumber } from '@_public/utils';
 
 export default {
     components: {
@@ -57,7 +73,7 @@ export default {
     },
     data() {
         return {
-            avaiable: true,
+            dates: moment(new Date()).format('YYYY'),
             tableData: []
         };
     },
@@ -70,13 +86,15 @@ export default {
         ...mapGetters(['IS_H5', 'TEAMS'])
     },
     methods: {
+        priceToString: priceToString,
+        priceToNumber: priceToNumber,
         getData() {
             const loading = this.$loading({ lock: true, text: '数据取得中...' });
-            let url = '/api/ACBalance/api_getaccountgrplist';
+            let url = '/api/TaxRule/api_gettaxrulelist';
             this.$axios({
                 url,
                 params: {
-                    bspl: this.avaiable
+                    year: this.dates
                 }
             }).then(res => {
                 loading.close();
@@ -84,10 +102,13 @@ export default {
                     this.tableData = res.data || [];
                     if (this.tableData.length === 0) {
                         let obj = {
-                            order: '',
-                            text: '',
-                            level: '',
-                            formula: ''
+                            additionalAmout: '',
+                            fromAmount: '',
+                            percent: '',
+                            roundRule: '',
+                            tableNo: '',
+                            tableNoName: '',
+                            toAmount: ''
                         };
                         this.tableData.push(obj);
                     }
@@ -100,28 +121,36 @@ export default {
                 }
             });
         },
+        isedit() {
+            this.tableData.forEach((item) => {
+                if (item.fromAmount !== '' && item.toAmount !== '') {
+                    if (Number(item.fromAmount) > Number(item.toAmount)) {
+                        this.$message({
+                            type: 'error',
+                            showClose: false,
+                            message: '请重新输入范围！'
+                        });
+                    }
+                }  
+            });
+        },
         // 更新按钮
         updateFile() {
             this.tableData.forEach((item) => {
                 item.updateTime = moment(item.updateTime).format('YYYY-MM-DD');
             });
             const loading = this.$loading({ lock: true, text: '数据更新中...' });
-            let url = '/api/ACBalance/api_updateaccountgrplist';
+            let url = '/api/TaxRule/api_updatetaxrules';
             this.$axios({
                 method: 'POST',
                 url,
                 params: {
-                    acctgrps: this.tableData
+                    taxrules: this.tableData
                 },
                 formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    // this.$message({
-                    //     type: 'success',
-                    //     showClose: false,
-                    //     message: res.message
-                    // });
                     this.getData();
                 } else {
                     this.$message({
@@ -134,10 +163,13 @@ export default {
         },
         adds() {
             let obj = {
-                order: '',
-                text: '',
-                level: '',
-                formula: ''
+                additionalAmout: '',
+                fromAmount: '',
+                percent: '',
+                roundRule: '',
+                tableNo: '',
+                tableNoName: '',
+                toAmount: ''
             };
             this.tableData.push(obj);
         },

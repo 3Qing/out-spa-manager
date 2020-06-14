@@ -42,6 +42,8 @@ import BalanceSheet from '@views/Balance-sheet';
 import FinReportCustomize from '@views/FinReportCustomize-list';
 import DocTypeManage from '@views/DocTypeManage-list';
 import OCRKeywordManage from '@views/OCRKeywordManage-list';
+import HolidayManage from '@views/HolidayManage-list';
+import TaxRuleManage from '@views/TaxRuleManage-list';
 
 Vue.use(Router);
 
@@ -233,6 +235,14 @@ const router = new Router({
         path: '/OCRKeywordManage',
         name: 'OCRKeywordManage',
         component: OCRKeywordManage
+    }, {
+        path: '/holidayManage',
+        name: 'HolidayManage',
+        component: HolidayManage
+    }, {
+        path: '/taxRuleManage',
+        name: 'TaxRuleManage',
+        component: TaxRuleManage
     }
     ]
 });

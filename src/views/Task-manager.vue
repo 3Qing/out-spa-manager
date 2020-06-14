@@ -56,12 +56,14 @@ export default {
             columns: [],
             tableData: [],
             curTime: '',
-            isTrue: true
+            isTrue: true,
+            timeData: ''
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.initTable();
+            vm.timeData = moment(new Date()).format('YYYY-MM-DD');
         });
     },
     computed: {
@@ -207,6 +209,7 @@ export default {
         },
         // 时间点击
         clickDay(data) {
+            this.timeData = data;
             this.initTable(data);
         },
         getSummaries(param) {
@@ -214,13 +217,27 @@ export default {
             columns.forEach((column, index) => {
                 if (index === 0) {
                     column.id = 'el-table_1_column_1';
+                } else if (index === 1) {
+                    column.id = 'el-table_1_column_2';
+                } else if (index === 2) {
+                    column.id = 'el-table_1_column_3';
+                } else if (index === 3) {
+                    column.id = 'el-table_1_column_4';
+                } else if (index === 4) {
+                    column.id = 'el-table_1_column_5';
+                } else if (index === 5) {
+                    column.id = 'el-table_1_column_6';
+                } else if (index === 6) {
+                    column.id = 'el-table_1_column_7';
+                } else if (index === 7) {
+                    column.id = 'el-table_1_column_8';
                 }
             });
             return columns;
         },
         // 添加日程
         handleClick(row, col) {
-            // console.log(col.id, this.columns);
+            console.log(col, this.columns);
             if (col.id !== 'el-table_1_column_1') {
                 let mins = '';
                 if (col.id === 'el-table_1_column_2') {
@@ -247,8 +264,8 @@ export default {
                     dater2 = '0' + dater2;
                 }
                 let objs = {
-                    dateFrom: moment(new Date()).format(`YYYY-${mins} ${dater1}:00`),
-                    dateTo: moment(new Date()).format(`YYYY-${mins} ${dater2}:00`),
+                    dateFrom: moment(this.timeData).format(`YYYY-${mins} ${dater1}:00`),
+                    dateTo: moment(this.timeData).format(`YYYY-${mins} ${dater2}:00`),
                     content: '',
                     atyType: [],
                     candidateID: '',
