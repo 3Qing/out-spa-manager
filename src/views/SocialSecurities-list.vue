@@ -18,8 +18,8 @@
             </el-form-item>
         </el-form>
         <div class="table-wrapper sosd">
-            <el-table size="small" :data="tableData" border>
-                <el-table-column label="タイプ" prop="type" width="150px">
+            <el-table size="small" :data="tableData" border >
+                <el-table-column label="タイプ" prop="type" width="120px">
                     <template slot-scope="scope">
                         <el-select
                             v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)'
@@ -36,7 +36,7 @@
                         <span v-else>{{getContent(scope.row.type, tabSelect, 'id', 'text')}}</span>
                     </template> 
                 </el-table-column>
-                <el-table-column label="有効開始日" prop="effectFromDate" show-overflow-tooltip>
+                <el-table-column label="有効開始日" prop="effectFromDate" width="160px" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-date-picker
                             v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)'
@@ -49,7 +49,7 @@
                         <span v-else>{{scope.row.effectFromDate}}</span>
                     </template> 
                 </el-table-column>
-                <el-table-column label="有効終了日" show-overflow-tooltip>
+                <el-table-column label="有効終了日" width="160px" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <el-date-picker
                             v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)'
@@ -62,7 +62,7 @@
                         <span v-else>{{scope.row.effectToDate}}</span>
                     </template> 
                 </el-table-column>
-                <el-table-column label="等級" prop="insuranceLevel" width="150px">
+                <el-table-column label="等級" prop="insuranceLevel" width="120px">
                     <template slot-scope="scope">
                         <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' type="number" v-model="scope.row.insuranceLevel" ></el-input>
                         <span v-else>{{scope.row.insuranceLevel}}</span>
@@ -74,7 +74,7 @@
                         <span v-else>{{priceToString(scope.row.standardSalary)}}</span>
                     </template> 
                 </el-table-column>
-                <el-table-column label="報酬月額" prop="roundRule" >
+                <el-table-column label="報酬月額" >
                     <template slot-scope="scope">
                         <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' style="width:50%" @blur='isedit' type='number' v-model="scope.row.salaryFrom" ></el-input>
                         <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' style="width:50%" @blur='isedit' type='number' v-model="scope.row.salaryTo" ></el-input>
@@ -89,7 +89,7 @@
                         <span v-else>{{scope.row.standardPercent}}%</span>
                     </template> 
                 </el-table-column>
-                <el-table-column label="追加率" prop="additionalPercent" width="150px">
+                <el-table-column label="追加率" prop="additionalPercent" width="150px" :render-header="renderHeader">
                     <template slot-scope="scope">
                         <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' v-model="scope.row.additionalPercent" 
                         type='number'>
@@ -179,6 +179,27 @@ export default {
                 }
             });
         },
+        renderHeader(h, { column }) {
+            return h("div", [
+                h("span", column.label),
+                h("el-tooltip",{
+                    props: {
+                        effect: "dark",
+                        content:"介護保険第２号被保険者に該当する場合",
+                        placement: "top"
+                    }
+                },
+                [
+                    h("i", {
+                        class: "el-icon-question",
+                        style: "color:#1473B7;margin-left:5px;cursor:pointer;"
+                    })
+                ],
+                {
+                    content: "介護保険第２号被保険者に該当する場合"
+                })
+            ]);
+        },
         isedit() {
             this.tableData.forEach((item) => {
                 if (item.salaryFrom !== '' && item.salaryTo !== '') {
@@ -210,7 +231,7 @@ export default {
                 this.tableData = [{
                     type: '',
                     effectFromDate: '',
-                    effectToDate: '',
+                    effectToDate: '9999-12-31',
                     insuranceLevel: '',
                     standardSalary: '',
                     salaryFrom: '',
@@ -226,27 +247,80 @@ export default {
             }
         },
         saves(inid) {
-            console.log(inid);
-            const loading = this.$loading({ lock: true, text: '数据更新中...' });
-            let url = '/api/SocialSecurity/api_updatesocialsecurities';
-            this.$axios({
-                method: 'POST',
-                url,
-                params: {
-                    ssrules: this.tableData,
-                    date: this.dates,
-                    updateflag: inid
-                },
-                formData: true
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.getData();
-                } else {
+            this.tableData.forEach((item) => {
+                item.updateTime = moment(item.updateTime).format('YYYY-MM-DD');
+                if (item.type === '') {
                     this.$message({
                         type: 'error',
                         showClose: false,
-                        message: res ? res.message : 'インタフェース異常、データ取得できません！'
+                        message: 'タイプ不能为空！'
+                    });
+                    return;
+                } else if (item.effectFromDate === '') {
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '有効開始日不能为空！'
+                    });
+                    return;
+                } else if (item.effectToDate === '') {
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '有効終了日不能为空！'
+                    });
+                    return;
+                } else if (item.insuranceLevel === '') {
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '等級不能为空！'
+                    });
+                    return;
+                } else if (item.standardSalary === '') {
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '標準報酬不能为空！'
+                    });
+                    return;
+                } else if (item.salaryFrom === '' && item.salaryTo === '') {
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '報酬月額至少填写一个！'
+                    });
+                    return;
+                } else if (item.standardPercent === '') {
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '保険率不能为空！'
+                    });
+                    return;
+                } else {
+                    const loading = this.$loading({ lock: true, text: '数据更新中...' });
+                    let url = '/api/SocialSecurity/api_updatesocialsecurities';
+                    this.$axios({
+                        method: 'POST',
+                        url,
+                        params: {
+                            ssrules: this.tableData,
+                            date: this.dates,
+                            updateflag: inid
+                        },
+                        formData: true
+                    }).then(res => {
+                        loading.close();
+                        if (res && res.code === 0) {
+                            this.getData();
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                showClose: false,
+                                message: res ? res.message : 'インタフェース異常、データ取得できません！'
+                            });
+                        }
                     });
                 }
             });
