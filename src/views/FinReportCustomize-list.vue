@@ -34,7 +34,7 @@
                 <el-table-column label="操作" prop="title" show-overflow-tooltip width="70px">
                     <template slot-scope="scope">
                         <el-tooltip effect="dark" content="增加" placement="top-start">
-                            <i class="icon-add iconfont oper-icon" color="success" @click="adds(scope.row)"></i>
+                            <i class="icon-add iconfont oper-icon" color="success" @click="adds(scope.$index)"></i>
                         </el-tooltip>
                         <el-tooltip effect="dark" content="删除" placement="top-start">
                             <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.$index)"></i>
@@ -132,14 +132,14 @@ export default {
                 }
             });
         },
-        adds() {
+        adds(i) {
             let obj = {
                 order: '',
                 text: '',
                 level: '',
                 formula: ''
             };
-            this.tableData.push(obj);
+            this.tableData.splice(i+1, 0, obj);
         },
         deletes(i) {
             this.tableData.splice(i, 1);

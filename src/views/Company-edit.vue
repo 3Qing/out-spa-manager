@@ -7,26 +7,34 @@
         </div>
         <el-row>
             <el-col :span="12">
-                <el-form size="mini" label-width="100px" ref="form" :model="form" :rules="isDisplay ? {} : rules" label-suffix=":">
+                <el-form size="mini" label-width="140px" ref="form" :model="form" :rules="isDisplay ? {} : rules" label-suffix="">
                     <el-row>
-                        <el-col :span="12">
+                        <el-col :span="24">
                             <el-form-item label="会社名" prop="title">
                                 <p v-if="isDisplay">{{form.title}}</p>
                                 <el-input v-model="form.title" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
+                    </el-row>
+                    <el-row>
                         <el-col :span="12">
-                            <el-form-item label="郵便番号">
-                                <p v-if="isDisplay">{{form.postal}}</p>
-                                <el-input v-model="form.postal" :maxlength="30" v-else></el-input>
+                            <el-form-item label="简称" prop="imG_Prefix">
+                                <p v-if="isDisplay">{{form.imG_Prefix}}</p>
+                                <el-input v-model="form.imG_Prefix" :maxlength="4" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="ホムページ">
+                                <p v-if="isDisplay">{{form.webSite}}</p>
+                                <el-input v-model="form.webSite" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="公司简称">
-                                <p v-if="isDisplay">{{form.imG_Prefix}}</p>
-                                <el-input v-model="form.imG_Prefix" :maxlength="4" v-else></el-input>
+                            <el-form-item label="郵便番号">
+                                <p v-if="isDisplay">{{form.postal}}</p>
+                                <el-input v-model="form.postal" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -60,6 +68,28 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
+                            <el-form-item label="連絡担当者" prop="contactPerson">
+                                <p v-if="isDisplay">{{form.contactPerson}}</p>
+                                <el-input v-model="form.contactPerson" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="メールアドレス" prop="mailAddress">
+                                <p v-if="isDisplay">{{form.mailAddress}}</p>
+                                <el-input v-model="form.mailAddress" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="連絡方法">
+                                <p v-if="isDisplay">{{form.contactTelMail}}</p>
+                                <el-input v-model="form.contactTelMail" type="textarea" :rows="3" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
                             <el-form-item label="管理者ユーザ名" prop="userName">
                                 <p v-if="isDisplay">{{form.userName}}</p>
                                 <el-input v-model="form.userName" :maxlength="30" v-else></el-input>
@@ -72,24 +102,6 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row>
-                        <el-col :span="12">
-                            <el-form-item label="連絡担当者" prop="contactPerson">
-                                <p v-if="isDisplay">{{form.contactPerson}}</p>
-                                <el-input v-model="form.contactPerson" :maxlength="30" v-else></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="ホムページ">
-                                <p v-if="isDisplay">{{form.webSite}}</p>
-                                <el-input v-model="form.webSite" :maxlength="30" v-else></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-form-item label="連絡方法">
-                        <p v-if="isDisplay">{{form.contactTelMail}}</p>
-                        <el-input v-model="form.contactTelMail" type="textarea" :rows="3" v-else></el-input>
-                    </el-form-item>
                 </el-form>
             </el-col>
             <el-col :span="10" :offset="2">
@@ -99,8 +111,8 @@
                 <div class="image-wrapper" v-if="isDisplay">
                     <img :src="form.touhonImage" alt="">
                 </div>
-                <card-upload v-if="!isDisplay" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" @success="upload"></card-upload>
-                <card-upload v-if="!isDisplay" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" style="margin-left: 20px;" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" @success="upload"></card-upload>
                 <image-croppa></image-croppa>
             </el-col>
         </el-row>
@@ -133,6 +145,7 @@ export default {
                 userName: '',
                 userPassword: '',
                 contactPerson: '',
+                mailAddress: '',
                 contactTelMail: '',
                 logoImage: '',
                 webSite: '',
@@ -161,6 +174,12 @@ export default {
                 };
             } else {
                 vm.rules = {
+                    mailAddress: [{
+                        required: true, message: '请输入メールアドレス', trigger: 'blur'
+                    }],
+                    imG_Prefix: [{
+                        required: true, message: '请输入简称', trigger: 'blur'
+                    }],
                     title: [{
                         required: true, message: '请输入会社名', trigger: 'blur'
                     }],
@@ -256,7 +275,8 @@ export default {
                         AccountOwner: this.form.accountOwner || '',
                         'user.Name': this.form.userName || '',
                         'user.Password': this.form.userPassword || '',
-                        ContractPerson: this.form.contactPerson || '',
+                        ContactPerson: this.form.contactPerson || '',
+                        mailAddress: this.form.mailAddress || '',
                         ContactTelMail: this.form.contactTelMail || '',
                         LogoImage: this.form.logoImage || '',
                         WebSite: this.form.webSite || '',
@@ -302,7 +322,7 @@ export default {
 .company-edit-wrapper {
     .el-form {
         .el-input {
-            width: 220px;
+            // width: 220px;
         }
     }
     .image-wrapper {

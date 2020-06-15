@@ -44,7 +44,7 @@ import DocTypeManage from '@views/DocTypeManage-list';
 import OCRKeywordManage from '@views/OCRKeywordManage-list';
 import HolidayManage from '@views/HolidayManage-list';
 import TaxRuleManage from '@views/TaxRuleManage-list';
-
+import SocialSecurityManage from '@views/SocialSecurities-list';
 Vue.use(Router);
 
 // 复写push方法 修复导航错误
@@ -243,6 +243,10 @@ const router = new Router({
         path: '/taxRuleManage',
         name: 'TaxRuleManage',
         component: TaxRuleManage
+    }, {
+        path: '/socialSecurityManage',
+        name: 'SocialSecurityManage',
+        component: SocialSecurityManage
     }
     ]
 });

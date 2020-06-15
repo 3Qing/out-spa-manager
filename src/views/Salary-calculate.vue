@@ -24,7 +24,7 @@
             </el-select>
             <el-button style="margin-left:40px;" type="primary" size="mini" @click="batchCalculation">批量计算工资</el-button>
         </div>
-        <el-table size="mini" :data="tableData" border>
+        <el-table size="mini" :data="tableData" border @row-dblclick='getSalery'>
             <el-table-column label="就職タイプ" prop="employeeType" show-overflow-tooltip width='110px' fixed="left"></el-table-column>
             <el-table-column label="社員番号" prop="employeeNo" fixed="left"></el-table-column>
             <el-table-column label="名前" prop="employeeName" width='90px' fixed="left"></el-table-column>
@@ -66,11 +66,24 @@
                     <span>{{priceToString(scope.row.incomeTax)}}</span>
                 </template>
             </el-table-column>
+            <el-table-column label="健康保険" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.healthInsurance)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="厚生年金" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.endowInsurance)}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="支払予定日" prop="dueDate" width="100px"></el-table-column>
             <el-table-column label="支給額" prop="payAmount"></el-table-column>
             <el-table-column label="実際支払日" prop="payedDate" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="アクション" min-width="70px" fixed="right">
+            <el-table-column label="アクション" min-width="100px" fixed="right">
                 <template slot-scope="scope">
+                    <el-tooltip effect="dark" content="查看" placement="top-start">
+                        <i class="el-icon-view oper-icon" color="primary" @click="actionHandler(scope.row)"></i>
+                    </el-tooltip>
                     <el-tooltip
                         v-for="(item, i) in scope.row.actions"
                         :key="i"
@@ -119,6 +132,68 @@
                 <el-button type="primary" size="mini" @click="save">保存</el-button>
             </div>
         </el-dialog>
+        <!-- // 查看明细 -->
+        <el-dialog :visible.sync="visibles" title="明细" @close="closedetail" >
+            <div class="salary-wrapper">
+                <el-row>
+                    <el-col :span="6">{{formDetail.Periperiodod || period}}給料明細書</el-col>
+                    <el-col :span="3" class="label">部門-所属</el-col>
+                    <el-col :span="3">{{formDetail.teamName || '-'}}</el-col>
+                    <el-col :span="3" class="label">社員</el-col>
+                    <el-col :span="3">{{formDetail.employeeNo || '-'}}</el-col>
+                    <el-col :span="3" class="label">氏名</el-col>
+                    <el-col :span="3">{{formDetail.name || '-'}}</el-col>
+                </el-row>
+                <div class="row-wrapper multiple-row">
+                    <el-row>
+                        <el-col :span="2" class="row-label label">支給</el-col>
+                        <el-col :span="4" :offset="2" class="label">基本給</el-col>
+                        <el-col :span="4" class="label">待機代</el-col>
+                        <el-col :span="4" class="label">時間外手当</el-col>
+                        <el-col :span="4" class="label">通勤手当</el-col>
+                        <el-col :span="6" class="label">総支給額</el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="4" :offset="2">{{formatPrice(formDetail.projectSalary)}}</el-col>
+                        <el-col :span="4">{{formatPrice(formDetail.benchSalary)}}</el-col>
+                        <el-col :span="4">{{formatPrice(formDetail.overtimeSalary)}}</el-col>
+                        <el-col :span="4">{{formatPrice(form.travelFare)}}</el-col>
+                        <el-col :span="6">{{formatPrice(allowance)}}</el-col>
+                    </el-row>
+                </div>
+                <div class="row-wrapper multiple-row">
+                    <el-row>
+                        <el-col :span="2" class="row-label label">控除</el-col>
+                        <el-col :span="4" :offset="2" class="label">雇用保険</el-col>
+                        <el-col :span="4" class="label">健康保険</el-col>
+                        <el-col :span="4" class="label">所得税</el-col>
+                        <el-col :span="4" class="label">厚生年金</el-col>
+                        <el-col :span="6" class="label">控除計</el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="4" :offset="2">{{formatPrice(formDetail.hireInsurance)}}</el-col>
+                        <el-col :span="4">{{formatPrice(formDetail.healthInsurance)}}</el-col>
+                        <el-col :span="4">{{formatPrice(formDetail.incomeTax)}}</el-col>
+                        <el-col :span="4">{{formatPrice(formDetail.endowInsurance)}}</el-col>
+                        <el-col :span="6">{{formatPrice(meter)}}</el-col>
+                    </el-row>
+                </div>
+                <div class="row-wrapper total-row">
+                    <el-row>
+                        <el-col :span="6" :offset="18" class="label">現金</el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="6" :offset="18">{{formatPrice(allowance - meter)}}</el-col>
+                    </el-row>
+                </div>
+                <div class="row-wrapper">
+                    <el-row>
+                        <el-col :span="2" class="label">出勤日数</el-col>
+                        <el-col :span="2">{{formDetail.workDays || 0}}天</el-col>
+                    </el-row>
+                </div>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -142,6 +217,7 @@ export default {
             tableData: [],
             customers: [],
             visible: false,
+            visibles: false,
             form: {
                 empeeid: '',
                 period: '',
@@ -150,6 +226,21 @@ export default {
                 benchSalary: '',
                 travelFare: '',
                 dueDate: ''
+            },
+            formDetail: {
+                Period: '',
+                Team: '',
+                EmpeeNo: '',
+                Name: '',
+                projectSalary: 0,
+                benchSalary: 0,
+                overtimeSalary: 0,
+                travelFare: 0,
+                hireInsurance: 0,
+                incomeTax: 0,
+                workDays: 0,
+                healthInsurance: 0,
+                endowInsurance: 0
             }
         };
     },
@@ -162,7 +253,23 @@ export default {
         });
     },
     computed: {
-        ...mapGetters(['IS_H5'])
+        ...mapGetters(['IS_H5']),
+        allowance() {
+            const {
+                projectSalary = 0,
+                benchSalary = 0,
+                overtimeSalary = 0,
+                travelFare = 0
+            } = this.formDetail;
+            return Number(projectSalary) + Number(benchSalary) + Number(overtimeSalary) + Number(travelFare);
+        },
+        meter() {
+            const {
+                hireInsurance = 0,
+                incomeTax = 0
+            } = this.formDetail;
+            return Number(hireInsurance) + Number(incomeTax);
+        }
     },
     methods: {
         priceToString: priceToString,
@@ -238,6 +345,8 @@ export default {
                 this.getCalculateSalery(row);
             } else if (item.id === 'act_manualrevisesalary') {
                 this.showDialog(row);
+            } else {
+                this.getSalery(item);
             }
         },
         showDialog(row) {
@@ -249,11 +358,39 @@ export default {
                 travelFare: row.travelFare,
                 dueDate: row.dueDate
             };
-            console.log(this.form);
             this.visible = true;
         },
         close() {
             this.visible = false;
+        },
+        closedetail() {
+            this.visibles = false;
+        },
+        // 获取工资详细
+        getSalery(row) {
+            const loading = this.$loading({ lock: true, text: '正在计算中...' });
+            this.$axios({
+                url: '/api/Salary/api_getsalaryinfo',
+                params: {
+                    empeeid: row.employeeID,
+                    period: this.period
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.formDetail = res.data;
+                    this.visibles = true;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回'
+                    });
+                }
+            });
         },
         getCalculateSalery(row) {
             const loading = this.$loading({ lock: true, text: '正在计算中...' });
@@ -345,6 +482,10 @@ export default {
             } else if (item.id === 'act_manualrevisesalary') {
                 return 'warning';
             }
+        },
+        formatPrice(value) {
+            if (!value) return 0;
+            return Number(value).toLocaleString();
         }
     }
 };
@@ -359,6 +500,57 @@ export default {
         .el-select {
             width: 200px;
             margin-left: 40px;
+        }
+    }
+    .salary-wrapper {
+        .row-wrapper {
+            &:last-child {
+                .el-row {
+                    border-bottom: 1px solid rgb(108, 146, 190);
+                    border-right: 1px solid rgb(108, 146, 190);
+                }
+            }
+        }
+        .el-row {
+            border: 1px solid rgb(108, 146, 190);
+            border-bottom: none;
+            border-right: none;
+        }
+        .el-col {
+            padding-left: 5px;
+            height: 36px;
+            line-height: 36px;
+            border-right: 1px solid rgb(108, 146, 190);
+        }
+        .multiple-row {
+            position: relative;
+            .row-label {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 72px;
+                line-height: 72px;
+                z-index: 1;
+            }
+        }
+        .total-row {
+            .el-row:last-child {
+                border-top: none;
+                .el-col {
+                    border-top: 1px solid rgb(108, 146, 190);
+                }
+            }
+            .el-col {
+                border-left: 1px solid rgb(108, 146, 190);
+                // position: relative;
+                // left: -1px;
+            }
+        }
+        .label {
+            color: #1473B7;
+            overflow: hidden;
+            white-space: nowrap;
+            background-color: rgb(236, 254, 253);
         }
     }
 }
