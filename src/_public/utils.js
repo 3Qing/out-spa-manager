@@ -87,6 +87,7 @@ export function priceToNumber(val) {
 }
 
 export function fileToBase64(file) {
+    console.log(file);
     return new Promise(resolve => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -94,4 +95,14 @@ export function fileToBase64(file) {
         };
         reader.readAsDataURL(file);
     });
+}
+
+export function fileToUrl(file) {
+    // if (file) {
+    return new Promise(resolve => {
+        const csvData = new Blob([file]);
+        const url = window.URL.createObjectURL(csvData);
+        resolve(url);
+    });
+    // }
 }

@@ -70,15 +70,15 @@
                 </el-table-column>
                 <el-table-column label="標準報酬" prop="standardSalary" >
                     <template slot-scope="scope">
-                        <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' v-model="scope.row.standardSalary" ></el-input>
-                        <span v-else>{{priceToString(scope.row.standardSalary)}}</span>
+                        <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' @input='isedit' v-model="scope.row.standardSalary" ></el-input>
+                        <span v-else>{{scope.row.standardSalary}}</span>
                     </template> 
                 </el-table-column>
                 <el-table-column label="報酬月額" >
                     <template slot-scope="scope">
-                        <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' style="width:50%" @blur='isedit' type='number' v-model="scope.row.salaryFrom" ></el-input>
-                        <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' style="width:50%" @blur='isedit' type='number' v-model="scope.row.salaryTo" ></el-input>
-                        <span v-else>{{priceToString(scope.row.salaryFrom)}}-{{priceToString(scope.row.salaryTo)}}</span>
+                        <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' style="width:50%" @input='isedit'  v-model="scope.row.salaryFrom" ></el-input>
+                        <el-input v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' style="width:50%" @input='isedit'  v-model="scope.row.salaryTo" ></el-input>
+                        <span v-else>{{scope.row.salaryFrom}}-{{scope.row.salaryTo}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="保険率" prop="standardPercent" width="150px">
@@ -98,7 +98,7 @@
                         <span v-else>{{scope.row.additionalPercent}}%</span>
                     </template> 
                 </el-table-column>
-                <!-- <el-table-column label="操作" prop="title" show-overflow-tooltip width="70px">
+                <el-table-column v-if='(isAdd === true && isEdit === false) || (isAdd === false && isEdit === true)' label="操作" prop="title" show-overflow-tooltip width="70px">
                     <template slot-scope="scope">
                         <el-tooltip effect="dark" content="增加" placement="top-start">
                             <i class="icon-add iconfont oper-icon" color="success" @click="adds(scope.$index)"></i>
@@ -107,7 +107,7 @@
                             <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.$index)"></i>
                         </el-tooltip>
                     </template> 
-                </el-table-column> -->
+                </el-table-column>
             </el-table>
         </div>
     </main-wrapper>
@@ -169,6 +169,9 @@ export default {
                     this.tableData.forEach((item) => {
                         item.effectFromDate = moment(item.effectFromDate).format('YYYY-MM-DD');
                         item.effectToDate = moment(item.effectToDate).format('YYYY-MM-DD');
+                        item.salaryFrom = priceToString(priceToNumber(item.salaryFrom));
+                        item.salaryTo = priceToString(priceToNumber(item.salaryTo));
+                        item.standardSalary = priceToString(priceToNumber(item.standardSalary));
                     });
                 } else {
                     this.$message({
@@ -202,15 +205,18 @@ export default {
         },
         isedit() {
             this.tableData.forEach((item) => {
-                if (item.salaryFrom !== '' && item.salaryTo !== '') {
-                    if (Number(item.salaryFrom) > Number(item.salaryTo)) {
-                        this.$message({
-                            type: 'error',
-                            showClose: false,
-                            message: '请重新输入報酬月額！'
-                        });
-                    }
-                }  
+                item.salaryFrom = priceToString(priceToNumber(item.salaryFrom));
+                item.salaryTo = priceToString(priceToNumber(item.salaryTo));
+                item.standardSalary = priceToString(priceToNumber(item.standardSalary));
+                // if (item.salaryFrom !== '' && item.salaryTo !== '') {
+                //     if (Number(item.salaryFrom) > Number(item.salaryTo)) {
+                //         this.$message({
+                //             type: 'error',
+                //             showClose: false,
+                //             message: '请重新输入報酬月額！'
+                //         });
+                //     }
+                // }  
             });
         },
         getContent(val, arr, key, field) {
@@ -247,93 +253,110 @@ export default {
             }
         },
         saves(inid) {
-            this.tableData.forEach((item) => {
-                item.updateTime = moment(item.updateTime).format('YYYY-MM-DD');
-                if (item.type === '') {
+            let arr = this.tableData;
+            let istrue = false;
+            for (let i=0;i<arr.length;i++) {
+                if (arr[i].type === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: 'タイプ不能为空！'
                     });
-                    return;
-                } else if (item.effectFromDate === '') {
+                    break;
+                } else if (arr[i].effectFromDate === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: '有効開始日不能为空！'
                     });
-                    return;
-                } else if (item.effectToDate === '') {
+                    break;
+                } else if (arr[i].effectToDate === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: '有効終了日不能为空！'
                     });
-                    return;
-                } else if (item.insuranceLevel === '') {
+                    break;
+                } else if (arr[i].insuranceLevel === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: '等級不能为空！'
                     });
-                    return;
-                } else if (item.standardSalary === '') {
+                    break;
+                } else if (arr[i].standardSalary === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: '標準報酬不能为空！'
                     });
-                    return;
-                } else if (item.salaryFrom === '' && item.salaryTo === '') {
+                    break;
+                } else if (arr[i].salaryFrom === '' && arr[i].salaryTo === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: '報酬月額至少填写一个！'
                     });
-                    return;
-                } else if (item.standardPercent === '') {
+                    break;
+                } else if (arr[i].standardPercent === '') {
+                    istrue = true;
                     this.$message({
                         type: 'error',
                         showClose: false,
                         message: '保険率不能为空！'
                     });
-                    return;
-                } else {
-                    const loading = this.$loading({ lock: true, text: '数据更新中...' });
-                    let url = '/api/SocialSecurity/api_updatesocialsecurities';
-                    this.$axios({
-                        method: 'POST',
-                        url,
-                        params: {
-                            ssrules: this.tableData,
-                            date: this.dates,
-                            updateflag: inid
-                        },
-                        formData: true
-                    }).then(res => {
-                        loading.close();
-                        if (res && res.code === 0) {
-                            this.getData();
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                showClose: false,
-                                message: res ? res.message : 'インタフェース異常、データ取得できません！'
-                            });
-                        }
-                    });
+                    break;
                 }
-            });
+            }
+            if (istrue === false) {
+                this.tableData.forEach((item) => {
+                    item.salaryFrom = priceToNumber(item.salaryFrom);
+                    item.salaryTo = priceToNumber(item.salaryTo);
+                    item.standardSalary = priceToNumber(item.standardSalary);
+                    item.updateTime = moment(item.updateTime).format('YYYY-MM-DD');
+                });
+                const loading = this.$loading({ lock: true, text: '数据更新中...' });
+                let url = '/api/SocialSecurity/api_updatesocialsecurities';
+                this.$axios({
+                    method: 'POST',
+                    url,
+                    params: {
+                        ssrules: this.tableData,
+                        date: this.dates,
+                        updateflag: inid
+                    },
+                    formData: true
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        this.getData();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            showClose: false,
+                            message: res ? res.message : 'インタフェース異常、データ取得できません！'
+                        });
+                    }
+                });
+            }
         },
         adds(i) {
             let obj = {
-                additionalAmout: '',
-                fromAmount: '',
-                percent: '',
-                roundRule: '',
-                tableNo: '',
-                tableNoName: '',
-                toAmount: ''
+                type: '',
+                effectFromDate: '',
+                effectToDate: '9999-12-31',
+                insuranceLevel: '',
+                standardSalary: '',
+                salaryFrom: '',
+                salaryTo: '',
+                standardPercent: '',
+                additionalPercent: ''
             };
             this.tableData.splice(i+1, 0, obj);
         },

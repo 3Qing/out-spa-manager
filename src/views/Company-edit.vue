@@ -106,13 +106,13 @@
             </el-col>
             <el-col :span="10" :offset="2">
                 <div class="image-wrapper" v-if="isDisplay">
-                    <img :src="form.logoImage" alt="">
+                    <img :src=data1 >
                 </div>
                 <div class="image-wrapper" v-if="isDisplay">
-                    <img :src="form.touhonImage" alt="">
+                    <img :src=data2 >
                 </div>
-                <card-upload v-if="!isDisplay" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" @success="upload"></card-upload>
-                <card-upload v-if="!isDisplay" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay&&istrue1&&istrue2" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay&&istrue1&&istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload>
                 <image-croppa></image-croppa>
             </el-col>
         </el-row>
@@ -134,6 +134,10 @@ export default {
     },
     data() {
         return {
+            istrue1: false,
+            istrue2: false,
+            data1: '',
+            data2: '',
             form: {
                 title: '',
                 postal: '',
@@ -216,10 +220,16 @@ export default {
                 url: '/api/Company/api_getcompanylogoimg',
                 params: {
                     companyid: this.$route.params.id
-                }
+                },
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'blob'
             }).then(res => {
                 fileToBase64(res).then(result => {
                     this.form.logoImage = result;
+                    this.data1 = result;
+                    this.istrue1 = true;
                 });
             });
         },
@@ -228,10 +238,16 @@ export default {
                 url: '/api/Company/api_getcompanytouhonimg',
                 params: {
                     companyid: this.$route.params.id
-                }
+                },
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'blob'
             }).then(res => {
                 fileToBase64(res).then(result => {
                     this.form.touhonImage = result;
+                    this.data2 = result;
+                    this.istrue2 = true;
                 });
             });
         },
@@ -258,6 +274,7 @@ export default {
         beforeSubmit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
+                    // console.log(this.form.logoImage, this.form.touhonImage);
                     if (!this.form.logoImage || !this.form.touhonImage) {
                         this.$message({
                             type: 'warning',
@@ -285,6 +302,7 @@ export default {
                     if (this.$route.params.id) {
                         params.ID = this.$route.params.id;
                     }
+                    console.log(params);
                     this.submit(params);
                 }
             });
@@ -312,7 +330,9 @@ export default {
             });
         },
         upload({res, opt}) {
-            this.form[opt.field] = res.file;
+            fileToBase64(res.file).then(result => {
+                this.form[opt.field] = result;
+            });
         }
     }
 };

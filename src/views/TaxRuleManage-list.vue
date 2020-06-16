@@ -145,7 +145,8 @@ export default {
                 method: 'POST',
                 url,
                 params: {
-                    taxrules: this.tableData
+                    taxrules: this.tableData,
+                    year: this.dates
                 },
                 formData: true
             }).then(res => {

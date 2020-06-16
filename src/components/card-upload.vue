@@ -35,6 +35,7 @@ export default {
         BigPicture
     },
     props: {
+        datas: String,
         form: {
             type: Object,
             default: () => ({})
@@ -54,6 +55,11 @@ export default {
         return {
             previewImage: ''
         };
+    },
+    mounted() {
+        if (this.datas) {
+            this.previewImage = this.datas;
+        }
     },
     methods: {
         success(res) {

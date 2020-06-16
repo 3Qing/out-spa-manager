@@ -43,15 +43,15 @@
                     <el-col :span="2" class="row-label label">控除</el-col>
                     <el-col :span="4" :offset="2" class="label">雇用保険</el-col>
                     <el-col :span="4" class="label">健康保険</el-col>
-                    <el-col :span="4" class="label">所得税</el-col>
                     <el-col :span="4" class="label">厚生年金</el-col>
+                    <el-col :span="4" class="label">所得税</el-col>
                     <el-col :span="6" class="label">控除計</el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="4" :offset="2">{{formatPrice(form.hireInsurance)}}</el-col>
                     <el-col :span="4">{{formatPrice(form.healthInsurance)}}</el-col>
-                    <el-col :span="4">{{formatPrice(form.incomeTax)}}</el-col>
                     <el-col :span="4">{{formatPrice(form.endowInsurance)}}</el-col>
+                    <el-col :span="4">{{formatPrice(form.incomeTax)}}</el-col>
                     <el-col :span="6">{{formatPrice(meter)}}</el-col>
                 </el-row>
             </div>

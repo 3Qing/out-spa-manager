@@ -111,7 +111,8 @@ export default {
                 method: 'POST',
                 url,
                 params: {
-                    acctgrps: this.tableData
+                    acctgrps: this.tableData,
+                    bspl: this.avaiable
                 },
                 formData: true
             }).then(res => {
