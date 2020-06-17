@@ -535,7 +535,8 @@ export default {
                         };
                         let noPass = false;
                         this.form.certificates.forEach(item => {
-                            if ((item.title && !item.passDate) || (!item.title && item.passDate)) {
+                            console.log(item.title, item.passDate);
+                            if ((item.title === '' && item.passDate !== '') || (item.title !== '' && item.passDate === '') || (item.title === '' && item.passDate === '')) {
                                 noPass = true;
                             }
                         });

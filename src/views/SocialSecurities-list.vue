@@ -316,6 +316,9 @@ export default {
             }
             if (istrue === false) {
                 this.tableData.forEach((item) => {
+                    item.additionalPercent = priceToNumber(item.additionalPercent);
+                    item.standardPercent = priceToNumber(item.standardPercent);
+                    item.insuranceLevel = priceToNumber(item.insuranceLevel);
                     item.salaryFrom = priceToNumber(item.salaryFrom);
                     item.salaryTo = priceToNumber(item.salaryTo);
                     item.standardSalary = priceToNumber(item.standardSalary);
@@ -324,6 +327,9 @@ export default {
                 const loading = this.$loading({ lock: true, text: '数据更新中...' });
                 let url = '/api/SocialSecurity/api_updatesocialsecurities';
                 this.$axios({
+                    // headers: {
+                    //     'Content-Type': 'application/x-www-form-urlencoded'
+                    // },
                     method: 'POST',
                     url,
                     params: {
