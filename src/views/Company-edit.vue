@@ -105,7 +105,7 @@
                 </el-form>
             </el-col>
             <el-col :span="10" :offset="2">
-                <div class="image-wrapper" v-if="isDisplay">
+                <div class="image-wrapper" style="margin-right:20px;" v-if="isDisplay">
                     <img :src=data1 >
                 </div>
                 <div class="image-wrapper" v-if="isDisplay">
@@ -238,12 +238,9 @@ export default {
                 url: '/api/Company/api_getcompanytouhonimg',
                 params: {
                     companyid: this.$route.params.id
-                },
-                headers: {
-                    'Content-Type': 'application/octet-stream'
-                },
-                responseType: 'blob'
+                }
             }).then(res => {
+                console.log(res);
                 fileToBase64(res).then(result => {
                     this.form.touhonImage = result;
                     this.data2 = result;
@@ -350,9 +347,6 @@ export default {
         vertical-align: top;
         width: 300px;
         height: 400px;
-        & + .image-wrapper {
-            margin-left: 20px;
-        }
         img {
             width: 100%;
         }

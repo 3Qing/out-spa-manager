@@ -32,9 +32,9 @@
                         <span>{{formatTime(scope.row.avaiableDate)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="营业状态" prop="status" width="140px">
+                <el-table-column label="营业状态" prop="salesStatusText" width="140px">
                     <template slot-scope="scope">
-                        <div>{{getStatusText(scope.row.status)}}</div>
+                        <div>{{scope.row.salesStatusText}}</div>
                     </template>
                 </el-table-column>
                 <el-table-column label="进行中Case数" prop="salesCaseCnt" width="100px"></el-table-column>
@@ -59,6 +59,7 @@
                 :loading="caseLoading"
                 :data="caseListData"
                 :itemID="curItemID"
+                :oppStatu='oppStatus'
                 @update="getCaseListData"></case-list>
         </div>
         <intro-dialog :allStatus="allStatus"></intro-dialog>
@@ -106,7 +107,8 @@ export default {
             loading: false,
             allName: [],
             keyword: '',
-            allStatus: []
+            allStatus: [],
+            oppStatus: []
         };
     },
     provide() {
@@ -121,10 +123,20 @@ export default {
         next(vm => {
             vm.getListData();
             vm.getSales();
+            vm.getStatus();
         });
     },
     methods: {
         formatTime: formatTime,
+        getStatus() {
+            this.$axios({
+                url: '/api/SalesCase/api_salescasestatusforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.oppStatus = res.data || [];
+                }
+            });
+        },
         getSales() {
             this.$axios({
                 url: '/api/Employee/api_salespersonforselect'
@@ -258,13 +270,13 @@ export default {
     }
     .left {
         float: left;
-        width: 45%;
+        width: 40%;
         .el-table{
             width: 100%;
         }
     }
     .right {
-        width: 55%;
+        width: 60%;
         float: left;
         padding-left: 20px;
         box-sizing: border-box;

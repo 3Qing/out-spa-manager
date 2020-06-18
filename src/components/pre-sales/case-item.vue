@@ -1,7 +1,7 @@
 <template>
     <div class="case-item">
         <div class="case-header clearfix">
-            <el-form size="mini" label-width="150px" label-suffix=":" inline>
+            <el-form size="mini" label-width="140px" label-suffix=":" inline>
                 <el-form-item label="商机" class="shangji">
                     <el-select v-model="form.opportunityID" >
                         <el-option v-for="item in opt.opports" :key="item.id" :label="item.text" :value="item.id"></el-option>
@@ -31,11 +31,11 @@
                     </el-select>
                     <span v-else :class="[getStatusColor(form.status)]">{{this.getStatusContent()}}</span>
                 </el-form-item> -->
-                <!-- <el-form-item label="提案状態">
+                <el-form-item label="提案状態">
                     <el-select size="mini" v-model="form.status">
                         <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
                     </el-select>
-                </el-form-item> -->
+                </el-form-item>
                 <el-form-item class="shangji" v-for='(item,index) in form.salesCaseItems' :key='index' :label="item.updateTime">
                     <!-- <el-input  type="input" v-model="form.content" :maxlength="200"></el-input> -->
                     <el-input class="input" v-model="item.content" ></el-input>
@@ -47,7 +47,7 @@
                     </el-tooltip>
                 </el-form-item>
             </el-form>
-            <el-button class="disk" size="mini" type="warning" @click="beforeSubmit">保存</el-button>
+            <!-- <el-button class="disk" size="mini" type="warning" @click="beforeSubmit">保存</el-button> -->
         </div>
         <!-- <ul class="case-content" v-if="form.items && form.items.length">
             <li v-for="(item, i) in form.items" :key="i">
@@ -76,6 +76,7 @@
 import moment from 'moment';
 export default {
     props: {
+        opport: Array,
         datas: Array,
         form: {
             type: Object,
@@ -110,7 +111,6 @@ export default {
     },
     mounted() {
         this.initNewCase();
-        console.log(this.form);
         if (this.form.salesCaseItems.length>0) {
             this.form.salesCaseItems.forEach((i) => {
                 i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
@@ -224,6 +224,7 @@ export default {
                 Content: this.form.content || '',
                 CustomerID: this.form.customerID,
                 SalesPersonID: this.form.salesPersonID,
+                Status: this.form.status
             };
             if (typeof this.form.customerID === 'string') {
                 params.CustomerTitle = this.form.customerID;
@@ -381,7 +382,10 @@ export default {
         .el-form {
             // display: flex;
             .el-form-item {
-                width: 40%;
+                width: 48%;
+                .el-form-item__content{
+                    width: calc(100% - 140px);
+                }
             }
             .shangji {
                 width: 100%;

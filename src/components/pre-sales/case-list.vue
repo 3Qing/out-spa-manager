@@ -13,21 +13,31 @@
                 :ref="'item'+i"
                 :form="item"
                 :datas="data"
+                :opport="oppStatu"
                 :key="item.id || i"
                 @update="$emit('update')"
                 :opt="opt"></case-item>
         </div>
+        <!-- <tian-dialog
+            :visible="tianApply"
+            :data="tianArr"
+            :opport="oppStatu"
+            @close="tianApply = false"
+            @update="getData"></tian-dialog> -->
     </div>
 </template>
 
 <script>
 import CaseItem from './case-item';
-
+// import TianDialog from './tian-dialog';
+import moment from 'moment';
 export default {
     components: {
-        CaseItem
+        CaseItem,
+        // TianDialog
     },
     props: {
+        oppStatu: Array,
         data: {
             type: Array,
             default: () => ([])
@@ -44,7 +54,9 @@ export default {
     data() {
         return {
             opt: {},
-            style: {}
+            style: {},
+            tianApply: false,
+            tianArr: []
         };
     },
     watch: {
@@ -65,18 +77,22 @@ export default {
         beforeSu() {
             this.data.forEach((item, i) => {
                 let gv = 'item'+i;
-                this.$refs[gv][0].beforeSubmit();
+                if (gv === 'item0') {
+                    this.$refs[gv][0].beforeSubmit();
+                }
             });
         },
         addCase() {
+            // this.tianApply = true;
             this.data.unshift({
-                edit: true,
-                CustomerID: '',
-                SalesPersonID: '',
-                SalesPersonName: '',
-                Content: '',
-                Status: '',
-                Items: []
+                customerID: '',
+                salesPersonID: '',
+                content: '',
+                status: '',
+                salesCaseItems: [{
+                    content: '',
+                    updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+                }]
             });
         },
         getSalespersonforselect() {
