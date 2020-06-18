@@ -1,12 +1,12 @@
 <template>
     <div class="case-item">
         <div class="case-header clearfix">
-            <el-form size="mini" label-width="50px" label-suffix=":" inline>
-                <el-form-item label="商机">
-                    <el-select v-model="form.opportunityID" v-if="form.edit">
+            <el-form size="mini" label-width="150px" label-suffix=":" inline>
+                <el-form-item label="商机" class="shangji">
+                    <el-select v-model="form.opportunityID" >
                         <el-option v-for="item in opt.opports" :key="item.id" :label="item.text" :value="item.id"></el-option>
                     </el-select>
-                    <span v-else>{{handleText(form.opportunityID, opt.opports, 'text')}}</span>
+                    <!-- <span v-else>{{handleText(form.opportunityID, opt.opports, 'text')}}</span> -->
                 </el-form-item>
                 <el-form-item label="客户">
                     <el-select
@@ -14,32 +14,42 @@
                         remote
                         filterable
                         clearable
-                        :remote-method="setCustomTitle"
-                        v-if="form.edit">
+                        :remote-method="setCustomTitle">
                         <el-option v-for="item in opt.customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
                     </el-select>
-                    <span v-else>{{handleText(form.customerID, opt.customers, 'title')}}</span>
+                    <!-- <span v-else>{{handleText(form.customerID, opt.customers, 'title')}}</span> -->
                 </el-form-item>
                 <el-form-item label="营业">
-                    <el-select v-model="form.salesPersonID" v-if="form.edit">
+                    <el-select v-model="form.salesPersonID" >
                         <el-option v-for="item in opt.sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
-                    <span v-else>{{handleText(form.salesPersonID, opt.sales, 'name')}}</span>
+                    <!-- <span v-else>{{handleText(form.salesPersonID, opt.sales, 'name')}}</span> -->
                 </el-form-item>
-                <el-form-item label="状态">
-                    <el-select v-if="form.edit" v-model="form.status" size="mini">
+                <!-- <el-form-item label="状态">
+                    <el-select  v-model="form.status" size="mini">
                         <el-option v-for="item in displayStatus" :key="item.val" :value="item.val" :label="item.label"></el-option>
                     </el-select>
                     <span v-else :class="[getStatusColor(form.status)]">{{this.getStatusContent()}}</span>
-                </el-form-item>
-                <el-form-item label="概要">
-                    <el-input v-if="form.edit" type="textarea" v-model="form.content" :maxlength="200" :rows="2"></el-input>
-                    <span v-else>{{form.content}}</span>
+                </el-form-item> -->
+                <!-- <el-form-item label="提案状態">
+                    <el-select size="mini" v-model="form.status">
+                        <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item> -->
+                <el-form-item class="shangji" v-for='(item,index) in form.salesCaseItems' :key='index' :label="item.updateTime">
+                    <!-- <el-input  type="input" v-model="form.content" :maxlength="200"></el-input> -->
+                    <el-input class="input" v-model="item.content" ></el-input>
+                    <el-tooltip class="flot" effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="deletes(form.id, index)"></i>
+                    </el-tooltip>
+                    <el-tooltip v-if='(index+1) === form.salesCaseItems.length' class="flot flot1" effect="dark" content="添加" placement="top-start">
+                        <i class="el-icon-plus oper-icon" color="primary" @click="adds(form.id)"></i>
+                    </el-tooltip>
                 </el-form-item>
             </el-form>
-            <el-button size="mini" type="warning" @click="beforeSubmit">{{this.getOperText()}}</el-button>
+            <el-button class="disk" size="mini" type="warning" @click="beforeSubmit">保存</el-button>
         </div>
-        <ul class="case-content" v-if="form.items && form.items.length">
+        <!-- <ul class="case-content" v-if="form.items && form.items.length">
             <li v-for="(item, i) in form.items" :key="i">
                 <div class="edit-area" v-if="isEdit.includes(i)">
                     <el-date-picker
@@ -58,7 +68,7 @@
                 </div>
                 <span class="save-btn" v-if="isEdit.includes(i)" @click="submitCaseItem(item, i)" color="primary">保存</span>
             </li>
-        </ul>
+        </ul> -->
     </div>
 </template>
 
@@ -66,6 +76,7 @@
 import moment from 'moment';
 export default {
     props: {
+        datas: Array,
         form: {
             type: Object,
             default: () => ({
@@ -74,8 +85,7 @@ export default {
                 customerID: '',
                 salesPersonID: '',
                 content: '',
-                status: '',
-                items: []
+                status: ''
             })
         },
         opt: {
@@ -100,37 +110,48 @@ export default {
     },
     mounted() {
         this.initNewCase();
+        console.log(this.form);
+        if (this.form.salesCaseItems.length>0) {
+            this.form.salesCaseItems.forEach((i) => {
+                i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
+            });
+        } else {
+            this.form.salesCaseItems = [{
+                content: '',
+                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+            }];
+        }
     },
     methods: {
         initNewCase() {
-            if (!this.form.id) {
-                this.displayStatus = [this.status[0]];
-            }
-            if (!this.form.items || (this.form.items && !this.form.items.length) && this.form.id) {
-                this.addNewItem();
-                if (!this.form.id) {
-                    this.isEdit.push(0);
-                }
-            }
+            // if (!this.form.id) {
+            //     this.displayStatus = [this.status[0]];
+            // }
+            // if (!this.form.items || (this.form.items && !this.form.items.length) && this.form.id) {
+            //     this.addNewItem();
+            //     if (!this.form.id) {
+            //         this.isEdit.push(0);
+            //     }
+            // }
         },
         getOperText() {
-            if (this.form.edit) {
-                return this.form.id ? '保存' : '新增';
-            }
-            return '编辑';
+            // if (this.form.edit) {
+            return this.form.id ? '保存' : '新增';
+            // }
+            // return '编辑';
         },
         setCustomTitle(keyword) {
             this.form.customerID = keyword;
         },
         addNewItem() {
-            if (!this.form.items)  this.form.items = [];
-            if (this.form.items && this.form.items.length) {
-                this.isEdit.push(this.form.items.length);
-            }
-            this.$set(this.form.items, this.form.items.length ? this.form.items.length : 0, {
-                UpdateDateTime: '',
-                Content: ''
-            });
+            // if (!this.form.items)  this.form.items = [];
+            // if (this.form.items && this.form.items.length) {
+            //     this.isEdit.push(this.form.items.length);
+            // }
+            // this.$set(this.form.items, this.form.items.length ? this.form.items.length : 0, {
+            //     UpdateDateTime: '',
+            //     Content: ''
+            // });
         },
         modifyItem(item, i) {
             if (item.UpdateDateTime) {
@@ -181,68 +202,104 @@ export default {
             return '';
         },
         beforeSubmit() {
-            if (this.form.edit) {
-                if (!this.form.salesPersonID) {
-                    this.$message({
-                        type: 'warning',
-                        showClose: true,
-                        message: '请选择营业'
-                    });
-                    return false;
-                } else if (!this.form.customerID) {
-                    this.$message({
-                        type: 'warning',
-                        showClose: true,
-                        message: '请选择客户'
-                    });
-                    return false;
-                } else if (!this.form.status) {
-                    this.$message({
-                        type: 'warning',
-                        showClose: true,
-                        message: '请选择状态'
-                    });
-                    return false;
-                }
-                const params = {
-                    CandidateID: this.opt.id,
-                    OpportunityID: this.form.opportunityID,
-                    Content: this.form.content || '',
-                    CustomerID: this.form.customerID,
-                    SalesPersonID: this.form.salesPersonID,
-                    Status: this.form.id ? this.form.status : 1
-                };
-                if (typeof this.form.customerID === 'string') {
-                    params.CustomerTitle = this.form.customerID;
-                    params.CustomerID = 0;
-                } else {
-                    params.CustomerID = this.form.customerID;
-                }
-                if (this.form.id) {
-                    params['ID'] = this.form.id;
-                }
-                this.submit(params);
-            } else {
-                if (!this.form.items.length) {
-                    this.addNewItem();
-                }
-                if (!this.form.id) {
-                    this.displayStatus = [this.status[0]];
-                } else {
-                    this.displayStatus = [...this.status];
-                }
-                if (this.form.customerTitle) {
-                    this.form.customerID = this.form.customerTitle;
-                }
-                this.$set(this.form, 'edit', !(this.form.edit || false));
+            // if (this.form.edit) {
+            if (!this.form.salesPersonID) {
+                this.$message({
+                    type: 'warning',
+                    showClose: true,
+                    message: '请选择营业'
+                });
+                return false;
+            } else if (!this.form.customerID) {
+                this.$message({
+                    type: 'warning',
+                    showClose: true,
+                    message: '请选择客户'
+                });
+                return false;
             }
+            const params = {
+                CandidateID: this.opt.id,
+                OpportunityID: this.form.opportunityID,
+                Content: this.form.content || '',
+                CustomerID: this.form.customerID,
+                SalesPersonID: this.form.salesPersonID,
+            };
+            if (typeof this.form.customerID === 'string') {
+                params.CustomerTitle = this.form.customerID;
+                params.CustomerID = 0;
+            } else {
+                params.CustomerID = this.form.customerID;
+            }
+            if (this.form.id) {
+                params['ID'] = this.form.id;
+            }
+            this.submit(params);
+            // }
+            // else {
+            //     if (!this.form.items.length) {
+            //         this.addNewItem();
+            //     }
+            //     if (!this.form.id) {
+            //         this.displayStatus = [this.status[0]];
+            //     } else {
+            //         this.displayStatus = [...this.status];
+            //     }
+            //     if (this.form.customerTitle) {
+            //         this.form.customerID = this.form.customerTitle;
+            //     }
+            //     this.$set(this.form, 'edit', !(this.form.edit || false));
+            // }
+        },
+        // 添加
+        adds(id) {
+            console.log(id);
+            this.form.salesCaseItems.push({
+                content: '',
+                updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+            });
+            // this.salesCaseItems.push({
+            //     content: '',
+            //     updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM'),
+            //     salesCaseID: id
+            // });
+            // this.form.salesCases.forEach((item) => {
+            //     if(item.id === id) {
+            //         item.salesCaseItems.push({
+            //             content: '',
+            //             updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+            //         });
+            //     }
+            // });
+        },
+        // 删除
+        deletes(id, i) {
+            console.log(id);
+            this.form.salesCaseItems.splice(i, 1);
+            // this.form.salesCases.forEach((item) => {
+            //     if(item.id === id) {
+            //         this.form.salesCaseItems.splice(i, 1);
+            //     }
+            // });
+            // this.salesCaseItems.splice(i, 1);
         },
         submit(params) {
+            let arra = this.datas;
+            arra.forEach((item) => {
+                item.createDate = moment(item.createDate).format('YYYY-MM-DD HH:MM');
+                item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:MM');
+                item.salesCaseItems.forEach((i) => {
+                    i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
+                });
+            });
+            console.log(params, arra);
             const loading = this.$loading({ lock: true, text: '正在提交数据中' });
             this.$axios({
                 method: 'POST',
-                url: '/api/SalesCase/api_updatesalescase',
-                params,
+                url: '/api/SalesCase/api_updatesalescases',
+                params: {
+                    salescases: arra
+                },
                 custom: {
                     loading,
                     vm: this
@@ -326,12 +383,27 @@ export default {
             .el-form-item {
                 width: 40%;
             }
-            .el-form-item:nth-child(5) {
+            .shangji {
                 width: 100%;
-                .el-form-item__content {
-                    width: 70%;
+                .el-form-item__content{
+                    width: calc(100% - 185px);
+                    .el-select{
+                        width: 100%;
+                    }
                 }
+                // .el-form-item__content {
+                //     width: calc(100% - 185px);
+                // }
             }
+            // .shangji{
+            //     width: 100% !important;
+            //     .el-form-item__content{
+            //         width: 79%;
+            //         .el-select{
+            //             width: 100%;
+            //         }
+            //     }
+            // }
         }
         .header-left {
             width: 40%;
@@ -389,6 +461,24 @@ export default {
             top: 50%;
             cursor: pointer;
             transform: translateY(-50%);
+        }
+    }
+    .flot{
+        position: absolute;
+        top: 5px;
+        margin-left: 5px;
+    }
+    .flot1{
+        margin-left: 25px !important;
+    }
+    .display{
+        display: none;
+    }
+    .list-wrapper{
+        .case-item:first-child{
+            .display{
+                display: block;
+            }
         }
     }
 }

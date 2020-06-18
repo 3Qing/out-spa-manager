@@ -26,8 +26,8 @@
             <el-button size="mini" type="primary" @click="showIntroDialog" style="margin-bottom: 10px">添加营业候选人</el-button>
             <el-table size="small" :data="tableData" @cell-click="cellClick" border>
                 <el-table-column label="员工号" prop="employeeNo" width="100px"></el-table-column>
-                <el-table-column label="姓名" prop="name" min-width="140px" show-overflow-tooltip></el-table-column>
-                <el-table-column label="Avaiable Date" prop="avaiableDate" min-width="140px">
+                <el-table-column label="姓名" prop="name" show-overflow-tooltip></el-table-column>
+                <el-table-column label="Avaiable Date" prop="avaiableDate" >
                     <template slot-scope="scope">
                         <span>{{formatTime(scope.row.avaiableDate)}}</span>
                     </template>
@@ -37,10 +37,13 @@
                         <div>{{getStatusText(scope.row.status)}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="进行中Case数" prop="salesCaseCnt" min-width="120px"></el-table-column>
-                <el-table-column label="操作" width="80px">
+                <el-table-column label="进行中Case数" prop="salesCaseCnt" width="100px"></el-table-column>
+                <el-table-column label="操作" width="50px">
                     <template slot-scope="scope">
-                        <el-button type="warning" size="mini" @click="showIntroDialog(scope.row)">编辑</el-button>
+                        <!-- <el-button type="warning" size="mini" @click="showIntroDialog(scope.row)">编辑</el-button> -->
+                        <el-tooltip effect="dark" content="编辑" placement="top-start">
+                            <i class="el-icon-edit-outline oper-icon" color="warning" @click="showIntroDialog(scope.row)"></i>
+                        </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
@@ -169,27 +172,33 @@ export default {
             this.getListData();
         },
         getCaseListData() {
-            this.caseLoading = true;
-            this.$axios({
-                url: '/api/Candidate/api_getcandidatebyid',
-                params: {
-                    id: this.curItemID
+            this.tableData.forEach((item) => {
+                if(this.curItemID === item.id) {
+                    this.caseListData = item.salesCases;
+                    console.log(this.caseListData);
                 }
-            }).then(res => {
-                this.caseLoading = false;
-                if (res && res.code === 0) {
-                    const data = res.data || {};
-                    this.caseListData = data.salesCases || [];
-                } else {
-                    this.$message({
-                        type: 'error',
-                        showClose: true,
-                        message: res.message ? res.message : '接口开小差了，没有返回信息'
-                    });
-                }
-            }).catch(() => {
-                this.caseLoading = false;
             });
+            // this.caseLoading = true;
+            // this.$axios({
+            //     url: '/api/Candidate/api_getcandidatebyid',
+            //     params: {
+            //         id: this.curItemID
+            //     }
+            // }).then(res => {
+            //     this.caseLoading = false;
+            //     if (res && res.code === 0) {
+            //         const data = res.data || {};
+            //         this.caseListData = data.salesCases || [];
+            //     } else {
+            //         this.$message({
+            //             type: 'error',
+            //             showClose: true,
+            //             message: res.message ? res.message : '接口开小差了，没有返回信息'
+            //         });
+            //     }
+            // }).catch(() => {
+            //     this.caseLoading = false;
+            // });
         },
         showIntroDialog() {
             this.$root.$emit('SHOW_INTRO_DIALOG', {
@@ -249,10 +258,13 @@ export default {
     }
     .left {
         float: left;
-        width: 60%;
+        width: 45%;
+        .el-table{
+            width: 100%;
+        }
     }
     .right {
-        width: 40%;
+        width: 55%;
         float: left;
         padding-left: 20px;
         box-sizing: border-box;

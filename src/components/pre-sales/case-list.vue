@@ -1,6 +1,7 @@
 <template>
     <div class="sales-case-list">
         <el-button class="add-case-btn" size="mini" type="primary" @click="addCase">新建营业Case</el-button>
+        <el-button size="mini" type="warning" @click="beforeSu">保存</el-button>
         <div class="empty-text" v-if="!data.length && !loading">暂无数据</div>
         <div class="loading-wrapper" v-if="loading">
             <i class="el-icon-loading" color="primary"></i>
@@ -9,7 +10,9 @@
         <div class="list-wrapper" :style="style">
             <case-item
                 v-for="(item, i) in data"
+                :ref="'item'+i"
                 :form="item"
+                :datas="data"
                 :key="item.id || i"
                 @update="$emit('update')"
                 :opt="opt"></case-item>
@@ -59,6 +62,12 @@ export default {
         this.getOpport();
     },
     methods: {
+        beforeSu() {
+            this.data.forEach((item, i) => {
+                let gv = 'item'+i;
+                this.$refs[gv][0].beforeSubmit();
+            });
+        },
         addCase() {
             this.data.unshift({
                 edit: true,

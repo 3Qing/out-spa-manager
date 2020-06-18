@@ -518,7 +518,6 @@ export default {
             line-height: 30px;
         }
         .flot{
-            // float: left;
             position: absolute;
             top: 5px;
             margin-left: 5px;
