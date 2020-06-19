@@ -56,7 +56,8 @@ export default {
             opt: {},
             style: {},
             tianApply: false,
-            tianArr: []
+            tianArr: [],
+            isAddCase: false
         };
     },
     watch: {
@@ -83,8 +84,9 @@ export default {
             });
         },
         addCase() {
-            // this.tianApply = true;
+            this.isAddCase = true;
             this.data.unshift({
+                isAddCase: true,
                 customerID: '',
                 salesPersonID: '',
                 content: '',

@@ -1,15 +1,21 @@
 <template>
     <div class="case-item">
         <div class="case-header clearfix">
-            <el-form size="mini" label-width="140px" label-suffix=":" inline>
-                <el-form-item label="商机" class="shangji">
-                    <el-select v-model="form.opportunityID" >
+            <el-form size="mini" label-width="150px" label-suffix=":" inline>
+                <el-form-item label="商机" class="">
+                    <el-select v-if='form.isAddCase' v-model="form.opportunityID">
                         <el-option v-for="item in opt.opports" :key="item.id" :label="item.text" :value="item.id"></el-option>
                     </el-select>
-                    <!-- <span v-else>{{handleText(form.opportunityID, opt.opports, 'text')}}</span> -->
+                    <span v-else>{{handleText(form.opportunityID, opt.opports, 'text')}}</span>
+                </el-form-item>
+                <el-form-item label="提案状態">
+                    <el-select size="mini" v-model="form.status">
+                        <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="客户">
                     <el-select
+                        v-if='form.isAddCase'
                         v-model="form.customerID"
                         remote
                         filterable
@@ -17,24 +23,14 @@
                         :remote-method="setCustomTitle">
                         <el-option v-for="item in opt.customers" :key="item.id" :label="item.title" :value="item.id"></el-option>
                     </el-select>
-                    <!-- <span v-else>{{handleText(form.customerID, opt.customers, 'title')}}</span> -->
+                    <span v-if='!form.isAddCase && form.customerID!==0'>{{handleText(form.customerID, opt.customers, 'title')}}</span>
+                    <span v-if='!form.isAddCase && form.customerID===0'>{{form.customerTitle || '-'}}</span>
                 </el-form-item>
                 <el-form-item label="营业">
                     <el-select v-model="form.salesPersonID" >
                         <el-option v-for="item in opt.sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                     <!-- <span v-else>{{handleText(form.salesPersonID, opt.sales, 'name')}}</span> -->
-                </el-form-item>
-                <!-- <el-form-item label="状态">
-                    <el-select  v-model="form.status" size="mini">
-                        <el-option v-for="item in displayStatus" :key="item.val" :value="item.val" :label="item.label"></el-option>
-                    </el-select>
-                    <span v-else :class="[getStatusColor(form.status)]">{{this.getStatusContent()}}</span>
-                </el-form-item> -->
-                <el-form-item label="提案状態">
-                    <el-select size="mini" v-model="form.status">
-                        <el-option v-for="item in opport" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                    </el-select>
                 </el-form-item>
                 <el-form-item class="shangji" v-for='(item,index) in form.salesCaseItems' :key='index' :label="item.updateTime">
                     <!-- <el-input  type="input" v-model="form.content" :maxlength="200"></el-input> -->
@@ -81,12 +77,16 @@ export default {
         form: {
             type: Object,
             default: () => ({
-                edit: false,
+                isAddCase: false,
                 opportunityID: '',
                 customerID: '',
                 salesPersonID: '',
                 content: '',
-                status: ''
+                status: '',
+                salesCaseItems: [{
+                    content: '',
+                    updateTime: moment(new Date()).format('YYYY-MM-DD HH:MM')
+                }]
             })
         },
         opt: {
@@ -178,12 +178,14 @@ export default {
             }
         },
         handleText(id, arr, field) {
-            for (let item of arr) {
-                if (item.id === id) {
-                    return item[field];
+            if (arr !== undefined) {
+                for (let item of arr) {
+                    if (item.id === id) {
+                        return item[field];
+                    }
                 }
+                return '-';
             }
-            return '-';
         },
         saveCaseContent(data, i) {
             this.isEdit = this.isEdit.filter(item => item !== i);
@@ -289,6 +291,7 @@ export default {
             arra.forEach((item) => {
                 item.createDate = moment(item.createDate).format('YYYY-MM-DD HH:MM');
                 item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:MM');
+                delete item.isAddCase;
                 item.salesCaseItems.forEach((i) => {
                     i.updateTime = moment(i.updateTime).format('YYYY-MM-DD HH:MM');
                 });
@@ -384,7 +387,7 @@ export default {
             .el-form-item {
                 width: 48%;
                 .el-form-item__content{
-                    width: calc(100% - 140px);
+                    width: calc(100% - 150px);
                 }
             }
             .shangji {

@@ -335,7 +335,7 @@ export default {
             params.append('conid', opt.scope.row.id);
             this.$axios({
                 method: 'POST',
-                url: '/api/uploadcontractpdf',
+                url: '/api/Contract/api_uploadcontractpdf',
                 params,
                 headers: {
                     'Content-Type': 'multipart/form-data'

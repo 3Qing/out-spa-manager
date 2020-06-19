@@ -27,12 +27,12 @@
             <el-table size="small" :data="tableData" @cell-click="cellClick" border>
                 <el-table-column label="员工号" prop="employeeNo" width="100px"></el-table-column>
                 <el-table-column label="姓名" prop="name" show-overflow-tooltip></el-table-column>
-                <el-table-column label="Avaiable Date" prop="avaiableDate" >
+                <el-table-column label="Avaiable Date" prop="avaiableDate" width="120px">
                     <template slot-scope="scope">
                         <span>{{formatTime(scope.row.avaiableDate)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="营业状态" prop="salesStatusText" width="140px">
+                <el-table-column label="营业状态" prop="salesStatusText">
                     <template slot-scope="scope">
                         <div>{{scope.row.salesStatusText}}</div>
                     </template>
@@ -187,7 +187,9 @@ export default {
             this.tableData.forEach((item) => {
                 if(this.curItemID === item.id) {
                     this.caseListData = item.salesCases;
-                    console.log(this.caseListData);
+                    this.caseListData.forEach((item) => {
+                        item['isAddCase'] = false;
+                    });
                 }
             });
             // this.caseLoading = true;

@@ -215,6 +215,17 @@ export default {
         ...mapGetters(['GET_LOADING'])
     },
     methods: {
+        dataURLtoFile(dataurl, filename) {
+            var arr = dataurl.split(","),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, { type: mime });
+        },
         getLogo() {
             this.$axios({
                 url: '/api/Company/api_getcompanylogoimg',
@@ -227,7 +238,7 @@ export default {
                 responseType: 'blob'
             }).then(res => {
                 fileToBase64(res).then(result => {
-                    this.form.logoImage = result;
+                    this.form.logoImage = this.dataURLtoFile(result, 'filename');
                     this.data1 = result;
                     this.istrue1 = true;
                 });
@@ -238,11 +249,16 @@ export default {
                 url: '/api/Company/api_getcompanytouhonimg',
                 params: {
                     companyid: this.$route.params.id
-                }
+                },
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'blob'
             }).then(res => {
-                console.log(res);
+                // console.log(res);
                 fileToBase64(res).then(result => {
-                    this.form.touhonImage = result;
+                    console.log(this.dataURLtoFile(result, 'filename'));
+                    this.form.touhonImage = this.dataURLtoFile(result, 'filename');
                     this.data2 = result;
                     this.istrue2 = true;
                 });
@@ -328,7 +344,7 @@ export default {
         },
         upload({res, opt}) {
             fileToBase64(res.file).then(result => {
-                this.form[opt.field] = result;
+                this.form[opt.field] = this.dataURLtoFile(result, opt.field);
             });
         }
     }
