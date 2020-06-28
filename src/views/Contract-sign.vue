@@ -2,6 +2,7 @@
     <main-wrapper class="contract-sign">
         <div slot="header" class="main-header">
             <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '预览' : '确认'}}</el-button>
+            <el-button v-if="btnfalse" type="primary" @click="submitSave" size="small">保存</el-button>
             <el-button v-if="!isDisplay" @click="resetForm('form')" size="small" type="danger">重置</el-button>
             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
         </div>
@@ -503,7 +504,8 @@ export default {
             cashflows: [],
             nextMonth1: '',
             nextMonth2: '',
-            selectList: []
+            selectList: [],
+            btnfalse: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -620,6 +622,9 @@ export default {
         sumPrice(sums) {
             sums.contractSales = Number(sums.ningetsu) * Number(sums.unitPrice);
             console.log(Number(sums.ningetsu), Number(sums.unitPrice), sums.contractSales);
+        },
+        handleChange(scope) {
+            console.log(scope);
         },
         // 获取详细数据
         // getDetailsData(ids) {
@@ -766,10 +771,11 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid && !this.erroeMsg) {
                     this.isDisplay = true;
-                    if (this.$route.params.id) {
-                        // 保存面板
-                        this.postSavePanle();
-                    }
+                    this.btnfalse = true;
+                    this.postSavePanle();
+                    // if (this.$route.params.id) {
+                    //     // 保存面板
+                    // }
                     // if (this.$route.params.id) {
                     //     this.getPersonMonth();
                     // } else {
@@ -782,6 +788,66 @@ export default {
                 } else {
                     this.$message.warning('请正确输入表单数据');
                     return false;
+                }
+            });
+        },
+        // 修改保存
+        submitSave() {
+            // const params = {
+            //     ID: 0,
+            //     Title: this.form.title || '',
+            //     Content: this.form.content || '',
+            //     FromDate: this.form.fromDate,
+            //     ToDate: this.form.toDate,
+            //     PaymentTermID: this.form['paymenttermId'],
+            //     UnitPrice: priceToNumber(this.form.unitPrice),
+            //     HoursFrom: Number(this.form.hoursFrom),
+            //     HoursTo: Number(this.form.hoursTo),
+            //     CalculateUnit: this.form.calculateUnit,
+            //     OverTimePrice: priceToNumber(this.form.overTimePrice),
+            //     UnderTimePrice: priceToNumber(this.form.underTimePrice),
+            //     CustomerID: this.form['customerId'],
+            //     EmployeeID: this.form['employeeId'],
+            //     SalesPersonID: this.form['salespersonId'],
+            //     BusinessFlow: this.form.businessFlow
+            //     // Ningetsu: this.form.ningetsu
+            // };
+            let url = '/api/contract/api_createcontract';
+            if (this.$route.params.id) {
+                // this.forms.ID = this.$route.params.id;
+                url = '/api/contract/api_updatecontract';
+            }
+            // const formData = new FormData();
+            // for (let key in params) {
+            //     formData.append(key, params[key]);
+            // }
+            // if (this.form.ningetsu) {
+            //     formData.append('Ningetsu', JSON.stringify(this.form.ningetsu || []));
+            // } else {
+            //     formData.append('Ningetsu', '');
+            // }
+            // console.log('params', params, formData);
+            const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
+            this.$axios({
+                method: 'POST',
+                url,
+                params: this.forms,
+                formData: true,
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    if (!this.$route.params.id) {
+                        this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
+                    } else {
+                        this.getData();
+                    }
+                    this.$message.success('保存成功');
+                } else {
+                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
                 }
             });
         },
