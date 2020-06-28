@@ -297,7 +297,7 @@ export default {
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取合同列表' });
             this.$axios({
-                url: '/api/Contract/api_getcontractlist',
+                url: '/api/SOContract/api_getcontractlist',
                 params: this.form,
                 custom: {
                     loading,
@@ -367,7 +367,7 @@ export default {
             const params = {
                 name: 'ContractEdit',
                 params: {
-                    id: row.id
+                    id: row.contractID
                 }
             };
             if (type === 'display') {
@@ -481,7 +481,7 @@ export default {
         previewHandle(scope) {
             imageFileToPreview({
                 vm: this,
-                url: '/api/Invoice/api_previewinvoicefile',
+                url: '/api/Contract/api_previewcontract',
                 params: {
                     invid: scope.row.id
                 }

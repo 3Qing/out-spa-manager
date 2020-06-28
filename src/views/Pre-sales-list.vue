@@ -3,7 +3,7 @@
         <el-form slot="header" class="main-header" size="mini" inline>
             <el-form-item>
                 <el-radio-group v-model="avaiable" @change="changeHandle">
-                    <el-radio :label="true">营业中</el-radio>
+                    <el-radio :label="true">営業中</el-radio>
                     <el-radio :label="false">全部</el-radio>
                 </el-radio-group>
             </el-form-item>
@@ -12,7 +12,7 @@
         </el-form>
         <el-table :data="tableData" size="small" :cell-class-name="cellClassName">
             <el-table-column label="氏名" fixed prop="name" width="120px"></el-table-column>
-            <el-table-column label="入場可能日" prop="avaiableDates" width="120px"></el-table-column>
+            <el-table-column label="稼働日" prop="avaiableDates" width="120px"></el-table-column>
             <!-- <el-table-column label="営業可否">
                 <template slot-scope="scope">
                     <div>{{transformText(scope.row, 'avaiable')}}</div>
@@ -30,9 +30,9 @@
             <el-table-column label="モジュール" prop="mainSkill" width="100px" show-overflow-tooltip></el-table-column>
             <el-table-column label="認定資格" prop="certificates"></el-table-column>
             <el-table-column label="経験年数" prop="expYears"></el-table-column>
-            <el-table-column label="日本語" prop="jpLang" show-overflow-tooltip></el-table-column>
-            <el-table-column label="英語" prop="enLang" show-overflow-tooltip></el-table-column>
-            <el-table-column label="単価" prop="salesPrice"></el-table-column>
+            <el-table-column label="日本語力" prop="jpLang" show-overflow-tooltip></el-table-column>
+            <el-table-column label="英語力" prop="enLang" show-overflow-tooltip></el-table-column>
+            <el-table-column label="提案単価" prop="salesPrice"></el-table-column>
             <el-table-column label="案件名" prop="curPJ" show-overflow-tooltip></el-table-column>
             <el-table-column label="顧客" prop="curPJCustomer" show-overflow-tooltip></el-table-column>
             <el-table-column label="契約終了日" prop="curPJEndDate" width="120px"></el-table-column>
@@ -54,12 +54,12 @@
                     </el-popover>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="80px">
+            <el-table-column label="アクション" fixed="right" width="80px">
                 <template slot-scope="scope">
-                    <el-tooltip effect="dark" content="编辑" placement="top-start">
+                    <el-tooltip effect="dark" content="編集" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="showIntroDialog('edit', scope.row)"></i>
                     </el-tooltip>
-                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                    <el-tooltip effect="dark" content="削除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
                     </el-tooltip>
                 </template>
@@ -105,7 +105,7 @@ export default {
             page: 1,
             pageSize: 15,
             options: [{
-                label: '营业中', val: true,
+                label: '営業中', val: true,
             }, {
                 label: '全部', val: false
             }],
@@ -137,7 +137,7 @@ export default {
             this.getData();
         },
         getData() {
-            const loading = this.$loading({ lock: true, text: '正在获取候选人清单数据' });
+            const loading = this.$loading({ lock: true, text: '候補者リスト取得中...' });
             this.$axios({
                 url: '/api/Candidate/api_getcandidatelist',
                 params: {
@@ -247,7 +247,7 @@ export default {
         },
         // 删除按钮
         deletes(row) {
-            this.$confirm('是否删除', '删除', {
+            this.$confirm('削除確認', '削除', {
                 type: 'warning'
             }).then(() => {
                 this.$axios({

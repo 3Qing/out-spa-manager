@@ -1,33 +1,42 @@
 <template>
     <main-wrapper class="contract-sign">
         <div slot="header" class="main-header">
-            <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '修改' : '提交'}}</el-button>
+            <el-button v-if="!isDisplay" type="primary" @click="submitForm('form')" size="small">{{$route.params.id ? '预览' : '确认'}}</el-button>
             <el-button v-if="!isDisplay" @click="resetForm('form')" size="small" type="danger">重置</el-button>
             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
         </div>
         <div class="content">
             <el-row v-if="!isDisplay">
                 <el-col :span="12">
-                    <el-form ref="form" :model="form" label-width="110px" :rules="isDisplay ? {} : rules" label-suffix=":">
+                    <el-form ref="form" :model="forms" label-width="110px" :rules="isDisplay ? {} : rules" label-suffix=":">
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="注文タイプ">
+                                    <el-select v-model="forms['contractCategory']" size="small" @change="changeCustomer">
+                                        <el-option v-for="item in selectList" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
                         <el-form-item label="注文名称" prop="title">
                             <!-- <p v-if="isDisplay">{{form.title || '-'}}</p> -->
-                            <el-input v-model="form.title" size="small"></el-input>
+                            <el-input v-model="forms.title" size="small"></el-input>
                         </el-form-item>
                         <el-form-item label="注文内容" prop="content">
                             <!-- <p v-if="isDisplay">{{form.content || '-'}}</p> -->
-                            <el-input v-model="form.content" type="textarea" :rows="3" size="small"></el-input>
+                            <el-input v-model="forms.content" size="small"></el-input>
                         </el-form-item>
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="契約期間" prop="fromDate">
                                     <!-- <p v-if="isDisplay">{{form.fromDate}}</p> -->
-                                    <el-date-picker placeholder="开始时间" v-model="form.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                    <el-date-picker placeholder="开始时间" v-model="forms.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="" prop="toDate">
                                     <!-- <p v-if="isDisplay">{{form.toDate}}</p> -->
-                                    <el-date-picker placeholder="结束时间" v-model="form.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                    <el-date-picker placeholder="结束时间" v-model="forms.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -35,44 +44,42 @@
                             <el-col :span="12">
                                 <el-form-item label="作業時間範囲">
                                     <!-- <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p> -->
-                                    <el-input placeholder="开始时间" v-model="form.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                                    <el-input placeholder="开始时间" v-model="forms.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
                                     <div class="err">{{erroeMsg}}</div>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12" v-if="!isDisplay">
                                 <el-form-item label="">
-                                    <el-input placeholder="结束时间" v-model="form.hoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
+                                    <el-input placeholder="结束时间" v-model="forms.hoursTo" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="得意先" prop="customerId">
-                                    <p v-if='$route.params.id'>{{getContent(form['customerId'], customerList, 'id', 'title')}}</p>
-                                    <el-select v-else v-model="form['customerId']" size="small" @change="changeCustomer">
+                                <el-form-item label="得意先" prop="customerID">
+                                    <p v-if='$route.params.id'>{{getContent(forms['customerID'], customerList, 'id', 'title')}}</p>
+                                    <el-select v-else v-model="forms['customerID']" size="small" @change="changeCustomer">
                                         <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="支払サイト" prop="paymenttermId">
+                                <el-form-item label="支払サイト" prop="paymentTermID">
                                     <!-- <p v-if="isDisplay">{{form['paymenttermId']}}</p> -->
-                                    <el-select v-model="form['paymenttermId']" size="small">
+                                    <el-select v-model="forms['paymentTermID']" size="small">
                                         <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
-                        <el-row>
+                        <!-- <el-row>
                             <el-col :span="12">
                                 <el-form-item label="単価" prop="unitPrice">
-                                    <!-- <p v-if="isDisplay">{{form.unitPrice}}</p> -->
                                     <el-input v-model="form.unitPrice" size="small" @input="handlePrice" @blur="calculateOverTimePrice"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="精算単位" prop="calculateUnit">
-                                    <!-- <p v-if="isDisplay">{{getContent(form.calculateUnit, unit, 'value', 'label')}}</p> -->
                                     <el-select v-model="form.calculateUnit" size="small">
                                         <el-option v-for="item in unit" :key="item.value" :value="item.value" :label="item.label"></el-option>
                                     </el-select>
@@ -82,19 +89,17 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="超過精算単価" prop="overTimePrice">
-                                    <!-- <p v-if="isDisplay">{{form.overTimePrice}}</p> -->
                                     <el-input v-model="form.overTimePrice" size="small"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="控除精算単価" prop="underTimePrice">
-                                    <!-- <p v-if="isDisplay">{{form.underTimePrice}}</p> -->
                                     <el-input v-model="form.underTimePrice" size="small"></el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row>
+                        </el-row> -->
                         <el-row>
-                            <el-col :span="12">
+                            <!-- <el-col :span="12">
                                 <el-form-item label="作業担当" prop="employeeId">
                                     <p v-if='$route.params.id'>{{getContent(form['employeeId'], workList, 'id', 'name')}}</p>
                                     <el-select
@@ -109,11 +114,10 @@
                                         <el-option v-for="item in workList" :key="item.id" :value="item.id" :label="item.name"></el-option>
                                     </el-select>
                                 </el-form-item>
-                            </el-col>
+                            </el-col> -->
                             <el-col :span="12">
-                                <el-form-item label="営業担当" prop="salespersonId">
-                                    <!-- <p v-if="isDisplay">{{form['salespersonId']}}</p> -->
-                                    <el-select v-model="form['salespersonId']" size="small">
+                                <el-form-item label="営業担当" prop="salesPersonID">
+                                    <el-select v-model="forms['salesPersonID']" size="small">
                                         <el-option v-for="item in salespersonforselect" :key="item.id" :value="item.id" :label="item.name"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -121,10 +125,56 @@
                         </el-row>
                         <el-form-item label="商流備考" prop="businessFlow">
                             <!-- <p v-if="isDisplay">{{form.businessFlow}}</p> -->
-                            <el-input v-model="form.businessFlow" size="small" type="textarea"></el-input>
+                            <el-input v-model="forms.businessFlow" size="small" type="textarea"></el-input>
                         </el-form-item>
                     </el-form>
                 </el-col>
+                <el-table size="small" :data="tableData">
+                    <el-table-column label="番号" width="100px">
+                        <template slot-scope="scope">
+                            <span>{{scope.$index + 1}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="担当者" width="200px">
+                        <template slot-scope="scope">
+                            <el-select v-model="scope.row.employeeID" size="mini">
+                                <el-option v-for="item in workList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                            </el-select>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="単価" width="160px">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice" @blur="calculateOverTimePrice"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="人月" width="140px">
+                        <template slot-scope="scope">
+                            <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="handleChange(scope)"></el-input-number>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="価格" width="100px">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.contractPrice" size="mini"></el-input>
+                            <!-- <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span> -->
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="超過精算単価">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.overTimePrice" size="mini"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="控除精算単価">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.underTimePrice" size="mini"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="アクション" width="80px">
+                        <template slot-scope="scope">
+                            <i class="el-icon-plus link" color="primary" @click="handleAdd(scope)"></i>
+                            <i class="el-icon-delete link" color="danger" @click="handleDel(scope)"></i>
+                        </template>
+                    </el-table-column>
+                </el-table>
                 <el-col :span="12" v-if="isDisplay">
                     <div class="top"></div>
                 </el-col>
@@ -133,55 +183,59 @@
                 <ul>
                     <li>
                         <span>注文名称</span>
-                        <span :title='form.title'>{{form.title}}</span>
+                        <span :title='forms.title'>{{forms.title}}</span>
+                    </li>
+                    <li>
+                        <span>注文タイプ</span>
+                        <span>{{getContent(forms.contractCategory, selectList, 'id', 'text')}}</span>
                     </li>
                     <li>
                         <span>注文内容</span>
-                        <span :title='form.content'>{{form.content}}</span>
+                        <span :title='forms.content'>{{forms.content}}</span>
                     </li>
                     <li>
                         <span>契約期間</span>
-                        <span>{{formatTime(form.fromDate)}}~{{formatTime(form.toDate)}}</span>
+                        <span>{{formatTime(forms.fromDate)}}~{{formatTime(forms.toDate)}}</span>
                     </li>
                     <li>
                         <span>作業時間範囲</span>
-                        <span>{{form.hoursFrom}}~{{form.hoursTo}}</span>
+                        <span>{{forms.hoursFrom}}~{{forms.hoursTo}}</span>
                     </li>
                     <li>
                         <span>得意先</span>
-                        <span :title="getContent(form.customerId, customerList, 'id', 'title')">{{getContent(form.customerId, customerList, 'id', 'title')}}</span>
+                        <span :title="forms.customerName">{{forms.customerName}}</span>
                     </li>
                     <li>
                         <span>支払サイト</span>
-                        <span>{{form.paymenttermId}}</span>
-                    </li>
-                    <li>
-                        <span>単価</span>
-                        <span>{{form.unitPrice}}</span>
+                        <span>{{forms.paymentTermText}}</span>
                     </li>
                     <li>
                         <span>精算単位</span>
-                        <span>{{getContent(form.calculateUnit, unit, 'value', 'label')}}</span>
+                        <span>{{getContent(forms.calculateUnit, unit, 'value', 'label')}}</span>
+                    </li>
+                    <!-- <li>
+                        <span>単価</span>
+                        <span>{{forms.unitPrice}}</span>
                     </li>
                     <li>
                         <span>超過精算単価</span>
-                        <span>{{form.overTimePrice}}</span>
+                        <span>{{forms.overTimePrice}}</span>
                     </li>
                     <li>
                         <span>控除精算単価</span>
-                        <span>{{form.underTimePrice}}</span>
+                        <span>{{forms.underTimePrice}}</span>
                     </li>
                     <li>
                         <span>作業担当</span>
-                        <span>{{getContent(form.employeeId, workList, 'id', 'name')}}</span>
-                    </li>
+                        <span>{{getContent(forms.employeeId, workList, 'id', 'name')}}</span>
+                    </li> -->
                     <li class="lis">
                         <span>営業担当</span>
-                        <span>{{form.salespersonId}}</span>
+                        <span>{{forms.salesPersonName}}</span>
                     </li>
                     <li>
                         <span>商流備考</span>
-                        <span>{{form.businessFlow}}</span>
+                        <span>{{forms.businessFlow}}</span>
                     </li>
                 </ul>
                 <!-- <el-table size="small" :data="forms" border>
@@ -227,20 +281,43 @@
                 </el-table> -->
             </div>
             <div class="bottom" v-if="isDisplay">
-                <el-table size="small" :data="cashflows" border>
-                    <el-table-column label="fromDate" prop="fromDate" width="100px">
-                        <template slot-scope="scope">
-                            <span>{{formatTime(scope.row.fromDate)}}</span>
+                <el-table size="small" :data="tableData" border>
+                    <el-table-column type="expand">
+                        <template slot-scope="props">
+                            <div v-for="(item, index) in props.row.cashflows" :key='index'>
+                                <el-form label-position="left" inline class="demo-table">
+                                    <el-form-item label="开始日:">
+                                        <span class="lop">{{ formatTime(item.fromDate) }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="结束日:">
+                                        <span class="lop">{{ formatTime(item.toDate) }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="人月:">
+                                        <el-input-number v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(item)"></el-input-number>
+                                    </el-form-item>
+                                    <el-form-item label="金额:">
+                                        <el-input v-model="item.contractSales" size="mini"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="支付日:">
+                                        <span class="lop">{{ formatTime(item.planCollectDate) }}</span>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="toDate" prop="toDate" width="100px">
+                    <el-table-column label="作業担当" prop="employeeName" width="150px">
                         <template slot-scope="scope">
-                            <span>{{formatTime(scope.row.toDate)}}</span>
+                            <span>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="ningetsu" prop="ningetsu"></el-table-column>
-                    <el-table-column label="actualHours" prop="actualHours"></el-table-column>
-                    <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
+                    <el-table-column label="単価" prop="unitPrice">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.unitPrice}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="超過計算単価" prop="overTimePrice"></el-table-column>
+                    <el-table-column label="控除精算単価" prop="underTimePrice"></el-table-column>
+                    <!-- <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
                     <el-table-column label="planCollectSales" prop="planCollectSales">
                         <template slot-scope="scope">
                             <span>{{priceToString(scope.row.planCollectSales)}}</span>
@@ -256,7 +333,7 @@
                             <span>{{priceToString(scope.row.planCollectTax)}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column>
+                    <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column> -->
                 </el-table>
             </div>
         </div>
@@ -341,7 +418,9 @@ export default {
     data() {
         return {
             loading: false,
+            forms: {},
             form: {
+                contractCategory: 0,
                 title: '',
                 content: '',
                 'employeeId': '',
@@ -377,9 +456,9 @@ export default {
                 title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
                 ],
-                content: [
-                    { required: true, message: '请输入内容', trigger: 'blur' }
-                ],
+                // content: [
+                //     { required: true, message: '请输入内容', trigger: 'blur' }
+                // ],
                 fromDate: [
                     { required: true, validator: this.validFromDate, trigger: 'blur' }
                 ],
@@ -411,6 +490,7 @@ export default {
                     { required: true, message: '请选择支払サイト', trigger: 'blur' }
                 ],
             },
+            tableData: [],
             workList: [],
             customerList: [],
             paymenttermsforselect: [],
@@ -422,7 +502,8 @@ export default {
             isDisplay: false,
             cashflows: [],
             nextMonth1: '',
-            nextMonth2: ''
+            nextMonth2: '',
+            selectList: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -430,19 +511,21 @@ export default {
             if (to.query.display) {
                 vm.isDisplay = true;
             }
-            if (to.params.id) {
-                vm.getData(vm.isDisplay);
-            }
-            // /api/Contract/api_getcontractfordisplay
+            vm.getContracts(); // 下拉列表
             vm.getWorkList(); // 员工列表
             vm.getCustomerList(); // 客户列表
             vm.getPaymenttermsforselect(); // 支付条件清单
             vm.getSalespersonforselect(); // 销售人员
+            if (to.params.id) {
+                vm.getData(vm.isDisplay);
+            }
+            // /api/Contract/api_getcontractfordisplay
         });
     },
     methods: {
         formatTime: formatTime,
         priceToString: priceToString,
+        priceToNumber: priceToNumber,
         validFromDate(rule, value, callback) {
             const toDate = new Date(this.form.toDate).getTime() || -1;
             if (value) {
@@ -533,11 +616,50 @@ export default {
                 }
             }
         },
+        // 人月
+        sumPrice(sums) {
+            sums.contractSales = Number(sums.ningetsu) * Number(sums.unitPrice);
+            console.log(Number(sums.ningetsu), Number(sums.unitPrice), sums.contractSales);
+        },
+        // 获取详细数据
+        // getDetailsData(ids) {
+        //     const loading = this.$loading({ lock: true, text: '正在获取合同资料中...' });
+        //     this.$axios({
+        //         url: '/api/SOContract/api_getcontractforupdate',
+        //         params: {
+        //             id: ids
+        //         }
+        //     }).then(res => {
+        //         loading.close();
+        //         console.log(res.data.contractitems);
+        //         this.forms = res.data;
+        //         this.tableData = res.data.contractitems || [];
+        //     });
+        // },
+        getContracts() {
+            this.$axios({
+                url: '/api/SOContract/api_contractcategoryforselect',
+            }).then(res => {
+                this.selectList = res.data || [];
+            });
+        },
+        // 添加
+        handleAdd(scope) {
+            const tmp = [ ...this.tableData ];
+            tmp.splice(scope.$index + 1, 0, {});
+            this.tableData = [ ...tmp ];
+        },
+        // 删除
+        handleDel(scope) {
+            const tmp = [ ...this.tableData ];
+            tmp.splice(scope.$index, 1);
+            this.tableData = [ ...tmp ];
+        },
         getData(type) {
             const loading = this.$loading({ lock: true, text: '正在获取合同资料中...' });
-            let url = '/api/Contract/api_getcontractforupdate';
+            let url = '/api/SOContract/api_getcontractforupdate';
             if (type) {
-                url = '/api/Contract/api_getcontractfordisplay';
+                url = '/api/SOContract/api_getcontractfordisplay';
             }
             this.$axios({
                 url,
@@ -584,7 +706,9 @@ export default {
                             this.cashflows = [];
                         }
                     }
-                    this.form = form;
+                    data.contractCategory = 0;
+                    this.forms = data;
+                    this.tableData = data.contractitems || [];
                 } else {
                     this.$message({
                         type: 'error',
@@ -641,15 +765,20 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid && !this.erroeMsg) {
+                    this.isDisplay = true;
                     if (this.$route.params.id) {
-                        this.getPersonMonth();
-                    } else {
-                        if (this.completeMonth()) {
-                            this.getPersonMonth();
-                        } else {
-                            this.submit();
-                        }
+                        // 保存面板
+                        this.postSavePanle();
                     }
+                    // if (this.$route.params.id) {
+                    //     this.getPersonMonth();
+                    // } else {
+                    //     if (this.completeMonth()) {
+                    //         this.getPersonMonth();
+                    //     } else {
+                    //         this.submit();
+                    //     }
+                    // }
                 } else {
                     this.$message.warning('请正确输入表单数据');
                     return false;
@@ -701,6 +830,29 @@ export default {
                 }
             }
             return formData;
+        },
+        postSavePanle() {
+            this.forms.contractitems = this.tableData;
+            const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/SOContract/api_simulatecontract',
+                params: this.forms,
+                formData: true,
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.forms = res.data;
+                    this.tableData = res.data.contractitems;
+                    this.$message.success('保存成功');
+                } else {
+                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+                }
+            });
         },
         submit() {
             const params = {
@@ -941,6 +1093,12 @@ export default {
             .lis{
                 border-bottom: 1px solid #EBEEF5;
             }
+        }
+    }
+    .link {
+        font-size: 16px;
+        & + .link {
+            margin-left: 10px;
         }
     }
 }

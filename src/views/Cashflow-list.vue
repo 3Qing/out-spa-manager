@@ -11,7 +11,7 @@
                 filterable
                 remote
                 reserve-keyword
-                placeholder="従業員"
+                placeholder="社員"
                 :remote-method="remoteMethod"
                 :loading="loading"
                 @change="changeHandle">
@@ -26,57 +26,57 @@
                 @blur="changeHandle"></el-input>
         </main-header-date>
         <el-table size="small" :data="tableData">
-            <el-table-column label="注文書" prop="contractNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="注文書番号" prop="contractNo" show-overflow-tooltip></el-table-column>
             <el-table-column label="注文書タイトル" prop="contractTitle" width="120px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="取引先" prop="customerName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="従業員番号" prop="employeeNo" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="従業員名前" prop="employeeName" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="開始期間" prop="fromDate" width="100px">
+            <el-table-column label="得意先" prop="customerName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="社員番号" prop="employeeNo" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="社員氏名" prop="employeeName" width="100px" show-overflow-tooltip></el-table-column>
+            <el-table-column label="開始日付" prop="fromDate" width="100px">
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.fromDate)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="終了期間" prop="toDate" width="100px">
+            <el-table-column label="終了日付" prop="toDate" width="100px">
                 <template slot-scope="scope">
                     <span>{{formatTime(scope.row.toDate)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="作業時間・承認状態">
-                <el-table-column label="契約時間・円" prop="contractHours" show-overflow-tooltip></el-table-column>
-                <el-table-column label="実際時間" prop="actualHours" show-overflow-tooltip></el-table-column>
+            <el-table-column label="作業時間">
+                <el-table-column label="契約時間" prop="contractHours" show-overflow-tooltip></el-table-column>
+                <el-table-column label="実績時間" prop="actualHours" show-overflow-tooltip></el-table-column>
             </el-table-column>
-            <el-table-column label="注文単価・円（税抜）" prop="contractSales" show-overflow-tooltip></el-table-column>
-            <el-table-column label="見込売掛金">
-                <el-table-column label="売掛金額・円（税込）" show-overflow-tooltip>
+            <el-table-column label="注文単価・万円（税抜）" prop="contractSales" show-overflow-tooltip></el-table-column>
+            <el-table-column label="見込売掛金・円（税込）">
+                <el-table-column label="金額" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>{{thousandFormat(scope.row.planCollectSales)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="予定回収日" prop="planCollectDate" width="100px">
+                <el-table-column label="予定入金日" prop="planCollectDate" width="100px">
                     <template slot-scope="scope">
                         <span>{{formatTime(scope.row.planCollectDate)}}</span>
                     </template>
                 </el-table-column>
             </el-table-column>
-            <el-table-column label="実際売掛金">
-                <el-table-column label="実際回収額・円" prop="actualCollectSales" show-overflow-tooltip>
+            <el-table-column label="実際売掛金・円">
+                <el-table-column label="金額" prop="actualCollectSales" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>{{thousandFormat(scope.row.actualCollectSales)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="実際回収日" prop="actualCollectDate" show-overflow-tooltip>
+                <el-table-column label="実際入金日" prop="actualCollectDate" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>{{formatTime(scope.row.actualCollectDate)}}</span>
                     </template>
                 </el-table-column>
             </el-table-column>
-            <el-table-column label="コスト">
-                <el-table-column label="人件費・円" prop="projectSalary" show-overflow-tooltip>
+            <el-table-column label="コスト・円">
+                <el-table-column label="人件費" prop="projectSalary" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>{{thousandFormat(scope.row.projectSalary)}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="交通代・円" prop="travelFare" show-overflow-tooltip>
+                <el-table-column label="交通代" prop="travelFare" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>{{thousandFormat(scope.row.travelFare)}}</span>
                     </template>
@@ -126,7 +126,7 @@
                 <ess-edit :id="curRow.cfid" v-if="show"></ess-edit>
             </div>
             <div slot="footer">
-                <el-button type="primary" size="mini" @click="show = false">确定</el-button>
+                <el-button type="primary" size="mini" @click="show = false">確定</el-button>
             </div>
         </el-dialog>
     </main-wrapper>
@@ -217,7 +217,7 @@ export default {
             this.getEmployees(keyword);
         },
         getList() {
-            const loading = this.$loading({ lock: true, text: '正在获取现金流数据' });
+            const loading = this.$loading({ lock: true, text: 'キャッシュフロー取得中...' });
             this.$axios({
                 url: '/api/Cashflow/api_getcashflowlist',
                 params: {
@@ -274,7 +274,7 @@ export default {
             }
         },
         createInvoice(row) {
-            const loading = this.$loading({ lock: true, text: '正在创建请求书番号' });
+            const loading = this.$loading({ lock: true, text: '請求書作成中...' });
             this.$axios({
                 method: 'POST',
                 url: `/api/Invoice/api_createinvoice`,
