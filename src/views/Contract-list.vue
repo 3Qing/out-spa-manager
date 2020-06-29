@@ -103,7 +103,7 @@
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="toEdit(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="更新" placement="top-start">
-                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="toEdit(scope.row, 'updates')"></i>
+                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="删除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
@@ -129,7 +129,7 @@
                 value-format="yyyy-MM-dd"
                 value="yyyy-MM-dd"></el-date-picker>
             <div>
-                <el-button type="primary" size="mini" @click="getPersonMonth">确认</el-button>
+                <el-button type="primary" size="mini" @click="confirmDialog">确认</el-button>
             </div>
         </el-dialog>
         <el-dialog :visible.sync="dialogPresonMonth">
@@ -421,59 +421,74 @@ export default {
             this.personMonthArr = [];
             this.dialogPresonMonth = true;
             this.dialogLoading = true;
-            const [ fromDate = '', toDate = '' ] = this.datetime;
-            this.$axios({
-                url: '/api/Contract/api_calculateningetsu',
-                params: {
-                    fromDate: fromDate,
-                    todate: toDate
-                }
-            }).then(res => {
-                if (res && res.code === 0) {
-                    this.dialogLoading = false;
-                    const result = [...res.data];
-                    result.forEach(item => {
-                        item.ningetsu = item.ningetsu / 100;
-                    });
-                    this.personMonthArr = result;
-                }
-            });
+            // const [ fromDate = '', toDate = '' ] = this.datetime;
+            // this.$axios({
+            //     url: '/api/Contract/api_calculateningetsu',
+            //     params: {
+            //         fromDate: fromDate,
+            //         todate: toDate
+            //     }
+            // }).then(res => {
+            //     if (res && res.code === 0) {
+            //         this.dialogLoading = false;
+            //         const result = [...res.data];
+            //         result.forEach(item => {
+            //             item.ningetsu = item.ningetsu / 100;
+            //         });
+            //         this.personMonthArr = result;
+            //     }
+            // });
         },
         confirmDialog() {
-            const ningetsu = [];
-            this.personMonthArr.forEach(item => {
-                ningetsu.push(parseInt(item.ningetsu * 100));
-            });
-            const params = new FormData();
-            params.append('fromdate', this.datetime[0]);
-            params.append('todate', this.datetime[1]);
-            params.append('contractid', this.curRow.id);
-            if (ningetsu) {
-                ningetsu.forEach((item, index) => {
-                    params.append(`ningetsu[${index}]`, item);
-                });
-            } else {
-                params.append('ningetsu', '');
-            }
-            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
-            this.$axios({
-                method: 'POST',
-                url: '/api/Contract/api_renewcontract',
-                params,
-                custom: {
-                    loading,
-                    vm: this
+            // const ningetsu = [];
+            // this.personMonthArr.forEach(item => {
+            //     ningetsu.push(parseInt(item.ningetsu * 100));
+            // });
+            // const params = new FormData();
+            // params.append('fromdate', this.datetime[0]);
+            // params.append('todate', this.datetime[1]);
+            // params.append('contractid', this.curRow.id);
+            // if (ningetsu) {
+            //     ningetsu.forEach((item, index) => {
+            //         params.append(`ningetsu[${index}]`, item);
+            //     });
+            // } else {
+            //     params.append('ningetsu', '');
+            // }
+            // const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            // let url = '/api/SOContract/api_renewcontract';
+            // this.$axios({
+            //     method: 'GET',
+            //     url,
+            //     params: {
+            //         contractid: this.curRow.contractID,
+            //         fromdate: this.datetime[0],
+            //         todate: this.datetime[1]
+            //     },
+            //     custom: {
+            //         loading,
+            //         vm: this
+            //     }
+            // }).then(res => {
+            //     loading.close();
+            //     if (res && res.code === 0) {
+            //         this.$message.success('保存成功');
+            //         this.close();
+            //         this.getData();
+            //     } else {
+            //         this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+            //     }
+            // });
+            const params = {
+                name: 'ContractEdit',
+                params: {
+                    id: this.curRow.contractID,
+                    updates : true,
+                    fromdate: this.datetime[0],
+                    todate: this.datetime[1]
                 }
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.$message.success('保存成功');
-                    this.close();
-                    this.getData();
-                } else {
-                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
-                }
-            });
+            };
+            this.$router.push(params);
             this.dialogLoading = false;
             this.dialogPresonMonth = false;
         },
@@ -486,7 +501,7 @@ export default {
                 vm: this,
                 url: '/api/SOContract/api_previewcontract',
                 params: {
-                    invid: scope.row.contractID
+                    conid: scope.row.contractID
                 }
             });
         }

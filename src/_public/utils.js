@@ -68,7 +68,6 @@ export function imageFileToPreview({ vm, url, params }) {
         if (res) {
             const csvData = new Blob([res]);
             const url = window.URL.createObjectURL(csvData);
-            console.log(url);
             vm.$root.$emit('SHOW_PICTURE_DIALOG', {
                 url: url
             });

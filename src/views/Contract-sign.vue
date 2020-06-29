@@ -5,7 +5,8 @@
             <el-button v-if="btnfalse" type="primary" @click="submitSave" size="small">保存</el-button>
             <el-button v-if="!isDisplay&&!$route.params.id" @click="resetForm('forms')" size="small" type="danger">重置</el-button>
             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
-            <el-button v-if="isDisplay&&!$route.params.id" size="small" @click="fanhuis">返回</el-button>
+            <el-button v-if="clearFale&&!$route.params.id" size="small" @click="$router.back()">返回</el-button>
+            <el-button v-if="isDisplay&&!$route.params.id&&!clearFale" size="small" @click="fanhuis">返回</el-button>
         </div>
         <div class="content">
             <el-row v-if="!isDisplay">
@@ -14,7 +15,7 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="注文タイプ">
-                                    <el-select v-model="forms['contractCategory']" size="small" @change="changeCustomer">
+                                    <el-select v-model="forms['contractCategory']" size="small" >
                                         <el-option v-for="item in selectList" :key="item.id" :value="item.id" :label="item.text"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -44,7 +45,7 @@
                         </el-row>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="作業時間範囲">
+                                <el-form-item label="作業時間範囲" class="is-required">
                                     <!-- <p v-if="isDisplay">{{form.hoursFrom}}~{{form.hoursTo}}</p> -->
                                     <el-input placeholder="开始时间" v-model="forms.hoursFrom" size="small" @change="hoursChange" @blur="hoursChange" :class="{'errborder': erroeMsg}"></el-input>
                                     <div class="err">{{erroeMsg}}</div>
@@ -58,7 +59,7 @@
                         </el-row>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="得意先" prop="customerID">
+                                <el-form-item label="得意先" prop="customerID" >
                                     <p v-if='$route.params.id'>{{getContent(forms['customerID'], customerList, 'id', 'title')}}</p>
                                     <el-select v-else v-model="forms['customerID']" size="small" @change="changeCustomer">
                                         <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
@@ -147,20 +148,20 @@
                     </el-table-column>
                     <el-table-column label="単価" width="160px">
                         <template slot-scope="scope">
-                            <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice" @blur="calculateOverTimePrice"></el-input>
+                            <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice(scope.row, scope.$index)" @blur="calculateOverTimePrice(scope.row, scope.$index)"></el-input>
                         </template>
                     </el-table-column>
-                    <el-table-column label="人月" width="140px">
+                    <!-- <el-table-column label="人月" width="140px">
                         <template slot-scope="scope">
                             <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="handleChange(scope.row, scope.$index)"></el-input-number>
                         </template>
-                    </el-table-column>
-                    <el-table-column label="価格" width="100px">
+                    </el-table-column> -->
+                    <!-- <el-table-column label="価格" width="100px">
                         <template slot-scope="scope">
                             <el-input v-model="scope.row.contractPrice" size="mini"></el-input>
-                            <!-- <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span> -->
+                            <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column label="超過精算単価">
                         <template slot-scope="scope">
                             <el-input v-model="scope.row.overTimePrice" size="mini"></el-input>
@@ -184,23 +185,23 @@
             </el-row>
             <div class="bottom" v-if="isDisplay">
                 <ul>
-                    <li>
-                        <span>注文名称</span>
-                        <span :title='forms.title'>{{forms.title}}</span>
-                    </li>
-                    <li>
+                    <li class="widths">
                         <span>注文タイプ</span>
                         <span>{{getContent(forms.contractCategory, selectList, 'id', 'text')}}</span>
                     </li>
-                    <li>
+                    <li class="widths">
+                        <span>注文名称</span>
+                        <span :title='forms.title'>{{forms.title}}</span>
+                    </li>
+                    <li class="widths">
                         <span>注文内容</span>
                         <span :title='forms.content'>{{forms.content}}</span>
                     </li>
-                    <li>
+                    <li class="widths">
                         <span>契約期間</span>
                         <span>{{formatTime(forms.fromDate)}}~{{formatTime(forms.toDate)}}</span>
                     </li>
-                    <li>
+                    <li class="widths">
                         <span>作業時間範囲</span>
                         <span>{{forms.hoursFrom}}~{{forms.hoursTo}}</span>
                     </li>
@@ -232,15 +233,18 @@
                         <span>作業担当</span>
                         <span>{{getContent(forms.employeeId, workList, 'id', 'name')}}</span>
                     </li> -->
-                    <li class="lis">
+                    <li class="">
                         <span>営業担当</span>
                         <span>{{getContent(forms.salesPersonID, salespersonforselect, 'id', 'name')}}</span>
                     </li>
-                    <li>
+                    <li class="widths">
                         <span>商流備考</span>
                         <span>{{forms.businessFlow}}</span>
                     </li>
                 </ul>
+                <div class="lifloat" v-if='forms.paperReceived === true'>
+                    <img :src=urls>
+                </div>
                 <!-- <el-table size="small" :data="forms" border>
                     <el-table-column label="注文名称" prop="title" width="100px"></el-table-column>
                     <el-table-column label="注文内容" prop="content" width="100px"></el-table-column>
@@ -296,12 +300,12 @@
                                         <span class="lop">{{ formatTime(item.toDate) }}</span>
                                     </el-form-item>
                                     <el-form-item label="人月:">
-                                        <el-input-number v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.row)"></el-input-number>
-                                        <span v-else class="lop">{{ (item.ningetsu / 100).toFixed(2) }}</span>
+                                        <el-input-number v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
+                                        <span v-else class="lop">{{ item.ningetsu }}</span>
                                     </el-form-item>
                                     <el-form-item label="金额:">
-                                        <el-input v-if="btnfalse" v-model="item.contractSales" size="mini"></el-input>
-                                        <span v-else class="lop">{{ item.contractSales }}</span>
+                                        <el-input v-if="btnfalse" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
+                                        <span v-else class="lop">{{ priceToString(priceToNumber(item.contractSales)) }}</span>
                                     </el-form-item>
                                     <el-form-item label="支付日:">
                                         <span class="lop">{{ formatTime(item.planCollectDate) }}</span>
@@ -317,11 +321,29 @@
                     </el-table-column>
                     <el-table-column label="単価" prop="unitPrice">
                         <template slot-scope="scope">
-                            <span>{{scope.row.unitPrice}}</span>
+                            <span>{{priceToString(priceToNumber(scope.row.unitPrice))}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="超過計算単価" prop="overTimePrice"></el-table-column>
-                    <el-table-column label="控除精算単価" prop="underTimePrice"></el-table-column>
+                    <el-table-column label="人月" prop="ningetsu">
+                        <template slot-scope="scope">
+                            <span>{{(scope.row.ningetsu/100).toFixed(2)}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="金额" prop="contractPrice">
+                        <template slot-scope="scope">
+                            <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="超過計算単価" prop="overTimePrice">
+                        <template slot-scope="scope">
+                            <span>{{priceToString(priceToNumber(scope.row.overTimePrice))}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="控除精算単価" prop="underTimePrice">
+                        <template slot-scope="scope">
+                            <span>{{priceToString(priceToNumber(scope.row.underTimePrice))}}</span>
+                        </template>
+                    </el-table-column>
                     <!-- <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
                     <el-table-column label="planCollectSales" prop="planCollectSales">
                         <template slot-scope="scope">
@@ -414,7 +436,7 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import { formatTime, priceToString, priceToNumber } from '@_public/utils';
+import { formatTime, priceToString, priceToNumber} from '@_public/utils';
 import moment from 'moment';
 export default {
     components: {
@@ -437,25 +459,6 @@ export default {
                 salesPersonID: '',
                 businessFlow: ''
             },
-            form: {
-                contractCategory: 0,
-                title: '',
-                content: '',
-                'employeeId': '',
-                fromDate: this.nextMonthFirstDay(),
-                toDate: this.nextMonthLastDay(),
-                'paymenttermId': '',
-                unitPrice: '',
-                hoursFrom: 140,
-                hoursTo: 180,
-                overTimePrice: '',
-                underTimePrice: '',
-                calculateUnit: '',
-                'salespersonId': '',
-                'customerId': '',
-                businessFlow: '',
-                ningetsu: ''
-            },
             unit: [
                 {
                     value: 1,
@@ -474,9 +477,15 @@ export default {
                 title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
                 ],
-                // content: [
-                //     { required: true, message: '请输入内容', trigger: 'blur' }
-                // ],
+                content: [
+                    { required: true, message: '请输入内容', trigger: 'blur' }
+                ],
+                fromDate: [
+                    { required: true, message: '请输入开始日期', trigger: 'blur' }
+                ],
+                toDate: [
+                    { required: true, message: '请输入结束日期', trigger: 'blur' }
+                ],
                 // fromDate: [
                 //     { required: true, validator: this.validFromDate, trigger: 'blur' }
                 // ],
@@ -486,25 +495,19 @@ export default {
                 unitPrice: [
                     { required: true, message: '请输入単価', trigger: 'blur' }
                 ],
-                overTimePrice: [
-                    { required: true, message: '请输入超過精算単価', trigger: 'blur' }
-                ],
-                underTimePrice: [
-                    { required: true, message: '请输入控除精算単価', trigger: 'blur' }
-                ],
                 calculateUnit: [
                     { required: true, message: '请选择精算単位', trigger: 'blur' }
                 ],
                 employeeID: [
                     { required: true, message: '请选择作業担当', trigger: 'blur' }
                 ],
-                salespersonId: [
+                salesPersonID: [
                     { required: true, message: '请选择営業担当', trigger: 'blur' }
                 ],
-                customerId: [
+                customerID: [
                     { required: true, message: '请选择得意先', trigger: 'blur' }
                 ],
-                paymenttermId: [
+                paymentTermID: [
                     { required: true, message: '请选择支払サイト', trigger: 'blur' }
                 ],
             },
@@ -513,7 +516,7 @@ export default {
                 employeeID: '',
                 unitPrice: '',
                 ningetsu: 0,
-                contractPrice: '',
+                contractPrice: 0,
                 overTimePrice: '',
                 underTimePrice: ''
             }],
@@ -530,7 +533,9 @@ export default {
             nextMonth1: '',
             nextMonth2: '',
             selectList: [],
-            btnfalse: false
+            btnfalse: false,
+            clearFale: false,
+            urls: ''
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -593,6 +598,31 @@ export default {
         //         callback(new Error('请选择结束时间'));
         //     }
         // },
+        previewHandle(scope) {
+            this.$axios({
+                url: '/api/SOContract/api_previewcontract',
+                params: {
+                    conid: scope
+                },
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'blob'
+            }).then(res => {
+                if (res) {
+                    const csvData = new Blob([res]);
+                    const url = window.URL.createObjectURL(csvData);
+                    this.urls = url;
+                }
+            });
+            // imageFileToPreviews({
+            //     vm: this,
+            //     url: '/api/SOContract/api_previewcontract',
+            //     params: {
+            //         conid: scope
+            //     }
+            // });
+        },
         // 下个月的第一天
         nextMonthFirstDay() {
             var time = new Date();
@@ -639,11 +669,11 @@ export default {
         hoursChange(val, old) {
             const reg = /^\d+$|^\d+[.]?\d+$/;
             if (val !== old) {
-                if (!this.form.hoursFrom || !this.form.hoursTo) {
+                if (!this.forms.hoursFrom || !this.forms.hoursTo) {
                     this.erroeMsg = '请输入完整作業時間';
-                } else if (!reg.test(this.form.hoursFrom) || !reg.test(this.form.hoursTo)) {
+                } else if (!reg.test(this.forms.hoursFrom) || !reg.test(this.forms.hoursTo)) {
                     this.erroeMsg = '请输入数字';
-                } else if (parseInt(this.form.hoursFrom) > parseInt(this.form.hoursTo)) {
+                } else if (parseInt(this.forms.hoursFrom) > parseInt(this.forms.hoursTo)) {
                     this.erroeMsg = '结束作業時間需大于开始作業時間';
                 } else {
                     this.erroeMsg = '';
@@ -653,13 +683,27 @@ export default {
         },
         // 返回页面
         fanhuis() {
+            this.tableData.forEach((item) => {
+                item.isFalse = true;
+                item.contractSales = priceToString(priceToNumber(item.contractSales));
+                item.overTimePrice = priceToString(priceToNumber(item.overTimePrice));
+                item.underTimePrice = priceToString(priceToNumber(item.underTimePrice));
+                item.unitPrice = priceToString(priceToNumber(item.unitPrice));
+                delete item.cashflows;
+            });
             this.isDisplay = false;
             this.btnfalse = false;
         },
         // 人月
-        sumPrice(sums) {
-            sums.contractSales = parseInt(Number(sums.ningetsu) * Number(sums.unitPrice));
-            console.log(sums);
+        sumPrice(sums, ins) {
+            // sums.contractSales = parseInt(Number(sums.ningetsu) * Number(sums.unitPrice));
+            this.tableData.forEach(item => {
+                item.cashflows.forEach((ind, index) => {
+                    if (ins === index) {
+                        ind.contractSales = priceToString(parseInt(Number(ind.ningetsu) * Number(item.unitPrice)));
+                    }
+                });
+            });
         },
         handleChange(sums, ids) {
             let arr = this.tableData;
@@ -689,7 +733,7 @@ export default {
                 employeeID: '',
                 unitPrice: '',
                 ningetsu: 0,
-                contractPrice: '',
+                contractPrice: 0,
                 overTimePrice: '',
                 underTimePrice: ''
             });
@@ -726,42 +770,57 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
-                    const form = {
-                        title: data.title || '',
-                        content: data.content || '',
-                        'employeeId': (data.employee && data.employee.id) || '',
-                        fromDate: formatTime(data.fromDate || ''),
-                        toDate: formatTime(data.toDate || ''),
-                        'paymenttermId': (data.paymentterm && data.paymentterm.id) || '',
-                        unitPrice: priceToString(data.unitPrice || ''),
-                        hoursFrom: data.hoursFrom || '',
-                        hoursTo: data.hoursTo || '',
-                        overTimePrice: data.overTimePrice || '',
-                        underTimePrice: data.underTimePrice || '',
-                        calculateUnit: data.calculateUnit || '',
-                        'salespersonId': (data.salesperson && data.salesperson.id) || '',
-                        'customerId': (data.customer && data.customer.id) || '',
-                        businessFlow: data.businessFlow || ''
-                    };
-                    if (type) {
-                        form['employeeId'] = data.employeeID;
-                        form['paymenttermId'] = data.paymentTerm;
-                        form['salespersonId'] = data.salesPerson;
-                        form['customerId'] = data.customerID;
-                    }
-                    if (data.cashflows) {
-                        if(data.cashflows.length > 0) {
-                            let nuing = (data.cashflows[0].ningetsu / 100).toFixed(2);
-                            data.cashflows[0].ningetsu = nuing;
-                            this.cashflows = data.cashflows;
-                        } else {
-                            this.cashflows = [];
-                        }
-                    }
+                    // const form = {
+                    //     title: data.title || '',
+                    //     content: data.content || '',
+                    //     'employeeId': (data.employee && data.employee.id) || '',
+                    //     fromDate: formatTime(data.fromDate || ''),
+                    //     toDate: formatTime(data.toDate || ''),
+                    //     'paymenttermId': (data.paymentterm && data.paymentterm.id) || '',
+                    //     unitPrice: priceToString(data.unitPrice || ''),
+                    //     hoursFrom: data.hoursFrom || '',
+                    //     hoursTo: data.hoursTo || '',
+                    //     overTimePrice: data.overTimePrice || '',
+                    //     underTimePrice: data.underTimePrice || '',
+                    //     calculateUnit: data.calculateUnit || '',
+                    //     'salespersonId': (data.salesperson && data.salesperson.id) || '',
+                    //     'customerId': (data.customer && data.customer.id) || '',
+                    //     businessFlow: data.businessFlow || ''
+                    // };
+                    // if (type) {
+                    //     form['employeeId'] = data.employeeID;
+                    //     form['paymenttermId'] = data.paymentTerm;
+                    //     form['salespersonId'] = data.salesPerson;
+                    //     form['customerId'] = data.customerID;
+                    // }
+                    // if (data.cashflows) {
+                    //     if(data.cashflows.length > 0) {
+                    //         let nuing = (data.cashflows[0].ningetsu / 100).toFixed(2);
+                    //         data.cashflows[0].ningetsu = nuing;
+                    //         this.cashflows = data.cashflows;
+                    //     } else {
+                    //         this.cashflows = [];
+                    //     }
+                    // }
                     data.contractCategory = 0;
                     this.forms = data;
                     this.tableData = data.contractitems || [];
+                    this.tableData.forEach((item) => {
+                        item.unitPrice = priceToString(priceToNumber(item.unitPrice));
+                        item.overTimePrice = priceToString(priceToNumber(item.overTimePrice));
+                        item.underTimePrice = priceToString(priceToNumber(item.underTimePrice));
+                        if (item.cashflows.length > 0) {
+                            item.cashflows.forEach((ins) => {
+                                ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
+                            });
+                        }
+                    });
+                    if (this.forms.paperReceived === true) {
+                        this.previewHandle(this.forms.id);
+                    }
                     if (this.$route.params.updates) {
+                        this.forms.fromDate = this.$route.params.fromdate;
+                        this.forms.toDate = this.$route.params.todate;
                         this.tableData.forEach((item) => {
                             item.isFalse = false;
                         });
@@ -826,8 +885,6 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid && !this.erroeMsg) {
-                    this.isDisplay = true;
-                    this.btnfalse = true;
                     this.postSavePanle();
                     // if (this.$route.params.id) {
                     //     // 保存面板
@@ -857,6 +914,7 @@ export default {
             this.forms.contractitems.forEach((item) => {
                 item.cashflows.forEach((i) => {
                     i.ningetsu = i.ningetsu * 100;
+                    i.contractSales = priceToNumber(i.contractSales);
                 });
             });
             this.$axios({
@@ -870,8 +928,9 @@ export default {
                 }
             }).then(res => {
                 loading.close();
-                this.btnfalse = true;
                 if (res && res.code === 0) {
+                    this.btnfalse = false;
+                    this.clearFale = true;
                     if (!this.$route.params.id) {
                         this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
                     } else {
@@ -899,7 +958,7 @@ export default {
                 employeeID: '',
                 unitPrice: '',
                 ningetsu: 0,
-                contractPrice: '',
+                contractPrice: 0,
                 overTimePrice: '',
                 underTimePrice: ''
             }];
@@ -920,58 +979,94 @@ export default {
         },
         postSavePanle() {
             this.forms.contractitems = this.tableData;
-            this.forms.contractitems.forEach((item) => {
-                item.ningetsu = item.ningetsu * 100;
-                delete item.isFalse;
+            let btnsd = false;
+            this.forms.contractitems.forEach(item => {
+                if (item.unitPrice === 0 || item.unitPrice === '' || item.employeeID === 0 || item.employeeID === '') {
+                    btnsd = true;
+                }
             });
-            const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
-            if (this.$route.params.updates) {
-                let url = '/api/SOContract/api_renewcontract';
-                this.$axios({
-                    method: 'GET',
-                    url,
-                    params: {
-                        contractid: this.forms.id,
-                        fromdate: moment(this.forms.fromDate).format('YYYY-MM-DD'),
-                        todate: moment(this.forms.toDate).format('YYYY-MM-DD')
-                    },
-                    custom: {
-                        loading,
-                        vm: this
-                    }
-                }).then(res => {
-                    loading.close();
-                    if (res && res.code === 0) {
-                        this.forms = res.data;
-                        this.tableData = res.data.contractitems;
-                        this.$message.success('保存成功');
-                    } else {
-                        this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
-                    }
+            if (!btnsd) {
+                this.forms.contractitems.forEach((item) => {
+                    item.ningetsu = item.ningetsu * 100;
+                    item.unitPrice = priceToNumber(item.unitPrice);
+                    item.overTimePrice = priceToNumber(item.overTimePrice);
+                    item.underTimePrice = priceToNumber(item.underTimePrice);
+                    // delete item.isFalse;
                 });
+                const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
+                if (this.$route.params.updates) {
+                    let url = '/api/SOContract/api_renewcontract';
+                    this.$axios({
+                        method: 'GET',
+                        url,
+                        params: {
+                            contractid: this.forms.id,
+                            fromdate: moment(this.forms.fromDate).format('YYYY-MM-DD'),
+                            todate: moment(this.forms.toDate).format('YYYY-MM-DD')
+                        },
+                        custom: {
+                            loading,
+                            vm: this
+                        }
+                    }).then(res => {
+                        loading.close();
+                        if (res && res.code === 0) {
+                            this.forms = res.data;
+                            this.tableData = res.data.contractitems;
+                            this.tableData.forEach(item => {
+                                item.cashflows.forEach(ins => {
+                                    ins.isFalse = true;
+                                    ins.contractSales = priceToString(ins.contractSales);
+                                    ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
+                                });
+                            });
+                            this.$message.success(res.message ? res.message : '接口开小差了，没有返回信息');
+                            this.isDisplay = true;
+                            this.btnfalse = true;
+                        } else {
+                            this.tableData.forEach(item => {
+                                item.cashflows.forEach(ins => {
+                                    ins.isFalse = true;
+                                    ins.contractSales = priceToString(ins.contractSales);
+                                    ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
+                                });
+                            });
+                            this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+                        }
+                    });
+                } else {
+                    let url = '/api/SOContract/api_simulatecontract';
+                    this.$axios({
+                        method: 'POST',
+                        url,
+                        params: this.forms,
+                        formData: true,
+                        custom: {
+                            loading,
+                            vm: this
+                        }
+                    }).then(res => {
+                        loading.close();
+                        if (res && res.code === 0) {
+                            this.forms = res.data;
+                            this.tableData = res.data.contractitems;
+                            this.tableData.forEach(item => {
+                                item.cashflows.forEach(ins => {
+                                    ins.contractSales = priceToString(ins.contractSales);
+                                    ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
+                                });
+                            });
+                            this.$message.success(res.message ? res.message : '接口开小差了，没有返回信息');
+                            this.isDisplay = true;
+                            this.btnfalse = true;
+                        } else {
+                            this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+                        }
+                    });
+                }
             } else {
-                let url = '/api/SOContract/api_simulatecontract';
-                this.$axios({
-                    method: 'POST',
-                    url,
-                    params: this.forms,
-                    formData: true,
-                    custom: {
-                        loading,
-                        vm: this
-                    }
-                }).then(res => {
-                    loading.close();
-                    if (res && res.code === 0) {
-                        this.forms = res.data;
-                        this.tableData = res.data.contractitems;
-                        this.$message.success('保存成功');
-                    } else {
-                        this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
-                    }
-                });
+                this.$message.warning('请填写単価和担当者');
             }
-            
         },
         submit() {
             const params = {
@@ -1109,8 +1204,22 @@ export default {
                 }
             }
         },
-        handlePrice() {
-            this.form.unitPrice = priceToString(priceToNumber(this.form.unitPrice)); 
+        handlePrice(rows, i) {
+            this.tableData.forEach((item, index) => {
+                if (i === index) {
+                    item.unitPrice = priceToString(priceToNumber(item.unitPrice)); 
+                }
+            });
+            // this.forms.unitPrice = priceToString(priceToNumber(this.forms.unitPrice)); 
+        },
+        handlePrices(i) {
+            this.tableData.forEach((item) => {
+                item.cashflows.forEach((ite, ins) => {
+                    if (i === ins) {
+                        ite.contractSales = priceToString(priceToNumber(ite.contractSales)); 
+                    }
+                });
+            });
         },
         getContent(val, arr, key, field) {
             for (let item of arr) {
@@ -1120,24 +1229,31 @@ export default {
             }
             return '-';
         },
-        calculateOverTimePrice() {
-            if (this.form.unitPrice) {
-                if (this.form.hoursFrom) {
-                    if (!this.erroeMsg) {
-                        this.form.overTimePrice = priceToString(parseInt(priceToNumber(this.form.unitPrice) / Number(this.form.hoursFrom)));
-                    }
+        calculateOverTimePrice(rows, i) {
+            this.tableData.forEach((item, index) => {
+                if (i === index) {
+                    item.overTimePrice = priceToString(parseInt(priceToNumber(item.unitPrice) / Number(this.forms.hoursFrom)));
+                    item.underTimePrice = priceToString(parseInt(priceToNumber(item.unitPrice) / Number(this.forms.hoursTo)));
                 }
-                if (this.form.hoursTo) {
-                    if (!this.erroeMsg) {
-                        this.form.underTimePrice = priceToString(parseInt(priceToNumber(this.form.unitPrice) / Number(this.form.hoursTo)));
-                    }
-                }
-            }
+            });
+            // if (this.forms.unitPrice) {
+            //     if (this.forms.hoursFrom) {
+            //         if (!this.erroeMsg) {
+            //             this.forms.overTimePrice = priceToString(parseInt(priceToNumber(this.forms.unitPrice) / Number(this.forms.hoursFrom)));
+            //         }
+            //     }
+            //     if (this.forms.hoursTo) {
+            //         if (!this.erroeMsg) {
+            //             this.forms.underTimePrice = priceToString(parseInt(priceToNumber(this.forms.unitPrice) / Number(this.forms.hoursTo)));
+            //         }
+            //     }
+            // }
         },
         changeCustomer() {
+            // console.log(this.customerList);
             for (let item of this.customerList) {
-                if (item.id === this.form['customerId']) {
-                    this.form['paymenttermId'] = item.paymentTermID;
+                if (item.id === this.forms['customerID']) {
+                    this.forms['paymentTermID'] = item.paymentTermID;
                 }
             }
         }
@@ -1179,8 +1295,10 @@ export default {
         left: 0;
     }
     .bottom {
+        width: 100%;
         margin-top: 20px;
         ul{
+            float: left;
             width: 900px;
             overflow: hidden;
             // height: 280px;
@@ -1211,6 +1329,16 @@ export default {
             }
             .lis{
                 border-bottom: 1px solid #EBEEF5;
+            }
+            .widths{
+                width: 100%;
+            }
+        }
+        .lifloat{
+            float: left;
+            width: calc(100% - 900px);
+            img{
+                width: 100%;
             }
         }
     }
