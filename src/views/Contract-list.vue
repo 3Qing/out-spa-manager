@@ -103,7 +103,7 @@
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="toEdit(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="更新" placement="top-start">
-                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
+                        <i class="el-icon-refresh-right oper-icon" color="primary" @click="toEdit(scope.row, 'updates')"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="删除" placement="top-start">
                         <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
@@ -324,7 +324,7 @@ export default {
         downloadPDF(row) {
             apiDownloadFile({
                 vm: this,
-                url: `/api/Contract/api_downloadcontractpdf?conid=${row.id}`,
+                url: `/api/SOContract/api_downloadcontractpdf?conid=${row.contractID}`,
                 filename: `${Date.now()}.pdf`
             });
         },
@@ -332,10 +332,10 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在上传文件' });
             const params = new FormData();
             params.append('file', file);
-            params.append('conid', opt.scope.row.id);
+            params.append('conid', opt.scope.row.contractID);
             this.$axios({
                 method: 'POST',
-                url: '/api/Contract/api_uploadcontractpdf',
+                url: '/api/SOContract/api_uploadcontractpdf',
                 params,
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -375,6 +375,9 @@ export default {
                     display: 1
                 };
             }
+            if (type === 'updates') {
+                params.params.updates = true;
+            }
             this.$router.push(params);
         },
         // 删除合同
@@ -383,9 +386,9 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.$axios({
-                    url: '/api/Contract/api_deletecontract',
+                    url: '/api/SOContract/api_deletecontract',
                     params: {
-                        contractid: row.id
+                        contractid: row.contractID
                     }
                 }).then(res => {
                     if (res && res.code === 0) {
@@ -481,9 +484,9 @@ export default {
         previewHandle(scope) {
             imageFileToPreview({
                 vm: this,
-                url: '/api/Contract/api_previewcontract',
+                url: '/api/SOContract/api_previewcontract',
                 params: {
-                    invid: scope.row.id
+                    invid: scope.row.contractID
                 }
             });
         }
