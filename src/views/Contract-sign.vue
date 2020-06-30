@@ -11,7 +11,7 @@
         <div class="content">
             <el-row v-if="!isDisplay">
                 <el-col :span="12">
-                    <el-form ref="forms" :model="forms" label-width="110px" :rules="isDisplay ? {} : rules" label-suffix=":">
+                    <el-form ref="forms" :model="forms" label-width="120px" :rules="isDisplay ? {} : rules" label-suffix=":">
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="注文タイプ">
@@ -287,8 +287,8 @@
                     <el-table-column label="商流備考" prop="businessFlow"></el-table-column>
                 </el-table> -->
             </div>
-            <div class="bottom" v-if="isDisplay">
-                <el-table size="small" :data="tableData" border>
+            <div class="bottom tstable" v-if="isDisplay">
+                <el-table size="small" :data="tableData" border :default-expand-all=defluatFalse>
                     <el-table-column type="expand">
                         <template slot-scope="props">
                             <div v-for="(item, index) in props.row.cashflows" :key='index'>
@@ -444,6 +444,7 @@ export default {
     },
     data() {
         return {
+            defluatFalse: true,
             loading: false,
             forms: {
                 calculateUnit: '',
@@ -477,9 +478,9 @@ export default {
                 title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
                 ],
-                content: [
-                    { required: true, message: '请输入内容', trigger: 'blur' }
-                ],
+                // content: [
+                //     { required: true, message: '请输入内容', trigger: 'blur' }
+                // ],
                 fromDate: [
                     { required: true, message: '请输入开始日期', trigger: 'blur' }
                 ],
@@ -698,11 +699,17 @@ export default {
         sumPrice(sums, ins) {
             // sums.contractSales = parseInt(Number(sums.ningetsu) * Number(sums.unitPrice));
             this.tableData.forEach(item => {
+                let nings = 0;
+                let money = 0;
                 item.cashflows.forEach((ind, index) => {
                     if (ins === index) {
                         ind.contractSales = priceToString(parseInt(Number(ind.ningetsu) * Number(item.unitPrice)));
                     }
+                    nings += Number(ind.ningetsu);
+                    money += priceToNumber(ind.contractSales);
                 });
+                item.ningetsu = nings * 100;
+                item.contractPrice = priceToString(money);
             });
         },
         handleChange(sums, ids) {
@@ -713,7 +720,6 @@ export default {
                 }
             });
             this.tableData = arr;
-            console.log(this.tableData);
         },
         getContracts() {
             this.$axios({
@@ -910,10 +916,15 @@ export default {
             if (this.$route.params.id) {
                 url = '/api/SOContract/api_updatecontract';
             }
+            if (this.$route.params.updates) {
+                url = '/api/SOContract/api_createcontract';
+            }
             const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
             this.forms.contractitems.forEach((item) => {
+                item.ningetsu = parseInt(item.ningetsu);
+                item.contractPrice = priceToNumber(item.contractPrice);
                 item.cashflows.forEach((i) => {
-                    i.ningetsu = i.ningetsu * 100;
+                    i.ningetsu = parseInt(i.ningetsu * 100);
                     i.contractSales = priceToNumber(i.contractSales);
                 });
             });
@@ -987,7 +998,8 @@ export default {
             });
             if (!btnsd) {
                 this.forms.contractitems.forEach((item) => {
-                    item.ningetsu = item.ningetsu * 100;
+                    // item.ningetsu = item.ningetsu * 100;
+                    item.ningetsu = parseInt(item.ningetsu * 100);
                     item.unitPrice = priceToNumber(item.unitPrice);
                     item.overTimePrice = priceToNumber(item.overTimePrice);
                     item.underTimePrice = priceToNumber(item.underTimePrice);
@@ -1209,6 +1221,7 @@ export default {
                 if (i === index) {
                     item.unitPrice = priceToString(priceToNumber(item.unitPrice)); 
                 }
+
             });
             // this.forms.unitPrice = priceToString(priceToNumber(this.forms.unitPrice)); 
         },
@@ -1216,7 +1229,7 @@ export default {
             this.tableData.forEach((item) => {
                 item.cashflows.forEach((ite, ins) => {
                     if (i === ins) {
-                        ite.contractSales = priceToString(priceToNumber(ite.contractSales)); 
+                        ite.contractSales = priceToString(priceToNumber(ite.contractSales));
                     }
                 });
             });
@@ -1232,8 +1245,8 @@ export default {
         calculateOverTimePrice(rows, i) {
             this.tableData.forEach((item, index) => {
                 if (i === index) {
-                    item.overTimePrice = priceToString(parseInt(priceToNumber(item.unitPrice) / Number(this.forms.hoursFrom)));
-                    item.underTimePrice = priceToString(parseInt(priceToNumber(item.unitPrice) / Number(this.forms.hoursTo)));
+                    item.underTimePrice = priceToString(parseInt(priceToNumber(item.unitPrice) / Number(this.forms.hoursFrom)));
+                    item.overTimePrice = priceToString(parseInt(priceToNumber(item.unitPrice) / Number(this.forms.hoursTo)));
                 }
             });
             // if (this.forms.unitPrice) {
@@ -1296,6 +1309,7 @@ export default {
     }
     .bottom {
         width: 100%;
+        overflow: hidden;
         margin-top: 20px;
         ul{
             float: left;

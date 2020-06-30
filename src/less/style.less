@@ -392,11 +392,26 @@ body {
         }
     }
 }
-.demo-table{
-    line-height: 35px;
-    .el-form-item__content{
-        span.lop{
-            // line-height: 40px;
+.tstable{
+    .el-table__expanded-cell[class*=cell]{
+        padding: 0 50px;
+    }
+    .demo-table{
+        height: 35px;
+        line-height: 35px;
+        .el-form-item{
+            // margin-bottom: -10px;
+            .el-form-item__label{
+                line-height: 35px;
+                font-size: 12px;
+            }
+        }
+        .el-form-item__content{
+            line-height: 35px;
+            font-size: 12px;
+            span.lop{
+                // line-height: 40px;
+            }
         }
     }
 }

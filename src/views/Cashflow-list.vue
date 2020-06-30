@@ -92,7 +92,7 @@
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.actions"
                         :key="item.id" :content="item.title">
-                        <i v-if="item.id==='act_collectsales'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                        <i v-if="item.id==='act_confirmtimesheet'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
                         <i v-if="item.id==='act_displaytimesheet'" class="icon-approve iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
                         <i v-if="item.id==='act_createinvoice'" class="icon-Invoice iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
                         <i v-if="item.id==='act_canceltimesheet'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
