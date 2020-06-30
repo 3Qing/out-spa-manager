@@ -30,19 +30,28 @@
             <el-table-column label="入金予定日" prop="planCollectDate"></el-table-column>
             <el-table-column label="実際入金日" prop="actualCollectDate"></el-table-column>
             <el-table-column label="入金額" prop="collectAmount"></el-table-column>
-            <el-table-column label="アクション" width="320px" fixed="right">
+            <el-table-column label="アクション" width="240px" fixed="right">
                 <template slot-scope="scope">
                     <el-tooltip effect="dark" content="预览" placement="top-start">
                         <i class="iconfont icon-chengyi_pc_preview link oper-icon" color="primary" @click="preview(scope.row)"></i>
                     </el-tooltip>
-                    <i class="icon-PDF iconfont oper-icon" color="danger" @click="downloadFile('pdf', scope.row)"></i>
-                    <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadFile('excel', scope.row)"></i>
-                    <el-button
+                    <el-tooltip effect="dark" content="下载pdf" placement="top-start">
+                        <i class="icon-PDF iconfont oper-icon" color="danger" @click="downloadFile('pdf', scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="下载excel" placement="top-start">
+                        <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadFile('excel', scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip v-for="item in scope.row.actions" :key="item.id" effect="dark" :content="item.title" placement="top-start">
+                        <i v-if="item.id==='act_downloadinvoice'" class="icon-icon-test iconfont oper-icon" color="danger" @click="actionHandler(item, scope.row)"></i>
+                        <i v-if="item.id==='act_collectsales'" class="icon-pay iconfont oper-icon" color="success" @click="actionHandler(item, scope.row)"></i>
+                        <i v-if="item.id==='act_cancelinvoice'" class="icon-cancel1 iconfont oper-icon" color="danger" @click="actionHandler(item, scope.row)"></i>
+                    </el-tooltip>
+                    <!-- <el-button
                         type="primary"
                         v-for="item in scope.row.actions"
                         :key="item.id"
                         @click="actionHandler(item, scope.row)"
-                        size="mini">{{item.title}}</el-button>
+                        size="mini">{{item.title}}</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -200,17 +209,18 @@ export default {
             this.getData();
         },
         downloadFile(type, row) {
+            console.log(row);
             if (type === 'pdf') {
                 apiDownloadFile({
                     vm: this,
                     url: `/api/Invoice/api_downloadinvoice?invid=${row.id}&filetype=0`,
-                    filename: `${Date.now()}.pdf`
+                    filename: `YP請求書_${row.abbreCustomerTitle}_${row.invoiceNo}.pdf`
                 });
             } else if (type === 'excel') {
                 apiDownloadFile({
                     vm: this,
                     url: `/api/Invoice/api_downloadinvoice?invid=${row.id}&filetype=1`,
-                    filename: `${Date.now()}.xlsx`
+                    filename: `YP請求書_${row.abbreCustomerTitle}_${row.invoiceNo}.xlsx`
                 });
             }
         },

@@ -28,12 +28,15 @@
             </div>
             <el-card class="right display-container">
                 <div class="display-header">
-                    <el-button size="mini" type="primary" @click="beforeSubmit('edit')">変更</el-button>
+                    <el-button size="mini" type="primary" @click="beforeSubmit('edit','showForm')">変更</el-button>
                     <el-button size="mini" type="danger" @click="deleteHandler">削除</el-button>
                 </div>
-                <el-form size="mini" label-width="140px">
-                    <el-form-item :label="showFields.title">
+                <el-form class="blackColor" size="mini" ref="showForm" :model="showForm" label-width="140px" :rules="rules">
+                    <el-form-item :label="showFields.title" prop="title">
                         <el-input v-model="showForm.title" :placeholder="showFields.title"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="showFields.abbreTitle" prop="abbreTitle">
+                        <el-input v-model="showForm.abbreTitle" :placeholder="showFields.abbreTitle"></el-input>
                     </el-form-item>
                     <el-form-item :label="showFields.address1">
                         <el-input v-model="showForm.address1" :placeholder="showFields.address1"></el-input>
@@ -44,17 +47,23 @@
                     <el-form-item :label="showFields.bank_AccountHolder">
                         <el-input v-model="showForm.bank_AccountHolder" :placeholder="showFields.bank_AccountHolder"></el-input>
                     </el-form-item>
-                    <el-form-item :label="showFields.paymentTermID">
+                    <el-form-item :label="showFields.paymentTermID" prop="paymentTermID">
                         <el-select v-model="showForm.paymentTermID">
                             <el-option v-for="item in payments" :key="item.id" :label="item.title" :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item :label="showFields.customerFlag">
-                        <el-checkbox v-model="showForm.customerFlag"></el-checkbox>
-                    </el-form-item>
-                    <el-form-item :label="showFields.vendorFlag">
-                        <el-checkbox v-model="showForm.vendorFlag"></el-checkbox>
-                    </el-form-item>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item :label="showFields.customerFlag" prop="customerFlag">
+                                <el-checkbox v-model="showForm.customerFlag"></el-checkbox>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item :label="showFields.vendorFlag" prop="vendorFlag">
+                                <el-checkbox v-model="showForm.vendorFlag"></el-checkbox>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
                     <el-form-item :label="showFields.contactPerson">
                         <el-input v-model="showForm.contactPerson" :placeholder="showFields.contactPerson"></el-input>
                     </el-form-item>
@@ -70,10 +79,13 @@
                 </el-form>
             </el-card>
         </div>
-        <el-dialog :visible.sync="visible" title="新規登録" @close="close">
-            <el-form size="mini" label-width="100px">
-                <el-form-item :label="showFields.title">
+        <el-dialog :visible.sync="visible" title="新規登録" @close="close('curForm')">
+            <el-form class="blackColor" size="mini" ref="curForm" :model="curForm" label-width="140px" :rules="rules">
+                <el-form-item :label="showFields.title" prop="title">
                     <el-input v-model="curForm.title" :placeholder="showFields.title"></el-input>
+                </el-form-item>
+                <el-form-item :label="showFields.abbreTitle" prop="abbreTitle">
+                    <el-input v-model="showForm.abbreTitle" :placeholder="showFields.abbreTitle"></el-input>
                 </el-form-item>
                 <el-form-item :label="showFields.address1">
                     <el-input v-model="curForm.address1" :placeholder="showFields.address1"></el-input>
@@ -84,17 +96,23 @@
                 <el-form-item :label="showFields.bank_AccountHolder">
                     <el-input v-model="curForm.bank_AccountHolder" :placeholder="showFields.bank_AccountHolder"></el-input>
                 </el-form-item>
-                <el-form-item :label="showFields.paymentTermID">
-                        <el-select v-model="curForm.paymentTermID">
-                            <el-option v-for="item in payments" :key="item.id" :label="item.title" :value="item.id"></el-option>
-                        </el-select>
-                    </el-form-item>
-                <el-form-item :label="showFields.customerFlag">
-                    <el-checkbox v-model="curForm.customerFlag"></el-checkbox>
+                <el-form-item :label="showFields.paymentTermID" prop="paymentTermID">
+                    <el-select v-model="curForm.paymentTermID">
+                        <el-option v-for="item in payments" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item :label="showFields.vendorFlag">
-                    <el-checkbox v-model="curForm.vendorFlag"></el-checkbox>
-                </el-form-item>
+                <el-row>
+                    <el-col :span="12">
+                        <el-form-item :label="showFields.customerFlag" prop="customerFlag">
+                            <el-checkbox v-model="curForm.customerFlag"></el-checkbox>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item :label="showFields.vendorFlag" prop="vendorFlag">
+                            <el-checkbox v-model="curForm.vendorFlag"></el-checkbox>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <el-form-item :label="showFields.contactPerson">
                     <el-input v-model="curForm.contactPerson" :placeholder="showFields.contactPerson"></el-input>
                 </el-form-item>
@@ -110,7 +128,7 @@
             </el-form>
             <div slot="footer">
                 <el-button size="mini" @click="close">取消</el-button>
-                <el-button size="mini" type="primary" @click="beforeSubmit('add')">保存</el-button>
+                <el-button size="mini" type="primary" @click="beforeSubmit('add', 'curForm')">保存</el-button>
             </div>
         </el-dialog>
     </main-wrapper>
@@ -138,6 +156,7 @@ export default {
             pageSize: 15,
             total: 0,
             showFields: {
+                abbreTitle: '略称',
                 address1: '住所（番地まで）',
                 address2: '住所（詳細）',
                 bank_AccountHolder: '銀行名義人',
@@ -149,6 +168,23 @@ export default {
                 title: '名称',
                 vendorFlag: '仕入先フラグ',
                 paymentTermID: '支払条件'
+            },
+            rules: {
+                abbreTitle: [
+                    { required: true, message: '请输入略称', trigger: 'blur' }
+                ],
+                title: [
+                    { required: true, message: '请输入名称', trigger: 'blur' }
+                ],
+                paymentTermID: [
+                    { required: true, message: '请输入支払条件', trigger: 'blur' }
+                ],
+                customerFlag: [
+                    { required: true, message: '请选择得意先フラグ', trigger: 'blur' }
+                ],
+                vendorFlag: [
+                    { required: true, message: '请选择仕入先フラグ', trigger: 'blur' }
+                ]
             },
             showForm: {},
             curForm: {},
@@ -278,48 +314,55 @@ export default {
             };
             this.visible = true;
         },
-        close() {
+        close(formName) {
             this.visible = false;
             this.curForm = {};
+            this.$refs[formName].resetFields();
         },
-        beforeSubmit(type) {
-            let form = {};
-            if (type === 'edit') {
-                form = { ...this.showForm };
-            } else {
-                form = { ...this.curForm };
-            }
-            const params = {
-                Title: form.title,
-                Bank_AccountHolder: form.bank_AccountHolder,
-                Postal: form.postal,
-                Address1: form.address1,
-                Address2: form.address2,
-                Tel: form.tel,
-                Fax: form.fax,
-                ContactPerson: form.contactPerson,
-                CustomerFlag: form.customerFlag,
-                VendorFlag: form.vendorFlag,
-                PaymentTermID: form.paymentTermID
-            };
-            if (type === 'edit') {
-                params.ID = this.curId;
-                params.CompanyID = this.showForm.companyID;
-            }
-            if (!params.Title) {
-                this.$message({
-                    type: 'warning',
-                    message: '名称を入力してください！'
-                });
-                return;
-            } else if (!params.CustomerFlag && !params.VendorFlag) {
-                this.$message({
-                    type: 'warning',
-                    message: `${this.showFields.CustomerFlag}と${this.showFields.VendorFlag}最低一つ選択してください！`
-                });
-            } else {
-                this.submit(params, type);
-            }
+        beforeSubmit(type, restd) {
+            this.$refs[restd].validate((valid) => {
+                if (valid) {
+                    let form = {};
+                    if (type === 'edit') {
+                        form = { ...this.showForm };
+                    } else {
+                        form = { ...this.curForm };
+                    }
+                    const params = {
+                        AbbreTitle: form.abbreTitle,
+                        Title: form.title,
+                        Bank_AccountHolder: form.bank_AccountHolder,
+                        Postal: form.postal,
+                        Address1: form.address1,
+                        Address2: form.address2,
+                        Tel: form.tel,
+                        Fax: form.fax,
+                        ContactPerson: form.contactPerson,
+                        CustomerFlag: form.customerFlag,
+                        VendorFlag: form.vendorFlag,
+                        PaymentTermID: form.paymentTermID
+                    };
+                    if (type === 'edit') {
+                        params.ID = this.curId;
+                        params.CompanyID = this.showForm.companyID;
+                    }
+                    if (!params.Title) {
+                        this.$message({
+                            type: 'warning',
+                            message: '名称を入力してください！'
+                        });
+                        return;
+                    } else if (!params.CustomerFlag && !params.VendorFlag) {
+                        this.$message({
+                            type: 'warning',
+                            message: `${this.showFields.CustomerFlag}と${this.showFields.VendorFlag}最低一つ選択してください！`
+                        });
+                    } else {
+                        this.submit(params, type);
+                        this.$refs[restd].resetFields();
+                    }
+                }
+            });
         },
         submit(params, type) {
             const loading = this.$loading({ lock: true, text: 'データ提出中...' });

@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "567715",
+      "name": "pay",
+      "font_class": "pay",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "1988917",
+      "name": "取消",
+      "font_class": "cancel1",
+      "unicode": "e6b4",
+      "unicode_decimal": 59060
+    },
+    {
       "icon_id": "8647422",
       "name": "excel",
       "font_class": "Excel",

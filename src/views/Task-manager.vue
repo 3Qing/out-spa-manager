@@ -7,12 +7,11 @@
         <div class="clearfix">
             <div class="left fl">
                 <Calendar @choseDay="clickDay"></Calendar>
-                <ul>
-                    <li>自己</li>
-                    <li>全部</li>
-                </ul>
-                <ul>
-                    <li>yujkjkl</li>
+                <ul class="ul1" v-if='dataPerson.length>0'>
+                    <li @click='getData(0)'>自己</li>
+                    <li @click='getData(-1)'>全员</li>
+                    <li style="opacity:0;">-</li>
+                    <li v-for='(item, index) in dataPerson' :key='index' @click='getData(item.userID)'>{{item.employeeNo}} {{item.name}}</li>
                 </ul>
             </div>
             <div class="right fr" >
@@ -28,9 +27,10 @@
                                 <span
                                     v-for="(cell, j) in scope.row[item.prop]"
                                     :key="j"
-                                    class="cell-success task-cell link"
+                                    :class="[cell.atyType===0?'cell-success':'cell-warning','task-cell','link']"
                                     :style="getStyle(cell,j,scope.row[item.prop])"
                                     @click="cellClick(cell)"
+                                    :title='getTitle(cell.atyPurpose,cell.content)'
                                     >{{cell.atyPurpose}}</span>
                             </div>
                         </template>
@@ -63,13 +63,16 @@ export default {
             tableData: [],
             curTime: '',
             isTrue: true,
-            timeData: ''
+            timeData: '',
+            dataLength: [],
+            dataPerson: []
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.initTable();
             vm.timeData = moment(new Date()).format('YYYY-MM-DD');
+            vm.getpersonData();
         });
     },
     computed: {
@@ -110,7 +113,8 @@ export default {
             }
             this.$nextTick(() => {
                 this.columns = columns;
-                this.getData();
+                this.getData(-1);
+                this.getpersonData();
             });
         },
         timeDate(obj1, obj2) {
@@ -196,21 +200,34 @@ export default {
                     return '星期日';
             }
         },
-        getData() {
+        getData(ids) {
             const loading = this.$loading({ lock: true, text: this.GET_LOADING });
             this.$axios({
                 url: '/api/SalesActivity/api_getactivitylist',
                 params: {
-                    owntask: this.owntask,
+                    userid: ids,
                     fromdate: this.curTime
                 }
             }).then(res => {
                 loading.close();
                 let data = [];
+                console.log(res.data);
                 if (res && res.code === 0) {
                     data = res.data || [];
+                    this.dataLength = data;
                 }
                 this.formatData(data);
+            });
+        },
+        // 获得人员
+        getpersonData() {
+            this.$axios({
+                url: '/api/SalesActivity/api_gettaskownerlist',
+            }).then(res => {
+                // let data = [];
+                if (res && res.code === 0) {
+                    this.dataPerson = res.data || [];
+                }
             });
         },
         // 时间点击
@@ -283,7 +300,7 @@ export default {
                     news: true,
                     objs,
                     callback: () => {
-                        this.getData();
+                        this.getData(-1);
                     }
                 });
             }
@@ -295,7 +312,7 @@ export default {
                 data,
                 edit: false,
                 callback: () => {
-                    this.getData();
+                    this.getData(-1);
                 }
             });
             this.cancelBubble();
@@ -321,6 +338,10 @@ export default {
                 left: ileft,
                 'z-index': zIndex
             };
+        },
+        getTitle(id, type) {
+            let obj = '标题：' + id + '。' + '内容：' + type;
+            return obj;
         }
     }
 };
@@ -339,12 +360,12 @@ export default {
     }
     .left {
         width: 250px;
-        height: 300px;
+        height: 250px;
         .wh_container {
-            height: 300px;
+            height: 250px;
             box-shadow: 0 0 5px 5px #f8f8f8;
             .wh_content_all {
-                height: 300px;
+                height: 250px;
                 background-color: transparent;
                 .wh_jiantou1, .wh_jiantou2 {
                     border-color: #999;
@@ -352,12 +373,15 @@ export default {
                 li {
                     color: #333;
                 }
+                .wh_content_item{
+                    height: 28px;
+                }
                 .wh_item_date {
                     color: #333;
                     border-radius: 50%;
-                    height: 30px;
-                    width: 30px;
-                    line-height: 30px;
+                    height: 25px;
+                    width: 25px;
+                    line-height: 25px;
                     font-size: 14px;
                     &.wh_other_dayhide {
                         color: #ccc;
@@ -375,6 +399,12 @@ export default {
                         background-color: #E6A23C;
                     }
                 }
+            }
+        }
+        .ul1{
+            margin-top: 10px;
+            li{
+                cursor: pointer;
             }
         }
     }
@@ -397,8 +427,12 @@ export default {
             line-height: 18px;
         }
         .cell-warning {
-            color: #606266;
-            background-color: rgb(250, 236, 216) !important;
+            color: white;
+            background-color: rgb(20, 115, 183, 0.8) !important;
+            box-sizing: border-box;
+            padding: 3px;
+            border: 1px solid white;
+            line-height: 18px;
         }
         .el-table {
             tbody {

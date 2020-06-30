@@ -1,18 +1,18 @@
 <template>
     <el-dialog class="borderDialog" :visible.sync="visible" :close="close" :title="!edit ? '查看' : form.id ? '编辑' : '新增'">
         <el-switch v-if="form.id" v-model="edit" inactive-text="查看" active-text="编辑" class="status-btn"></el-switch>
-        <el-form size="mini" label-width="120px" :model="form" ref="form" label-suffix=":">
-            <el-form-item label="" prop="atyPurpose" label-width="0px">
+        <el-form size="mini" label-width="60px" :model="form" ref="form" label-suffix=":">
+            <el-form-item label="タスク" prop="atyPurpose" >
                 <el-input v-if="edit" v-model="form.atyPurpose" placeholder="标题"></el-input>
                 <p v-else>{{form.atyPurpose}}</p>
             </el-form-item>
-            <el-form-item label="" label-width="0px">
+            <el-form-item label="タイプ" >
                 <el-radio-group v-if="edit" v-model="form.atyType">
                     <el-radio v-for="(item, i) in atyTypes" :label="item.value" :key="i">{{item.label}}</el-radio>
                 </el-radio-group>
                 <p v-else>{{getContent(form.atyType, atyTypes, 'value', 'label')}}</p>
             </el-form-item>
-            <el-form-item label="" prop="candidateID" v-if="form.atyType === 0" label-width="0px">
+            <el-form-item label="人员" prop="candidateID" v-if="form.atyType === 0" >
                 <el-select
                     v-if="edit"
                     v-model="form.candidateID"
@@ -26,13 +26,13 @@
                 </el-select>
                 <p v-else>{{getContent(form.candidateID, candidates, 'id', 'name')}}</p>
             </el-form-item>
-            <el-form-item label="" prop="opportunityID" v-if="form.atyType === 0" label-width="0px">
+            <el-form-item label="場所" prop="opportunityID" v-if="form.atyType === 0" >
                 <el-select v-model="form.opportunityID" v-if="edit">
                     <el-option v-for="item in opportunits" :key="item.id" :label="item.text" :value="item.id"></el-option>
                 </el-select>
                 <p v-else>{{getContent(form.opportunityID, opportunits, 'id', 'text')}}</p>
             </el-form-item>
-            <el-form-item label="" label-width="0px">
+            <el-form-item label="時間" >
                 <el-date-picker
                     v-if="edit"
                     v-model="form.atyFromTime"
@@ -57,12 +57,12 @@
                 </el-input>
                 <span v-else>{{form.atyMinutes}}分钟</span>
             </el-form-item> -->
-            <el-form-item label="" prop="atyLocation" label-width="0px">
+            <el-form-item label="地点" prop="atyLocation" >
                 <el-input v-if="edit" placeholder="地点" v-model="form.atyLocation" :maxlength="50"></el-input>
                 <span v-else>{{form.atyLocation}}</span>
             </el-form-item>
-            <el-form-item label="" prop="content" label-width="0px">
-                <el-input v-if="edit" class="atyPurpose" placeholder="描述" v-model="form.content" type="textarea" :maxlength="200"></el-input>
+            <el-form-item label="内容" prop="content" >
+                <el-input v-if="edit" class="atyPurpose" placeholder="内容" v-model="form.content" type="textarea" :maxlength="200"></el-input>
                 <p v-else>{{form.content}}</p>
             </el-form-item>
         </el-form>
@@ -205,11 +205,6 @@ export default {
                 this.$message({
                     type: 'warning',
                     message: '请选择营业活动'
-                });
-            } else if (this.form.atyLocation === '') {
-                this.$message({
-                    type: 'warning',
-                    message: '请输入地点'
                 });
             } else if (this.form.content === '') {
                 this.$message({
