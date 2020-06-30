@@ -3,7 +3,7 @@
         custom-class="ess-edit-dialog"
         :visible.sync="visible"
         @close="close">
-        <ess-edit :id="id"></ess-edit>
+        <ess-edit v-if="visible" :id="id"></ess-edit>
         <div slot="footer">
             <el-button type="primary" size="small" @click="submit">{{type === 'confirm' ? '承认' : '取消承认'}}</el-button>
             <el-button size="small" @click="close">取消</el-button>

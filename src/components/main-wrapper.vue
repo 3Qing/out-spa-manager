@@ -55,7 +55,7 @@ export default {
         & > div {
             padding: 20px;
             border-radius: 4px;
-            box-shadow: 0 0 5px 5px #f8f8f8;
+            // box-shadow: 0 0 5px 5px #f8f8f8;
         }
     }
     .footer {

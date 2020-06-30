@@ -1,13 +1,19 @@
 <template>
     <main-wrapper class="task-manager">
-        <div class="main-header" slot="header">
-            <!-- <el-button size="mini" type="primary" @click="newHandle">新增</el-button> -->
+        <!-- <div class="main-header" slot="header">
+            <el-button size="mini" type="primary" @click="newHandle">新增</el-button>
             <el-switch v-model="owntask" inactive-text="所有人" active-text="仅自己" @change="getData" style="margin-left: 20px;"></el-switch>
-        </div>
+        </div> -->
         <div class="clearfix">
             <div class="left fl">
-                <Calendar
-                    @choseDay="clickDay"></Calendar>
+                <Calendar @choseDay="clickDay"></Calendar>
+                <ul>
+                    <li>自己</li>
+                    <li>全部</li>
+                </ul>
+                <ul>
+                    <li>yujkjkl</li>
+                </ul>
             </div>
             <div class="right fr" >
                 <el-table :data="tableData" height="100%" border :summary-method="getSummaries" :show-summary=showSu @cell-click='handleClick'>
