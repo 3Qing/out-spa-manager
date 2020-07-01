@@ -24,7 +24,7 @@
         </div>
         <div class="left">
             <el-button size="mini" type="primary" @click="showIntroDialog" style="margin-bottom: 10px">添加营业候选人</el-button>
-            <el-table size="small" :data="tableData" @cell-click="cellClick" border>
+            <el-table size="small" :data="tableData" @cell-click="cellClick" border :cell-class-name="cellClassName">
                 <el-table-column label="员工号" prop="employeeNo" width="100px"></el-table-column>
                 <el-table-column label="姓名" prop="name" show-overflow-tooltip></el-table-column>
                 <el-table-column label="Avaiable Date" prop="avaiableDate" width="120px">
@@ -128,6 +128,23 @@ export default {
     },
     methods: {
         formatTime: formatTime,
+        // 列表颜色
+        cellClassName({ row, columnIndex }) {
+            if (columnIndex === 3) {
+                if (row.salesStatus === 0) {
+                    return 'bg-danger';
+                }
+                if (row.salesStatus === 1) {
+                    return 'bg-warning';
+                }
+                if (row.salesStatus === 2) {
+                    return 'bg-info';
+                }
+                if (row.salesStatus === 3 || row.saleStatus === 4) {
+                    return 'bg-success';
+                }
+            }
+        },
         getStatus() {
             this.$axios({
                 url: '/api/SalesCase/api_salescasestatusforselect'
@@ -275,6 +292,22 @@ export default {
         width: 40%;
         .el-table{
             width: 100%;
+        }
+        td.bg-danger {
+            color: #fff;
+            background-color: rgba(219, 65, 78, 0.78) !important;
+        }
+        td.bg-success {
+            color: #fff;
+            background-color: rgba(69, 190, 135, 0.78) !important;
+        }
+        td.bg-warning {
+            color: #fff;
+            background-color: rgba(230, 162, 60, 0.78) !important;
+        }
+        td.bg-info {
+            color: #fff;
+            background-color: #438fc5 !important;
         }
     }
     .right {

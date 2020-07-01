@@ -4,6 +4,7 @@
             <el-button type="primary" size="mini" @click="$router.back()">返回</el-button>
         </div>
         <card-item
+            v-if='isfalse'
             :form="form"
             :items="items"
             :doc-types="docTypes"
@@ -26,7 +27,8 @@ export default {
     },
     data() {
         return {
-            items: []
+            items: [],
+            isfalse: false
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -50,8 +52,9 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
+                    this.isfalse = true;
                     this.form = res.data || {};
-                    this.items = res.data.items || [];
+                    this.items = res.data.docitems || [];
                 }
             });
         }

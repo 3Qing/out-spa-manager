@@ -79,11 +79,11 @@
             <el-table-column label="支払予定日" prop="dueDate" width="100px"></el-table-column>
             <el-table-column label="支給額" prop="payAmount"></el-table-column>
             <el-table-column label="実際支払日" prop="payedDate" width="100px" show-overflow-tooltip></el-table-column>
-            <el-table-column label="アクション" min-width="100px" fixed="right">
+            <el-table-column label="アクション" width="110px" fixed="right">
                 <template slot-scope="scope">
-                    <el-tooltip effect="dark" content="查看" placement="top-start">
+                    <!-- <el-tooltip effect="dark" content="查看" placement="top-start">
                         <i class="el-icon-view oper-icon" color="primary" @click="actionHandler(scope.row)"></i>
-                    </el-tooltip>
+                    </el-tooltip> -->
                     <el-tooltip
                         v-for="(item, i) in scope.row.actions"
                         :key="i"
@@ -136,7 +136,7 @@
         <el-dialog :visible.sync="visibles" title="明细" @close="closedetail" >
             <div class="salary-wrapper">
                 <el-row>
-                    <el-col :span="6">{{formDetail.Periperiodod || period}}給料明細書</el-col>
+                    <el-col :span="6">{{formDetail.period}}給与明細書</el-col>
                     <el-col :span="3" class="label">部門-所属</el-col>
                     <el-col :span="3">{{formDetail.teamName || '-'}}</el-col>
                     <el-col :span="3" class="label">社員</el-col>
@@ -189,7 +189,7 @@
                 <div class="row-wrapper">
                     <el-row>
                         <el-col :span="2" class="label">出勤日数</el-col>
-                        <el-col :span="2">{{formDetail.workDays || 0}}天</el-col>
+                        <el-col :span="2">{{formDetail.actualWorkDays || 0}}天</el-col>
                     </el-row>
                 </div>
             </div>
@@ -345,8 +345,8 @@ export default {
                 this.getCalculateSalery(row);
             } else if (item.id === 'act_manualrevisesalary') {
                 this.showDialog(row);
-            } else {
-                this.getSalery(item);
+            } else if (item.id === 'act_displaysalarydetail'){
+                this.getSalery(row);
             }
         },
         showDialog(row) {
@@ -474,6 +474,8 @@ export default {
                 return 'el-icon-money';
             } else if (item.id === 'act_manualrevisesalary') {
                 return 'el-icon-edit-outline';
+            } else if (item.id === 'act_displaysalarydetail') {
+                return 'el-icon-view';
             }
         },
         getColor(item) {
@@ -481,6 +483,8 @@ export default {
                 return 'danger';
             } else if (item.id === 'act_manualrevisesalary') {
                 return 'warning';
+            } else if (item.id === 'act_displaysalarydetail') {
+                return 'success';
             }
         },
         formatPrice(value) {

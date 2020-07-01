@@ -101,7 +101,9 @@ export default {
                 name: 'ResumeUpdate',
                 params: {
                     epId: row.employeeID,
-                    id: row.resumeID || 0
+                    id: row.resumeID || 0,
+                    doId1: row.furigana_LastName,
+                    doId2: row.furigana_FirstName
                 }
             });
         },

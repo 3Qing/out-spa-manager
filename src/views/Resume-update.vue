@@ -2,8 +2,10 @@
     <main-wrapper class="resume-update">
         <div class="main-header clearfix" slot="header">
             <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="beforeSubmit">{{Number($route.params.id) > 0 ? '変更' : '新規'}}</el-button>
-            <el-button v-else size="mini" type="warning" @click="beforeSubmit">変更</el-button>
-            <el-button class="fr" size="mini" @click="$router.back()">リターン</el-button>
+            <el-button v-if="$route.name !== 'ResumeUpdate'" size="mini" type="warning" @click="beforeSubmit">変更</el-button>
+            <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="download(Number($route.params.id), 'excel')">下载Excel</el-button>
+            <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="download(Number($route.params.id), 'word')">下载Word</el-button>
+            <!-- <el-button class="fr" size="mini" @click="$router.back()">リターン</el-button> -->
         </div>
         <el-form size="mini" label-width="100px" ref="form" :model="form" :rules="rules">
             <el-row v-if="!IS_H5">
@@ -224,6 +226,7 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import moment from 'moment';
+import { apiDownloadFile } from '@_public/utils';
 export default {
     components: {
         MainWrapper
@@ -337,6 +340,22 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        download(row, type) {
+            console.log(row, this.$route.params.doId1, this.$route.params.doId2);
+            if (type === 'excel') {
+                apiDownloadFile({
+                    vm: this,
+                    url: `/api/Resume/api_downloadresumeexcel?id=${row}`,
+                    filename: `YP履歴書_${this.$route.params.doId1.substring(0, 1)}${this.$route.params.doId2.substring(0,1)}.xlsx`
+                });
+            } else if (type === 'word') {
+                apiDownloadFile({
+                    vm: this,
+                    url: `/api/Resume/api_downloadresumeword?id=${row}`,
+                    filename: `YP履歴書_${this.$route.params.doId1.substring(0, 1)}${this.$route.params.doId2.substring(0,1)}.doc`
+                });
+            }
+        },
         getInfo(type) {
             const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             let url = '/api/Resume/api_getresumebyuser';

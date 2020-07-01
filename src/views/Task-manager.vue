@@ -7,11 +7,11 @@
         <div class="clearfix">
             <div class="left fl">
                 <Calendar @choseDay="clickDay"></Calendar>
-                <ul class="ul1" v-if='dataPerson.length>0'>
-                    <li @click='getData(0)'>自己</li>
-                    <li @click='getData(-1)'>全员</li>
-                    <li style="opacity:0;">-</li>
-                    <li v-for='(item, index) in dataPerson' :key='index' @click='getData(item.userID)'>{{item.employeeNo}} {{item.name}}</li>
+                <ul class="ul1" v-if='dataPerson.length>2'>
+                    <!-- <li @click='getDataClick(0)'>自己</li>
+                    <li @click='getDataClick(-1)'>全员</li>
+                    <li style="opacity:0;">-</li> -->
+                    <li v-for='(item, index) in dataPerson' :key='index' :class="item.isFalse?'active':''" @click='getDataClick(item.userID)'>{{item.employeeNo}} {{item.name}}</li>
                 </ul>
             </div>
             <div class="right fr" >
@@ -65,7 +65,8 @@ export default {
             isTrue: true,
             timeData: '',
             dataLength: [],
-            dataPerson: []
+            dataPerson: [],
+            userids: 0
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -86,6 +87,17 @@ export default {
         // console.log('111');
     },
     methods: {
+        getDataClick(type) {
+            this.userids = type;
+            this.dataPerson.forEach((item) => {
+                if (item.userID === type) {
+                    item.isFalse = true;
+                } else {
+                    item.isFalse = false;
+                }
+            });
+            this.getData();
+        },
         initTable(val) {
             let curTime;
             if (val) {
@@ -113,8 +125,8 @@ export default {
             }
             this.$nextTick(() => {
                 this.columns = columns;
-                this.getData(-1);
-                this.getpersonData();
+                this.getData();
+                // this.getpersonData();
             });
         },
         timeDate(obj1, obj2) {
@@ -200,12 +212,12 @@ export default {
                     return '星期日';
             }
         },
-        getData(ids) {
+        getData() {
             const loading = this.$loading({ lock: true, text: this.GET_LOADING });
             this.$axios({
                 url: '/api/SalesActivity/api_getactivitylist',
                 params: {
-                    userid: ids,
+                    userid: this.userids,
                     fromdate: this.curTime
                 }
             }).then(res => {
@@ -227,6 +239,23 @@ export default {
                 // let data = [];
                 if (res && res.code === 0) {
                     this.dataPerson = res.data || [];
+                    if (this.dataPerson.length > 0) {
+                        this.dataPerson.forEach((item) => {
+                            item.isFalse = false;
+                        });
+                    }
+                    this.dataPerson.unshift({
+                        isFalse: false,
+                        employeeNo: "",
+                        name: "全部",
+                        userID: -1
+                    });
+                    this.dataPerson.unshift({
+                        isFalse: true,
+                        employeeNo: "",
+                        name: "自己",
+                        userID: 0
+                    });
                 }
             });
         },
@@ -260,7 +289,6 @@ export default {
         },
         // 添加日程
         handleClick(row, col) {
-            console.log(col, this.columns);
             if (col.id !== 'el-table_1_column_1') {
                 let mins = '';
                 if (col.id === 'el-table_1_column_2') {
@@ -300,7 +328,7 @@ export default {
                     news: true,
                     objs,
                     callback: () => {
-                        this.getData(-1);
+                        this.getData();
                     }
                 });
             }
@@ -312,7 +340,7 @@ export default {
                 data,
                 edit: false,
                 callback: () => {
-                    this.getData(-1);
+                    this.getData();
                 }
             });
             this.cancelBubble();
@@ -402,9 +430,10 @@ export default {
             }
         }
         .ul1{
-            margin-top: 10px;
+            margin-top: 20px;
             li{
                 cursor: pointer;
+                line-height: 30px;
             }
         }
     }
@@ -501,6 +530,9 @@ export default {
             -webkit-transform: rotate(42deg);
             -webkit-transform-origin: top left;
         }
+    }
+    .active{
+        color: #1473b7;
     }
 }
 </style>
