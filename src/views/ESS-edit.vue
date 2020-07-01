@@ -87,13 +87,13 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="作業内容">
+                <el-table-column label="作業内容" width="300">
                     <template slot-scope="scope">
                         <el-input v-if="editable" size="mini" v-model="scope.row.content" :maxlength="100"></el-input>
                         <p v-else>{{scope.row.content || '-'}}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="ｱｸｼｮﾝ" width="100">
+                <el-table-column label="ｱｸｼｮﾝ" width="100" v-if="!faad">
                     <template slot-scope="scope" v-if="editable && scope.$index === workDayIndex">
                         <el-button type="primary" size="mini" @click="copyOneToAll(scope)">コピー</el-button>
                     </template>
@@ -173,6 +173,10 @@ export default {
         id: {
             type: Number,
             default: 0
+        },
+        faad: {
+            type: Boolean,
+            default: false
         }
     },
     data() {

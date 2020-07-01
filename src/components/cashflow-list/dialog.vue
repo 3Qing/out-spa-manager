@@ -3,7 +3,7 @@
         custom-class="ess-edit-dialog"
         :visible.sync="visible"
         @close="close">
-        <ess-edit v-if="visible" :id="id"></ess-edit>
+        <ess-edit v-if="visible" :id="id" :faad="tis"></ess-edit>
         <div slot="footer">
             <el-button type="primary" size="small" @click="submit">{{type === 'confirm' ? '承认' : '取消承认'}}</el-button>
             <el-button size="small" @click="close">取消</el-button>
@@ -22,7 +22,8 @@ export default {
             id: 0,
             type: '',
             callback: null,
-            visible: false
+            visible: false,
+            tis: true
         };
     },
     mounted() {
@@ -65,7 +66,7 @@ export default {
         cancel() {
             const loading = this.$loading({ lock: true, text: '正在取消承认请求书' });
             this.$axios({
-                url: '/api/Invoice/api_cancelinvoice',
+                url: '/api/Timesheet/api_canceltimesheet',
                 params: {
                     cfid: this.id
                 },

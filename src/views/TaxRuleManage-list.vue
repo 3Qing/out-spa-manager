@@ -27,8 +27,8 @@
                 </el-table-column>
                 <el-table-column label="課税範囲" show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <el-input style="width:50%" type="number" @blur='isedit' v-model="scope.row.fromAmount" ></el-input>
-                        <el-input style="width:50%" type="number" @blur='isedit' v-model="scope.row.toAmount" ></el-input>
+                        <el-input style="width:50%" @input='selectprice' @blur='isedit' v-model="scope.row.fromAmount" ></el-input>
+                        <el-input style="width:50%" @input='selectprice' @blur='isedit' v-model="scope.row.toAmount" ></el-input>
                     </template> 
                 </el-table-column>
                 <el-table-column label="課税率・控除率" prop="percent" width="150px">
@@ -38,7 +38,7 @@
                 </el-table-column>
                 <el-table-column label="追加控除額" prop="additionalAmout" width="300px">
                     <template slot-scope="scope">
-                        <el-input type="number" v-model="scope.row.additionalAmout" ></el-input>
+                        <el-input @input='selectprice' v-model="scope.row.additionalAmout" ></el-input>
                     </template> 
                 </el-table-column>
                 <el-table-column label="四捨五入ルール" prop="roundRule" width="150px">
@@ -88,6 +88,13 @@ export default {
     methods: {
         priceToString: priceToString,
         priceToNumber: priceToNumber,
+        selectprice() {
+            this.tableData.forEach((item) => {
+                item.fromAmount = priceToString(priceToNumber(item.fromAmount));
+                item.toAmount = priceToString(priceToNumber(item.toAmount));
+                item.additionalAmout = priceToString(priceToNumber(item.additionalAmout));
+            });
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: '数据取得中...' });
             let url = '/api/TaxRule/api_gettaxrulelist';
@@ -111,6 +118,12 @@ export default {
                             toAmount: ''
                         };
                         this.tableData.push(obj);
+                    } else {
+                        this.tableData.forEach((item) => {
+                            item.fromAmount = priceToString(priceToNumber(item.fromAmount));
+                            item.toAmount = priceToString(priceToNumber(item.toAmount));
+                            item.additionalAmout = priceToString(priceToNumber(item.additionalAmout));
+                        });
                     }
                 } else {
                     this.$message({
@@ -138,6 +151,9 @@ export default {
         updateFile() {
             this.tableData.forEach((item) => {
                 item.updateTime = moment(item.updateTime).format('YYYY-MM-DD');
+                item.fromAmount = priceToNumber(item.fromAmount);
+                item.toAmount = priceToNumber(item.toAmount);
+                item.additionalAmout = priceToNumber(item.additionalAmout);
             });
             const loading = this.$loading({ lock: true, text: '数据更新中...' });
             let url = '/api/TaxRule/api_updatetaxrules';
