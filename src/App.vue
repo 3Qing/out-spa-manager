@@ -33,16 +33,20 @@
                 </div>
             </el-header>
             <el-main>
-                <div class="page-tag" v-if="routes.length">
-                    <el-tag
-                        class="link"
-                        v-for="(item, i) in routes"
-                        :key="i"
-                        @click.native="toView(item)"
-                        :closable="routes.length !== 1"
-                        effect="plain"
-                        :type="item.name === activeRouter ? '' : 'info'"
-                        @close="closeRoute(item, i)">{{item.title}}</el-tag>
+                <div class="overscool">
+                    <div class="page-tag" v-if="routes.length">
+                        <!-- <span class="positions">按钮1</span> -->
+                        <el-tag
+                            class="link"
+                            v-for="(item, i) in routes"
+                            :key="i"
+                            @click.native="toView(item)"
+                            :closable="routes.length !== 1"
+                            effect="plain"
+                            :type="item.name === activeRouter ? '' : 'info'"
+                            @close="closeRoute(item, i)">{{item.title}}</el-tag>
+                        <!-- <span class="positions">按钮2</span> -->
+                    </div>
                 </div>
                 <router-view></router-view>
             </el-main>
@@ -318,11 +322,18 @@ export default {
         overflow: auto;
         padding: 0;
         background-color: #e5edf4;
+        .overscool{
+            position: relative;
+        }
         .page-tag {
             height: @height;
             line-height: @height;
             background-color: #fff;
             border-bottom: 1px solid #C1D4E5;
+            .positions{
+                position: fixed;
+                right: 0;
+            }
             .el-tag {
                 height: @height;
                 line-height: @height;

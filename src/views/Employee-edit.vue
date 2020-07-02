@@ -8,12 +8,31 @@
         <el-row class="minwidth" v-if="!isDisplay">
             <el-col :span="16">
                 <el-form size="small" label-width="130px" ref="form" :model="isDisplay ? {} : form" :rules="isDisplay ? {} : rules">
-                    <el-form-item label="就職タイプ" prop="employeeTypeID">
-                        <!-- <p v-if="isDisplay">{{getContent(form.employeeTypeID, employeeTypes, 'id', 'title')}}</p> -->
-                        <el-select v-model="form.employeeTypeID">
-                            <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
-                        </el-select>
-                    </el-form-item>
+                    <el-row >
+                        <el-col :span="12">
+                            <el-form-item label="就職タイプ" prop="employeeTypeID">
+                                <el-select v-model="form.employeeTypeID" @change="selsectEmployee">
+                                    <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12" v-if='isEmplooe'>
+                            <el-form-item label="パートナー" prop="vendorID">
+                                <el-select v-model="form.vendorID">
+                                    <el-option v-for="item in vendorsArr" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="常住都市" prop="liveCity">
+                                <el-select v-model="form.liveCity">
+                                    <el-option v-for="item in cityTypes" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
                     <el-row >
                         <el-col :span="12">
                             <el-form-item label="姓（フリガナ）" prop="furigana_FirstName">
@@ -25,6 +44,18 @@
                             <el-form-item label="名（フリガナ）" prop="furigana_LastName">
                                 <!-- <p v-if="isDisplay">{{form.furigana_LastName}}</p> -->
                                 <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row >
+                        <el-col :span="12">
+                            <el-form-item label="姓（英語）" prop="pinYin_FirstName">
+                                <el-input v-model="form.pinYin_FirstName" :maxlength="20"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="名（英語）" prop="pinYin_LastName">
+                                <el-input v-model="form.pinYin_LastName" :maxlength="20"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -92,7 +123,7 @@
                             </el-form-item> -->
                             <el-form-item label="国籍" prop="nationality">
                                 <!-- <p v-if="isDisplay">{{form.nationality}}</p> -->
-                                <el-select v-model="form.nationality">
+                                <el-select v-model="form.nationality" @change="selsectNation">
                                     <el-option v-for="item in countryTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -133,7 +164,7 @@
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="12">
+                        <el-col :span="12" v-if="ishight">
                             <el-form-item label="来日時間" prop="arriveJPDate">
                                 <!-- <p v-if="isDisplay">{{form.arriveJPDate}}</p> -->
                                 <el-date-picker
@@ -245,6 +276,9 @@
                     </el-form-item>
                 </el-form>
             </el-col>
+            <el-col :span="8" v-if='$route.params.id'>
+                <card-upload style="margin-right: 20px;" :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" @success="upload"></card-upload>
+            </el-col>
             <el-col :span="12" v-if="isDisplay">
                 <div class="top"></div>
             </el-col>
@@ -260,6 +294,14 @@
                         <span>{{form.furigana_LastName}}</span>
                     </li>
                     <li>
+                        <span>姓（英語）</span>
+                        <span>{{form.pinYin_FirstName}}</span>
+                    </li>
+                    <li>
+                        <span>名（英語）</span>
+                        <span>{{form.pinYin_LastName}}</span>
+                    </li>
+                    <li>
                         <span>姓（漢字）</span>
                         <span>{{form.firstName}}</span>
                     </li>
@@ -270,6 +312,10 @@
                     <li>
                         <span>就職タイプ</span>
                         <span>{{getContent(form.employeeTypeID, employeeTypes, 'id', 'title')}}</span>
+                    </li>
+                    <li>
+                        <span>常住都市</span>
+                        <span>{{getContent(form.liveCity, cityTypes, 'id', 'text')}}</span>
                     </li>
                     <li>
                         <span>性别</span>
@@ -392,11 +438,13 @@
 import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
-import { priceToString, formatTime } from '@_public/utils';
+import CardUpload from '@components/card-upload';
+import { priceToString, formatTime} from '@_public/utils';
 
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        CardUpload
     },
     data() {
         return {
@@ -404,6 +452,8 @@ export default {
             countryTypeArr: [],
             form: {
                 employeeTypeID: '',
+                vendorID: '',
+                liveCity: '',
                 name: '',
                 furigana: '',
                 onBoardDate: '',
@@ -448,8 +498,17 @@ export default {
                 furigana_LastName: [{
                     required: true, message: '请输入名', trigger: 'blur'
                 }],
+                pinYin_FirstName: [{
+                    required: true, message: '请输入姓', trigger: 'blur'
+                }],
+                pinYin_LastName: [{
+                    required: true, message: '请输入名', trigger: 'blur'
+                }],
                 employeeTypeID: [{
                     required: true, message: '请选择就职类型', trigger: 'blur'
+                }],
+                liveCity: [{
+                    required: true, message: '请选择常住都市', trigger: 'blur'
                 }],
                 firstName: [{
                     required: true, message: '请输入姓', trigger: 'blur'
@@ -493,6 +552,7 @@ export default {
             emptyTip: false,
             errorTip: false,
             employeeTypes: [],
+            cityTypes: [],
             sexs: [{
                 label: '男', value: true
             }, {
@@ -507,12 +567,18 @@ export default {
             }],
             teams: [],
             positions: [],
-            certificates: []
+            certificates: [],
+            ishight: true,
+            isEmplooe: false,
+            vendorsArr: [],
+            employeeImages: [],
+            employeePersonID: 0
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             if (Number(to.params.id)) {
+                vm.getInfos(to.params.id);
                 if (to.query.display) {
                     vm.isDisplay = true;
                 }
@@ -521,8 +587,10 @@ export default {
             vm.getTeams();
             vm.countryType();
             vm.getEmployeeTypes();
+            vm.getCityTypes();
             vm.getPositions();
             vm.getCertificates();
+            vm.getVendors();
         });
     },
     computed: {
@@ -576,6 +644,36 @@ export default {
             this.teamM = data.teamMembers || [];
             this.form = { ...form };
         },
+        selsectNation(id) {
+            if (id === 0) {
+                this.ishight = false;
+            } else {
+                this.ishight = true;
+            }
+        },
+        selsectEmployee(ids) {
+            this.employeeTypes.forEach(item => {
+                if (item.id === ids) {
+                    console.log(item);
+                    if (item.type === 2) {
+                        this.isEmplooe = true;
+                    } else {
+                        this.isEmplooe = false;
+                        this.form.vendorID = 0;
+                    }
+                }
+            });
+        },
+        // 部门
+        getVendors() {
+            this.$axios({
+                url: '/api/Customer/api_vendorsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.vendorsArr = res.data || [];
+                }
+            });
+        },
         // 部门
         getTeams() {
             this.$axios({
@@ -601,6 +699,16 @@ export default {
             }).then(res => {
                 if (res.data) {
                     this.employeeTypes = res.data || [];
+                }
+            });
+        },
+        // 城市
+        getCityTypes() {
+            this.$axios({
+                url: '/api/Candidate/api_cityforselect'
+            }).then(res => {
+                if (res.data) {
+                    this.cityTypes = res.data || [];
                 }
             });
         },
@@ -713,9 +821,12 @@ export default {
                 'TeamMembers': '',
                 'CandidateID': this.form.candidateID || 0,
                 'EmployeeTypeID': this.form.employeeTypeID,
+                'VendorID': this.form.vendorID || 0,
                 'OnBoardDate': this.form.onBoardDate,
                 'Furigana_FirstName': this.form.furigana_FirstName || '',
                 'Furigana_LastName':  this.form.furigana_LastName || '',
+                'PinYin_FirstName': this.form.pinYin_FirstName || '',
+                'PinYin_LastName':  this.form.pinYin_LastName || '',
                 'FirstName': this.form.firstName || '',
                 'LastName': this.form.lastName || '',
                 'Sex': this.form.sex,
@@ -801,6 +912,69 @@ export default {
                 }
             });
             return arr.join('，');
+        },
+        dataURLtoFile(dataurl, filename) {
+            var arr = dataurl.split(","),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, { type: mime });
+        },
+        upload({res, opt}) {
+            console.log(res, opt);
+            this.$axios({
+                method: 'POST',
+                url: '/api/Employee/api_uploadempeeimage',
+                params: {
+                    empeeid: this.employeePersonID,
+                    imageid: 0
+                },
+                formData: true
+            }).then(res => {
+                console.log(res);
+            });
+            // fileToBase64(res.file).then(result => {
+            //     this.form[opt.field] = this.dataURLtoFile(result, opt.field);
+            // });
+        },
+        getInfos(ids) {
+            this.$axios({
+                url: '/api/Employee/api_getemployeeinfo',
+                params: {
+                    id: ids
+                }
+            }).then(res => {
+                this.employeeImages = res.data.employeeImages;
+                this.employeePersonID = res.data.id;
+                if (this.employeeImages.length > 0) {
+                    this.getLogo(this.employeeImages[0].id);
+                }
+            });
+        },
+        getLogo(ids) {
+            this.$axios({
+                url: '/api/Employee/api_getempeeimage',
+                params: {
+                    imageid: ids
+                }
+                // headers: {
+                //     'Content-Type': 'application/octet-stream'
+                // },
+                // responseType: 'blob'
+            }).then(res => {
+                console.log(res);
+                // fileToBase64(res).then(result => {
+                //     if (result.indexOf('image') > -1) {
+                //         this.form.logoImage = this.dataURLtoFile(result, 'filename');
+                //         this.data1 = result;
+                //     }
+                //     this.istrue1 = true;
+                // });
+            });
         }
     }
 };

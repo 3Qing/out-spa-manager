@@ -3,8 +3,8 @@
         <div class="main-header clearfix" slot="header">
             <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="beforeSubmit">{{Number($route.params.id) > 0 ? '変更' : '新規'}}</el-button>
             <el-button v-if="$route.name !== 'ResumeUpdate'" size="mini" type="warning" @click="beforeSubmit">変更</el-button>
-            <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="download(Number($route.params.id), 'excel')">下载Excel</el-button>
-            <el-button v-if="$route.name === 'ResumeUpdate'" size="mini" type="primary" @click="download(Number($route.params.id), 'word')">下载Word</el-button>
+            <el-button v-if="Number($route.params.id) > 0 || $route.name === 'ResumeEdit'" size="mini" type="primary" @click="download(Number($route.params.id), 'excel')">下载Excel</el-button>
+            <el-button v-if="Number($route.params.id) > 0 || $route.name === 'ResumeEdit'" size="mini" type="primary" @click="download(Number($route.params.id), 'word')">下载Word</el-button>
             <!-- <el-button class="fr" size="mini" @click="$router.back()">リターン</el-button> -->
         </div>
         <el-form size="mini" label-width="100px" ref="form" :model="form" :rules="rules">
