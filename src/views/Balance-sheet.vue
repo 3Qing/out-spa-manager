@@ -1,6 +1,7 @@
 <template>
     <main-wrapper class="balance-sheet contract-list">
         <div slot="header" class="main-header">
+            <span class="flops">会計期間</span>
             <el-date-picker
                 v-model="form.fromperiod"
                 type="month"
@@ -11,6 +12,7 @@
                 clearable
                 @change="changeStartTime">
             </el-date-picker>
+            <span class="flops">~</span>
             <el-date-picker
                 v-model="form.toperiod"
                 type="month"
@@ -29,7 +31,7 @@
             <span>{{company}}</span>
             <span>累计期间：{{form.fromperiod}} - {{form.toperiod}}</span>
         </div>
-        <el-table :data="tableData" size="mini" border>
+        <el-table :data="tableData" size="mini" border :row-class-name="rowClassName">
             <el-table-column label="勘定科目" prop="item" show-overflow-tooltip></el-table-column>
             <el-table-column label="勘定コード" prop="account"></el-table-column>
             <el-table-column label="前期残高">
@@ -107,6 +109,15 @@ export default {
                 this.getData();
             });
         },
+        rowClassName({ row }) {
+            if (row.summaryLevel === 1) {
+                return 'color1';
+            } else if (row.summaryLevel === 2) {
+                return 'color2';
+            } else if (row.summaryLevel === 3) {
+                return 'color3';
+            }
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
             this.$axios({
@@ -178,6 +189,11 @@ export default {
 
 <style scoped lang="less">
 .balance-sheet {
+    .flops{
+        display: initial;
+        margin: 0 10px;
+        color: #606266;
+    }
     .el-date-editor, .el-select {
         & + .el-date-editor {
             margin-left: 2%;

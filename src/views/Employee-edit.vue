@@ -14,7 +14,7 @@
                             <el-option v-for="item in employeeTypes" :key="item.id" :value="item.id" :label="item.title"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-row v-if="!IS_H5">
+                    <el-row >
                         <el-col :span="12">
                             <el-form-item label="姓（フリガナ）" prop="furigana_FirstName">
                                 <!-- <p v-if="isDisplay">{{form.furigana_FirstName}}</p> -->
@@ -28,15 +28,13 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="姓（フリガナ）" v-if="IS_H5" prop="furigana_FirstName">
-                        <!-- <p v-if="isDisplay">{{form.furigana_FirstName}}</p> -->
+                    <!-- <el-form-item label="姓（フリガナ）" prop="furigana_FirstName">
                         <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
                     </el-form-item>
-                    <el-form-item label="名（フリガナ）" v-if="IS_H5" prop="furigana_LastName">
-                        <!-- <p v-if="isDisplay">{{form.furigana_LastName}}</p> -->
+                    <el-form-item label="名（フリガナ）" prop="furigana_LastName">
                         <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
-                    </el-form-item>
-                    <el-row v-if="!IS_H5">
+                    </el-form-item> -->
+                    <el-row >
                         <el-col :span="12">
                             <el-form-item label="姓（漢字）" prop="firstName">
                                 <!-- <p v-if="isDisplay">{{form.firstName}}</p> -->
@@ -50,14 +48,12 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-form-item label="姓（漢字）" prop="firstName" v-if="IS_H5">
-                        <!-- <p v-if="isDisplay">{{form.firstName}}</p> -->
+                    <!-- <el-form-item label="姓（漢字）" prop="firstName" v-if="IS_H5">
                         <el-input v-model="form.firstName" :maxlength="20"></el-input>
-                    </el-form-item>
-                    <el-form-item label="名（漢字）" prop="lastName" v-if="IS_H5">
-                        <!-- <p v-if="isDisplay">{{form.lastName}}</p> -->
+                    </el-form-item> -->
+                    <!-- <el-form-item label="名（漢字）" prop="lastName" v-if="IS_H5">
                         <el-input v-model="form.lastName" :maxlength="20"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-row>
                         <el-col :span="12">
                             <el-form-item label="入社日" prop="onBoardDate">

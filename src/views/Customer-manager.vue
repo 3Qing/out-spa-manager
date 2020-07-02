@@ -36,7 +36,7 @@
                         <el-input v-model="showForm.title" :placeholder="showFields.title"></el-input>
                     </el-form-item>
                     <el-form-item :label="showFields.abbreTitle" prop="abbreTitle">
-                        <el-input v-model="showForm.abbreTitle" :placeholder="showFields.abbreTitle"></el-input>
+                        <el-input maxlength="20" show-word-limit v-model="showForm.abbreTitle" :placeholder="showFields.abbreTitle"></el-input>
                     </el-form-item>
                     <el-form-item :label="showFields.address1">
                         <el-input v-model="showForm.address1" :placeholder="showFields.address1"></el-input>
@@ -85,7 +85,7 @@
                     <el-input v-model="curForm.title" :placeholder="showFields.title"></el-input>
                 </el-form-item>
                 <el-form-item :label="showFields.abbreTitle" prop="abbreTitle">
-                    <el-input v-model="showForm.abbreTitle" :placeholder="showFields.abbreTitle"></el-input>
+                    <el-input v-model="showForm.abbreTitle" maxlength="20" show-word-limit :placeholder="showFields.abbreTitle"></el-input>
                 </el-form-item>
                 <el-form-item :label="showFields.address1">
                     <el-input v-model="curForm.address1" :placeholder="showFields.address1"></el-input>

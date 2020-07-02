@@ -113,8 +113,10 @@
                 </div>
                 <card-upload v-if="!isDisplay&&istrue1&&istrue2" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
                 <card-upload v-if="!isDisplay&&istrue1&&istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload>
-                <card-upload v-if="!isDisplay&&!istrue1&&!istrue2" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
-                <card-upload v-if="!isDisplay&&!istrue1&&!istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload>
+                <!-- <card-upload v-if="!isDisplay&&!istrue1&&!istrue2" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay&&!istrue1&&!istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload> -->
+                <!-- <card-upload v-if="$route.params.edit" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
+                <card-upload v-if="$route.params.edit" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload> -->
                 <image-croppa></image-croppa>
             </el-col>
         </el-row>
@@ -240,8 +242,10 @@ export default {
                 responseType: 'blob'
             }).then(res => {
                 fileToBase64(res).then(result => {
-                    this.form.logoImage = this.dataURLtoFile(result, 'filename');
-                    this.data1 = result;
+                    if (result.indexOf('image') > -1) {
+                        this.form.logoImage = this.dataURLtoFile(result, 'filename');
+                        this.data1 = result;
+                    }
                     this.istrue1 = true;
                 });
             });
@@ -257,11 +261,11 @@ export default {
                 },
                 responseType: 'blob'
             }).then(res => {
-                // console.log(res);
                 fileToBase64(res).then(result => {
-                    console.log(this.dataURLtoFile(result, 'filename'));
-                    this.form.touhonImage = this.dataURLtoFile(result, 'filename');
-                    this.data2 = result;
+                    if (result.indexOf('image') > -1) {
+                        this.form.touhonImage = this.dataURLtoFile(result, 'filename');
+                        this.data2 = result;
+                    }
                     this.istrue2 = true;
                 });
             });

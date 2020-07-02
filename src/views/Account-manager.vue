@@ -124,7 +124,7 @@ export default {
                     'text': data.text,
                     'bspl': data.bspl,
                     'clearManagement': data.clearManagement,
-                    'groupID': data.groupID
+                    'groupID': data.groupID !== 0 ? data.groupID : ''
                 };
                 // console.log(this.curData);
             }
@@ -190,7 +190,7 @@ export default {
         },
         save() {
             if (!this.curData['accountID']) {
-                this.$message.warning('');
+                this.$message.warning('请填写勘定コード');
                 return false;
             }
             if (this.curData.groupID === '') {

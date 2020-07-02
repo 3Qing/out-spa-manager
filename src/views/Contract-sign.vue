@@ -183,185 +183,187 @@
                     <div class="top"></div>
                 </el-col>
             </el-row>
-            <div class="bottom" v-if="isDisplay">
-                <ul>
-                    <li class="widths">
-                        <span>注文タイプ</span>
-                        <span>{{getContent(forms.contractCategory, selectList, 'id', 'text')}}</span>
-                    </li>
-                    <li class="widths">
-                        <span>注文名称</span>
-                        <span :title='forms.title'>{{forms.title}}</span>
-                    </li>
-                    <li class="widths">
-                        <span>注文内容</span>
-                        <span :title='forms.content'>{{forms.content}}</span>
-                    </li>
-                    <li class="widths">
-                        <span>契約期間</span>
-                        <span>{{formatTime(forms.fromDate)}}~{{formatTime(forms.toDate)}}</span>
-                    </li>
-                    <li class="widths">
-                        <span>作業時間範囲</span>
-                        <span>{{forms.hoursFrom}}~{{forms.hoursTo}}</span>
-                    </li>
-                    <li>
-                        <span>得意先</span>
-                        <span :title="getContent(forms.customerID, customerList, 'id', 'title')">{{getContent(forms.customerID, customerList, 'id', 'title')}}</span>
-                    </li>
-                    <li>
-                        <span>支払サイト</span>
-                        <span>{{getContent(forms.paymentTermID, paymenttermsforselect, 'id', 'title')}}</span>
-                    </li>
-                    <li>
-                        <span>精算単位</span>
-                        <span>{{getContent(forms.calculateUnit, unit, 'value', 'label')}}</span>
-                    </li>
-                    <!-- <li>
-                        <span>単価</span>
-                        <span>{{forms.unitPrice}}</span>
-                    </li>
-                    <li>
-                        <span>超過精算単価</span>
-                        <span>{{forms.overTimePrice}}</span>
-                    </li>
-                    <li>
-                        <span>控除精算単価</span>
-                        <span>{{forms.underTimePrice}}</span>
-                    </li>
-                    <li>
-                        <span>作業担当</span>
-                        <span>{{getContent(forms.employeeId, workList, 'id', 'name')}}</span>
-                    </li> -->
-                    <li class="">
-                        <span>営業担当</span>
-                        <span>{{getContent(forms.salesPersonID, salespersonforselect, 'id', 'name')}}</span>
-                    </li>
-                    <li class="widths">
-                        <span>商流備考</span>
-                        <span>{{forms.businessFlow}}</span>
-                    </li>
-                </ul>
-                <div class="lifloat" v-if='forms.paperReceived === true'>
-                    <img :src=urls>
+            <div class="cl1" v-if="isDisplay">
+                <div class="bottom">
+                    <ul>
+                        <li class="widths">
+                            <span>注文タイプ</span>
+                            <span>{{getContent(forms.contractCategory, selectList, 'id', 'text')}}</span>
+                        </li>
+                        <li class="widths">
+                            <span>注文名称</span>
+                            <span :title='forms.title'>{{forms.title}}</span>
+                        </li>
+                        <li class="widths">
+                            <span>注文内容</span>
+                            <span :title='forms.content'>{{forms.content}}</span>
+                        </li>
+                        <li class="widths">
+                            <span>契約期間</span>
+                            <span>{{formatTime(forms.fromDate)}}~{{formatTime(forms.toDate)}}</span>
+                        </li>
+                        <li class="widths">
+                            <span>作業時間範囲</span>
+                            <span>{{forms.hoursFrom}}~{{forms.hoursTo}}</span>
+                        </li>
+                        <li>
+                            <span>得意先</span>
+                            <span :title="getContent(forms.customerID, customerList, 'id', 'title')">{{getContent(forms.customerID, customerList, 'id', 'title')}}</span>
+                        </li>
+                        <li>
+                            <span>支払サイト</span>
+                            <span>{{getContent(forms.paymentTermID, paymenttermsforselect, 'id', 'title')}}</span>
+                        </li>
+                        <li>
+                            <span>精算単位</span>
+                            <span>{{getContent(forms.calculateUnit, unit, 'value', 'label')}}</span>
+                        </li>
+                        <!-- <li>
+                            <span>単価</span>
+                            <span>{{forms.unitPrice}}</span>
+                        </li>
+                        <li>
+                            <span>超過精算単価</span>
+                            <span>{{forms.overTimePrice}}</span>
+                        </li>
+                        <li>
+                            <span>控除精算単価</span>
+                            <span>{{forms.underTimePrice}}</span>
+                        </li>
+                        <li>
+                            <span>作業担当</span>
+                            <span>{{getContent(forms.employeeId, workList, 'id', 'name')}}</span>
+                        </li> -->
+                        <li class="">
+                            <span>営業担当</span>
+                            <span>{{getContent(forms.salesPersonID, salespersonforselect, 'id', 'name')}}</span>
+                        </li>
+                        <li class="widths" style="width:800px;">
+                            <span>商流備考</span>
+                            <span style="width:600px;">{{forms.businessFlow}}</span>
+                        </li>
+                    </ul>
+                    <!-- <el-table size="small" :data="forms" border>
+                        <el-table-column label="注文名称" prop="title" width="100px"></el-table-column>
+                        <el-table-column label="注文内容" prop="content" width="100px"></el-table-column>
+                        <el-table-column label="契約期間">
+                            <template slot-scope="scope">
+                                <span>{{formatTime(scope.row.fromDate)}}</span>~
+                                <span>{{formatTime(scope.row.toDate)}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="作業時間範囲">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.hoursFrom}}</span>~
+                                <span>{{scope.row.hoursTo}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="得意先">
+                            <template slot-scope="scope">
+                                <span>{{getContent(scope.row.customerId, customerList, 'id', 'title')}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="支払サイト">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.paymenttermId}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="単価" prop="unitPrice"></el-table-column>
+                        <el-table-column label="精算単位">
+                            <template slot-scope="scope">
+                                <span>{{getContent(scope.row.calculateUnit, unit, 'value', 'label')}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="超過精算単価" prop="overTimePrice"></el-table-column>
+                        <el-table-column label="控除精算単価" prop="underTimePrice"></el-table-column>
+                        <el-table-column label="作業担当">
+                            <template slot-scope="scope">
+                                <span>{{getContent(scope.row.employeeId, workList, 'id', 'name')}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="営業担当" prop="salespersonId"></el-table-column>
+                        <el-table-column label="商流備考" prop="businessFlow"></el-table-column>
+                    </el-table> -->
                 </div>
-                <!-- <el-table size="small" :data="forms" border>
-                    <el-table-column label="注文名称" prop="title" width="100px"></el-table-column>
-                    <el-table-column label="注文内容" prop="content" width="100px"></el-table-column>
-                    <el-table-column label="契約期間">
-                         <template slot-scope="scope">
-                            <span>{{formatTime(scope.row.fromDate)}}</span>~
-                            <span>{{formatTime(scope.row.toDate)}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="作業時間範囲">
-                        <template slot-scope="scope">
-                            <span>{{scope.row.hoursFrom}}</span>~
-                            <span>{{scope.row.hoursTo}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="得意先">
-                        <template slot-scope="scope">
-                            <span>{{getContent(scope.row.customerId, customerList, 'id', 'title')}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="支払サイト">
-                        <template slot-scope="scope">
-                            <span>{{scope.row.paymenttermId}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="単価" prop="unitPrice"></el-table-column>
-                    <el-table-column label="精算単位">
-                        <template slot-scope="scope">
-                            <span>{{getContent(scope.row.calculateUnit, unit, 'value', 'label')}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="超過精算単価" prop="overTimePrice"></el-table-column>
-                    <el-table-column label="控除精算単価" prop="underTimePrice"></el-table-column>
-                    <el-table-column label="作業担当">
-                        <template slot-scope="scope">
-                            <span>{{getContent(scope.row.employeeId, workList, 'id', 'name')}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="営業担当" prop="salespersonId"></el-table-column>
-                    <el-table-column label="商流備考" prop="businessFlow"></el-table-column>
-                </el-table> -->
+                <div class="bottom tstable">
+                    <el-table size="small" :data="tableData" border :default-expand-all=defluatFalse>
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <div v-for="(item, index) in props.row.cashflows" :key='index'>
+                                    <el-form label-position="left" inline class="demo-table">
+                                        <el-form-item label="开始日:">
+                                            <span class="lop">{{ formatTime(item.fromDate) }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="结束日:">
+                                            <span class="lop">{{ formatTime(item.toDate) }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="人月:">
+                                            <el-input-number v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
+                                            <span v-else class="lop">{{ item.ningetsu }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="金额:">
+                                            <el-input v-if="btnfalse" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
+                                            <span v-else class="lop">{{ priceToString(priceToNumber(item.contractSales)) }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="支付日:">
+                                            <span class="lop">{{ formatTime(item.planCollectDate) }}</span>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="作業担当" prop="employeeName" width="150px">
+                            <template slot-scope="scope">
+                                <span>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="単価" prop="unitPrice">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(priceToNumber(scope.row.unitPrice))}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="人月" prop="ningetsu">
+                            <template slot-scope="scope">
+                                <span>{{(scope.row.ningetsu/100).toFixed(2)}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="金额" prop="contractPrice">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="超過計算単価" prop="overTimePrice">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(priceToNumber(scope.row.overTimePrice))}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="控除精算単価" prop="underTimePrice">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(priceToNumber(scope.row.underTimePrice))}}</span>
+                            </template>
+                        </el-table-column>
+                        <!-- <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
+                        <el-table-column label="planCollectSales" prop="planCollectSales">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(scope.row.planCollectSales)}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="planCollectAddSales" prop="planCollectAddSales">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(scope.row.planCollectAddSales)}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="planCollectTax" prop="planCollectTax">
+                            <template slot-scope="scope">
+                                <span>{{priceToString(scope.row.planCollectTax)}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column> -->
+                    </el-table>
+                </div>
             </div>
-            <div class="bottom tstable" v-if="isDisplay">
-                <el-table size="small" :data="tableData" border :default-expand-all=defluatFalse>
-                    <el-table-column type="expand">
-                        <template slot-scope="props">
-                            <div v-for="(item, index) in props.row.cashflows" :key='index'>
-                                <el-form label-position="left" inline class="demo-table">
-                                    <el-form-item label="开始日:">
-                                        <span class="lop">{{ formatTime(item.fromDate) }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="结束日:">
-                                        <span class="lop">{{ formatTime(item.toDate) }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="人月:">
-                                        <el-input-number v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
-                                        <span v-else class="lop">{{ item.ningetsu }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="金额:">
-                                        <el-input v-if="btnfalse" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
-                                        <span v-else class="lop">{{ priceToString(priceToNumber(item.contractSales)) }}</span>
-                                    </el-form-item>
-                                    <el-form-item label="支付日:">
-                                        <span class="lop">{{ formatTime(item.planCollectDate) }}</span>
-                                    </el-form-item>
-                                </el-form>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="作業担当" prop="employeeName" width="150px">
-                        <template slot-scope="scope">
-                            <span>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="単価" prop="unitPrice">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(priceToNumber(scope.row.unitPrice))}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="人月" prop="ningetsu">
-                        <template slot-scope="scope">
-                            <span>{{(scope.row.ningetsu/100).toFixed(2)}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="金额" prop="contractPrice">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="超過計算単価" prop="overTimePrice">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(priceToNumber(scope.row.overTimePrice))}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="控除精算単価" prop="underTimePrice">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(priceToNumber(scope.row.underTimePrice))}}</span>
-                        </template>
-                    </el-table-column>
-                    <!-- <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
-                    <el-table-column label="planCollectSales" prop="planCollectSales">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(scope.row.planCollectSales)}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="planCollectAddSales" prop="planCollectAddSales">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(scope.row.planCollectAddSales)}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="planCollectTax" prop="planCollectTax">
-                        <template slot-scope="scope">
-                            <span>{{priceToString(scope.row.planCollectTax)}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column> -->
-                </el-table>
+            <div class="cl2" v-if="isDisplay&&forms.paperReceived === true">
+                <img :src=urls>
             </div>
         </div>
         <el-dialog :visible.sync="dialogPresonMonth">
@@ -1284,6 +1286,7 @@ export default {
     }
     .content {
         padding: 0 20px;
+        overflow: hidden;
         .el-select, .el-input, .el-date-editor {
             width: 220px;
         }
@@ -1307,13 +1310,25 @@ export default {
         top: 100%;
         left: 0;
     }
+    .cl1{
+        float: left;
+        width: 800px;
+    }
+    .cl2{
+        float: right;
+        width: calc(100% - 810px);
+        margin-top: 20px;
+        img{
+            width: 100%;
+        }
+    }
     .bottom {
         width: 100%;
         overflow: hidden;
         margin-top: 20px;
         ul{
             float: left;
-            width: 900px;
+            width: 800px;
             overflow: hidden;
             // height: 280px;
             border: 1px solid #EBEEF5;
@@ -1331,11 +1346,11 @@ export default {
                     box-sizing: border-box;
                 }
                 span:first-child{
-                    width: 145px;
+                    width: 140px;
                     background-color: #F5F7FA;
                 }
                 span:last-child{
-                    width: 300px;
+                    width: 220px;
                     overflow:hidden;  /*超过部分不显示*/
                     text-overflow:ellipsis;  /*超过部分用点点表示*/
                     white-space:nowrap; /*不换行*/
@@ -1348,13 +1363,9 @@ export default {
                 width: 100%;
             }
         }
-        .lifloat{
-            float: left;
-            width: calc(100% - 900px);
-            img{
-                width: 100%;
-            }
-        }
+    }
+    .tstable{
+        width: 800px;
     }
     .link {
         font-size: 16px;
