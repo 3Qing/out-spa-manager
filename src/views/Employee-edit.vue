@@ -276,8 +276,8 @@
                     </el-form-item>
                 </el-form>
             </el-col>
-            <el-col :span="8" v-if='$route.params.id'>
-                <card-upload style="margin-right: 20px;" :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" @success="upload"></card-upload>
+            <el-col :span="8" v-if='$route.params.id&&istrue'>
+                <card-upload style="margin-right: 20px;" :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" :datas='data1' @success="upload"></card-upload>
             </el-col>
             <el-col :span="12" v-if="isDisplay">
                 <div class="top"></div>
@@ -439,7 +439,7 @@ import MainWrapper from '@components/main-wrapper';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
 import CardUpload from '@components/card-upload';
-import { priceToString, formatTime} from '@_public/utils';
+import { priceToString, formatTime, fileToBase64} from '@_public/utils';
 
 export default {
     components: {
@@ -448,6 +448,7 @@ export default {
     },
     data() {
         return {
+            istrue: false,
             teamM: [],
             countryTypeArr: [],
             form: {
@@ -572,7 +573,8 @@ export default {
             isEmplooe: false,
             vendorsArr: [],
             employeeImages: [],
-            employeePersonID: 0
+            employeePersonID: 0,
+            data1: ''
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -960,20 +962,21 @@ export default {
                 url: '/api/Employee/api_getempeeimage',
                 params: {
                     imageid: ids
-                }
-                // headers: {
-                //     'Content-Type': 'application/octet-stream'
-                // },
-                // responseType: 'blob'
+                },
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                responseType: 'blob'
             }).then(res => {
-                console.log(res);
-                // fileToBase64(res).then(result => {
-                //     if (result.indexOf('image') > -1) {
-                //         this.form.logoImage = this.dataURLtoFile(result, 'filename');
-                //         this.data1 = result;
-                //     }
-                //     this.istrue1 = true;
-                // });
+                // this.data1 = res;
+                fileToBase64(res).then(result => {
+                    if (result.indexOf('image') > -1) {
+                        // this.form.logoImage = this.dataURLtoFile(result, 'filename');
+                        this.data1 = result;
+                        // console.log(result);
+                    }
+                    this.istrue = true;
+                });
             });
         }
     }
