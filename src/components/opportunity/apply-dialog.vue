@@ -7,6 +7,7 @@
                     remote
                     filterable
                     clearable
+                    multiple
                     @clear="clearHandle"
                     @change="handleChange"
                     :remote-method="getCandidate">
@@ -38,7 +39,7 @@ export default {
             dialog: false,
             curId: '',
             form: {
-                candidateid: '',
+                candidateid: [],
                 comment: ''
             },
             candidates: []
@@ -53,14 +54,11 @@ export default {
         }
     },
     methods: {
-        getCandidate(keyword) {
+        getCandidate() {
             this.loading = true;
-            this.form.candidateid = keyword;
+            // this.form.candidateid = keyword;
             this.$axios({
-                url: '/api/Candidate/api_candidatesforselect',
-                params: {
-                    keyword
-                }
+                url: '/api/Candidate/api_candidatesforselect'
             }).then(res => {
                 this.loading = false;
                 if (res && res.code === 0) {
@@ -70,27 +68,36 @@ export default {
         },
         // 获取提案列表
         handleChange(val) {
-            this.$set(this.form, 'candidateid', val);
+            console.log(val);
+            // this.$set(this.form, 'candidateid', val);
         },
         clearHandle() {
-            this.form.candidateid = '';
+            this.form.candidateid = [];
         },
         close() {
             this.$emit('close');
             this.form = {
-                candidateid: '',
+                candidateid: [],
                 comment: ''
             };
         },
         submit() {
+            // var list = {};
+            // var arr = this.form.candidateid;
+            // for (var key in arr) {
+            //     list[key] = arr[key];
+            // }
+            // console.log(list);
             const loading = this.$loading({ lock: true, text: 'データ提出中...' });
             this.$axios({
-                url: '/api/Opportunity/api_applyforopportunity',
+                method: 'POST',
+                url: '/api/Opportunity/api_applyforopportunity1',
                 params: {
                     opportunityid: this.curId,
-                    candidateid: this.form.candidateid,
+                    candidateids: this.form.candidateid,
                     comment: this.form.comment
-                }
+                },
+                formData: true
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {

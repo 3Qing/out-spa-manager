@@ -40,6 +40,9 @@
             <el-select v-model="form.salespersonid" placeholder="営業担当" @change="changeHandler" size="mini" clearable>
                 <el-option v-for="item in sales" :key="item.id" :value="item.id" :label="item.name"></el-option>
             </el-select>
+            <el-select v-model="form.paperreceived" placeholder="注文書原本" @change="changeHandler" size="mini" clearable>
+                <el-option v-for="item in selectArrar" :key="item.id" :value="item.id" :label="item.name"></el-option>
+            </el-select>
         </div>
         <el-table size="small" :data="tableData" border>
             <el-table-column label="注文番号" width="130px">
@@ -62,8 +65,16 @@
             <el-table-column label="契約単価・万円" prop="contractPrice"></el-table-column>
             <el-table-column label="支払条件" prop="paymentTerm" width="120px"></el-table-column>
             <el-table-column label="作業時間範囲" prop="hoursRange" show-overflow-tooltip></el-table-column>
-            <el-table-column label="超過精算・円/時間" prop="overTimePrice"></el-table-column>
-            <el-table-column label="控除精算・円/時間" prop="underTimePrice"></el-table-column>
+            <el-table-column label="超過精算・円/時間">
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.overTimePrice)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="控除精算・円/時間">
+                <template slot-scope="scope">
+                    <span>{{priceToString(scope.row.underTimePrice)}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="作業担当" prop="employeeName" show-overflow-tooltip></el-table-column>
             <el-table-column label="営業担当" prop="salesName" show-overflow-tooltip></el-table-column>
             <el-table-column label="注文書原本" width="140px">
@@ -162,7 +173,7 @@ import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import BigPicture from '@components/big-picture';
 import { mapGetters } from 'vuex';
-import { formatTime, apiDownloadFile, imageFileToPreview } from '@_public/utils';
+import { formatTime, apiDownloadFile, imageFileToPreview, priceToString} from '@_public/utils';
 export default {
     components: {
         MainWrapper,
@@ -177,6 +188,7 @@ export default {
                 customerid: '',
                 empeeid: '',
                 salespersonid: '',
+                paperreceived: '',
                 page: 1,
                 pagesize: 10
             },
@@ -192,7 +204,17 @@ export default {
             dialogLoading: false,
             personMonthArr: [],
             curRow: {},
-            loading: false
+            loading: false,
+            selectArrar: [{
+                id: 0,
+                name: '全部'
+            },{
+                id: 1,
+                name: '原本受領'
+            },{
+                id: 2,
+                name: '原本未受領'
+            }]
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -207,6 +229,7 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        priceToString: priceToString,
         formatTime: formatTime,
         changeHandler() {
             this.form.page = 1;

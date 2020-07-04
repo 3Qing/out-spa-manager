@@ -2,7 +2,7 @@
     <main-wrapper class="employee-edit">
         <div class="main-header" slot="header">
             <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
-            <el-button type="danger" size="small" @click="resetForm" v-if="!isDisplay">リセット</el-button>
+            <el-button type="danger" size="small" @click="resetForm" v-if="!isDisplay">扶養情報更新</el-button>
             <el-button size="small" @click="$router.back()">リターン</el-button>
         </div>
         <el-row class="minwidth" v-if="!isDisplay">
@@ -431,6 +431,57 @@
                 </el-table-column>
             </el-table>
         </div>
+        <el-dialog title="被扶養者" :visible.sync="visible" @close="close" class="csstable">
+            <el-table :data="forms" size="small" border>
+                <el-table-column label="氏名（カタカナ）" prop="dependantFurigana">
+                    <template slot-scope="scope">
+                        <el-input v-model="scope.row.dependantFurigana" :maxlength="20"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="氏名（漢字）" prop="dependantName">
+                    <template slot-scope="scope">
+                        <el-input v-model="scope.row.dependantName" :maxlength="20"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="関係" prop="relation">
+                    <template slot-scope="scope">
+                        <el-select v-model="scope.row.relation" filterable allow-create default-first-option @change="selectBlur(scope.row, scope.$index)">
+                            <el-option v-for="item in selation" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column label="生年月日" prop="dependantBirthday" width="150px">
+                    <template slot-scope="scope">
+                        <el-date-picker
+                            class="ces"
+                            v-model="scope.row.dependantBirthday"
+                            type="date"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"></el-date-picker>
+                    </template>
+                </el-table-column>
+                <el-table-column label="性別" prop="dependantSex" width="85px">
+                    <template slot-scope="scope">
+                        <el-select v-model="scope.row.dependantSex">
+                            <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column label="住所" prop="dependantAddress">
+                    <template slot-scope="scope">
+                        <el-input v-model="scope.row.dependantAddress" :maxlength="100"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="同居" prop="liveTogether" width="50px">
+                    <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.liveTogether"></el-checkbox>
+                    </template>  
+                </el-table-column>
+            </el-table>
+            <div slot="footer">
+                <el-button type="primary" size="small" @click="savesubmit">保存</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -448,9 +499,11 @@ export default {
     },
     data() {
         return {
+            visible: false,
             istrue: false,
             teamM: [],
             countryTypeArr: [],
+            forms: [],
             form: {
                 employeeTypeID: '',
                 vendorID: '',
@@ -574,7 +627,8 @@ export default {
             vendorsArr: [],
             employeeImages: [],
             employeePersonID: 0,
-            data1: ''
+            data1: '',
+            selation: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -584,6 +638,8 @@ export default {
                 if (to.query.display) {
                     vm.isDisplay = true;
                 }
+                vm.getFuyang();
+                vm.getReslion();
                 vm.getData();
             }
             vm.getTeams();
@@ -601,6 +657,118 @@ export default {
     methods: {
         priceToString: priceToString,
         formatTime: formatTime,
+        selectBlur(e, id) {
+            this.forms.forEach((item, index) => {
+                if(id === index) {
+                    if (typeof(e.relation) === 'string') {
+                        item.otherRelation = e.relation;
+                        item.relation = 0;
+                    } else {
+                        item.otherRelation = '';
+                    }
+                }
+            });
+        },
+        getReslion() {
+            this.$axios({
+                url: '/api/Employee/api_dependantrelationforselect',
+                custom: {
+                    vm: this
+                }
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.selation = res.data;
+                }
+            });
+        },
+        getFuyang() {
+            this.$axios({
+                url: '/api/Employee/api_getdependants',
+                params: {
+                    empeeid: this.$route.params.id
+                },
+                custom: {
+                    vm: this
+                }
+            }).then(res => {
+                if (res && res.code === 0) {
+                    if (res.data.length > 0) {
+                        this.forms = res.data;
+                    } else {
+                        this.forms = [{
+                            dependantAddress: '',
+                            dependantBirthday: '',
+                            dependantFurigana: '',
+                            dependantName: '',
+                            dependantSex: '',
+                            liveTogether: '',
+                            relation: '',
+                            otherRelation: ''
+                        }];
+                    }
+                }
+            });
+        },
+        close() {
+            this.visible = false;
+        },
+        savesubmit() {
+            let btns = false;
+            this.forms.forEach(item => {
+                // if (typeof(item.otherRelation) === 'string') {
+                //     item.relation = 0;
+                // }
+                if (item.dependantFurigana !== '' && item.dependantName !== '' && item.dependantAddress !== '') {
+                    btns = true;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: '请输入氏名（カタカナ）,氏名（漢字）,住所'
+                    });
+                }
+                // if (item.dependantName === '') {
+                //     this.$message({
+                //         type: 'error',
+                //         message: '请输入氏名（漢字）'
+                //     });
+                // } else if (item.dependantAddress === '') {
+                //     this.$message({
+                //         type: 'error',
+                //         message: '请输入住所'
+                //     });
+                // } else {
+                //     btns = true;
+                // }
+            });
+            if (btns === true) {
+                const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
+                this.$axios({
+                    method: 'POST',
+                    url: '/api/Employee/api_updatedependants',
+                    params: {
+                        dependants: this.forms,
+                        empeeid: this.$route.params.id
+                    },
+                    formData: true
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        this.visible = false;
+                        this.$message({
+                            type: 'success',
+                            showClose: true,
+                            message: '保存成功'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            showClose: true,
+                            message: res.message ? res.message : '接口开小差了，没有返回信息'
+                        });
+                    }
+                });
+            }
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: 'データ取得中...' });
             this.$axios({
@@ -774,7 +942,8 @@ export default {
             }
         },
         resetForm() {
-            this.$refs.from.resetFields();
+            // this.$refs.from.resetFields();
+            this.visible = true;
         },
         beforeSubmit() {
             this.$refs.form.validate(valid => {

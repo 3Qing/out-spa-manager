@@ -1,6 +1,15 @@
 import axios from 'axios';
+import qs from 'qs';
 
 axios.defaults.withCredentials = true;
+// axios.interceptors.request.use(async (config) => {
+// //只针对get方式进行序列化
+//     if (config.method === 'get') {
+//     config.paramsSerializer = function(params) {
+//         return qs.stringify(params, { arrayFormat: 'repeat' })
+//         }
+//     }
+// }
 
 export default (params = {}) => {
     const url = process.env.NODE_ENV === 'production' ? 'http://erp.your-partner.co.jp' : '/proxy';
@@ -13,6 +22,11 @@ export default (params = {}) => {
         options.data = params.params;
         options.withCredentials = true;
         delete options.params;
+    }
+    if (options.method.toLocaleUpperCase() === 'GET') {
+        options.paramsSerializer = function(params) {
+            return qs.stringify(params, { arrayFormat: 'repeat' });
+        };
     }
     if (options.formData === true) {
         const formData = new FormData();
