@@ -60,6 +60,7 @@ export default {
                 type: CHANGE_TAB_TITLE,
                 title: 'ログイン'
             });
+            // vm.inspectIfAutoLogin();
         });
     },
     // beforeMount() {
@@ -68,6 +69,14 @@ export default {
     //     }
     // },
     methods: {
+        // 检测是否自动登录
+        inspectIfAutoLogin() {
+            const _this = this;
+            const _ruleForm = sessionStorage.getItem('names');
+            if (_ruleForm) {
+                _this.submit();
+            }
+        },
         reloadValidCover() {
             this.validUrl = formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false);
         },
@@ -95,6 +104,8 @@ export default {
         submit() {
             const loading = this.$loading({ lock: true, text: 'ログイン中...' });
             const params = Object.assign({}, this.form);
+            sessionStorage.setItem('names', JSON.stringify(params));
+            console.log(params);
             this.$axios({
                 url: '/api/User/api_login',
                 params,

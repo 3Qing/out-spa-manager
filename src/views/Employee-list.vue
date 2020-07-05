@@ -22,6 +22,11 @@
             <el-form-item>
                 <el-input v-model="form.name" placeholder="氏名" :maxlength="30" @blur="changeHandle" clearable></el-input>
             </el-form-item>
+            <el-form-item>
+                <el-select v-model="form.onjob" placeholder="是否在职" @change="changeHandle" clearable>
+                    <el-option v-for="item in selectLabs" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                </el-select>
+            </el-form-item>
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData" border>
@@ -175,6 +180,13 @@ export default {
     },
     data() {
         return {
+            selectLabs: [{
+                id: false,
+                title: '全部'
+            },{
+                id: true,
+                title: '在职'
+            }],
             teamFromdate: '',
             teamFromid: '',
             teamTodate: '',
@@ -187,7 +199,8 @@ export default {
                 employeetype: '',
                 module: '',
                 positions: [],
-                name: ''
+                name: '',
+                onjob: ''
             },
             teams: [],
             employeeTypes: [],
@@ -244,6 +257,7 @@ export default {
                     positions: this.form.positions,
                     masterskill: this.form.module,
                     name: this.form.name,
+                    onjob: this.form.onjob,
                     page: this.pn,
                     pagesize: this.ps
                 },

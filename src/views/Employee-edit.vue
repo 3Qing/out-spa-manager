@@ -2,11 +2,11 @@
     <main-wrapper class="employee-edit">
         <div class="main-header" slot="header">
             <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
-            <el-button type="danger" size="small" @click="resetForm" v-if="!isDisplay">扶養情報更新</el-button>
+            <el-button type="danger" size="small" @click="resetForm" >扶養情報更新</el-button>
             <el-button size="small" @click="$router.back()">リターン</el-button>
         </div>
         <el-row class="minwidth" v-if="!isDisplay">
-            <el-col :span="16">
+            <el-col :span="14">
                 <el-form size="small" label-width="130px" ref="form" :model="isDisplay ? {} : form" :rules="isDisplay ? {} : rules">
                     <el-row >
                         <el-col :span="12">
@@ -276,14 +276,21 @@
                     </el-form-item>
                 </el-form>
             </el-col>
-            <el-col :span="8" v-if='$route.params.id&&istrue'>
-                <card-upload style="margin-right: 20px;" :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" :datas='data1' @success="upload"></card-upload>
+            <el-col :span="10" v-if='$route.params.id&&istrue'>
+                <card-upload :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" @success="upload"></card-upload>
+                <div class="imgid" v-if='imgIds.length>0'>
+                    <div v-for="(item, index) in imgIds" :key='index'>
+                        <img :src="item.url">
+                        <i class="posis el-icon-delete oper-icon" color="danger" @click="deleteimage(item.id)"></i>
+                    </div>
+                </div>
             </el-col>
             <el-col :span="12" v-if="isDisplay">
                 <div class="top"></div>
             </el-col>
         </el-row>
-        <div class="bottom" v-if="isDisplay">
+        <div class="disbled" v-if="isDisplay">
+            <div class="bottom">
                 <ul>
                     <li>
                         <span>姓（フリガナ）</span>
@@ -398,87 +405,110 @@
                         <span :title='form.comment'>{{form.comment}}</span>
                     </li>
                 </ul>
+            </div>
+            <div class="bottom">
+                <el-table :data="form.salaries" size="small" border>
+                    <el-table-column label="时间" width="100px">
+                        <template slot-scope="scope">
+                            <p>{{formatTime(scope.row.fromDate)}}</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="绩效工资" prop="pjSalary" width="100px"></el-table-column>
+                    <el-table-column label="基本工资" prop="baseSalary" width="100px"></el-table-column>
+                    <el-table-column label="工资的备注" prop="comment">
+                        <template slot-scope="scope">
+                            <p>{{scope.row.comment || '-'}}</p>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <div class="bottom">
+                <el-table :data="teamM" size="small" border>
+                    <el-table-column label="部門" prop="teamName"></el-table-column>
+                    <el-table-column label="部門リーダー" prop="teamLeader"></el-table-column>
+                    <el-table-column label="配属開始日">
+                        <template slot-scope="scope">
+                            <p>{{formatTime(scope.row.fromDate)}}</p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="配属終了日">
+                        <template slot-scope="scope">
+                            <p>{{formatTime(scope.row.toDate)}}</p>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
         </div>
-        <div class="bottom" v-if="isDisplay">
-            <el-table :data="form.salaries" size="small" border>
-                <el-table-column label="时间">
-                    <template slot-scope="scope">
-                        <p>{{formatTime(scope.row.fromDate)}}</p>
-                    </template>
-                </el-table-column>
-                <el-table-column label="绩效工资" prop="pjSalary"></el-table-column>
-                <el-table-column label="基本工资" prop="baseSalary"></el-table-column>
-                <el-table-column label="工资的备注" prop="comment">
-                    <template slot-scope="scope">
-                        <p>{{scope.row.comment || '-'}}</p>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div>
-        <div class="bottom" v-if="isDisplay">
-            <el-table :data="teamM" size="small" border>
-                <el-table-column label="部門" prop="teamName"></el-table-column>
-                <el-table-column label="部門リーダー" prop="teamLeader"></el-table-column>
-                <el-table-column label="配属開始日">
-                    <template slot-scope="scope">
-                        <p>{{formatTime(scope.row.fromDate)}}</p>
-                    </template>
-                </el-table-column>
-                <el-table-column label="配属終了日">
-                    <template slot-scope="scope">
-                        <p>{{formatTime(scope.row.toDate)}}</p>
-                    </template>
-                </el-table-column>
-            </el-table>
+        <div class="disbleds" v-if="isDisplay">
+            <div class="imgid" v-if='imgIds.length>0'>
+                <div v-for="(item, index) in imgIds" :key='index'>
+                    <img :src="item.url">
+                </div>
+            </div>
         </div>
         <el-dialog title="被扶養者" :visible.sync="visible" @close="close" class="csstable">
             <el-table :data="forms" size="small" border>
                 <el-table-column label="氏名（カタカナ）" prop="dependantFurigana">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.dependantFurigana" :maxlength="20"></el-input>
+                        <el-input v-if='!isDisplay' v-model="scope.row.dependantFurigana" :maxlength="20"></el-input>
+                        <span v-else>{{scope.row.dependantFurigana}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="氏名（漢字）" prop="dependantName">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.dependantName" :maxlength="20"></el-input>
+                        <el-input v-if='!isDisplay' v-model="scope.row.dependantName" :maxlength="20"></el-input>
+                        <span v-else>{{scope.row.dependantName}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="関係" prop="relation">
                     <template slot-scope="scope">
-                        <el-select v-model="scope.row.relation" filterable allow-create default-first-option @change="selectBlur(scope.row, scope.$index)">
+                        <el-select v-if='!isDisplay' v-model="scope.row.relation" filterable allow-create default-first-option @change="selectBlur(scope.row, scope.$index)">
                             <el-option v-for="item in selation" :key="item.id" :value="item.id" :label="item.text"></el-option>
                         </el-select>
+                        <span v-else>{{getContent(scope.row.relation, selation, 'id', 'text')}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="生年月日" prop="dependantBirthday" width="150px">
                     <template slot-scope="scope">
                         <el-date-picker
+                            v-if='!isDisplay'
                             class="ces"
                             v-model="scope.row.dependantBirthday"
                             type="date"
                             format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd"></el-date-picker>
+                        <span v-else>{{formatTime(scope.row.dependantBirthday)}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="性別" prop="dependantSex" width="85px">
                     <template slot-scope="scope">
-                        <el-select v-model="scope.row.dependantSex">
+                        <el-select v-model="scope.row.dependantSex" v-if='!isDisplay'>
                             <el-option v-for="(item, i) in sexs" :key="i" :value="item.value" :label="item.label"></el-option>
                         </el-select>
+                        <span v-else>{{getContent(scope.row.dependantSex, sexs, 'value', 'label')}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="住所" prop="dependantAddress">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.dependantAddress" :maxlength="100"></el-input>
+                        <el-input v-if='!isDisplay' v-model="scope.row.dependantAddress" :maxlength="100"></el-input>
+                        <span v-else>{{scope.row.dependantAddress}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="同居" prop="liveTogether" width="50px">
                     <template slot-scope="scope">
-                        <el-checkbox v-model="scope.row.liveTogether"></el-checkbox>
+                        <el-checkbox v-if='!isDisplay' v-model="scope.row.liveTogether"></el-checkbox>
+                        <span v-else>{{scope.row.liveTogether?'是':'否'}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="50px" v-if='!isDisplay'>
+                    <template slot-scope="scope">
+                        <el-tooltip class="flot" effect="dark" content="削除" placement="top-start">
+                            <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.$index)"></i>
+                        </el-tooltip>
                     </template>  
                 </el-table-column>
             </el-table>
-            <div slot="footer">
+            <div slot="footer" v-if='!isDisplay'>
                 <el-button type="primary" size="small" @click="savesubmit">保存</el-button>
             </div>
         </el-dialog>
@@ -628,12 +658,14 @@ export default {
             employeeImages: [],
             employeePersonID: 0,
             data1: '',
-            selation: []
+            selation: [],
+            imgIds: []
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             if (Number(to.params.id)) {
+                console.log(to.params.id);
                 vm.getInfos(to.params.id);
                 if (to.query.display) {
                     vm.isDisplay = true;
@@ -662,10 +694,16 @@ export default {
                 if(id === index) {
                     if (typeof(e.relation) === 'string') {
                         item.otherRelation = e.relation;
-                        item.relation = 0;
                     } else {
                         item.otherRelation = '';
                     }
+                }
+            });
+        },
+        deletes(index) {
+            this.forms.forEach((item, inde) => {
+                if (index === inde) {
+                    this.forms.splice(index, 1);
                 }
             });
         },
@@ -711,19 +749,20 @@ export default {
         },
         close() {
             this.visible = false;
+            this.getFuyang();
         },
         savesubmit() {
             let btns = false;
             this.forms.forEach(item => {
-                // if (typeof(item.otherRelation) === 'string') {
-                //     item.relation = 0;
-                // }
-                if (item.dependantFurigana !== '' && item.dependantName !== '' && item.dependantAddress !== '') {
+                if (item.otherRelation !== '') {
+                    item.relation = 0;
+                }
+                if (item.dependantFurigana !== '' && item.dependantName !== '' && item.relation !== '' && item.dependantAddress !== '') {
                     btns = true;
                 } else {
                     this.$message({
                         type: 'error',
-                        message: '请输入氏名（カタカナ）,氏名（漢字）,住所'
+                        message: '请输入氏名（カタカナ）,氏名（漢字）,関係,住所'
                     });
                 }
                 // if (item.dependantName === '') {
@@ -740,6 +779,9 @@ export default {
                 //     btns = true;
                 // }
             });
+            if (this.forms.length === 0) {
+                btns = true;
+            }
             if (btns === true) {
                 const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
                 this.$axios({
@@ -1095,14 +1137,18 @@ export default {
             }
             return new File([u8arr], filename, { type: mime });
         },
-        upload({res, opt}) {
-            console.log(res, opt);
+        upload({res}) {
+            let optid = 0;
+            // if(this.employeeImages.length > 0) {
+            //     optid = this.employeeImages[0].id;
+            // }
             this.$axios({
                 method: 'POST',
                 url: '/api/Employee/api_uploadempeeimage',
                 params: {
                     empeeid: this.employeePersonID,
-                    imageid: 0
+                    imageid: optid,
+                    image: res.file
                 },
                 formData: true
             }).then(res => {
@@ -1111,6 +1157,23 @@ export default {
             // fileToBase64(res.file).then(result => {
             //     this.form[opt.field] = this.dataURLtoFile(result, opt.field);
             // });
+        },
+        deleteimage(opts) {
+            const loading = this.$loading({ lock: true, text: '正在删除中...' });
+            this.$axios({
+                url: '/api/Employee/api_deleteempeeimage',
+                params: {
+                    empeeid: this.employeePersonID,
+                    imageid: opts
+                }
+            }).then(res => {
+                loading.close();
+                this.$message({
+                    type: 'success',
+                    showClose: true,
+                    message: res.message
+                });
+            });
         },
         getInfos(ids) {
             this.$axios({
@@ -1122,11 +1185,16 @@ export default {
                 this.employeeImages = res.data.employeeImages;
                 this.employeePersonID = res.data.id;
                 if (this.employeeImages.length > 0) {
-                    this.getLogo(this.employeeImages[0].id);
+                    this.employeeImages.forEach(item => {
+                        this.getLogo(item.id);
+                    });
+                } else {
+                    this.istrue = true;
                 }
             });
         },
         getLogo(ids) {
+            let opts = ids;
             this.$axios({
                 url: '/api/Employee/api_getempeeimage',
                 params: {
@@ -1137,12 +1205,14 @@ export default {
                 },
                 responseType: 'blob'
             }).then(res => {
-                // this.data1 = res;
                 fileToBase64(res).then(result => {
                     if (result.indexOf('image') > -1) {
-                        // this.form.logoImage = this.dataURLtoFile(result, 'filename');
                         this.data1 = result;
-                        // console.log(result);
+                        let optimg = {
+                            url: result,
+                            id: opts
+                        };
+                        this.imgIds.push(optimg);
                     }
                     this.istrue = true;
                 });
@@ -1154,8 +1224,46 @@ export default {
 
 <style lang="less">
 .employee-edit {
+    .imgid{
+        width: 100%;
+        div{
+            border-radius: 3px;
+            border: 1px solid #C1D4E5;
+            position: relative;
+            width: 200px;
+            float: left;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            img{
+                width: 190px;
+            }
+            .posis{
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                cursor: pointer;
+            }
+        }
+    }
+    .content-wrapper{
+        overflow: hidden;
+    }
     .minwidth{
         min-width: 1200px;
+    }
+    .disbled{
+        float: left;
+        overflow: hidden;
+        width: 900px;
+    }
+    .disbleds{
+        float: right;
+        width: calc(100% - 920px);
+        margin-top: 20px;
+        img{
+            width: 200px;
+            margin-right: 20px;
+        }
     }
     .bottom{
         margin-top: 20px;

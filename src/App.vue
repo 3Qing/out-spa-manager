@@ -118,6 +118,7 @@ export default {
     methods: {
         logout() {
             sessionStorage.removeItem('appInfo');
+            sessionStorage.removeItem('names');
             sessionStorage.removeItem('pageTag');
             this.$store.dispatch({
                 type: FETCH_MENUS,

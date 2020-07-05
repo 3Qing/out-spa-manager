@@ -24,6 +24,7 @@
                 size="mini"
                 clearable
                 @blur="changeHandle"></el-input>
+            <el-button style="margin-left:25px;" type="primary" size="mini" @click="confirmLeave">请求书批量生成</el-button>
         </main-header-date>
         <el-table size="small" :data="tableData">
             <el-table-column label="注文書番号" prop="contractNo" show-overflow-tooltip></el-table-column>
@@ -129,6 +130,20 @@
                 <el-button type="primary" size="mini" @click="show = false">確定</el-button>
             </div>
         </el-dialog>
+        <el-dialog :visible.sync="leavedateFalse" title="请求书批量生成">
+            <el-form size="mini">
+                <el-form-item label="选择年月">
+                    <el-date-picker
+                        v-model="leavedate"
+                        type="month"
+                        value-format="yyyy-MM"
+                        format="yyyy-MM"></el-date-picker>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmBtn">确定</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -164,7 +179,9 @@ export default {
             visible: false,
             show: false,
             curRow: {},
-            loading: false
+            loading: false,
+            leavedateFalse: false,
+            leavedate: ''
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -181,6 +198,29 @@ export default {
     },
     methods: {
         formatTime: formatTime,
+        // 请求书批量生成
+        confirmLeave() {
+            this.leavedateFalse = true;
+        },
+        confirmBtn() {
+            const loading = this.$loading({ lock: true, text: '批量生成中...' });
+            let dates = this.leavedate.replace('-','');
+            this.$axios({
+                url: '/api/Invoice/api_createinvoicebybatch',
+                params: {
+                    period: dates
+                }
+            }).then(res => {
+                if (res && res.code === 0) {
+                    loading.close();
+                    this.leavedateFalse = false;
+                    this.$message({
+                        type: 'success',
+                        message: '生成成功'
+                    });
+                }
+            });
+        },
         // チーム
         getTeams() {
             this.$axios({
