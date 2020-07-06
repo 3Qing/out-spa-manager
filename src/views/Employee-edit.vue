@@ -2,7 +2,7 @@
     <main-wrapper class="employee-edit">
         <div class="main-header" slot="header">
             <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
-            <el-button type="danger" size="small" @click="resetForm" >扶養情報更新</el-button>
+            <el-button type="danger" size="small" @click="resetForm" v-if='$route.params.id'>扶養情報更新</el-button>
             <el-button size="small" @click="$router.back()">リターン</el-button>
         </div>
         <el-row class="minwidth" v-if="!isDisplay">

@@ -90,11 +90,17 @@
                 <template slot-scope="scope">
                     <!-- <el-button type="primary" size="mini" @click="toEdit(scope.row)">編集</el-button>
                     <el-button size="mini" @click="showDialog(scope.row)">更新</el-button> -->
+                    <el-tooltip effect="dark" content="显示" placement="top-start">
+                        <i class="el-icon-view oper-icon" color="success" @click="toEdit(scope.row, 'display')"></i>
+                    </el-tooltip>
                     <el-tooltip effect="dark" content="编辑" placement="top-start">
                         <i class="el-icon-edit-outline oper-icon" color="warning" @click="toEdit(scope.row)"></i>
                     </el-tooltip>
                     <el-tooltip effect="dark" content="更新" placement="top-start">
                         <i class="el-icon-refresh-right oper-icon" color="primary" @click="showDialog(scope.row)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="删除" placement="top-start">
+                        <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
                     </el-tooltip>
                 </template>
             </el-table-column>
@@ -203,7 +209,7 @@ export default {
                 pagesize: this.pageSize
             }, this.form);
             this.$axios({
-                url: '/api/PurchaseOrder/api_getpocontractlist',
+                url: '/api/POContract/api_getcontractlist',
                 params
             }).then(res => {
                 loading.close();
@@ -303,9 +309,35 @@ export default {
         downloadPDF(row) {
             apiDownloadFile({
                 vm: this,
-                url: `/api/PurchaseOrder/api_downloadpoexcel?id=${row.id}`,
+                url: `/api/POContract/api_downloadcontractpdf?conid=${row.contractID}`,
                 filename: `${Date.now()}.xlsx`
             });
+        },
+        // 删除合同
+        deletes(row) {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/POContract/api_deletecontract',
+                    params: {
+                        contractid: row.contractID
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.getData();
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
         },
         uploadFile({ file, opt }) {
             const loading = this.$loading({ lock: true, text: '正在上传文件' });
@@ -342,13 +374,28 @@ export default {
         close() {
             this.visible = false;
         },
-        toEdit(row) {
-            this.$router.push({
+        toEdit(row, type) {
+            // this.$router.push({
+            //     name: 'PurchaseEdit',
+            //     params: {
+            //         id: row.id
+            //     }
+            // });
+            const params = {
                 name: 'PurchaseEdit',
                 params: {
-                    id: row.id
+                    id: row.contractID
                 }
-            });
+            };
+            if (type === 'display') {
+                params.query = {
+                    display: 1
+                };
+            }
+            if (type === 'updates') {
+                params.params.updates = true;
+            }
+            this.$router.push(params);
         },
         formatNingetsu(scope) {
             const personMonthArr = [...this.personMonthArr];
@@ -365,59 +412,71 @@ export default {
             this.personMonthArr = [];
             this.dialogPresonMonth = true;
             this.dialogLoading = true;
-            const [ fromDate = '', toDate = '' ] = this.datetime;
-            this.$axios({
-                url: '/api/Contract/api_calculateningetsu',
-                params: {
-                    fromDate: fromDate,
-                    todate: toDate
-                }
-            }).then(res => {
-                if (res && res.code === 0) {
-                    this.dialogLoading = false;
-                    const result = [...res.data];
-                    result.forEach(item => {
-                        item.ningetsu = item.ningetsu / 100;
-                    });
-                    this.personMonthArr = result;
-                }
-            });
+            // const [ fromDate = '', toDate = '' ] = this.datetime;
+            // this.$axios({
+            //     url: '/api/Contract/api_calculateningetsu',
+            //     params: {
+            //         fromDate: fromDate,
+            //         todate: toDate
+            //     }
+            // }).then(res => {
+            //     if (res && res.code === 0) {
+            //         this.dialogLoading = false;
+            //         const result = [...res.data];
+            //         result.forEach(item => {
+            //             item.ningetsu = item.ningetsu / 100;
+            //         });
+            //         this.personMonthArr = result;
+            //     }
+            // });
         },
         confirmDialog() {
-            const ningetsu = [];
-            this.personMonthArr.forEach(item => {
-                ningetsu.push(parseInt(item.ningetsu * 100));
-            });
-            const params = new FormData();
-            params.append('fromdate', this.datetime[0]);
-            params.append('todate', this.datetime[1]);
-            params.append('contractid', this.curRow.id);
-            if (ningetsu) {
-                ningetsu.forEach((item, index) => {
-                    params.append(`ningetsu[${index}]`, item);
-                });
-            } else {
-                params.append('ningetsu', '');
-            }
-            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
-            this.$axios({
-                method: 'POST',
-                url: '/api/Contract/api_renewcontract',
-                params,
-                custom: {
-                    loading,
-                    vm: this
+            // const ningetsu = [];
+            // this.personMonthArr.forEach(item => {
+            //     ningetsu.push(parseInt(item.ningetsu * 100));
+            // });
+            // const params = new FormData();
+            // params.append('fromdate', this.datetime[0]);
+            // params.append('todate', this.datetime[1]);
+            // params.append('contractid', this.curRow.id);
+            // if (ningetsu) {
+            //     ningetsu.forEach((item, index) => {
+            //         params.append(`ningetsu[${index}]`, item);
+            //     });
+            // } else {
+            //     params.append('ningetsu', '');
+            // }
+            // const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            // this.$axios({
+            //     method: 'POST',
+            //     url: '/api/Contract/api_renewcontract',
+            //     params,
+            //     custom: {
+            //         loading,
+            //         vm: this
+            //     }
+            // }).then(res => {
+            //     loading.close();
+            //     if (res && res.code === 0) {
+            //         this.$message.success('保存成功');
+            //         this.close();
+            //         this.getData();
+            //     } else {
+            //         this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+            //     }
+            // });
+            // this.dialogLoading = false;
+            // this.dialogPresonMonth = false;
+            const params = {
+                name: 'PurchaseEdit',
+                params: {
+                    id: this.curRow.contractID,
+                    updates : true,
+                    fromdate: this.datetime[0],
+                    todate: this.datetime[1]
                 }
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.$message.success('保存成功');
-                    this.close();
-                    this.getData();
-                } else {
-                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
-                }
-            });
+            };
+            this.$router.push(params);
             this.dialogLoading = false;
             this.dialogPresonMonth = false;
         },
