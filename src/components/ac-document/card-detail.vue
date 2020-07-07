@@ -1,34 +1,42 @@
 <template>
     <el-card class="ac-box">
         <div slot="header" class="card-header">
-            <el-row v-if="!IS_H5">
+            <el-row>
                 <el-col :span="10">
                     <span class="label">転記日:</span>
                     <span class="fonts">{{form.postingDate}}</span>
                 </el-col>
                 <el-col :span="10">
                     <span class="label">伝票タイプ:</span>
-                    <span class="fonts">{{form.docTypeText}}</span>
+                    <span class="fonts">{{form.docType}} {{form.docTypeText}}</span>
                 </el-col>
-            </el-row>
-            <el-row v-if="IS_H5">
-                <span class="label">転記日:</span>
-                <span class="fonts">{{form.postingDate}}</span>
-            </el-row>
-            <el-row v-if="IS_H5">
-                <span class="label">伝票タイプ:</span>
-                <span class="fonts">{{form.docTypeText}}</span>
+                <el-col :span="4">
+                    <span class="vfonts">
+                        <i class="el-icon-delete oper-icon frp" color="danger" v-if='selectFalse' @click="deletes(form)"></i>
+                        <i class="el-icon-edit-outline oper-icon flp" color="warning" v-if='selectFalse' @click="toEdit(form)"></i>
+                        <i class="el-icon-check oper-icon flp" color="success" v-if='!selectFalse' @click="beforeSubmit(form)"></i>
+                    </span>
+                </el-col>
             </el-row>
             <el-row>
                 <el-col :span="10">
                     <span class="label">テキスト:</span>
-                    <span class="fonts">{{form.comment}}</span>
+                    <span class="fonts" v-if='selectFalse'>{{form.comment}}</span>
+                    <el-input v-else v-model="form.comment" placeholder="テキスト" size="mini"></el-input>
                 </el-col>
                 <el-col :span="10">
                     <span class="label">登録者:</span>
                     <span class="fonts">{{form.ownerID}} {{form.ownerName}}</span>
                 </el-col>
             </el-row>
+            <!-- <el-row v-if="IS_H5">
+                <span class="label">転記日:</span>
+                <span class="fonts">{{form.postingDate}}</span>
+            </el-row>
+            <el-row v-if="IS_H5">
+                <span class="label">伝票タイプ:</span>
+                <span class="fonts">{{form.docType}} {{form.docTypeText}}</span>
+            </el-row> -->
             <!-- <el-row :class="[!IS_H5 && 'row-wrapper']">
                 <el-col :span="24">
                     <span class="label">テキスト:</span>
@@ -44,7 +52,7 @@
             </el-table-column>
             <el-table-column label="勘定コード" prop="accountID" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.accountID || '-'}}</span>
+                    <span>{{scope.row.text || '-'}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="金額" prop="amount" width="100px">
@@ -52,9 +60,10 @@
                     <span>{{formatContext(scope.row['amount'], 'amount')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="得意先" prop="customerTitle">
+            <el-table-column label="得意先">
                 <template slot-scope="scope">
-                    <span>{{scope.row.customerTitle || '-'}}</span>
+                    <span >{{scope.row.abbreCustomerTitle || '-'}}</span>
+                    <!-- <span v-if='scope.row.abbreCustomerTitle.length>6'>{{scope.row.customerTitle || '-'}}</span> -->
                 </template>
             </el-table-column>
             <el-table-column label="部門" prop="teamName">
@@ -64,7 +73,7 @@
             </el-table-column>
             <el-table-column label="仕入先">
                 <template slot-scope="scope">
-                    <span>{{scope.row.vendorTitle ||'-' }}</span>
+                    <span>{{scope.row.abbreVendorTitle ||'-' }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="従業員" prop="employeeName">
@@ -74,7 +83,8 @@
             </el-table-column>
             <el-table-column label="テキスト" prop="comment">
                 <template slot-scope="scope">
-                    <span>{{scope.row.comment || '-'}}</span>
+                    <span v-if='selectFalse'>{{scope.row.comment || '-'}}</span>
+                    <el-input v-else v-model="scope.row.comment" placeholder="テキスト" size="mini"></el-input>
                 </template>
             </el-table-column>
         </el-table>
@@ -95,10 +105,70 @@ export default {
         customs: Array,
         vendors: Array
     },
+    data() {
+        return {
+            selectFalse: true
+        };
+    },
     computed: {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        deletes(row) {
+            this.$confirm('是否删除', '删除', {
+                type: 'warning'
+            }).then(() => {
+                this.$axios({
+                    url: '/api/ACDoc/api_deletedocument',
+                    params: {
+                        docno: row.docNo
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.$emit('update');
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
+        },
+        toEdit(row) {
+            console.log(row);
+            this.selectFalse = false;
+        },
+        beforeSubmit(row) {
+            this.$confirm('是否保存', '保存', {
+                type: 'success'
+            }).then(() => {
+                console.log('保存成功');
+                this.selectFalse = true;
+                this.$axios({
+                    url: '/api/ACDoc/api_updatedocument',
+                    params: {
+                        docno: row.docNo
+                    }
+                }).then(res => {
+                    if (res && res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '保存成功'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: res.message
+                        });
+                    }
+                });
+            }).catch(() => {});
+        },
         formatContext(value, type) {
             if (type === 'doctype') {
                 for (let item of this.docTypes) {
@@ -146,6 +216,20 @@ export default {
 
 <style lang="less">
 .ac-box {
+    .vfonts{
+        overflow: hidden;
+        i{
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .flp{
+            float: right;
+            margin-right: 10px;
+        }
+        .frp{
+            float: right;
+        }
+    }
     .label {
         display: inline-block;
         width: 80px;

@@ -399,11 +399,16 @@ body {
 }
 .tstable{
     .el-table__expanded-cell[class*=cell]{
-        padding: 0 50px;
+        padding: 0 10px;
     }
     .demo-table{
         height: 35px;
         line-height: 35px;
+        .dia{
+            .el-select, .el-input, .el-date-editor, .el-input__inner{
+                width: 131px !important;
+            }
+        }
         .el-form-item{
             // margin-bottom: -10px;
             .el-form-item__label{

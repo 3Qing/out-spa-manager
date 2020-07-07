@@ -123,7 +123,7 @@
                 value-format="yyyy-MM-dd"
                 value="yyyy-MM-dd"></el-date-picker>
             <div>
-                <el-button type="primary" size="mini" @click="getPersonMonth">确认</el-button>
+                <el-button type="primary" size="mini" @click="confirmDialog">确认</el-button>
             </div>
         </el-dialog>
         <el-dialog :visible.sync="dialogPresonMonth">
@@ -343,10 +343,10 @@ export default {
             const loading = this.$loading({ lock: true, text: '正在上传文件' });
             const params = new FormData();
             params.append('file', file);
-            params.append('conid', opt.scope.row.id);
+            params.append('conid', opt.scope.row.contractID);
             this.$axios({
                 method: 'POST',
-                url: '/api/uploadcontractpdf',
+                url: '/api/POContract/api_uploadcontractpdf',
                 params,
                 headers: {
                     'Content-Type': 'multipart/form-data'

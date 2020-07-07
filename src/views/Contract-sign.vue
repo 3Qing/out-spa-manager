@@ -138,7 +138,7 @@
                             <span>{{scope.$index + 1}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="担当者" width="200px">
+                    <el-table-column label="担当者" >
                         <template slot-scope="scope">
                             <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
                                 <el-option v-for="item in workList" :key="item.id" :label="item.name" :value="item.id"></el-option>
@@ -146,7 +146,7 @@
                             <span v-else>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="単価" width="160px">
+                    <el-table-column label="単価" >
                         <template slot-scope="scope">
                             <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice(scope.row, scope.$index)" @blur="calculateOverTimePrice(scope.row, scope.$index)"></el-input>
                         </template>
@@ -298,11 +298,11 @@
                                             <span class="lop">{{ formatTime(item.toDate) }}</span>
                                         </el-form-item>
                                         <el-form-item label="人月:">
-                                            <el-input-number v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
+                                            <el-input-number class="dia" v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
                                             <span v-else class="lop">{{ item.ningetsu }}</span>
                                         </el-form-item>
                                         <el-form-item label="金额:">
-                                            <el-input v-if="btnfalse" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
+                                            <el-input class="dia" v-if="btnfalse" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
                                             <span v-else class="lop">{{ priceToString(priceToNumber(item.contractSales)) }}</span>
                                         </el-form-item>
                                         <el-form-item label="支付日:">
@@ -1290,6 +1290,9 @@ export default {
         .el-select, .el-input, .el-date-editor {
             width: 220px;
         }
+        .dia.el-input{
+            width: 131px;
+        }
         .is-required {
             .el-form-item__label {
                 color: #606266;
@@ -1312,11 +1315,11 @@ export default {
     }
     .cl1{
         float: left;
-        width: 800px;
+        width: 850;
     }
     .cl2{
         float: right;
-        width: calc(100% - 810px);
+        width: calc(100% - 860px);
         margin-top: 20px;
         img{
             width: 100%;
@@ -1328,7 +1331,7 @@ export default {
         margin-top: 20px;
         ul{
             float: left;
-            width: 800px;
+            width: 850px;
             overflow: hidden;
             // height: 280px;
             border: 1px solid #EBEEF5;
@@ -1365,7 +1368,7 @@ export default {
         }
     }
     .tstable{
-        width: 800px;
+        width: 850px;
     }
     .link {
         font-size: 16px;

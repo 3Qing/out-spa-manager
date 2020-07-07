@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "710085",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e747",
+      "unicode_decimal": 59207
+    },
+    {
       "icon_id": "567715",
       "name": "pay",
       "font_class": "pay",

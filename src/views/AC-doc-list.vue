@@ -165,7 +165,7 @@ export default {
                     if (this.tableData.length) {
                         this.form = this.tableData[0] || {};
                         this.items = this.tableData[0].items || [];
-                        // console.log(this.form, this.items);
+                        console.log(this.form, this.items);
                     }
                 } else {
                     this.tableData = [];

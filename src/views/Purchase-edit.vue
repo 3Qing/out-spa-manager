@@ -1,9 +1,10 @@
 <template>
-    <main-wrapper class="contract-sign">
+    <main-wrapper class="contract-signs">
         <div slot="header" class="main-header">
             <el-button v-if="!isDisplay" type="primary" @click="submitForm('forms')" size="small">确认</el-button>
             <el-button v-if="btnfalse" type="primary" @click="submitSave" size="small">保存</el-button>
             <el-button v-if="!isDisplay&&!$route.params.id" @click="resetForm('forms')" size="small" type="danger">重置</el-button>
+            <el-button v-if="!isDisplay&&!$route.params.id" size="small" @click="$router.back()">返回</el-button>
             <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
             <el-button v-if="clearFale&&!$route.params.id" size="small" @click="$router.back()">返回</el-button>
             <el-button v-if="isDisplay&&!$route.params.id&&!clearFale" size="small" @click="fanhuis">返回</el-button>
@@ -59,10 +60,10 @@
                         </el-row>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="得意先" prop="customerID" >
-                                    <p v-if='$route.params.id'>{{getContent(forms['customerID'], customerList, 'id', 'title')}}</p>
-                                    <el-select v-else v-model="forms['customerID']" size="small" @change="changeCustomer">
-                                        <el-option v-for="item in customerList" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                <el-form-item label="仕入先" prop="vendorID" >
+                                    <p v-if='$route.params.id'>{{getContent(forms['vendorID'], vendorsArr, 'id', 'title')}}</p>
+                                    <el-select v-else v-model="forms['vendorID']" size="small" @change="changeCustomer">
+                                        <el-option v-for="item in vendorsArr" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
@@ -75,6 +76,16 @@
                                 </el-form-item>
                             </el-col>
                         </el-row>
+                        <el-row>
+                            <el-col :span="12">
+                                <el-form-item label="納入場所" prop="submitLocation" >
+                                    <el-input v-model="forms.submitLocation" size="small" maxlength="50"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item label="納入成果物" prop="submitDocuments" >
+                            <el-input type="textarea" :rows="5" v-model="forms.submitDocuments" maxlength="50"></el-input>
+                        </el-form-item>
                         <el-row>
                             <!-- <el-col :span="12">
                                 <el-form-item label="単価" prop="unitPrice">
@@ -138,7 +149,7 @@
                             <span>{{scope.$index + 1}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="担当者" width="200px">
+                    <el-table-column label="担当者" >
                         <template slot-scope="scope">
                             <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
                                 <el-option v-for="item in workList" :key="item.id" :label="item.name" :value="item.id"></el-option>
@@ -146,7 +157,7 @@
                             <span v-else>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="単価" width="160px">
+                    <el-table-column label="単価" >
                         <template slot-scope="scope">
                             <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice(scope.row, scope.$index)" @blur="calculateOverTimePrice(scope.row, scope.$index)"></el-input>
                         </template>
@@ -207,8 +218,8 @@
                             <span>{{forms.hoursFrom}}~{{forms.hoursTo}}</span>
                         </li>
                         <li>
-                            <span>得意先</span>
-                            <span :title="getContent(forms.customerID, customerList, 'id', 'title')">{{getContent(forms.customerID, customerList, 'id', 'title')}}</span>
+                            <span>仕入先</span>
+                            <span :title="getContent(forms.vendorID, customerList, 'id', 'title')">{{getContent(forms.vendorID, vendorsArr, 'id', 'title')}}</span>
                         </li>
                         <li>
                             <span>支払サイト</span>
@@ -217,6 +228,14 @@
                         <li>
                             <span>精算単位</span>
                             <span>{{getContent(forms.calculateUnit, unit, 'value', 'label')}}</span>
+                        </li>
+                        <li>
+                            <span>納入場所</span>
+                            <span>{{forms.submitLocation}}</span>
+                        </li>
+                        <li>
+                            <span>納入成果物</span>
+                            <span>{{forms.submitDocuments}}</span>
                         </li>
                         <!-- <li>
                             <span>単価</span>
@@ -298,11 +317,11 @@
                                             <span class="lop">{{ formatTime(item.toDate) }}</span>
                                         </el-form-item>
                                         <el-form-item label="人月:">
-                                            <el-input-number v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
+                                            <el-input-number class="dia" v-if="btnfalse" v-model.number="item.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="sumPrice(props.$index, index)"></el-input-number>
                                             <span v-else class="lop">{{ item.ningetsu }}</span>
                                         </el-form-item>
                                         <el-form-item label="金额:">
-                                            <el-input v-if="btnfalse" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
+                                            <el-input v-if="btnfalse" class="dia" v-model="item.contractSales" size="mini" @input='handlePrices(index)'></el-input>
                                             <span v-else class="lop">{{ priceToString(priceToNumber(item.contractSales)) }}</span>
                                         </el-form-item>
                                         <el-form-item label="支付日:">
@@ -423,7 +442,7 @@
                     <span>{{formatLabel(forms['salespersonId'], 'sales')}}</span>
                 </el-form-item>
                 <el-form-item label="顧客">
-                    <span>{{getContent(forms['customerId'], customerList, 'id', 'title')}}</span>
+                    <span>{{getContent(forms['vendorID'], customerList, 'id', 'title')}}</span>
                 </el-form-item>
                 <el-form-item label="商流備考">
                     <span>{{forms.businessFlow}}</span>
@@ -457,10 +476,12 @@ export default {
                 toDate: this.nextMonthLastDay(),
                 hoursFrom: 140,
                 hoursTo: 180,
-                customerID: '',
                 paymentTermID: '',
                 salesPersonID: '',
-                businessFlow: ''
+                businessFlow: '',
+                vendorID: '',
+                submitLocation: '',
+                submitDocuments: ''
             },
             unit: [
                 {
@@ -480,9 +501,12 @@ export default {
                 title: [
                     { required: true, message: '请输入注文名称', trigger: 'blur' }
                 ],
-                // content: [
-                //     { required: true, message: '请输入内容', trigger: 'blur' }
-                // ],
+                submitLocation: [
+                    { required: true, message: '请输入納入場所', trigger: 'blur' }
+                ],
+                submitDocuments: [
+                    { required: true, message: '请输入納入成果物', trigger: 'blur' }
+                ],
                 fromDate: [
                     { required: true, message: '请输入开始日期', trigger: 'blur' }
                 ],
@@ -507,8 +531,8 @@ export default {
                 salesPersonID: [
                     { required: true, message: '请选择営業担当', trigger: 'blur' }
                 ],
-                customerID: [
-                    { required: true, message: '请选择得意先', trigger: 'blur' }
+                vendorID: [
+                    { required: true, message: '请选择仕入先', trigger: 'blur' }
                 ],
                 paymentTermID: [
                     { required: true, message: '请选择支払サイト', trigger: 'blur' }
@@ -538,7 +562,8 @@ export default {
             selectList: [],
             btnfalse: false,
             clearFale: false,
-            urls: ''
+            urls: '',
+            vendorsArr: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -546,6 +571,7 @@ export default {
             if (to.query.display) {
                 vm.isDisplay = true;
             }
+            vm.getVendors();
             vm.getContracts(); // 下拉列表
             vm.getWorkList(); // 员工列表
             vm.getCustomerList(); // 客户列表
@@ -601,6 +627,16 @@ export default {
         //         callback(new Error('请选择结束时间'));
         //     }
         // },
+        // 部门
+        getVendors() {
+            this.$axios({
+                url: '/api/Customer/api_vendorsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.vendorsArr = res.data || [];
+                }
+            });
+        },
         previewHandle(scope) {
             this.$axios({
                 url: '/api/POContract/api_previewcontract',
@@ -984,10 +1020,12 @@ export default {
                 toDate: this.nextMonthLastDay(),
                 hoursFrom: 140,
                 hoursTo: 180,
-                customerID: '',
+                vendorID: '',
                 paymentTermID: '',
                 salesPersonID: '',
-                businessFlow: ''
+                businessFlow: '',
+                submitLocation: '',
+                submitDocuments: ''
             };
         },
         postSavePanle() {
@@ -1096,10 +1134,12 @@ export default {
                 CalculateUnit: this.form.calculateUnit,
                 OverTimePrice: priceToNumber(this.form.overTimePrice),
                 UnderTimePrice: priceToNumber(this.form.underTimePrice),
-                CustomerID: this.form['customerId'],
+                VendorID: this.form['vendorID'],
                 EmployeeID: this.form['employeeId'],
                 SalesPersonID: this.form['salespersonId'],
-                BusinessFlow: this.form.businessFlow
+                BusinessFlow: this.form.businessFlow,
+                submitLocation: this.form.submitLocation,
+                submitDocuments: this.form.submitDocuments
                 // Ningetsu: this.form.ningetsu
             };
             let url = '/api/contract/api_createcontract';
@@ -1267,7 +1307,7 @@ export default {
         changeCustomer() {
             // console.log(this.customerList);
             for (let item of this.customerList) {
-                if (item.id === this.forms['customerID']) {
+                if (item.id === this.forms['vendorID']) {
                     this.forms['paymentTermID'] = item.paymentTermID;
                 }
             }
@@ -1277,7 +1317,7 @@ export default {
 </script>
 
 <style lang="less">
-.contract-sign {
+.contract-signs {
     .el-form-item {
         margin-bottom: 15px;
     }
@@ -1289,6 +1329,9 @@ export default {
         overflow: hidden;
         .el-select, .el-input, .el-date-editor {
             width: 220px;
+        }
+        .dia.el-input{
+            width: 131px;
         }
         .is-required {
             .el-form-item__label {
@@ -1312,11 +1355,11 @@ export default {
     }
     .cl1{
         float: left;
-        width: 800px;
+        width: 850;
     }
     .cl2{
         float: right;
-        width: calc(100% - 810px);
+        width: calc(100% - 860px);
         margin-top: 20px;
         img{
             width: 100%;
@@ -1328,7 +1371,7 @@ export default {
         margin-top: 20px;
         ul{
             float: left;
-            width: 800px;
+            width: 850px;
             overflow: hidden;
             // height: 280px;
             border: 1px solid #EBEEF5;
@@ -1365,7 +1408,7 @@ export default {
         }
     }
     .tstable{
-        width: 800px;
+        width: 850px;
     }
     .link {
         font-size: 16px;

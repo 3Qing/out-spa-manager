@@ -111,10 +111,10 @@
                 <div class="image-wrapper" v-if="isDisplay">
                     <img :src=data2 >
                 </div>
-                <card-upload v-if="!isDisplay&&istrue1&&istrue2" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
-                <card-upload v-if="!isDisplay&&istrue1&&istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload>
-                <!-- <card-upload v-if="!isDisplay&&!istrue1&&!istrue2" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
-                <card-upload v-if="!isDisplay&&!istrue1&&!istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload> -->
+                <card-upload v-if="!isDisplay&&istrue1" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
+                <card-upload v-if="!isDisplay&&istrue2" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload>
+                <card-upload v-if="$route.params.edit" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
+                <card-upload v-if="$route.params.edit" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload>
                 <!-- <card-upload v-if="$route.params.edit" style="margin-right: 20px;" :opt="{btnText: '上传Logo', w: 300, h: 400, field: 'logoImage'}" :form="form" :datas="data1" @success="upload"></card-upload>
                 <card-upload v-if="$route.params.edit" :opt="{btnText: '上传营业执照', w: 300, h: 400, field: 'touhonImage'}" :form="form" :datas="data2" @success="upload"></card-upload> -->
                 <image-croppa></image-croppa>
@@ -293,14 +293,14 @@ export default {
         beforeSubmit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
-                    // console.log(this.form.logoImage, this.form.touhonImage);
-                    if (!this.form.logoImage || !this.form.touhonImage) {
-                        this.$message({
-                            type: 'warning',
-                            message: '请上传图片'
-                        });
-                        return;
-                    }
+                    console.log(this.form.logoImage, this.form.touhonImage);
+                    // if (!this.form.logoImage || !this.form.touhonImage) {
+                    //     this.$message({
+                    //         type: 'warning',
+                    //         message: '请上传图片'
+                    //     });
+                    //     return;
+                    // }
                     const params = {
                         Title: this.form.title,
                         Postal: this.form.postal,

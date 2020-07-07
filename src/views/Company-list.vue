@@ -90,7 +90,12 @@ export default {
             this.getData();
         },
         newHandle() {
-            this.$router.push({ name: 'CompanyNew' });
+            this.$router.push({ 
+                name: 'CompanyNew',
+                params: {
+                    edit: 'new'
+                }
+            });
         },
         editHandle(row, query = {}) {
             this.$router.push({

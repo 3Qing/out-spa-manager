@@ -12,7 +12,8 @@
             :teams="teams"
             :employees="employees"
             :customs="customs"
-            :drcr="drcr"></card-item>
+            :drcr="drcr"
+            @update="getData"></card-item>
     </main-wrapper>
 </template>
 
