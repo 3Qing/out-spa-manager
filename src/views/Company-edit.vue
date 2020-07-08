@@ -8,6 +8,7 @@
         <el-row>
             <el-col :span="12">
                 <el-form size="mini" label-width="140px" ref="form" :model="form" :rules="isDisplay ? {} : rules" label-suffix="">
+                    <p class="infos">基本信息</p>
                     <el-row>
                         <el-col :span="24">
                             <el-form-item label="会社名" prop="title">
@@ -60,9 +61,8 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label="銀行口座名義人">
-                                <p v-if="isDisplay">{{form.accountOwner}}</p>
-                                <el-input v-model="form.accountOwner" :maxlength="30" v-else></el-input>
+                            <el-form-item label="入驻日期">
+                                <p>{{formatTime(form.joinDate)}}</p>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -89,16 +89,129 @@
                         </el-col>
                     </el-row>
                     <el-row>
+                        <!-- <el-col :span="12">
+                            <el-form-item label="管理者ユーザ名" prop="userName">
+                                <p v-if="isDisplay">{{form.userName}}</p>
+                                <el-input v-model="form.userName" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col> -->
+                        <el-col :span="12">
+                            <el-form-item label="管理者パスワード" prop="userPassword">
+                                <p v-if="isDisplay">{{form.userPassword}}</p>
+                                <el-input v-model="form.userPassword" show-password :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <p class="infos">财务基本设置</p>
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="开始会计期间" prop="title">
+                                <p v-if="isDisplay">{{form.title}}</p>
+                                <el-input v-model="form.title" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="工资支付日期" prop="imG_Prefix">
+                                <p v-if="isDisplay">{{form.imG_Prefix}}</p>
+                                <el-input v-model="form.imG_Prefix" :maxlength="4" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="银行账户名义人">
+                                <p v-if="isDisplay">{{form.webSite}}</p>
+                                <el-input v-model="form.webSite" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="銀行口座名義人">
+                                <p v-if="isDisplay">{{form.accountOwner}}</p>
+                                <el-input v-model="form.accountOwner" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <p class="infos">编码配置</p>
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="员工号" prop="title">
+                                <p v-if="isDisplay">{{form.title}}</p>
+                                <el-input v-model="form.title" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="报价单号" prop="imG_Prefix">
+                                <p v-if="isDisplay">{{form.imG_Prefix}}</p>
+                                <el-input v-model="form.imG_Prefix" :maxlength="4" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="销售合同号">
+                                <p v-if="isDisplay">{{form.webSite}}</p>
+                                <el-input v-model="form.webSite" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="采购合同号">
+                                <p v-if="isDisplay">{{form.webSite}}</p>
+                                <el-input v-model="form.webSite" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <p class="infos">其他信息</p>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="入驻状态" prop="companyRoleTitle">
+                                <p>{{form.companyRoleTitle}}</p>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="联系人" prop="contactPerson">
+                                <p v-if="isDisplay">{{form.contactPerson}}</p>
+                                <el-input v-model="form.contactPerson" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="联系人邮箱" prop="mailAddress">
+                                <p v-if="isDisplay">{{form.mailAddress}}</p>
+                                <el-input v-model="form.mailAddress" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="其他联系方式" prop="contactTelMail">
+                                <p v-if="isDisplay">{{form.contactTelMail}}</p>
+                                <el-input v-model="form.contactTelMail" :maxlength="30" v-else></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
                         <el-col :span="12">
                             <el-form-item label="管理者ユーザ名" prop="userName">
                                 <p v-if="isDisplay">{{form.userName}}</p>
                                 <el-input v-model="form.userName" :maxlength="30" v-else></el-input>
                             </el-form-item>
                         </el-col>
+                    </el-row>
+                    <el-row>
                         <el-col :span="12">
-                            <el-form-item label="管理者パスワード" prop="userPassword">
-                                <p v-if="isDisplay">{{form.userPassword}}</p>
-                                <el-input v-model="form.userPassword" show-password :maxlength="30" v-else></el-input>
+                            <el-form-item label="管理员账户">
+                                <p>{{form.userID}} {{form['user.name']}}</p>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -129,7 +242,7 @@ import { mapGetters } from 'vuex';
 // import UploadCroppa from '@components/upload-croppa';
 import CardUpload from '@components/card-upload';
 import ImageCroppa from '@components/image-croppa';
-import { fileToBase64 } from '@_public/utils';
+import { fileToBase64, formatTime} from '@_public/utils';
 export default {
     components:  {
         MainWrapper,
@@ -157,7 +270,8 @@ export default {
                 contactTelMail: '',
                 logoImage: '',
                 webSite: '',
-                touhonImage: ''
+                touhonImage: '',
+                joinDate: ''
             },
             rules: {},
             isDisplay: false
@@ -219,6 +333,7 @@ export default {
         ...mapGetters(['GET_LOADING'])
     },
     methods: {
+        formatTime: formatTime,
         dataURLtoFile(dataurl, filename) {
             var arr = dataurl.split(","),
                 mime = arr[0].match(/:(.*?);/)[1],
@@ -283,6 +398,7 @@ export default {
                     if (res.data) {
                         const data = res.data || {};
                         this.form = data;
+                        console.log(data);
                     }
                 }
             });
@@ -359,6 +475,10 @@ export default {
 
 <style lang="less">
 .company-edit-wrapper {
+    .infos{
+        line-height: 50px;
+        color: #1473b7;
+    }
     .el-form {
         .el-input {
             // width: 220px;

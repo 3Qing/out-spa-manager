@@ -254,7 +254,39 @@ export default {
             } else {
                 vm.isSave = true;
                 vm.texts = '見積書保存';
-                vm.getData();
+                if (to.params.arritem) {
+                    console.log(111111);
+                    const data = to.params.arritem || {};
+                    data.amount = priceToString(priceToNumber(data.amount));
+                    vm.totals = priceToString(priceToNumber(data.amount));
+                    vm.data = { ...data };
+                    vm.dates = [
+                        moment(new Date(data.fromDate).getTime()).format('YYYY-MM-DD'),
+                        moment(new Date(data.toDate).getTime()).format('YYYY-MM-DD')
+                    ];
+                    vm.fromhours = data.fromHours;
+                    vm.tohours = data.toHours;
+                    vm.customerid = data.customerID;
+                    if(data.opportunityID === 0){
+                        vm.opportunityid = '';
+                    } else {
+                        vm.opportunityid = data.opportunityID;
+                    }
+                    if (data.items && data.items.length) {
+                        vm.tableData = data.items.map(item => {
+                            const tmp = { ...item };
+                            tmp.unitPrice = priceToString(tmp.unitPrice);
+                            tmp.ningetsu = Number((Number(tmp.ningetsu) / 100).toFixed(2));
+                            return tmp;
+                        });
+                    } else {
+                        vm.tableData = [{}];
+                    }
+                    vm.show = true;
+                } else {
+                    vm.getData();
+                    console.log(22222);
+                }
             }
             vm.getCustomer();
             vm.getOpport();
@@ -509,6 +541,9 @@ export default {
                     }
                     if (Number(this.$route.params.id)) {
                         params.ID = this.$route.params.id;
+                        if (this.$route.params.arritem) {
+                            params.ID = 0;
+                        }
                     }
                     this.submit(params);
                 } else {

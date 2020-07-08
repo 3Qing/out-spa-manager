@@ -208,6 +208,7 @@ export default {
                 });
                 return;
             }
+            const loading = this.$loading({ lock: true, text: '拷贝中...' });
             this.$axios({
                 url: '/api/Estimation/api_simulateestimation',
                 params: {
@@ -217,11 +218,20 @@ export default {
                 }
             }).then(res => {
                 if (res && res.code === 0) {
+                    this.visible = false;
+                    loading.close();
                     this.$message({
                         type: 'success',
                         message: '拷贝成功'
                     });
-                    this.getData();
+                    this.$router.push({
+                        name: 'Estimation',
+                        params: {
+                            id: res.data.id || 'new',
+                            arritem: res.data
+                        }
+                    });
+                    // this.getData();
                 } else {
                     this.$message({
                         type: 'error',

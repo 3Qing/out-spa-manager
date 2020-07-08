@@ -45,7 +45,8 @@
                     :teams="teams"
                     :employees="employees"
                     :customs="customs"
-                    :drcr="drcr"></card-item>
+                    :drcr="drcr"
+                    @update="getData"></card-item>
             </el-col>
         </el-row>
         <el-dialog :visible.sync="visible" @close="close">

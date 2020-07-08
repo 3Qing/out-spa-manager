@@ -13,8 +13,8 @@
                 <el-col :span="4">
                     <span class="vfonts">
                         <i class="el-icon-delete oper-icon frp" color="danger" v-if='selectFalse' @click="deletes(form)"></i>
-                        <i class="el-icon-edit-outline oper-icon flp" color="warning" v-if='selectFalse' @click="toEdit(form)"></i>
-                        <i class="el-icon-check oper-icon flp" color="success" v-if='!selectFalse' @click="beforeSubmit(form)"></i>
+                        <i class="el-icon-edit-outline oper-icon flp" color="warning" v-if='selectFalse' @click="toEdit()"></i>
+                        <i class="el-icon-check oper-icon flp" color="success" v-if='!selectFalse' @click="beforeSubmit()"></i>
                     </span>
                 </el-col>
             </el-row>
@@ -44,7 +44,7 @@
                 </el-col>
             </el-row> -->
         </div>
-        <el-table size="mini" :data="items" border>
+        <el-table size="mini" :data="form.items" border>
             <el-table-column label="借貸" prop="drcr" width="80px">
                 <template slot-scope="scope">
                     <span>{{formatContext(scope.row.drcr, 'drcr')}}</span>
@@ -139,21 +139,26 @@ export default {
                 });
             }).catch(() => {});
         },
-        toEdit(row) {
-            console.log(row);
+        toEdit() {
             this.selectFalse = false;
         },
-        beforeSubmit(row) {
+        beforeSubmit() {
             this.$confirm('是否保存', '保存', {
                 type: 'success'
             }).then(() => {
-                console.log('保存成功');
                 this.selectFalse = true;
                 this.$axios({
+                    method: 'POST',
                     url: '/api/ACDoc/api_updatedocument',
                     params: {
-                        docno: row.docNo
-                    }
+                        DocItems: this.form.items,
+                        DocNo: this.form.docNo,
+                        DocType: this.form.docType,
+                        PostingDate: this.form.postingDate,
+                        Comment: this.form.comment,
+                        OwnerID: this.form.ownerID,
+                    },
+                    formData: true
                 }).then(res => {
                     if (res && res.code === 0) {
                         this.$message({
