@@ -11,9 +11,14 @@
                 </template>
             </el-table-column>
             <el-table-column label="webSite" prop="webSite"></el-table-column>
+            <el-table-column label="利用ステータス" prop="status">
+                <template slot-scope="scope">
+                    <span>{{getContent(scope.row.status, studs, 'id', 'text')}}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="comapnyRoleID" prop="comapnyRoleID">
                 <template slot-scope="scope">
-                    <span>{{getContent(scope.row.comapnyRoleID)}}</span>
+                    <span>{{getContent(scope.row.comapnyRoleID, roles, 'id', 'title')}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="100px">
@@ -45,7 +50,8 @@ export default {
             page: 1,
             pageSize: 15,
             total: 0,
-            roles: []
+            roles: [],
+            studs: []
         };
     },
     computed: {
@@ -53,9 +59,16 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.getData();
-            vm.getRole();
+            console.log(vm);
+            // vm.getStus();
+            // vm.getData();
+            // vm.getRole();
         });
+    },
+    mounted() {
+        this.getStus();
+        this.getRole();
+        this.getData();
     },
     methods: {
         formatTime: formatTime,
@@ -85,6 +98,15 @@ export default {
                 }
             });
         },
+        getStus() {
+            this.$axios({
+                url: '/api/Company/api_joinstatusforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.studs = res.data || [];
+                }
+            });
+        },
         changePage(page) {
             this.page = page;
             this.getData();
@@ -106,10 +128,10 @@ export default {
                 query
             });
         },
-        getContent(id) {
-            for (let item of this.roles) {
-                if (item.id === id) {
-                    return item.title;
+        getContent(val, arr, key, field) {
+            for (let item of arr) {
+                if (item[key] === val) {
+                    return item[field];
                 }
             }
             return '-';

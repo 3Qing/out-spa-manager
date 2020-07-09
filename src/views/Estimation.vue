@@ -543,8 +543,12 @@ export default {
                         params.ID = this.$route.params.id;
                         if (this.$route.params.arritem) {
                             params.ID = 0;
+                            params.Items.forEach((item) => {
+                                item.ID = 0;
+                            });
                         }
                     }
+                    // console.log(params);
                     this.submit(params);
                 } else {
                     this.$message({

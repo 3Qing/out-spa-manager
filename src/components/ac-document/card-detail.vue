@@ -147,6 +147,11 @@ export default {
                 type: 'success'
             }).then(() => {
                 this.selectFalse = true;
+                this.form.items.forEach((item) => {
+                    if (item.clearDate === '') {
+                        item.clearDate = '0001-01-01';
+                    }
+                });
                 this.$axios({
                     method: 'POST',
                     url: '/api/ACDoc/api_updatedocument',
