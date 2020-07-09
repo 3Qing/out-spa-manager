@@ -247,14 +247,14 @@
                 </el-row>
             </div>
             <el-table size="mini" :data="rolesData" border>
-                <el-table-column label="ロールタイトル" prop="userID" >
+                <el-table-column label="ロールタイトル" prop="title" >
                     <template slot-scope="scope">
-                        <span>{{scope.row.userID}}</span>
+                        <span>{{scope.row.title}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="チャージ金額" prop="companyRoleID" >
+                <el-table-column label="チャージ金額" prop="charge" >
                     <template slot-scope="scope">
-                        <span>{{scope.row.companyRoleID}}</span>
+                        <span>{{scope.row.charge}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="利用開始日" prop="fromDate" >
@@ -278,7 +278,7 @@
             <el-form size="mini" :model="forms" :rules="rulesform" ref="rulesform" label-width="120px">
                 <el-form-item label="案件タグ" prop="companyRoleID">
                     <el-select placeholder="利用パケージ" size="mini" v-model="forms.companyRoleID">
-                        <el-option v-for="(item) in selectList" :key="item.type" :label="item.text" :value="item.type"></el-option>
+                        <el-option v-for="(item) in roles" :key="item.id" :label="item.title" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="利用開始日" prop="fromDate">
@@ -320,6 +320,7 @@
 <script>
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
+import moment from 'moment';
 // import UploadCroppa from '@components/upload-croppa';
 import CardUpload from '@components/card-upload';
 import ImageCroppa from '@components/image-croppa';
@@ -342,7 +343,9 @@ export default {
                 companyRoleID: '',
                 fromDate: '',
                 toDate: '',
-                payDate: ''
+                payDate: '',
+                userID: 0,
+                id: 0
             },
             form: {
                 title: '',
@@ -476,7 +479,8 @@ export default {
             selectLists: [],
             isDisplay: false,
             rolesData: [],
-            studs: []
+            studs: [],
+            roles: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -488,6 +492,7 @@ export default {
                 vm.getTouhon();
                 vm.getRoles();
                 vm.getStus();
+                vm.getselectRole();
                 // vm.rules = {
                 //     title: [{
                 //         required: true, message: '请输入会社名', trigger: 'blur'
@@ -551,6 +556,15 @@ export default {
     },
     methods: {
         formatTime: formatTime,
+        getselectRole() {
+            this.$axios({
+                url: '/api/Company/api_getcompanyrolelist'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.roles = res.data || [];
+                }
+            });
+        },
         getStus() {
             this.$axios({
                 url: '/api/Company/api_joinstatusforselect'
@@ -568,10 +582,12 @@ export default {
             this.$refs.rulesform.resetFields();
         },
         saSubmit() {
-            this.$refs.form.validate(valid => {
+            this.$refs.rulesform.validate(valid => {
                 if (valid) {
                     const loading = this.$loading({ lock: true, text: '正在保存中...' });
                     let url = '/api/CompanyRole/api_updatecompanypackage';
+                    this.forms['companyID'] = this.$route.params.id;
+                    this.forms['updateTime'] = moment(new Date()).format('YYYY-MM-DD');
                     let params = this.forms;
                     this.$axios({
                         method: 'POST',

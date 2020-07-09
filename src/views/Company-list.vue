@@ -16,11 +16,11 @@
                     <span>{{getContent(scope.row.status, studs, 'id', 'text')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="comapnyRoleID" prop="comapnyRoleID">
+            <!-- <el-table-column label="comapnyRoleID" prop="comapnyRoleID">
                 <template slot-scope="scope">
                     <span>{{getContent(scope.row.comapnyRoleID, roles, 'id', 'title')}}</span>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column label="操作" width="100px">
                 <template slot-scope="scope">
                     <i class="el-icon-view oper-icon" color="primary" @click="editHandle(scope.row, { display: 1 })"></i>
