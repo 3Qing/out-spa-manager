@@ -277,7 +277,7 @@
                 </el-form>
             </el-col>
             <el-col :span="10" v-if='$route.params.id&&istrue'>
-                <card-upload :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" @success="upload"></card-upload>
+                <card-upload class="imgupload" :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" @success="upload"></card-upload>
                 <div class="imgid" v-if='imgIds.length>0'>
                     <div v-for="(item, index) in imgIds" :key='index'>
                         <img :src="item.url">
@@ -1152,7 +1152,10 @@ export default {
                 },
                 formData: true
             }).then(res => {
-                console.log(res);
+                if (res.code === 0) {
+                    this.imgIds = [];
+                    this.getInfos(this.form.companyID);
+                }
             });
             // fileToBase64(res.file).then(result => {
             //     this.form[opt.field] = this.dataURLtoFile(result, opt.field);
@@ -1168,6 +1171,8 @@ export default {
                 }
             }).then(res => {
                 loading.close();
+                this.imgIds = [];
+                this.getInfos(this.form.companyID);
                 this.$message({
                     type: 'success',
                     showClose: true,
@@ -1224,6 +1229,16 @@ export default {
 
 <style lang="less">
 .employee-edit {
+    .imgupload{
+        width: 82px;
+        height: 34px;
+        position: relative;
+        .btn-upload-croppa{
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
     .imgid{
         width: 100%;
         div{
@@ -1231,16 +1246,19 @@ export default {
             border: 1px solid #C1D4E5;
             position: relative;
             width: 200px;
+            height: 200px;
             float: left;
+            padding: 15px;
             margin-right: 20px;
             margin-bottom: 20px;
             img{
-                width: 190px;
+                width: 170px;
+                height: 170px;
             }
             .posis{
                 position: absolute;
-                top: 5px;
-                right: 5px;
+                top: 3px;
+                right: 2px;
                 cursor: pointer;
             }
         }

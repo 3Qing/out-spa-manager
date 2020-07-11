@@ -19,7 +19,8 @@
                 </el-table-column>
                 <el-table-column label="Platform管理用" prop="adminRoute">
                     <template slot-scope="scope">
-                        <span>{{scope.row.adminRoute}}</span>
+                        <el-checkbox :disabled=true v-model="scope.row.adminRoute"></el-checkbox>
+                        <!-- <span>{{scope.row.adminRoute}}</span> -->
                     </template> 
                 </el-table-column>
                 <el-table-column label="アクション" prop="title" show-overflow-tooltip width="100px">

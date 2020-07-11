@@ -1,5 +1,9 @@
 <template>
     <main-wrapper class="ess-edit">
+        <el-form slot="header" class="main-header" inline>
+            <el-button type="primary" size="mini" @click="downloads">下载</el-button>
+            <el-button size="mini" @click="$router.back()">リターン</el-button>
+        </el-form>
         <el-card>
             <div class="summary">合計作業時間：<span>{{total}}</span></div>
             <el-table
@@ -87,7 +91,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="作業内容" width="300">
+                <el-table-column label="作業内容">
                     <template slot-scope="scope">
                         <el-input v-if="editable" size="mini" v-model="scope.row.content" :maxlength="100"></el-input>
                         <p v-else>{{scope.row.content || '-'}}</p>
@@ -161,7 +165,7 @@ import MainWrapper from '@components/main-wrapper';
 import Upload from '@components/upload';
 import BigPicture from '@components/big-picture';
 import moment from 'moment';
-import { imageFileToPreview } from '@_public/utils';
+import { imageFileToPreview, apiDownloadFile } from '@_public/utils';
 
 export default {
     components: {
@@ -253,12 +257,14 @@ export default {
             },
             workDayIndex: -1,
             total: '',
-            editable: false
+            editable: false,
+            psthid: ''
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             if (to.params.id) {
+                vm.psthid = to.params.id;
                 vm.getData(to.params.id);
             }
         });
@@ -269,6 +275,13 @@ export default {
         }
     },
     methods: {
+        downloads() {
+            apiDownloadFile({
+                vm: this,
+                url: `/api/Timesheet/api_downloadtimesheet?cfid=${this.psthid}`,
+                filename: `${Date.now()}.xlsx`
+            });
+        },
         getData(cfid) {
             const loading = this.$loading({ lock: true, text: '作業報告書データ取得中...' });
             this.$axios({

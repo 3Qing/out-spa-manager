@@ -84,7 +84,7 @@
                             </el-col>
                         </el-row>
                         <el-form-item label="納入成果物" prop="submitDocuments" >
-                            <el-input type="textarea" :rows="5" v-model="forms.submitDocuments" maxlength="50"></el-input>
+                            <el-input v-model="forms.submitDocuments" size="small" maxlength="50"></el-input>
                         </el-form-item>
                         <el-row>
                             <!-- <el-col :span="12">

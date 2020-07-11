@@ -57,6 +57,7 @@ export function apiDownloadFile({ vm, url, filename }) {
 }
 
 export function imageFileToPreview({ vm, url, params }) {
+    const loading = vm.$loading({ lock: true, text: '正在获取数据中...' });
     vm.$axios({
         url,
         params,
@@ -66,6 +67,7 @@ export function imageFileToPreview({ vm, url, params }) {
         responseType: 'blob'
     }).then(res => {
         if (res) {
+            loading.close();
             const csvData = new Blob([res]);
             const url = window.URL.createObjectURL(csvData);
             vm.$root.$emit('SHOW_PICTURE_DIALOG', {

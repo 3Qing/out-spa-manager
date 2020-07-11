@@ -33,7 +33,7 @@
                             <span>{{scope.row.overTimeHours || '-'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="賃金" prop="projectSalary" show-overflow-tooltip>
+                    <!-- <el-table-column label="賃金" prop="projectSalary" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <span>{{formatPrice(scope.row.projectSalary)}}</span>
                         </template>
@@ -42,7 +42,7 @@
                         <template slot-scope="scope">
                             <span>{{formatPrice(scope.row.overTimeSalary)}}</span>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column label="作業日数" prop="workDays"></el-table-column>
                     <el-table-column label="交通代" prop="travelFare" show-overflow-tooltip>
                         <template slot-scope="scope">
@@ -195,7 +195,7 @@ export default {
                 width: 50%;
                 span:first-child {
                     display: inline-block;
-                    width: 70px;
+                    width: 95px;
                 }
             }
         }
