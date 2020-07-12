@@ -240,6 +240,8 @@ export default {
             }],
             form: {
                 id: 0,
+                pinYin_FirstName: '',
+                pinYin_LastName: '',
                 schoolName: '',
                 major: '',
                 graduateDate: '',
@@ -341,6 +343,7 @@ export default {
     },
     methods: {
         download(type) {
+            console.log(this.form);
             if (type === 'excel') {
                 apiDownloadFile({
                     vm: this,
@@ -374,6 +377,7 @@ export default {
                 loading.close();
                 if (res && res.code === 0) {
                     const data = res.data || {};
+                    console.log(data);
                     let msTitle = [];
                     if(data.mS01_Title!==null || data.mS01_Content!==null){
                         let obj1 = {

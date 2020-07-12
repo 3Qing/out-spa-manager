@@ -67,14 +67,26 @@
             <el-table-column label="控除精算・円/時間" prop="underTimePrice"></el-table-column>
             <el-table-column label="作業担当" prop="employeeName" show-overflow-tooltip></el-table-column>
             <el-table-column label="営業担当" prop="salesName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="注文書原本" width="140px">
+            <el-table-column label="注文書原本" width="120px">
                 <template slot-scope="scope">
-                    <el-button
+                    <i class="iconfont icon-chengyi_pc_preview oper-icon" color="primary" @click="previewHandle(scope)"></i>
+                    <i class="icon-PDF iconfont oper-icon" color="danger" @click="downloadPDF(scope.row, 0, 'pdf')"></i>
+                    <i class="icon-Excel iconfont oper-icon" color="success" @click="downloadPDF(scope.row, 1, 'xlsx')"></i>
+                    <!-- <el-tooltip effect="dark" content="预览" placement="top-start">
+                        <i style="font-size:18px;position:relative;top:1px;" class="iconfont icon-icon-test1 link" color="warning" @click="previewHandle(scope)"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="下载excel" placement="top-start">
+                        <i style="font-size:18px;position:relative;top:1px;" class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row, 1, 'excel')"></i>
+                    </el-tooltip>
+                    <el-tooltip effect="dark" content="下载pdf" placement="top-start">
+                        <i style="font-size:18px;position:relative;top:1px;" class="iconfont icon-icon-test link" color="primary" @click="downloadPDF(scope.row, 0, 'pdf')"></i>
+                    </el-tooltip> -->
+                    <!-- <el-button
                         v-if="scope.row.paperReceived"
                         size="mini"
                         type="primary"
-                        @click="downloadPDF(scope.row)">照会</el-button>
-                    <upload
+                        @click="downloadPDF(scope.row)">照会</el-button> -->
+                    <!-- <upload
                         class="info-btn"
                         v-if="scope.row.paperReceived"
                         :opt="{ btnText: '再ｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
@@ -83,7 +95,7 @@
                         class="danger-btn"
                         v-if="!scope.row.paperReceived"
                         :opt="{ btnText: 'PDFｱｯﾌﾟﾛｰﾄﾞ', accept: 'application/pdf', scope: scope, show: false, showIcon: true }"
-                        @upload="uploadFile"></upload>
+                        @upload="uploadFile"></upload> -->
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="130px" fixed="right">
@@ -152,13 +164,12 @@
 
 <script>
 import MainWrapper from '@components/main-wrapper';
-import Upload from '@components/upload';
+// import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
-import { formatTime, apiDownloadFile } from '@_public/utils';
+import { formatTime, apiDownloadFile, imageFileToPreview} from '@_public/utils';
 export default {
     components: {
-        MainWrapper,
-        Upload
+        MainWrapper
     },
     data() {
         return {
@@ -306,11 +317,35 @@ export default {
             this.form.page = page;
             this.getData();
         },
-        downloadPDF(row) {
+        downloadPDF(row, type, ext) {
+            console.log(row);
             apiDownloadFile({
                 vm: this,
-                url: `/api/POContract/api_downloadcontractpdf?conid=${row.contractID}`,
-                filename: `${Date.now()}.xlsx`
+                url: `/api/POContract/api_downloadcontractfile?poid=${row.contractID}&filetype=${type}`,
+                filename: `${row.contractNo}.${ext}`
+            });
+            // if (type === 'excel') {
+            //     apiDownloadFile({
+            //         vm: this,
+            //         url: `/api/POContract/api_downloadcontractfile?poid=${row.contractID}&filetype=excel`,
+            //         filename: `${Date.now()}.xlsx`
+            //     });
+            // } else {
+            //     apiDownloadFile({
+            //         vm: this,
+            //         url: `/api/POContract/api_downloadcontractfile?poid=${row.contractID}&filetype=pdf`,
+            //         filename: `${Date.now()}.pdf`
+            //     });
+            // }
+            
+        },
+        previewHandle(scope) {
+            imageFileToPreview({
+                vm: this,
+                url: '/api/POContract/api_previewcontract',
+                params: {
+                    conid: scope.row.contractID
+                }
             });
         },
         // 删除合同
@@ -384,7 +419,8 @@ export default {
             const params = {
                 name: 'PurchaseEdit',
                 params: {
-                    id: row.contractID
+                    id: row.contractID,
+                    updates : false
                 }
             };
             if (type === 'display') {

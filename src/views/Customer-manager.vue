@@ -85,7 +85,7 @@
                     <el-input v-model="curForm.title" :placeholder="showFields.title"></el-input>
                 </el-form-item>
                 <el-form-item :label="showFields.abbreTitle" prop="abbreTitle">
-                    <el-input v-model="showForm.abbreTitle" maxlength="20" show-word-limit :placeholder="showFields.abbreTitle"></el-input>
+                    <el-input v-model="curForm.abbreTitle" maxlength="20" show-word-limit :placeholder="showFields.abbreTitle"></el-input>
                 </el-form-item>
                 <el-form-item :label="showFields.address1">
                     <el-input v-model="curForm.address1" :placeholder="showFields.address1"></el-input>
@@ -302,6 +302,7 @@ export default {
         },
         newHandler() {
             this.curForm = {
+                abbreTitle: '',
                 address1: '',
                 address2: '',
                 bank_AccountHolder: '',
@@ -312,6 +313,7 @@ export default {
                 title: '',
                 vendorFlag: false
             };
+            console.log(this.curForm);
             this.visible = true;
         },
         close(formName) {

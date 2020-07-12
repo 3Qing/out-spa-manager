@@ -52,7 +52,7 @@
             </el-table-column>
             <el-table-column label="勘定コード" prop="accountID" width="100px">
                 <template slot-scope="scope">
-                    <span>{{scope.row.text || '-'}}</span>
+                    <span>{{scope.row.accountID}} {{scope.row.text}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="金額" prop="amount" width="100px">

@@ -10,7 +10,7 @@
             <el-button v-if="isDisplay&&!$route.params.id&&!clearFale" size="small" @click="fanhuis">返回</el-button>
         </div>
         <div class="content">
-            <el-row v-if="!isDisplay">
+            <el-row v-if="!isDisplay&&!$route.params.updates">
                 <el-col :span="12">
                     <el-form ref="forms" :model="forms" label-width="120px" :rules="isDisplay ? {} : rules" label-suffix=":">
                         <el-row>
@@ -194,7 +194,7 @@
                     <div class="top"></div>
                 </el-col>
             </el-row>
-            <div class="cl1" v-if="isDisplay">
+            <div class="cl1" v-if="isDisplay||$route.params.updates">
                 <div class="bottom">
                     <ul>
                         <li class="widths">
@@ -219,7 +219,7 @@
                         </li>
                         <li>
                             <span>仕入先</span>
-                            <span :title="getContent(forms.vendorID, customerList, 'id', 'title')">{{getContent(forms.vendorID, vendorsArr, 'id', 'title')}}</span>
+                            <span :title="getContent(forms.vendorID, vendorsArr, 'id', 'title')">{{getContent(forms.vendorID, vendorsArr, 'id', 'title')}}</span>
                         </li>
                         <li>
                             <span>支払サイト</span>
@@ -577,8 +577,11 @@ export default {
             vm.getCustomerList(); // 客户列表
             vm.getPaymenttermsforselect(); // 支付条件清单
             vm.getSalespersonforselect(); // 销售人员
-            if (to.params.id) {
+            if (to.params.id&&!to.params.updates) {
                 vm.getData(vm.isDisplay);
+            }
+            if (to.params.updates) {
+                vm.getNews(to.params.id, to.params.fromdate, to.params.todate);
             }
             // /api/Contract/api_getcontractfordisplay
         });
@@ -981,7 +984,7 @@ export default {
                     this.btnfalse = false;
                     this.clearFale = true;
                     if (!this.$route.params.id) {
-                        this.$router.replace({ name: 'ContractEdit', params: { id: res.data }});
+                        this.$router.replace({ name: 'PurchaseEdit', params: { id: res.data }});
                     } else {
                         this.getData('type');
                     }
@@ -1028,6 +1031,41 @@ export default {
                 submitDocuments: ''
             };
         },
+        getNews(id, date1, date2) {
+            let url = '/api/POContract/api_renewcontract';
+            console.log(url);
+            this.$axios({
+                method: 'GET',
+                url,
+                params: {
+                    contractid: id,
+                    fromdate: moment(date1).format('YYYY-MM-DD'),
+                    todate: moment(date2).format('YYYY-MM-DD')
+                },
+                custom: {
+                    vm: this
+                }
+            }).then(res => {
+                // loading.close();
+                if (res && res.code === 0) {
+                    this.forms = res.data;
+                    this.tableData = res.data.contractitems;
+                    this.tableData.forEach(item => {
+                        item.cashflows.forEach(ins => {
+                            ins.isFalse = true;
+                            ins.contractSales = priceToString(ins.contractSales);
+                            ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
+                        });
+                    });
+                    this.$message.success(res.message ? res.message : '接口开小差了，没有返回信息');
+                    this.isDisplay = true;
+                    this.btnfalse = true;
+                } else {
+                    this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
+                    this.$router.back();
+                }
+            });
+        },
         postSavePanle() {
             this.forms.contractitems = this.tableData;
             let btnsd = false;
@@ -1047,45 +1085,7 @@ export default {
                 });
                 const loading = this.$loading({ lock: true, text: '正在提交合同资料中...' });
                 if (this.$route.params.updates) {
-                    let url = '/api/POContract/api_renewcontract';
-                    this.$axios({
-                        method: 'GET',
-                        url,
-                        params: {
-                            contractid: this.forms.id,
-                            fromdate: moment(this.forms.fromDate).format('YYYY-MM-DD'),
-                            todate: moment(this.forms.toDate).format('YYYY-MM-DD')
-                        },
-                        custom: {
-                            loading,
-                            vm: this
-                        }
-                    }).then(res => {
-                        loading.close();
-                        if (res && res.code === 0) {
-                            this.forms = res.data;
-                            this.tableData = res.data.contractitems;
-                            this.tableData.forEach(item => {
-                                item.cashflows.forEach(ins => {
-                                    ins.isFalse = true;
-                                    ins.contractSales = priceToString(ins.contractSales);
-                                    ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
-                                });
-                            });
-                            this.$message.success(res.message ? res.message : '接口开小差了，没有返回信息');
-                            this.isDisplay = true;
-                            this.btnfalse = true;
-                        } else {
-                            this.tableData.forEach(item => {
-                                item.cashflows.forEach(ins => {
-                                    ins.isFalse = true;
-                                    ins.contractSales = priceToString(ins.contractSales);
-                                    ins.ningetsu = (Number(ins.ningetsu) / 100).toFixed(2);
-                                });
-                            });
-                            this.$message.warning(res.message ? res.message : '接口开小差了，没有返回信息');
-                        }
-                    });
+                    console.log(1111);
                 } else {
                     let url = '/api/POContract/api_simulatecontract';
                     this.$axios({

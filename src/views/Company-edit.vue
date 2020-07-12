@@ -2,8 +2,8 @@
     <main-wrapper class="company-edit-wrapper">
         <div class="main-header" slot="header">
             <el-button type="primary" size="mini" @click="beforeSubmit" v-if="!isDisplay">提交</el-button>
-            <el-button type="primary" size="mini" v-if="$route.params.id&&form.status!==0" @click="dialogSubmit(1)">アカウント承認</el-button>
-            <el-button type="primary" size="mini" v-if="$route.params.id&&form.status===0" @click="dialogSubmit(2)">ステータスとパケージ</el-button>
+            <el-button type="primary" size="mini" v-if="$route.params.id&&form.status===0" @click="dialogSubmit(1)">アカウント承認</el-button>
+            <el-button type="primary" size="mini" v-if="$route.params.id&&form.status!==0" @click="dialogSubmit(2)">ステータスとパケージ</el-button>
             <el-button size="mini" @click="$router.back()">リターン</el-button>
         </div>
         <el-row>
