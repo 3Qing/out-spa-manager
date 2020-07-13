@@ -335,7 +335,8 @@ export default {
             this.$router.push({
                 name: 'EmployeeEdit',
                 params: {
-                    id: row.id
+                    id: row.id,
+                    news: 'new'
                 },
                 query: {
                     display: 1

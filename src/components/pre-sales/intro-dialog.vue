@@ -1,10 +1,10 @@
 <template>
     <el-dialog custom-class="intro-dialog" :title="form.id ? '候補者編集' : '候補者新規登録'" :visible.sync="visible" :close-on-click-modal="dialog" @close="close">
         <el-form label-width="130px" size="mini" ref="form" :model="form" :rules="rules" class='blackColor'>
-            <el-row v-if="!IS_H5">
+            <el-row>
                 <el-col :span="12" class="width50">
                     <el-col :span="6">
-                        <el-form-item label="英語氏名" prop='furigana_FirstName'>
+                        <el-form-item label="氏名" prop='furigana_FirstName'>
                             <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
                         </el-form-item>
                     </el-col>
@@ -27,12 +27,20 @@
                     </el-col>
                 </el-col>
             </el-row>
-            <!-- <el-form-item label="英語姓" v-if="IS_H5">
-                <el-input v-model="form.furigana_FirstName" :maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="英語名" v-if="IS_H5">
-                <el-input v-model="form.furigana_LastName" :maxlength="20"></el-input>
-            </el-form-item> -->
+            <el-row>
+                <el-col :span="12" class="width50">
+                    <el-col :span="6">
+                        <el-form-item label="英語氏名" prop='pinYin_FirstName'>
+                            <el-input v-model="form.pinYin_FirstName" :maxlength="20"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6" class="width25" label-width="0px">
+                        <el-form-item label="" prop='pinYin_LastName'>
+                            <el-input v-model="form.pinYin_LastName" :maxlength="20"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-col>
+            </el-row>
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="性別" prop="sex">
@@ -79,6 +87,20 @@
             </el-row>
             <el-row>
                 <el-col :span="12">
+                    <el-form-item label="ポジション" prop="positionID">
+                        <el-select v-model="form.positionID">
+                            <el-option v-for="item in positionTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="メインスキル" prop="mainSkill">
+                        <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
                     <el-form-item label="仕事開始日" prop="startWorkDate">
                         <el-date-picker
                             v-model="form.startWorkDate"
@@ -119,11 +141,20 @@
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="候補者タイプ">
-                        <el-select v-model="form.type">
+                        <el-select v-model="form.type" @change="changeHandler">
                             <el-option v-for="item in peopleTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
+                <el-col :span="12" v-if='isfalse'>
+                    <el-form-item label="仕入先">
+                        <el-select v-model="form.vendorID">
+                            <el-option v-for="item in allVenderTypeArr" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
                 <el-col :span="12">
                     <el-form-item label="営業状態">
                         <el-select v-model="form.status">
@@ -138,13 +169,6 @@
             <el-form-item label="コメント">
                 <el-input v-model="form.comment" type="textarea" :rows="5" :maxlength="300"></el-input>
             </el-form-item>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="メインスキル" prop="mainSkill">
-                        <el-input v-model="form.mainSkill" :maxlength="20"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
             <el-row>
                 <el-col :span="24">
                     <el-col :span="12">
@@ -213,6 +237,10 @@ export default {
             trus: false,
             dialog: false,
             form: {
+                vendorID: '',
+                positionID: '',
+                pinYin_FirstName: '',
+                pinYin_LastName: '',
                 furigana_FirstName: '',
                 furigana_LastName: '',
                 firstName: '',
@@ -239,14 +267,17 @@ export default {
                 type: ''
             },
             rules:{
+                vendorID: [{
+                    required: true, message: '仕入先を入力してください！'
+                }],
                 mainSkill: [{
                     required: true, message: 'メインスキルを入力してください！'
                 }],
                 furigana_FirstName: [{
-                    required: true, message: '英語氏名を入力してください！'
+                    required: true, message: '氏名を入力してください！'
                 }],
                 furigana_LastName: [{
-                    required: true, message: '英語氏名を入力してください！'
+                    required: true, message: '氏名を入力してください！'
                 }],
                 firstName: [{
                     required: true, message: '漢字氏名を入力してください！'
@@ -254,11 +285,20 @@ export default {
                 lastName: [{
                     required: true, message: '漢字氏名を入力してください！'
                 }],
+                pinYin_FirstName: [{
+                    required: true, message: '英語氏名を入力してください！'
+                }],
+                pinYin_LastName: [{
+                    required: true, message: '英語氏名を入力してください！'
+                }],
                 sex: [{
                     required: true, message: '性別を指定してください！'
                 }],
                 birthday: [{
                     required: true, message: '生年月日を入力してください！'
+                }],
+                positionID: [{
+                    required: true, message: 'ポジションを入力してください！'
                 }],
                 nationality: [{
                     required: true, message: '国籍を指定してください！'
@@ -300,10 +340,13 @@ export default {
             visible: false,
             callback: null,
             cityTypeArr: [],
+            positionTypeArr: [],
             peopleTypeArr: [],
             countryTypeArr: [],
             month: '',
-            nextMonth: ''
+            nextMonth: '',
+            allVenderTypeArr: [],
+            isfalse: false
         };
     },
     computed: {
@@ -319,6 +362,8 @@ export default {
         this.form.avaiableDate = this.nextMonth;
         this.getSelect();
         this.cityType();
+        this.positionType();
+        this.vendorType();
         this.countryType();
         this.$root.$off('SHOW_INTRO_DIALOG');
         this.$root.$on('SHOW_INTRO_DIALOG', ({ data = null, callback = null, showDate = false}) => {
@@ -335,14 +380,37 @@ export default {
         });
     },
     methods: {
+        changeHandler(val) {
+            console.log(val);
+            if (val === 2) {
+                this.isfalse = true;
+            } else {
+                this.isfalse = false;
+            }
+        },
+        // 仕入先
+        vendorType() {
+            this.$axios({
+                url: '/api/Customer/api_vendorsforselect'
+            }).then(res => {
+                this.allVenderTypeArr = res.data;
+            });
+        },
         // 城市列表
         cityType() {
             this.$axios({
                 url: '/api/Candidate/api_cityforselect'
             }).then(res => {
-                console.log('city', res);
                 this.cityTypeArr = res.data;
                 this.form.liveCity = this.cityTypeArr[0].id;
+            });
+        },
+        // 岗位列表
+        positionType() {
+            this.$axios({
+                url: '/api/Position/api_positiontypesforselect'
+            }).then(res => {
+                this.positionTypeArr = res.data;
             });
         },
         // 国籍列表
@@ -367,6 +435,10 @@ export default {
         },
         close() {
             this.form = {
+                vendorID: '',
+                positionID: '',
+                pinYin_FirstName: '',
+                pinYin_LastName: '',
                 furigana_FirstName: '',
                 furigana_LastName: '',
                 firstName: '',
@@ -442,7 +514,17 @@ export default {
                     const loading = this.$loading({ lock: true, text: '候補者データを更新中...' });
                     // this.form.nationality = this.getContent(this.form.nationality, this.countryTypeArr, 'id', 'text');
                     console.log(this.form.liveCity);
+                    if (this.form.type !== 2) {
+                        this.form.vendorID = 0;
+                    }
+                    if (this.form.vendorID === '') {
+                        this.form.vendorID = 0;
+                    }
                     const params = {
+                        VendorID: this.form.vendorID,
+                        PositionID: this.form.positionID,
+                        PinYin_FirstName: this.form.pinYin_FirstName,
+                        pinYin_LastName: this.form.pinYin_LastName,
                         Furigana_FirstName: this.form.furigana_FirstName,
                         Furigana_LastName: this.form.furigana_LastName,
                         FirstName: this.form.firstName,

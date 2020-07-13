@@ -2,7 +2,8 @@
     <main-wrapper class="employee-edit">
         <div class="main-header" slot="header">
             <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
-            <el-button type="danger" size="small" @click="resetForm" v-if='$route.params.id'>扶養情報更新</el-button>
+            <el-button type="danger" size="small" @click="resetForm" v-if='$route.params.id&&!$route.params.news'>扶養情報更新</el-button>
+            <el-button type="danger" size="small" @click="resetForm" v-if='$route.params.id&&$route.params.news'>扶養情報照会</el-button>
             <el-button size="small" @click="$router.back()">リターン</el-button>
         </div>
         <el-row class="minwidth" v-if="!isDisplay">
@@ -278,12 +279,13 @@
             </el-col>
             <el-col :span="10" v-if='$route.params.id&&istrue'>
                 <card-upload class="imgupload" :opt="{btnText: '上传照片', w: 300, h: 400, field: 'logoImage'}" @success="upload"></card-upload>
-                <div class="imgid" v-if='imgIds.length>0'>
+                <div class="imgid" v-if='employeeImages.length === imgIds.length'>
                     <div v-for="(item, index) in imgIds" :key='index'>
                         <img :src="item.url">
                         <i class="posis el-icon-delete oper-icon" color="danger" @click="deleteimage(item.id)"></i>
                     </div>
                 </div>
+                <div class="imgids" v-loading="loadings" v-else></div>
             </el-col>
             <el-col :span="12" v-if="isDisplay">
                 <div class="top"></div>
@@ -440,13 +442,18 @@
             </div>
         </div>
         <div class="disbleds" v-if="isDisplay">
-            <div class="imgid" v-if='imgIds.length>0'>
+            <div class="imgid" v-if='employeeImages.length === imgIds.length'>
                 <div v-for="(item, index) in imgIds" :key='index'>
                     <img :src="item.url">
                 </div>
             </div>
+            <div class="imgids" v-loading="loadings" v-else></div>
         </div>
         <el-dialog title="被扶養者" :visible.sync="visible" @close="close" class="csstable">
+            <div slot="title">
+                <span style="margin-right: 20px;">被扶養者</span>
+                <el-button v-if='!isDisplay' type="primary" size="small" @click="addMessage">新规登录</el-button>
+            </div>
             <el-table :data="forms" size="small" border>
                 <el-table-column label="氏名（カタカナ）" prop="dependantFurigana">
                     <template slot-scope="scope">
@@ -529,6 +536,7 @@ export default {
     },
     data() {
         return {
+            loadings: true,
             visible: false,
             istrue: false,
             teamM: [],
@@ -719,6 +727,19 @@ export default {
                 }
             });
         },
+        addMessage() {
+            let obj = {
+                dependantAddress: '',
+                dependantBirthday: '',
+                dependantFurigana: '',
+                dependantName: '',
+                dependantSex: '',
+                liveTogether: '',
+                relation: '',
+                otherRelation: ''
+            };
+            this.forms.push(obj);
+        },
         getFuyang() {
             this.$axios({
                 url: '/api/Employee/api_getdependants',
@@ -753,36 +774,72 @@ export default {
         },
         savesubmit() {
             let btns = false;
-            this.forms.forEach(item => {
-                if (item.otherRelation !== '') {
-                    item.relation = 0;
+            let arr = this.forms;
+            for (let i=0;i<arr.length;i++) {
+                if (arr[i].otherRelation !== '') {
+                    arr[i].relation = 0;
                 }
-                if (item.dependantFurigana !== '' && item.dependantName !== '' && item.relation !== '' && item.dependantAddress !== '') {
+                if (arr[i].dependantFurigana === '') {
                     btns = true;
-                } else {
                     this.$message({
                         type: 'error',
-                        message: '请输入氏名（カタカナ）,氏名（漢字）,関係,住所'
+                        showClose: false,
+                        message: '氏名（カタカナ）不能为空！'
                     });
+                    break;
+                } else if (arr[i].dependantName === '') {
+                    btns = true;
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '氏名（漢字）不能为空！'
+                    });
+                    break;
+                } else if (arr[i].relation === '') {
+                    btns = true;
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '関係不能为空！'
+                    });
+                    break;
+                } else if (arr[i].dependantAddress === '') {
+                    btns = true;
+                    this.$message({
+                        type: 'error',
+                        showClose: false,
+                        message: '住所不能为空！'
+                    });
+                    break;
                 }
-                // if (item.dependantName === '') {
-                //     this.$message({
-                //         type: 'error',
-                //         message: '请输入氏名（漢字）'
-                //     });
-                // } else if (item.dependantAddress === '') {
-                //     this.$message({
-                //         type: 'error',
-                //         message: '请输入住所'
-                //     });
-                // } else {
-                //     btns = true;
-                // }
-            });
-            if (this.forms.length === 0) {
-                btns = true;
             }
-            if (btns === true) {
+            // if (item.dependantFurigana !== '' && item.dependantName !== '' && item.relation !== '' && item.dependantAddress !== '') {
+            //     btns = true;
+            // } else {
+            //     this.$message({
+            //         type: 'error',
+            //         message: '请输入,氏名（漢字）,関係,住所'
+            //     });
+            //     return;
+            // }
+            // if (item.dependantName === '') {
+            //     this.$message({
+            //         type: 'error',
+            //         message: '请输入氏名（漢字）'
+            //     });
+            // } else if (item.dependantAddress === '') {
+            //     this.$message({
+            //         type: 'error',
+            //         message: '请输入住所'
+            //     });
+            // } else {
+            //     btns = true;
+            // }
+            // });
+            if (this.forms.length === 0) {
+                btns = false;
+            }
+            if (btns === false) {
                 const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
                 this.$axios({
                     method: 'POST',
@@ -1239,21 +1296,25 @@ export default {
             top: 0;
         }
     }
+    .imgids{
+        width: 100%;
+        height: 200px;
+    }
     .imgid{
         width: 100%;
         div{
             border-radius: 3px;
             border: 1px solid #C1D4E5;
             position: relative;
-            width: 200px;
-            height: 200px;
-            float: left;
+            width: 300px;
+            // height: 200px;
+            // float: left;
             padding: 15px;
             margin-right: 20px;
             margin-bottom: 20px;
             img{
-                width: 170px;
-                height: 170px;
+                width: 270px;
+                // height: 170px;
             }
             .posis{
                 position: absolute;

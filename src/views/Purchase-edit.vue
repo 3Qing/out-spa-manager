@@ -183,6 +183,11 @@
                             <el-input v-model="scope.row.underTimePrice" size="mini"></el-input>
                         </template>
                     </el-table-column>
+                    <el-table-column label="内容">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.content" size="mini"></el-input>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="アクション" width="80px">
                         <template slot-scope="scope">
                             <i class="el-icon-plus link" color="primary" @click="handleAdd(scope)"></i>
@@ -190,6 +195,9 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <div>
+                    <el-input type='textarea' v-model="forms.comment" size="mini"></el-input>
+                </div>
                 <el-col :span="12" v-if="isDisplay">
                     <div class="top"></div>
                 </el-col>
@@ -1028,7 +1036,8 @@ export default {
                 salesPersonID: '',
                 businessFlow: '',
                 submitLocation: '',
-                submitDocuments: ''
+                submitDocuments: '',
+                comment: ''
             };
         },
         getNews(id, date1, date2) {
