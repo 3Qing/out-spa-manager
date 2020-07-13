@@ -734,7 +734,7 @@ export default {
                 dependantFurigana: '',
                 dependantName: '',
                 dependantSex: '',
-                liveTogether: '',
+                liveTogether: false,
                 relation: '',
                 otherRelation: ''
             };
@@ -760,7 +760,7 @@ export default {
                             dependantFurigana: '',
                             dependantName: '',
                             dependantSex: '',
-                            liveTogether: '',
+                            liveTogether: false,
                             relation: '',
                             otherRelation: ''
                         }];

@@ -159,17 +159,20 @@
                 <el-button size="small" type="primary" @click="confirmDialog" :disabled="dialogLoading">确定</el-button>
             </div>
         </el-dialog>
+        <big-picture></big-picture>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
 // import Upload from '@components/upload';
+import BigPicture from '@components/big-picture';
 import { mapGetters } from 'vuex';
 import { formatTime, apiDownloadFile, imageFileToPreview} from '@_public/utils';
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        BigPicture
     },
     data() {
         return {

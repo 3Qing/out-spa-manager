@@ -195,8 +195,8 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div>
-                    <el-input type='textarea' v-model="forms.comment" size="mini"></el-input>
+                <div class="textaread">
+                    <el-input type='textarea' rows='5' v-model="forms.comment" size="mini"></el-input>
                 </div>
                 <el-col :span="12" v-if="isDisplay">
                     <div class="top"></div>
@@ -265,9 +265,13 @@
                             <span>営業担当</span>
                             <span>{{getContent(forms.salesPersonID, salespersonforselect, 'id', 'name')}}</span>
                         </li>
-                        <li class="widths" style="width:800px;">
+                        <li class="widths" style="width:850px;">
+                            <span>备注</span>
+                            <span style="width:700px;">{{forms.comment}}</span>
+                        </li>
+                        <li class="widths" style="width:850px;">
                             <span>商流備考</span>
-                            <span style="width:600px;">{{forms.businessFlow}}</span>
+                            <span style="width:700px;">{{forms.businessFlow}}</span>
                         </li>
                     </ul>
                     <!-- <el-table size="small" :data="forms" border>
@@ -367,6 +371,11 @@
                         <el-table-column label="控除精算単価" prop="underTimePrice">
                             <template slot-scope="scope">
                                 <span>{{priceToString(priceToNumber(scope.row.underTimePrice))}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="内容" prop="content">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.content}}</span>
                             </template>
                         </el-table-column>
                         <!-- <el-table-column label="actualMinutes" prop="actualMinutes"></el-table-column>
@@ -859,6 +868,9 @@ export default {
                     // }
                     data.contractCategory = 0;
                     this.forms = data;
+                    if (this.forms.vendorID === 0) {
+                        this.forms.vendorID = '';
+                    }
                     this.tableData = data.contractitems || [];
                     this.tableData.forEach((item) => {
                         item.unitPrice = priceToString(priceToNumber(item.unitPrice));
@@ -1327,6 +1339,9 @@ export default {
 
 <style lang="less">
 .contract-signs {
+    .textaread{
+        margin-top: 15px;
+    }
     .el-form-item {
         margin-bottom: 15px;
     }
@@ -1337,7 +1352,7 @@ export default {
         padding: 0 20px;
         overflow: hidden;
         .el-select, .el-input, .el-date-editor {
-            width: 220px;
+            // width: 220px;
         }
         .dia.el-input{
             width: 131px;

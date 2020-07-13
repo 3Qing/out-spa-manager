@@ -89,7 +89,7 @@
                 <el-col :span="12">
                     <el-form-item label="ポジション" prop="positionID">
                         <el-select v-model="form.positionID">
-                            <el-option v-for="item in positionTypeArr" :key="item.id" :value="item.id" :label="item.text"></el-option>
+                            <el-option v-for="item in positionTypeArr" :key="item.id" :value="item.id" :label="item.title"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-col>
@@ -408,7 +408,7 @@ export default {
         // 岗位列表
         positionType() {
             this.$axios({
-                url: '/api/Position/api_positiontypesforselect'
+                url: '/api/Position/api_positionsforselect'
             }).then(res => {
                 this.positionTypeArr = res.data;
             });
@@ -491,6 +491,12 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.form = { ...res.data };
+                    if (this.form.vendorID === 0) {
+                        this.form.vendorID = '';
+                    }
+                    if (this.form.positionID === 0) {
+                        this.form.positionID = '';
+                    }
                 } else {
                     this.$message({
                         type: 'error',
@@ -589,7 +595,6 @@ export default {
                 } else {
                     this.trus = true;
                     this.form.attachResume = file;
-
                 }
             }
         },
