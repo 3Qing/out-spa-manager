@@ -64,9 +64,9 @@
             <el-table-column label="勘定コード" :prop="'AccountID'" min-width="140px">
                 <template slot-scope="scope">
                     <el-select
-                        clearable 
                         :class="[errors[scope.$index] && errors[scope.$index]['AccountID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'AccountID')"
+                        value-key="accountID"
                         v-model="scope.row['AccountID']"
                         size="mini">
                         <el-option
@@ -97,6 +97,7 @@
                         :class="[errors[scope.$index] && errors[scope.$index]['TeamID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'TeamID')"
                         v-model="scope.row['TeamID']"
+                        clearable
                         size="mini">
                         <el-option
                             v-for="item in teams"
@@ -112,6 +113,7 @@
                         :class="[errors[scope.$index] && errors[scope.$index]['EmployeeID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'EmployeeID')"
                         v-model="scope.row['EmployeeID']"
+                        clearable
                         size="mini">
                         <el-option
                             v-for="item in employees"
@@ -123,7 +125,7 @@
             </el-table-column>
             <el-table-column label="得意先" :prop="'CustomerID'" min-width="140px">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row['CustomerID']" size="mini">
+                    <el-select v-model="scope.row['CustomerID']" clearable size="mini">
                         <el-option
                             v-for="item in customs"
                             :value="item.id"
@@ -134,7 +136,7 @@
             </el-table-column>
             <el-table-column label="仕入先" min-width="140px">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row.vendorid" size="mini">
+                    <el-select v-model="scope.row.vendorid" clearable size="mini">
                         <el-option
                             v-for="item in vendors"
                             :value="item.id"
@@ -163,9 +165,9 @@
             <el-table-column label="勘定コード" :prop="'AccountID'">
                 <template slot-scope="scope">
                     <el-select
-                        clearable 
                         :class="[errors[scope.$index] && errors[scope.$index]['AccountID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'AccountID')"
+                        value-key="accountID"
                         v-model="scope.row['AccountID']"
                         size="mini">
                         <el-option
@@ -187,7 +189,7 @@
             </el-table-column>
             <el-table-column label="得意先" :prop="'CustomerID'">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row['CustomerID']" size="mini">
+                    <el-select v-model="scope.row['CustomerID']" clearable size="mini">
                         <el-option
                             v-for="item in customs"
                             :value="item.id"
@@ -198,7 +200,7 @@
             </el-table-column>
             <el-table-column label="仕入先">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row.vendorid" size="mini">
+                    <el-select v-model="scope.row.vendorid" clearable size="mini">
                         <el-option
                             v-for="item in vendors"
                             :value="item.id"
@@ -213,6 +215,7 @@
                         :class="[errors[scope.$index] && errors[scope.$index]['TeamID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'TeamID')"
                         v-model="scope.row['TeamID']"
+                        clearable
                         size="mini">
                         <el-option
                             v-for="item in teams"
@@ -228,6 +231,7 @@
                         :class="[errors[scope.$index] && errors[scope.$index]['EmployeeID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'EmployeeID')"
                         v-model="scope.row['EmployeeID']"
+                        clearable
                         size="mini">
                         <el-option
                             v-for="item in employees"

@@ -149,12 +149,13 @@ export default {
             const itemsTmp = [];
             const errors = {};
             // 校验必填字段
+            console.log(this.items);
             this.items.forEach((item, i) => {
                 const tmp = { ...item };
                 if (item.DRCR) {
-                    borrowTotal += (item.Amount && Number(item.Amount.replace(/,/g, ''))) || 0;
+                    borrowTotal += (item.Amount) || 0;
                 } else {
-                    provideTotal += (item.Amount && Number(item.Amount.replace(/,/g, ''))) || 0;
+                    provideTotal += (item.Amount) || 0;
                 }
                 tmp['AccountID'] = item['AccountID'].accountID;
                 errors[i] = {};
@@ -168,9 +169,9 @@ export default {
                         }
                     }
                 }
-                if (tmp.Amount) {
-                    tmp.Amount = tmp.Amount.replace(/,/g, '');
-                }
+                // if (tmp.Amount) {
+                //     tmp.Amount = tmp.Amount;
+                // }
                 tmp['EmployeeID'] = item['EmployeeID'] || 0;
                 tmp['CustomerID'] = item['CustomerID'] || 0;
                 tmp['TeamID'] = item['TeamID'] || 0;
