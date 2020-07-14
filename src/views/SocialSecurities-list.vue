@@ -10,8 +10,8 @@
                     placeholder="选择年月日"
                     @change='changeHandle'>
                 </el-date-picker>
-                <el-button class="update" size="mini" type="primary" v-if='isAdd===true&&isEdit===true' @click="updateFile(1)">新增</el-button>
-                <el-button class="update" size="mini" type="primary" v-if='isAdd===true&&isEdit===false' @click="saves(false)">保存</el-button>
+                <!-- <el-button class="update" size="mini" type="primary" v-if='isAdd===true&&isEdit===true' @click="updateFile(1)">新增</el-button>
+                <el-button class="update" size="mini" type="primary" v-if='isAdd===true&&isEdit===false' @click="saves(false)">保存1</el-button> -->
                 <el-button class="update" size="mini" type="primary" v-if='isAdd===true&&isEdit===true' @click="updateFile(2)">编辑</el-button>
                 <el-button class="update" size="mini" type="primary" v-if='isAdd===false&&isEdit===true' @click="saves(true)">保存</el-button>
                 <el-button class="update" size="mini" type="info" v-if='isShow' @click="getData">返回</el-button>
@@ -169,7 +169,9 @@ export default {
                     this.tableData.forEach((item) => {
                         item.effectFromDate = moment(item.effectFromDate).format('YYYY-MM-DD');
                         item.effectToDate = moment(item.effectToDate).format('YYYY-MM-DD');
-                        item.salaryFrom = priceToString(priceToNumber(item.salaryFrom));
+                        if (item.salaryFrom !== 0) {
+                            item.salaryFrom = priceToString(priceToNumber(item.salaryFrom));
+                        }
                         item.salaryTo = priceToString(priceToNumber(item.salaryTo));
                         item.standardSalary = priceToString(priceToNumber(item.standardSalary));
                     });
@@ -250,9 +252,22 @@ export default {
                 this.isEdit = true;
                 this.isAdd = false;
                 this.updates = true;
+                if (this.tableData.length === 0) {
+                    this.tableData.unshift({
+                        type: '',
+                        effectFromDate: '',
+                        effectToDate: '9999-12-31',
+                        insuranceLevel: '',
+                        standardSalary: '',
+                        salaryFrom: '',
+                        salaryTo: '',
+                        standardPercent: '',
+                        additionalPercent: ''
+                    });
+                }
             }
         },
-        saves(inid) {
+        saves() {
             let arr = this.tableData;
             let istrue = false;
             for (let i=0;i<arr.length;i++) {
@@ -334,8 +349,7 @@ export default {
                     url,
                     params: {
                         ssrules: this.tableData,
-                        date: this.dates,
-                        updateflag: inid
+                        date: this.dates
                     },
                     formData: true
                 }).then(res => {

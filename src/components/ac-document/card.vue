@@ -64,16 +64,16 @@
             <el-table-column label="勘定コード" :prop="'AccountID'" min-width="140px">
                 <template slot-scope="scope">
                     <el-select
+                        clearable 
                         :class="[errors[scope.$index] && errors[scope.$index]['AccountID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'AccountID')"
-                        value-key="accountID"
                         v-model="scope.row['AccountID']"
                         size="mini">
                         <el-option
-                            v-for="(item, i) in acCounts"
-                            :value="item"
+                            v-for="item in acCounts"
+                            :value="item.accountID"
                             :label="item.text"
-                            :key="i"></el-option>
+                            :key="item.accountID"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
@@ -163,16 +163,16 @@
             <el-table-column label="勘定コード" :prop="'AccountID'">
                 <template slot-scope="scope">
                     <el-select
+                        clearable 
                         :class="[errors[scope.$index] && errors[scope.$index]['AccountID'] && 'errors-tip']"
                         @change="changeHandler(scope, 'AccountID')"
-                        value-key="accountID"
                         v-model="scope.row['AccountID']"
                         size="mini">
                         <el-option
-                            v-for="(item, i) in acCounts"
-                            :value="item"
+                            v-for="item in acCounts"
+                            :value="item.accountID"
                             :label="item.text"
-                            :key="i"></el-option>
+                            :key="item.accountID"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
@@ -284,6 +284,7 @@ export default {
             this.items.splice(scope.$index, 1);
         },
         addRow() {
+            console.log(this.acCounts);
             this.items.push({
                 DRCR: '',
                 'AccountID': '',

@@ -116,6 +116,17 @@ export default {
                         'EmployeeID': item.employeeID,
                         Comment: item.comment
                     }));
+                    this.items.forEach(item => {
+                        if (item.CustomerID === 0) {
+                            item.CustomerID = '';
+                        }
+                        if (item.EmployeeID === 0) {
+                            item.EmployeeID = '';
+                        }
+                        if (item.TeamID === 0) {
+                            item.TeamID = '';
+                        }
+                    });
                     this.form = {
                         PostingDate: moment(new Date(data.postingDate).getTime()).format('YYYY-MM-DD'),
                         DocType: data.docType,

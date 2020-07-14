@@ -698,6 +698,7 @@ export default {
         priceToString: priceToString,
         formatTime: formatTime,
         selectBlur(e, id) {
+            console.log(e, id);
             this.forms.forEach((item, index) => {
                 if(id === index) {
                     if (typeof(e.relation) === 'string') {
@@ -776,9 +777,9 @@ export default {
             let btns = false;
             let arr = this.forms;
             for (let i=0;i<arr.length;i++) {
-                if (arr[i].otherRelation !== '') {
-                    arr[i].relation = 0;
-                }
+                // if (arr[i].otherRelation !== '') {
+                //     arr[i].relation = 0;
+                // }
                 if (arr[i].dependantFurigana === '') {
                     btns = true;
                     this.$message({
@@ -840,6 +841,12 @@ export default {
                 btns = false;
             }
             if (btns === false) {
+                this.forms.forEach(item => {
+                    if (typeof(item.relation) === 'string') {
+                        item.relation = 0;
+                    }
+                });
+                console.log(this.forms);
                 const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
                 this.$axios({
                     method: 'POST',
