@@ -49,7 +49,6 @@ export default {
                 // empeeno: process.env.NODE_ENV === 'production' ? '' : 'YP006',
                 // username: process.env.NODE_ENV === 'production' ? '' : '喬国霞',
                 // userpwd: process.env.NODE_ENV === 'production' ? '' : 'qqmm@yp',
-                validatecode: ''
             },
             validUrl: formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false)
         };
@@ -60,7 +59,8 @@ export default {
                 type: CHANGE_TAB_TITLE,
                 title: 'ログイン'
             });
-            // vm.inspectIfAutoLogin();
+            vm.inspectIfAutoLogin();
+            console.log(formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false));
         });
     },
     // beforeMount() {
@@ -72,7 +72,7 @@ export default {
         // 检测是否自动登录
         inspectIfAutoLogin() {
             const _this = this;
-            const _ruleForm = sessionStorage.getItem('names');
+            const _ruleForm = localStorage.getItem('names');
             if (_ruleForm) {
                 _this.submit();
             }
@@ -88,8 +88,6 @@ export default {
                 message = '氏名を入力してください';
             } else if (!this.form.userpwd) {
                 message = 'パスワードを入力してください';
-            } else if (!this.form.validatecode) {
-                message = '認定コードを入力してください';
             }
             if (message) {
                 this.$message({
@@ -104,8 +102,6 @@ export default {
         submit() {
             const loading = this.$loading({ lock: true, text: 'ログイン中...' });
             const params = Object.assign({}, this.form);
-            sessionStorage.setItem('names', JSON.stringify(params));
-            console.log(params);
             this.$axios({
                 url: '/api/User/api_login',
                 params,
@@ -116,6 +112,8 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
+                    localStorage.setItem('names', JSON.stringify(params));
+                    console.log(params);
                     let result = res.data || {};
                     const data = result.data || {};
                     const resMenus = data.menus || [];
