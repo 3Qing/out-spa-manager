@@ -13,11 +13,11 @@
                 <p class="item-title">パスワード</p>
                 <el-input v-model="form.userpwd" show-password placeholder="パスワード"></el-input>
             </el-form-item>
-            <el-form-item>
+            <!-- <el-form-item>
                 <p class="item-title">認証コード</p>
                 <el-input class="code-input" v-model="form.validatecode" style="width: 140px;"></el-input>
                 <img class="valid-cover" @click="reloadValidCover" :src="validUrl" alt="認証コード">
-            </el-form-item>
+            </el-form-item> -->
             <el-button type="primary" size="small" @click="beforeSubmit">ログイン</el-button>
         </el-form>
     </main-wrapper>
@@ -49,6 +49,7 @@ export default {
                 // empeeno: process.env.NODE_ENV === 'production' ? '' : 'YP006',
                 // username: process.env.NODE_ENV === 'production' ? '' : '喬国霞',
                 // userpwd: process.env.NODE_ENV === 'production' ? '' : 'qqmm@yp',
+                // validatecode: ''
             },
             validUrl: formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false)
         };
@@ -60,7 +61,6 @@ export default {
                 title: 'ログイン'
             });
             vm.inspectIfAutoLogin();
-            console.log(formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false));
         });
     },
     // beforeMount() {
@@ -77,9 +77,9 @@ export default {
                 _this.submit();
             }
         },
-        reloadValidCover() {
-            this.validUrl = formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false);
-        },
+        // reloadValidCover() {
+        //     this.validUrl = formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false);
+        // },
         beforeSubmit() {
             let message = '';
             if (!this.form.empeeno) {
