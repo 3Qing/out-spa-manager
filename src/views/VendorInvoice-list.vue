@@ -1,333 +1,249 @@
 <template>
-    <main-wrapper class="vendor-list">
-        <el-form class="main-header" slot="header" size="mini" inline>
-            <el-date-picker
-                class="maright"
-                v-model="form.fromperiod"
-                type="month"
-                size="mini"
-                placeholder="开始时间"
-                value-format="yyyyMM"
-                value="yyyyMM"
-                clearable>
-            </el-date-picker>
-            <el-date-picker
-                class="maright"
-                v-model="form.toperiod"
-                type="month"
-                size="mini"
-                placeholder="结束时间"
-                value-format="yyyyMM"
-                value="yyyyMM"
-                clearable>
-            </el-date-picker>
-            <el-select v-model="form.vendorid" placeholder="取引先" size="mini" class="maright" clearable>
-                <el-option v-for="item in vendors" :key="item.id" :value="item.id" :label="item.title"></el-option>
-            </el-select>
-        </el-form>
-        <div class="table-wrapper">
-            <el-table size="small" :data="tableData" border>
-                <el-table-column label="請求書番号" prop="invoiceNo"></el-table-column>
-                <el-table-column label="請求書タイトル" prop="invoiceTitle" show-overflow-tooltip></el-table-column>
-                <el-table-column label="得意先" prop="abbreCustomerTitle"></el-table-column>
-                <el-table-column label="担当者" prop="employeeName" show-overflow-tooltip></el-table-column>
-                <el-table-column label="請求額" prop="invoiceAmount"></el-table-column>
-                <el-table-column label="消費税額" prop="taxAmount"></el-table-column>
-                <el-table-column label="請求日" prop="invoiceDate"></el-table-column>
-                <el-table-column label="支払期日" prop="PlanCollectDate"></el-table-column>
-                <el-table-column label="ステータス" prop="status"></el-table-column>
-                <el-table-column label="アクション">
-                    <template slot-scope="scope">
-                        <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.actions" :key="item.id" :content="item.title">
-                            <i v-if="item.id==='act_downloadinvoice'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_displayinvoice'" class="icon-approve iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_editinvoice'" class="icon-Invoice iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_cancelinvoice'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_collectsales'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-
-                <!-- <el-table-column label="操作" width="70px">
-                    <template slot-scope="scope">
-                        <el-tooltip effect="dark" content="编辑" placement="top-start">
-                            <i class="el-icon-edit-outline oper-icon" color="warning" @click="addLogin(2, scope.row)"></i>
-                        </el-tooltip>
-                        <el-tooltip effect="dark" content="删除" placement="top-start">
-                           <i class="el-icon-delete oper-icon" color="danger" @click="deletes(scope.row)"></i>
-                        </el-tooltip>
-                    </template>
-                </el-table-column> -->
-            </el-table>
-            <el-pagination
-                :current-page="page"
-                :page-size="pageSize"
-                @current-change="changePn"
-                :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
-                :total="total"></el-pagination>
+    <main-wrapper class="vendor">
+        <div slot="header" class="main-header">
+            <upload :opt="{
+                btnText: '上传文件',
+                accept: 'image/*, application/pdf',
+                show: false
+            }" @upload="upload"></upload>
         </div>
-        <el-dialog :visible.sync="vislble" :title="types === 1?'新增':'编辑'" @close='closeDialog'>
-            <!-- <el-form size="mini" label-width="100px" :model="form" :rules="rules" ref="form">
-                <el-form-item label="キーワード" prop="keyword">
-                    <el-input v-model="form.keyword"></el-input>
-                </el-form-item>
-                <el-form-item label="勘定コード" prop="accountID">
-                    <el-select size="mini" v-model="form.accountID">
-                        <el-option v-for="item in accountArray" :key="item.accountID" :label="item.text" :value="item.accountID"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="伝票タイプ" prop="docType">
-                    <el-select size="mini" v-model="form.docType">
-                        <el-option v-for="item in docArray" :key="item.type" :label="item.text" :value="item.type"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="重み" prop="weight">
-                    <el-input type='number' v-model="form.weight"></el-input>
-                </el-form-item>
-                <el-form-item label="タイプ" prop="type">
-                    <el-select size="mini" v-model="form.type">
-                        <el-option v-for="item in typeArray" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button type="primary" size="mini" @click="confirm">确定</el-button>
-            </div> -->
-        </el-dialog>
+        <el-row>
+            <el-col :span="12" v-if="show">
+                <div class="preview-image"><img :src="img"></div>
+            </el-col>
+            <el-col :span="show?12:24">
+                <el-button type="primary" size="mini" style="margin: 0 0 10px 15px;" @click="beforeSubmit" >提交</el-button>
+                <card-item
+                    :show="show"
+                    :form="form"
+                    :items="items"
+                    :teams="teams"
+                    :employees="employees"
+                    :customs="customs"
+                    :vendors="vendors"
+                    :errors="errors"></card-item>
+            </el-col>
+        </el-row>
     </main-wrapper>
 </template>
 
 <script>
-import MainWrapper from '@components/main-wrapper';
+import MainWrapper  from '@components/main-wrapper';
+import CardItem from '@components/vendor-invoice/card';
+import mixins from '@components/vendor-invoice/mixins';
+import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
-import moment from 'moment';
+// import moment from 'moment';
+import { fileToBase64 } from '@_public/utils';
 
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        CardItem,
+        Upload
     },
     data() {
         return {
-            page: 1,
-            pageSize: 15,
-            total: 0,
-            types: 1,
-            form: {
-                fromperiod: '',
-                toperiod: '',
-                vendorid: ''
-            },
-            tableData: [],
-            vislble: false,
-            vendors: [],
-            rules: {
-                keyword: [{
-                    required: true, message: '请输入キーワード！', trigger: 'blur'
-                }],
-                accountID: [{
-                    required: true, message: '请选择勘定コード！', trigger: 'blur'
-                }],
-                docType: [{
-                    required: true, message: '请选择伝票タイプ！', trigger: 'blur'
-                }],
-                weight: [{
-                    required: true, message: '请输入重み！', trigger: 'blur'
-                }],
-                type: [{
-                    required: true, message: '请选择タイプ！', trigger: 'blur'
-                }]
-            }
+            items: [{
+                ids: 1,
+                contractNo: '',
+                employeeID: '',
+                invoiceComment: '',
+                fromDate: '',
+                toDate: '',
+                ningetsu: '',
+                planCollectDate: '',
+                planCollectSales: '',
+                planCollectAddSales: '',
+                planCollectTax: ''
+            }],
+            errors: {},
+            show: false,
+            img: ''
         };
     },
-    beforeRouteEnter(to, from, next) {
-        next(vm => {
-            vm.form.fromperiod = moment(new Date()).format('YYYYMM');
-            vm.getVendors();
-            vm.getData();
-        });
-    },
+    mixins: [ mixins ],
     computed: {
-        ...mapGetters(['IS_H5', 'TEAMS'])
+        ...mapGetters([ 'POST_LOADING' ])
     },
     methods: {
-        // 获取字段函数
-        getContent(id, arr , arrName) {
-            if (arrName === 'accountArray') {
-                for (let item of arr) {
-                    if (item.accountID === id) {
-                        return item.text;
-                    }
-                }
-                return '-';
-            } else if (arrName === 'docArray') {
-                for (let item of arr) {
-                    if (item.type === id) {
-                        return item.text;
-                    }
-                }
-                return '-';
-            } else if (arrName === 'typeArray') {
-                for (let item of arr) {
-                    if (item.id === id) {
-                        return item.text;
-                    }
-                }
-                return '-';
-            }
-        },
-        getVendors() {
+        upload({ file }) {
+            const loading = this.$loading({ lock: true, text: this.POST_LOADING });
             this.$axios({
-                url: '/api/Customer/api_vendorsforselect'
-            }).then(res => {
-                if (res && res.code === 0) {
-                    this.vendors = res.data || [];
-                }
-            });
-        },
-        getData() {
-            const loading = this.$loading({ lock: true, text: '数据取得中...' });
-            let url = '/api/POInvoice/api_getinvoicelist';
-            this.form['page'] = this.page;
-            this.form['pagesize'] = this.pageSize;
-            this.$axios({
-                url,
-                params: this.form
+                method: 'POST',
+                url: '/api/POInvoice/api_proposepoinvoicebyocr',
+                params: {
+                    file: file
+                },
+                formData: true
             }).then(res => {
                 loading.close();
-                if (res && res.code === 0) {
-                    this.tableData = res.data.data || [];
-                    this.total = res.data.total;
-                } else {
-                    this.tableData = [];
-                    this.total = 0;
-                    this.$message({
-                        type: 'error',
-                        showClose: true,
-                        message: res ? res.message : 'インタフェース異常、データ取得できません！'
-                    });
-                }
-            });
-        },
-        closeDialog() {
-            this.$refs.form.resetFields();
-        },
-        changePn(page) {
-            this.page = page;
-            this.getData();
-        },
-        actionHandler(item, row) {
-            console.log(row);
-            if (item.id === 'act_downloadinvoice') {
-                // this.createInvoice(row);
-            } else if (item.id === 'act_displayinvoice') {
-                // this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                //     id: row.cfid,
-                //     type: 'confirm',
-                //     callback: () => {
-                //         this.getList();
-                //     }
-                // });
-            } else if (item.id === 'act_editinvoice') {
-                // this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                //     id: row.cfid,
-                //     type: 'cancel',
-                //     callback: () => {
-                //         this.getList();
-                //     }
-                // });
-            } else if (item.id === 'act_cancelinvoice') {
-                // this.curRow = { ...row };
-                // this.show = true;
-            } else if (item.id === 'act_collectsales') {
-                // this.curRow = { ...row };
-                // this.show = true;
-            }
-        },
-        // 新增 编辑按钮
-        addLogin(type, row) {
-            this.types = type;
-            if (type === 1) {
-                this.form = {
-                    keyword: '',
-                    accountID: '',
-                    docType: '',
-                    weight: '',
-                    type: ''
-                };
-            } else {
-                this.form = row;
-            }
-            this.vislble = true;
-        },
-        // 删除按钮
-        deletes(row) {
-            this.$confirm('削除確認', '削除', {
-                type: 'warning'
-            }).then(() => {
-                this.$axios({
-                    url: '/api/OCRKeyword/api_deleteocrkeyword',
-                    params: {
-                        id: row.id
-                    }
-                }).then(res => {
-                    if (res && res.code === 0) {
-                        this.$message({
-                            type: 'success',
-                            message: '削除完了！'
-                        });
-                        this.getData();
-                    } else {
-                        this.$message({
-                            type: 'error',
-                            message: res.message
-                        });
-                    }
+                fileToBase64(file).then(result => {
+                    this.img = result;
                 });
-            }).catch(() => {});
-        },
-        confirm() {
-            this.$refs.form.validate(valid => {
-                if (valid) {
-                    // 保存
-                    let params = {
-                        keyword: String(this.form.keyword),
-                        accountID: String(this.form.accountID),
-                        docType: String(this.form.docType),
-                        weight: Number(this.form.weight),
-                        type: this.form.type,
-                        id: 0,
-                        updateTime: moment(new Date()).format('YYYY-MM-DD'),
-                        companyID: 0
-                    };
-                    const loading = this.$loading({ lock: true, text: '正在提交数据中' });
-                    const url = '/api/OCRKeyword/api_updateocrkeyword';
-                    this.$axios({
-                        method: 'POST',
-                        url,
-                        params: params
-                    }).then( res => {
-                        loading.close();
-                        if (res && res.code === 0) {
-                            this.vislble = false;
-                            this.getData();
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                message: res.message
-                            });
-                        }
-                    });
+                if (res && res.code === 0) {
+                    const data = res.data || {};
+                    const items = data.cashflows || [];
+                    this.items = items.map((item, index) => ({
+                        Ids: index+1,
+                        contractNo: item.ContractNo,
+                        employeeID: item.EmployeeID,
+                        invoiceComment: item.InvoiceComment,
+                        fromDate: item.FromDate,
+                        toDate: item.ToDate,
+                        ningetsu: item.Ningetsu,
+                        planCollectDate: item.PlanCollectDate,
+                        planCollectSales: item.PlanCollectSales,
+                        planCollectAddSales: item.PlanCollectAddSales,
+                        planCollectTax: item.PlanCollectTax
+                    }));
+                    this.form = res.data;
+                    if (this.form.vendorID === 0) {
+                        this.form.vendorID = '';
+                    }
+                    this.show = true;
                 }
             });
+        },
+        beforeSubmit() {
+            // if (!(this.form.PostingDate && this.form['DocType'])) {
+            //     this.$message({
+            //         type: 'warning',
+            //         message: '転記日及び伝票タイプを入力してください！'
+            //     });
+            //     return false;
+            // }
+            // let borrowTotal = 0;
+            // let provideTotal = 0;
+            // const itemsTmp = [];
+            // const errors = {};
+            // // 校验必填字段
+            // console.log(this.items);
+            // this.items.forEach((item, i) => {
+            //     const tmp = { ...item };
+            //     if (item.DRCR) {
+            //         borrowTotal += (item.Amount) || 0;
+            //     } else {
+            //         provideTotal += (item.Amount) || 0;
+            //     }
+            //     // console.log(item['AccountID']);
+            //     tmp['AccountID'] = item['AccountID'];
+            //     errors[i] = {};
+            //     for (let key in item) {
+            //         if (['DRCR', 'AccountID', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {
+            //             errors[i][key] = true;
+            //         }
+            //         if (item['AccountID'].BSPL === false) {
+            //             if (['TeamID', 'EmployeeID'].includes(key) && !(item['TeamID'] || item['EmployeeID'])) {
+            //                 errors[i][key]  = true;
+            //             }
+            //         }
+            //     }
+            //     // if (tmp.Amount) {
+            //     //     tmp.Amount = tmp.Amount;
+            //     // }
+            //     tmp['EmployeeID'] = item['EmployeeID'] || 0;
+            //     tmp['CustomerID'] = item['CustomerID'] || 0;
+            //     tmp['TeamID'] = item['TeamID'] || 0;
+            //     if (!Object.keys(errors[i]).length) {
+            //         delete errors[i];
+            //     }
+            //     itemsTmp.push(tmp);
+            // });
+            // if (itemsTmp.length < 2) {
+            //     this.$message({
+            //         type: 'warning',
+            //         message: '伝票明細は最低２つ入力してください！'
+            //     });
+            //     return false;
+            // }
+            // if (Object.keys(errors).length) {
+            //     if (itemsTmp.length - Object.keys(errors).length < 2) {
+            //         this.errors = errors;
+            //         this.$message({
+            //             type: 'warning',
+            //             message: '必須項目を入力してください！'
+            //         });
+            //         return false;
+            //     }
+            // }
+            // if (borrowTotal !== provideTotal) {
+            //     this.$message({
+            //         type: 'warning',
+            //         message: '伝票借方金額と貸方金額が不一致です！'
+            //     });
+            //     return false;
+            // }
+            // this.errors = {};
+            // const items = [];
+            // itemsTmp.forEach((item, i) => {
+            //     if (!errors[i]) {
+            //         items.push(item);
+            //     }
+            // });
+            // this.submit({
+            //     ...this.form,
+            //     DocItems: items
+            // });
+        },
+        submit(params) {
+            console.log(params);
+            // const loading = this.$loading({ lock: true, text: 'データ提出中...' });
+            // this.$axios({
+            //     method: 'POST',
+            //     url: '/api/ACDoc/api_postdocument',
+            //     params,
+            //     custom: {
+            //         loading,
+            //         vm: this
+            //     },
+            //     formData: true
+            // }).then(res => {
+            //     loading.close();
+            //     if (res && res.code === 0) {
+            //         this.$message({
+            //             type: 'success',
+            //             message: '保存完了'
+            //         });
+            //         this.$router.push({
+            //             name: 'ACDocDetail',
+            //             params: {
+            //                 id: res.data
+            //             }
+            //         });
+            //     }
+            // });
         }
     }
 };
 </script>
 
 <style lang="less">
-.vendor-list {
-    .maright{
-        margin-right: 20px;
+.vendor {
+    .main-header {
+        .upload-wrapper {
+            display: inline-block;
+            vertical-align: top;
+            margin: 11px 0 0 15px;
+        }
+    }
+    &.hidden-card {
+        .content-wrapper {
+            & > div {
+                display: none;
+            }
+        }
+    }
+    .preview-image {
+        width: 100%;
+        img {
+            width: 100%;
+        }
+    }
+    .ac-box {
+        width: 100% !important;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1) !important;
+        text-align: left;
     }
 }
 </style>

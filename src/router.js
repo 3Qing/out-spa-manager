@@ -48,6 +48,7 @@ import SocialSecurityManage from '@views/SocialSecurities-list';
 import EmployeeTypeManage from '@views/EmployeeTypeManage-list';
 import RouteManage from '@views/RouteManage-list';
 import VendorInvoice from '@views/VendorInvoice-list';
+import VendorInvoiceList from '@views/VendorInvoiceList-list';
 Vue.use(Router);
 
 // 复写push方法 修复导航错误
@@ -262,6 +263,10 @@ const router = new Router({
         path: '/vendorInvoice',
         name: 'VendorInvoice',
         component: VendorInvoice
+    }, {
+        path: '/vendorInvoiceList',
+        name: 'VendorInvoiceList',
+        component: VendorInvoiceList
     }
     ]
 });
