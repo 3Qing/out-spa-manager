@@ -5,6 +5,7 @@ import Croppa from 'vue-croppa';
 import axios from '@_public/axios';
 import router from './router';
 import store from './vuex/store';
+import VueCookies from 'vue-cookies';
 // import JA from 'element-ui/lib/locale/lang/ja';
 // import locale from 'element-ui/lib/locale';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -20,7 +21,9 @@ Vue.config.productionTip = false;
 
 Vue.use(ElemenetUi);
 Vue.use(Croppa, { componentName: 'croppa' });
+Vue.use(VueCookies);
 
+Vue.prototype.$cookies = VueCookies;
 Vue.prototype.$axios = axios;
 
 new Vue({

@@ -157,7 +157,8 @@ export default {
                 } else {
                     provideTotal += (item.Amount) || 0;
                 }
-                tmp['AccountID'] = item['AccountID'].accountID;
+                // console.log(item['AccountID']);
+                tmp['AccountID'] = item['AccountID'];
                 errors[i] = {};
                 for (let key in item) {
                     if (['DRCR', 'AccountID', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {

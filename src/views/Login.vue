@@ -72,9 +72,8 @@ export default {
         // 检测是否自动登录
         inspectIfAutoLogin() {
             const _this = this;
-            const _ruleForm = localStorage.getItem('names');
-            if (_ruleForm) {
-                _this.submit();
+            if (_this.$cookies.isKey('user_session')) {
+                _this.submit('type');
             }
         },
         // reloadValidCover() {
@@ -99,11 +98,20 @@ export default {
                 this.submit();
             }
         },
-        submit() {
+        submit(type) {
             const loading = this.$loading({ lock: true, text: 'ログイン中...' });
-            const params = Object.assign({}, this.form);
+            let params = {};
+            let url = '';
+            if (type) {
+                url = `/api/User/api_autologin?key=${this.$cookies.get("user_session")}`;
+                // url = '/api/User/api_login';
+                // params = Object.assign({}, this.form);
+            } else {
+                url = '/api/User/api_login';
+                params = Object.assign({}, this.form);
+            }
             this.$axios({
-                url: '/api/User/api_login',
+                url,
                 params,
                 custom: {
                     loading,
@@ -112,8 +120,10 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    localStorage.setItem('names', JSON.stringify(params));
-                    console.log(params);
+                    // localStorage.setItem('names', JSON.stringify(params));
+                    // this.$cookies.config(expireTimes[,path]);
+                    this.$cookies.set("user_session", res.data.key, -1);
+                    console.log(this.$cookies.get("user_session"));
                     let result = res.data || {};
                     const data = result.data || {};
                     const resMenus = data.menus || [];

@@ -117,7 +117,7 @@ export default {
     },
     methods: {
         logout() {
-            localStorage.removeItem('names');
+            this.$cookies.remove("user_session");
             sessionStorage.removeItem('appInfo');
             sessionStorage.removeItem('names');
             sessionStorage.removeItem('pageTag');

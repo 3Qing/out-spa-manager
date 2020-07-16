@@ -46,8 +46,8 @@ import HolidayManage from '@views/HolidayManage-list';
 import TaxRuleManage from '@views/TaxRuleManage-list';
 import SocialSecurityManage from '@views/SocialSecurities-list';
 import EmployeeTypeManage from '@views/EmployeeTypeManage-list';
-// import EmployeeTypeManage from '@views/RouteManage-list';
 import RouteManage from '@views/RouteManage-list';
+import VendorInvoice from '@views/VendorInvoice-list';
 Vue.use(Router);
 
 // 复写push方法 修复导航错误
@@ -258,6 +258,10 @@ const router = new Router({
         path: '/routeManage',
         name: 'RouteManage',
         component: RouteManage
+    }, {
+        path: '/vendorInvoice',
+        name: 'VendorInvoice',
+        component: VendorInvoice
     }
     ]
 });
