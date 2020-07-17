@@ -7,7 +7,8 @@ export default  {
                 invoiceTitle: '',
                 invoiceDate: '',
                 planCollectDate: '',
-                invoiceAmount: ''
+                invoiceAmount: '',
+                comment: ''
             },
             docTypes: [],
             acCounts: [],

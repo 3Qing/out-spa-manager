@@ -131,56 +131,56 @@
                             <el-input v-model="forms.businessFlow" size="small" type="textarea"></el-input>
                         </el-form-item>
                     </el-form>
+                    <el-table size="small" :data="tableData">
+                        <el-table-column label="番号" width="100px">
+                            <template slot-scope="scope">
+                                <span>{{scope.$index + 1}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="担当者" >
+                            <template slot-scope="scope">
+                                <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
+                                    <el-option v-for="item in workList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                                </el-select>
+                                <span v-else>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="単価" >
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice(scope.row, scope.$index)" @blur="calculateOverTimePrice(scope.row, scope.$index)"></el-input>
+                            </template>
+                        </el-table-column>
+                        <!-- <el-table-column label="人月" width="140px">
+                            <template slot-scope="scope">
+                                <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="handleChange(scope.row, scope.$index)"></el-input-number>
+                            </template>
+                        </el-table-column> -->
+                        <!-- <el-table-column label="価格" width="100px">
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.contractPrice" size="mini"></el-input>
+                                <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span>
+                            </template>
+                        </el-table-column> -->
+                        <el-table-column label="超過精算単価">
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.overTimePrice" size="mini"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="控除精算単価">
+                            <template slot-scope="scope">
+                                <el-input v-model="scope.row.underTimePrice" size="mini"></el-input>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="アクション" width="80px">
+                            <template slot-scope="scope">
+                                <i class="el-icon-plus link" color="primary" @click="handleAdd(scope)"></i>
+                                <i class="el-icon-delete link" color="danger" @click="handleDel(scope)"></i>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-col>
-                <el-table size="small" :data="tableData">
-                    <el-table-column label="番号" width="100px">
-                        <template slot-scope="scope">
-                            <span>{{scope.$index + 1}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="担当者" >
-                        <template slot-scope="scope">
-                            <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
-                                <el-option v-for="item in workList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                            </el-select>
-                            <span v-else>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="単価" >
-                        <template slot-scope="scope">
-                            <el-input v-model="scope.row.unitPrice" size="mini" @input="handlePrice(scope.row, scope.$index)" @blur="calculateOverTimePrice(scope.row, scope.$index)"></el-input>
-                        </template>
-                    </el-table-column>
-                    <!-- <el-table-column label="人月" width="140px">
-                        <template slot-scope="scope">
-                            <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :step="0.1" :max="1" :min="0" @change="handleChange(scope.row, scope.$index)"></el-input-number>
-                        </template>
-                    </el-table-column> -->
-                    <!-- <el-table-column label="価格" width="100px">
-                        <template slot-scope="scope">
-                            <el-input v-model="scope.row.contractPrice" size="mini"></el-input>
-                            <span>{{priceToString(priceToNumber(scope.row.contractPrice))}}</span>
-                        </template>
-                    </el-table-column> -->
-                    <el-table-column label="超過精算単価">
-                        <template slot-scope="scope">
-                            <el-input v-model="scope.row.overTimePrice" size="mini"></el-input>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="控除精算単価">
-                        <template slot-scope="scope">
-                            <el-input v-model="scope.row.underTimePrice" size="mini"></el-input>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="アクション" width="80px">
-                        <template slot-scope="scope">
-                            <i class="el-icon-plus link" color="primary" @click="handleAdd(scope)"></i>
-                            <i class="el-icon-delete link" color="danger" @click="handleDel(scope)"></i>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <el-col :span="12" v-if="isDisplay">
-                    <div class="top"></div>
+                <el-col :span="12" v-if="forms.paperReceived === true">
+                    <img :src=urls>
                 </el-col>
             </el-row>
             <div class="cl1" v-if="isDisplay">
@@ -1288,7 +1288,7 @@ export default {
         padding: 0 20px;
         overflow: hidden;
         .el-select, .el-input, .el-date-editor {
-            width: 220px;
+            // width: 220px;
         }
         .dia.el-input{
             width: 131px;
@@ -1315,15 +1315,18 @@ export default {
     }
     .cl1{
         float: left;
-        width: 850;
+        width: 800px;
     }
     .cl2{
         float: right;
-        width: calc(100% - 860px);
+        width: calc(100% - 810px);
         margin-top: 20px;
         img{
             width: 100%;
         }
+    }
+    img{
+        width: 100%;
     }
     .bottom {
         width: 100%;
@@ -1331,7 +1334,7 @@ export default {
         margin-top: 20px;
         ul{
             float: left;
-            width: 850px;
+            width: 800px;
             overflow: hidden;
             // height: 280px;
             border: 1px solid #EBEEF5;
@@ -1368,7 +1371,7 @@ export default {
         }
     }
     .tstable{
-        width: 850px;
+        width: 800px;
     }
     .link {
         font-size: 16px;

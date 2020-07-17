@@ -34,6 +34,9 @@
                 <el-form-item label="合計金額" prop="invoiceAmount">
                     <el-input v-model="form.invoiceAmount"></el-input>
                 </el-form-item>
+                <el-form-item label="備考" prop="comment">
+                    <el-input type='textarea' :rows='4' v-model="form.comment"></el-input>
+                </el-form-item>
             </el-form>
         </div>
         <el-button type="primary" size="mini" @click="addRow" style="margin-bottom: 10px;">請求明細選択</el-button>
