@@ -29,16 +29,28 @@
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData" border>
-                <el-table-column label="請求書番号" prop="invoiceNo"></el-table-column>
+                <el-table-column label="請求書番号" prop="invoiceNo" width="125"></el-table-column>
                 <el-table-column label="請求書タイトル" prop="invoiceTitle" show-overflow-tooltip></el-table-column>
-                <el-table-column label="得意先" prop="abbreCustomerTitle"></el-table-column>
+                <el-table-column label="得意先" prop="customerTitle"></el-table-column>
                 <el-table-column label="担当者" prop="employeeName" show-overflow-tooltip></el-table-column>
-                <el-table-column label="請求額" prop="invoiceAmount"></el-table-column>
-                <el-table-column label="消費税額" prop="taxAmount"></el-table-column>
-                <el-table-column label="請求日" prop="invoiceDate"></el-table-column>
-                <el-table-column label="支払期日" prop="PlanCollectDate"></el-table-column>
-                <el-table-column label="ステータス" prop="status"></el-table-column>
-                <el-table-column label="アクション">
+                <el-table-column label="請求額" prop="invoiceAmount" width="100">
+                    <template slot-scope="scope">
+                        <span>{{priceToString(scope.row.invoiceAmount)}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="消費税額" prop="taxAmount" width="100">
+                    <template slot-scope="scope">
+                        <span>{{priceToString(scope.row.taxAmount) || 0}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="請求日" prop="invoiceDate" width="120"></el-table-column>
+                <el-table-column label="支払期日" prop="planCollectDate" width="120"></el-table-column>
+                <el-table-column label="ステータス" prop="status" width="140">
+                    <template slot-scope="scope">
+                        <span>{{getContent(scope.row.status, stausArr, 'id', 'text')}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="アクション" width="160">
                     <template slot-scope="scope">
                         <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.actions" :key="item.id" :content="item.title">
                             <i v-if="item.id==='act_downloadinvoice'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
@@ -103,6 +115,7 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import moment from 'moment';
+import { priceToString } from '@_public/utils';
 
 export default {
     components: {
@@ -122,6 +135,7 @@ export default {
             tableData: [],
             vislble: false,
             vendors: [],
+            stausArr: [],
             rules: {
                 keyword: [{
                     required: true, message: '请输入キーワード！', trigger: 'blur'
@@ -145,6 +159,7 @@ export default {
         next(vm => {
             vm.form.fromperiod = moment(new Date()).format('YYYYMM');
             vm.getVendors();
+            vm.getStaus();
             vm.getData();
         });
     },
@@ -152,29 +167,13 @@ export default {
         ...mapGetters(['IS_H5', 'TEAMS'])
     },
     methods: {
+        priceToString: priceToString,
         // 获取字段函数
-        getContent(id, arr , arrName) {
-            if (arrName === 'accountArray') {
-                for (let item of arr) {
-                    if (item.accountID === id) {
-                        return item.text;
-                    }
+        getContent(val, arr, key, field) {
+            for (let item of arr) {
+                if (item[key] === val) {
+                    return item[field];
                 }
-                return '-';
-            } else if (arrName === 'docArray') {
-                for (let item of arr) {
-                    if (item.type === id) {
-                        return item.text;
-                    }
-                }
-                return '-';
-            } else if (arrName === 'typeArray') {
-                for (let item of arr) {
-                    if (item.id === id) {
-                        return item.text;
-                    }
-                }
-                return '-';
             }
         },
         getVendors() {
@@ -183,6 +182,15 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.vendors = res.data || [];
+                }
+            });
+        },
+        getStaus() {
+            this.$axios({
+                url: '/api/POInvoice/api_invoicestatusforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.stausArr = res.data || [];
                 }
             });
         },

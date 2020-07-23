@@ -16,7 +16,6 @@
                 </div>
             </el-col>
             <el-col :span="show?12:24">
-                <el-button type="primary" size="mini" style="margin: 0 0 10px 15px;" @click="beforeSubmit" >提交</el-button>
                 <card-item
                     :show="show"
                     :form="form"
@@ -25,7 +24,7 @@
                     :employees="employees"
                     :customs="customs"
                     :vendors="vendors"
-                    :errors="errors"></card-item>
+                    :errors="rules"></card-item>
             </el-col>
         </el-row>
     </main-wrapper>
@@ -64,6 +63,29 @@ export default {
                 planCollectAddSales: '',
                 planCollectTax: ''
             }],
+            rules: {
+                invoiceNo: [{
+                    required: true, message: '请输入請求書番号！'
+                }],
+                vendorID: [{
+                    required: true, message: '请选择仕入先！'
+                }],
+                invoiceTitle: [{
+                    required: true, message: '请输入請求書タイトル！'
+                }],
+                invoiceDate: [{
+                    required: true, message: '请选择請求日！'
+                }],
+                planCollectDate: [{
+                    required: true, message: '请选择支払期日！'
+                }],
+                invoiceAmount: [{
+                    required: true, message: '请输入合計金額！'
+                }],
+                comment: [{
+                    required: true, message: '请输入備考！'
+                }]
+            },
             errors: {},
             show: false,
             img: ''
