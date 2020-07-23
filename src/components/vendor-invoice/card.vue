@@ -1,5 +1,5 @@
 <template>
-    <el-card class="ac-box">
+    <el-card class="vendor-box">
         <div slot="header" class="card-header">
             <el-form size="small" label-width="120px" ref="form" :model="form">
                 <el-form-item label="請求書番号" prop="invoiceNo">
@@ -145,7 +145,7 @@ export default {
 </script>
 
 <style lang="less">
-.ac-box {
+.vendor-box {
     box-shadow: none !important;
     .errors-tip {
         input {

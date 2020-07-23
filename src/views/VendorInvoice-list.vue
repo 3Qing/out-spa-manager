@@ -9,7 +9,11 @@
         </div>
         <el-row>
             <el-col :span="12" v-if="show">
-                <div class="preview-image"><img :src="img"></div>
+                <div class="preview-image">
+                    <!-- <img :src="img"> -->
+                    <!-- <iframe id="menuFrame" :src="img" width="100%" height="100%"></iframe> -->
+                    <pdf ref="pdf" :src="img"></pdf>
+                </div>
             </el-col>
             <el-col :span="show?12:24">
                 <el-button type="primary" size="mini" style="margin: 0 0 10px 15px;" @click="beforeSubmit" >提交</el-button>
@@ -33,14 +37,17 @@ import CardItem from '@components/vendor-invoice/card';
 import mixins from '@components/vendor-invoice/mixins';
 import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
+import pdf from 'vue-pdf';
 // import moment from 'moment';
 import { fileToBase64 } from '@_public/utils';
 
 export default {
+    name: 'Pdf',
     components: {
         MainWrapper,
         CardItem,
-        Upload
+        Upload,
+        pdf
     },
     data() {
         return {
@@ -236,8 +243,10 @@ export default {
     }
     .preview-image {
         width: 100%;
+        height: 100%;
         img {
             width: 100%;
+            height: 100%;
         }
     }
     .ac-box {
