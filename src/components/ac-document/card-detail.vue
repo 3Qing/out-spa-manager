@@ -44,7 +44,7 @@
                 </el-col>
             </el-row> -->
         </div>
-        <el-table size="mini" :data="form.docitems" border>
+        <el-table size="mini" :data="form.items" border>
             <el-table-column label="借貸" prop="drcr" width="80px">
                 <template slot-scope="scope">
                     <span>{{formatContext(scope.row.drcr, 'drcr')}}</span>

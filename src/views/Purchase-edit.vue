@@ -9,7 +9,7 @@
             <el-button v-if="clearFale&&!$route.params.id" size="small" @click="$router.back()">返回</el-button>
             <el-button v-if="isDisplay&&!$route.params.id&&!clearFale" size="small" @click="fanhuis">返回</el-button>
         </div>
-        <div class="content">
+        <div class="content cool">
             <el-row v-if="!isDisplay&&!$route.params.updates">
                 <el-col :span="12">
                     <el-form ref="forms" :model="forms" label-width="120px" :rules="isDisplay ? {} : rules" label-suffix=":">
@@ -149,12 +149,12 @@
                             <span>{{scope.$index + 1}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="仕入先" >
+                    <el-table-column label="员工" >
                         <template slot-scope="scope">
-                            <el-select v-if="scope.row.isFalse === true" v-model="scope.row.vendorID" size="mini">
-                                <el-option v-for="item in vendorsArr" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                            <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
+                                <el-option v-for="item in vendorData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
-                            <span v-else>{{getContent(scope.row.vendorID, vendorsArr, 'id', 'title')}}</span>
+                            <span v-else>{{getContent(scope.row.employeeID, vendorData, 'id', 'name')}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="単価" >
@@ -584,7 +584,8 @@ export default {
             btnfalse: false,
             clearFale: false,
             urls: '',
-            vendorsArr: []
+            vendorsArr: [],
+            vendorData: []
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -600,6 +601,7 @@ export default {
             vm.getSalespersonforselect(); // 销售人员
             if (to.params.id&&!to.params.updates) {
                 vm.getData(vm.isDisplay);
+                // vm.vendorIdArr();
             }
             if (to.params.updates) {
                 vm.getNews(to.params.id, to.params.fromdate, to.params.todate);
@@ -659,6 +661,22 @@ export default {
                 if (res && res.code === 0) {
                     this.vendorsArr = res.data || [];
                 }
+            });
+        },
+        vendorIdArr() {
+            let url = '/api/Employee/api_employeesbyvendor';
+            let params = {
+                vendorid: this.forms.vendorID
+            };
+            this.$axios({
+                url,
+                params,
+                custom: {
+                    vm: this
+                }
+            }).then(res => {
+                this.vendorData = res.data;
+                console.log(res.data);
             });
         },
         previewHandle(scope) {
@@ -872,6 +890,7 @@ export default {
                     // }
                     data.contractCategory = 0;
                     this.forms = data;
+                    this.vendorIdArr();
                     if (this.forms.vendorID === 0) {
                         this.forms.vendorID = '';
                     }
@@ -1336,6 +1355,7 @@ export default {
                     this.forms['paymentTermID'] = item.paymentTermID;
                 }
             }
+            this.vendorIdArr();
         }
     }
 };

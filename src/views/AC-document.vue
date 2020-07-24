@@ -87,7 +87,7 @@ export default {
                 } else {
                     provideTotal += (item.Amount && Number(item.Amount.replace(/,/g, ''))) || 0;
                 }
-                tmp['AccountID'] = item['AccountID'].accountID;
+                tmp['AccountID'] = item['AccountID'];
                 errors[i] = {};
                 for (let key in item) {
                     if (['DRCR', 'AccountID', 'Amount'].includes(key) && (item[key] === undefined || item[key] === '')) {
