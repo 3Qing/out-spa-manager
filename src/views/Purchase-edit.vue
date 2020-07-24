@@ -149,12 +149,12 @@
                             <span>{{scope.$index + 1}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="担当者" >
+                    <el-table-column label="仕入先" >
                         <template slot-scope="scope">
-                            <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
-                                <el-option v-for="item in workList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                            <el-select v-if="scope.row.isFalse === true" v-model="scope.row.vendorID" size="mini">
+                                <el-option v-for="item in vendorsArr" :key="item.id" :label="item.title" :value="item.id"></el-option>
                             </el-select>
-                            <span v-else>{{getContent(scope.row.employeeID, workList, 'id', 'name')}}</span>
+                            <span v-else>{{getContent(scope.row.vendorID, vendorsArr, 'id', 'title')}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="単価" >
@@ -195,9 +195,9 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div class="textaread">
+                <!-- <div class="textaread">
                     <el-input type='textarea' rows='5' v-model="forms.comment" size="mini"></el-input>
-                </div>
+                </div> -->
                 <el-col :span="12" v-if="isDisplay">
                     <div class="top"></div>
                 </el-col>
@@ -264,10 +264,6 @@
                         <li class="">
                             <span>営業担当</span>
                             <span>{{getContent(forms.salesPersonID, salespersonforselect, 'id', 'name')}}</span>
-                        </li>
-                        <li class="widths" style="width:850px;">
-                            <span>备注</span>
-                            <span style="width:700px;">{{forms.comment}}</span>
                         </li>
                         <li class="widths" style="width:850px;">
                             <span>商流備考</span>
@@ -396,6 +392,14 @@
                         </el-table-column>
                         <el-table-column label="invoiceNo" prop="invoiceNo"></el-table-column> -->
                     </el-table>
+                    <div class="textaread">
+                        <span>备注</span>
+                        <el-input type='textarea' rows='6' v-model="forms.comment" size="mini"></el-input>
+                    </div>
+                    <!-- <li class="widths" style="width:850px;">
+                            <span>备注</span>
+                            <span style="width:700px;">{{forms.comment}}</span>
+                        </li> -->
                 </div>
             </div>
             <div class="cl2" v-if="isDisplay&&forms.paperReceived === true">
@@ -497,8 +501,8 @@ export default {
                 salesPersonID: '',
                 businessFlow: '',
                 vendorID: '',
-                submitLocation: '',
-                submitDocuments: ''
+                submitLocation: 'お客様指定する作業場所',
+                submitDocuments: '作業実施報告書'
             },
             unit: [
                 {

@@ -29,7 +29,7 @@
         </el-form>
         <div class="table-wrapper">
             <el-table size="small" :data="tableData" border>
-                <el-table-column label="請求書番号" prop="invoiceNo" width="125"></el-table-column>
+                <el-table-column label="請求書番号" prop="invoiceNo" width="130"></el-table-column>
                 <el-table-column label="請求書タイトル" prop="invoiceTitle" show-overflow-tooltip></el-table-column>
                 <el-table-column label="得意先" prop="customerTitle"></el-table-column>
                 <el-table-column label="担当者" prop="employeeName" show-overflow-tooltip></el-table-column>
@@ -53,11 +53,11 @@
                 <el-table-column label="アクション" width="160">
                     <template slot-scope="scope">
                         <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.actions" :key="item.id" :content="item.title">
-                            <i v-if="item.id==='act_downloadinvoice'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_displayinvoice'" class="icon-approve iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_editinvoice'" class="icon-Invoice iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_cancelinvoice'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
-                            <i v-if="item.id==='act_collectsales'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                            <i v-if="item.id==='act_downloadinvoice'" class="icon-PDF iconfont oper-icon" color="danger" @click="downloadFile(scope.row, 'pdf')"></i>
+                            <i v-if="item.id==='act_displayinvoice'" class="iconfont icon-chengyi_pc_preview oper-icon" color="primary" @click="previewHandle(scope.row)"></i>
+                            <i v-if="item.id==='act_editinvoice'" class="el-icon-edit-outline oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                            <i v-if="item.id==='act_collectsales'" class="icon-pay iconfont oper-icon" color="success" @click="actionHandler(item, scope.row)"></i>
+                            <i v-if="item.id==='act_cancelinvoice'" class="icon-cancel1 iconfont oper-icon" color="danger" @click="actionHandler(item, scope.row)"></i>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -115,7 +115,7 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import moment from 'moment';
-import { priceToString } from '@_public/utils';
+import { priceToString, apiDownloadFile, imageFileToPreview} from '@_public/utils';
 
 export default {
     components: {
@@ -194,6 +194,20 @@ export default {
                 }
             });
         },
+        downloadFile(row, ext) {
+            apiDownloadFile({
+                vm: this,
+                url: `/api/POInvoice/api_downloadinvoice?invid=${row.id}`,
+                filename: `${row.customerTitle}${row.employeeName}.${ext}`
+            });
+        },
+        // 预览
+        previewHandle(row) {
+            imageFileToPreview({
+                vm: this,
+                url: `/api/POInvoice/api_previewinvoicefile?invid=${row.id}`
+            });
+        },
         getData() {
             const loading = this.$loading({ lock: true, text: '数据取得中...' });
             let url = '/api/POInvoice/api_getinvoicelist';
@@ -229,18 +243,7 @@ export default {
             this.getData();
         },
         actionHandler(item, row) {
-            console.log(row);
-            if (item.id === 'act_downloadinvoice') {
-                // this.createInvoice(row);
-            } else if (item.id === 'act_displayinvoice') {
-                // this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                //     id: row.cfid,
-                //     type: 'confirm',
-                //     callback: () => {
-                //         this.getList();
-                //     }
-                // });
-            } else if (item.id === 'act_editinvoice') {
+            if (item.id === 'act_editinvoice') {
                 // this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
                 //     id: row.cfid,
                 //     type: 'cancel',
@@ -249,12 +252,38 @@ export default {
                 //     }
                 // });
             } else if (item.id === 'act_cancelinvoice') {
-                // this.curRow = { ...row };
-                // this.show = true;
+                this.cancelInvoice(row);
             } else if (item.id === 'act_collectsales') {
                 // this.curRow = { ...row };
                 // this.show = true;
             }
+        },
+        cancelInvoice(row) {
+            const loading = this.$loading({ lock: true, text: '正在取消请求书' });
+            this.$axios({
+                url: '/api/POInvoice/api_cancelinvoice',
+                params: {
+                    invid: row.id
+                },
+                custom: {
+                    loading,
+                    vm: this
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '已取消请求书'
+                    });
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
+                    });
+                }
+            });
         },
         // 新增 编辑按钮
         addLogin(type, row) {

@@ -60,7 +60,7 @@
                     <el-select
                         v-model="scope.row.employeeID"
                         placeholder="担当者">
-                        <el-option v-for="item in vendors" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                        <el-option v-for="item in vendorData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
@@ -106,21 +106,21 @@
             </el-table-column>
             <el-table-column label="契約単価" >
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.planCollectSales" size="mini"></el-input>
+                    <el-input @input="changeInput" v-model="scope.row.planCollectSales" size="mini"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="精算額" >
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.planCollectAddSales" size="mini"></el-input>
+                    <el-input @input="changeInput" v-model="scope.row.planCollectAddSales" size="mini"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="消費税" >
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.planCollectTax" size="mini"></el-input>
+                    <el-input @input="changeInput" v-model="scope.row.planCollectTax" size="mini"></el-input>
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog title="入金" :visible.sync="visible" @close="close">
+        <el-dialog title="选择" :visible.sync="visible" @close="close">
             <el-table size="mini" :data="tableData" border>
                 <el-table-column label="選択">
                     <template slot-scope="scope">
@@ -162,7 +162,7 @@
                 <el-table-column label="人月" >
                     <template slot-scope="scope">
                         <!-- <el-input v-model="scope.row.ningetsu" size="mini"></el-input> -->
-                        <span>{{scope.row.cashflow.ningetsu}}</span>
+                        <span>{{(scope.row.cashflow.ningetsu / 100).toFixed(2)}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="支払期日" >
@@ -179,7 +179,7 @@
                 <el-table-column label="契約単価" >
                     <template slot-scope="scope">
                         <!-- <el-input v-model="scope.row.planCollectSales" size="mini"></el-input> -->
-                        <span>{{scope.row.cashflow.contractSales}}</span>
+                        <span>{{priceToString(scope.row.cashflow.contractSales)}}</span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -194,7 +194,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import moment from 'moment';
-import { formatTime } from '@_public/utils';
+import { formatTime, priceToString, priceToNumber } from '@_public/utils';
 export default {
     data() {
         return {
@@ -202,7 +202,8 @@ export default {
             visible: false,
             cashshow: false,
             tableData: [],
-            tabels: []
+            tabels: [],
+            vendorData: []
         };
     },
     props: {
@@ -219,6 +220,8 @@ export default {
         ...mapGetters(['IS_H5'])
     },
     methods: {
+        priceToNumber: priceToNumber,
+        priceToString: priceToString,
         formatTime: formatTime,
         getContent(val, arr, key, field) {
             for (let item of arr) {
@@ -227,10 +230,31 @@ export default {
                 }
             }
         },
+        changeInput() {
+            this.tabels.forEach(item => {
+                if (item.planCollectSales !== 0) {
+                    item.planCollectSales = priceToString(priceToNumber(item.planCollectSales));
+                }
+                if (item.planCollectAddSales !== 0) {
+                    item.planCollectAddSales = priceToString(priceToNumber(item.planCollectAddSales));
+                }
+                if (item.planCollectTax !== 0) {
+                    item.planCollectTax = priceToString(priceToNumber(item.planCollectTax));
+                }
+            });
+        },
         beforeSubmit() {
             this.$refs.form.validate(valid => {
                 if (valid) {
                     const loading = this.$loading({ lock: true, text: '正在提交信息中...' });
+                    if (this.tabels.length > 0) {
+                        this.tabels.forEach(item => {
+                            item.planCollectSales = priceToNumber(item.planCollectSales);
+                            item.planCollectAddSales = priceToNumber(item.planCollectAddSales);
+                            item.planCollectTax = priceToNumber(item.planCollectTax);
+                            item.ningetsu = item.ningetsu * 100;
+                        });
+                    }
                     let params = {
                         cashflows: this.tabels,
                         InvoiceNo: this.form.invoiceNo,
@@ -261,6 +285,25 @@ export default {
                                 message: '保存成功'
                             });
                             location.reload();
+                        } else {
+                            if (this.tabels.length > 0) {
+                                this.tabels.forEach(item => {
+                                    if (item.planCollectSales !== 0) {
+                                        item.planCollectSales = priceToString(priceToNumber(item.planCollectSales));
+                                    }
+                                    if (item.planCollectAddSales !== 0) {
+                                        item.planCollectAddSales = priceToString(priceToNumber(item.planCollectAddSales));
+                                    }
+                                    if (item.planCollectTax !== 0) {
+                                        item.planCollectTax = priceToString(priceToNumber(item.planCollectTax));
+                                    }
+                                    item.ningetsu = (item.ningetsu / 100).toFixed(2);
+                                });
+                            }
+                            this.$message({
+                                type: 'error',
+                                message: res.message ? res.message : 'システム異常、再試行してください！'
+                            });
                         }
                     });
                 }
@@ -279,6 +322,20 @@ export default {
                     this.tabels.push(item.cashflow);
                 }
             });
+            if (this.tabels.length > 0) {
+                this.tabels.forEach(item => {
+                    if (item.planCollectSales !== 0) {
+                        item.planCollectSales = priceToString(priceToNumber(item.planCollectSales));
+                    }
+                    if (item.planCollectAddSales !== 0) {
+                        item.planCollectAddSales = priceToString(priceToNumber(item.planCollectAddSales));
+                    }
+                    if (item.planCollectTax !== 0) {
+                        item.planCollectTax = priceToString(priceToNumber(item.planCollectTax));
+                    }
+                    item.ningetsu = (item.ningetsu / 100).toFixed(2);
+                });
+            }
             this.visible = false;
         },
         addRow() {
@@ -300,6 +357,22 @@ export default {
                 });
                 this.tableData = res.data;
                 this.visible = true;
+                this.vendorIdArr();
+            });
+        },
+        vendorIdArr() {
+            let url = '/api/Employee/api_employeesbyvendor';
+            let params = {
+                vendorid: this.form.vendorID
+            };
+            this.$axios({
+                url,
+                params,
+                custom: {
+                    vm: this
+                }
+            }).then(res => {
+                this.vendorData = res.data;
             });
         },
         changeVendor() {

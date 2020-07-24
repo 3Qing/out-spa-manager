@@ -40,6 +40,11 @@
                         </el-form-item>
                     </el-col>
                 </el-col>
+                <el-col :span="12">
+                    <el-form-item label="最寄駅" prop='station'>
+                        <el-input v-model="form.station" :maxlength="20"></el-input>
+                    </el-form-item>
+                </el-col>
             </el-row>
             <el-row>
                 <el-col :span="12">
@@ -239,6 +244,7 @@ export default {
             form: {
                 vendorID: '',
                 positionID: '',
+                station: '',
                 pinYin_FirstName: '',
                 pinYin_LastName: '',
                 furigana_FirstName: '',
@@ -290,6 +296,9 @@ export default {
                 }],
                 pinYin_LastName: [{
                     required: true, message: '英語氏名を入力してください！'
+                }],
+                station: [{
+                    required: true, message: '请输入最寄駅！'
                 }],
                 sex: [{
                     required: true, message: '性別を指定してください！'
@@ -439,6 +448,7 @@ export default {
                 positionID: '',
                 pinYin_FirstName: '',
                 pinYin_LastName: '',
+                station: '',
                 furigana_FirstName: '',
                 furigana_LastName: '',
                 firstName: '',
@@ -527,6 +537,7 @@ export default {
                         this.form.vendorID = 0;
                     }
                     const params = {
+                        Station: this.form.station,
                         VendorID: this.form.vendorID,
                         PositionID: this.form.positionID,
                         PinYin_FirstName: this.form.pinYin_FirstName,
