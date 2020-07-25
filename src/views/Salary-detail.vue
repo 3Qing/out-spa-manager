@@ -120,9 +120,11 @@ export default {
         meter() {
             const {
                 hireInsurance = 0,
+                healthInsurance = 0,
+                endowInsurance = 0,
                 incomeTax = 0
             } = this.form;
-            return Number(hireInsurance) + Number(incomeTax);
+            return Number(hireInsurance) + Number(healthInsurance) + Number(endowInsurance) + Number(incomeTax);
         }
     },
     methods: {

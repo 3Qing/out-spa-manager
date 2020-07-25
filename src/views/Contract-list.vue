@@ -219,6 +219,9 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            if (to.params.formid) {
+                vm.form = to.params.formid;
+            }
             vm.getData();
             vm.getCustomerList();
             vm.getEmployees();
@@ -390,7 +393,8 @@ export default {
             const params = {
                 name: 'ContractEdit',
                 params: {
-                    id: row.contractID
+                    id: row.contractID,
+                    formsId: this.form
                 }
             };
             if (type === 'display') {

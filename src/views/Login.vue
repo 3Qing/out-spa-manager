@@ -48,8 +48,7 @@ export default {
                 userpwd: process.env.NODE_ENV === 'production' ? '' : 'yz5m49d',
                 // empeeno: process.env.NODE_ENV === 'production' ? '' : 'YP006',
                 // username: process.env.NODE_ENV === 'production' ? '' : '喬国霞',
-                // userpwd: process.env.NODE_ENV === 'production' ? '' : 'qqmm@yp',
-                // validatecode: ''
+                // userpwd: process.env.NODE_ENV === 'production' ? '' : 'qqmm@yp'
             },
             validUrl: formatApiUrl('/api/User/GetValidateBmp', `?t=${new Date().getSeconds()}`, false)
         };

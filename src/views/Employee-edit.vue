@@ -673,7 +673,7 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             if (Number(to.params.id)) {
-                console.log(to.params.id);
+                // console.log(to.params.id);
                 vm.getInfos(to.params.id);
                 if (to.query.display) {
                     vm.isDisplay = true;
@@ -1218,7 +1218,7 @@ export default {
             }).then(res => {
                 if (res.code === 0) {
                     this.imgIds = [];
-                    this.getInfos(this.form.companyID);
+                    this.getInfos(this.$route.params.id);
                 }
             });
             // fileToBase64(res.file).then(result => {
@@ -1236,7 +1236,7 @@ export default {
             }).then(res => {
                 loading.close();
                 this.imgIds = [];
-                this.getInfos(this.form.companyID);
+                this.getInfos(this.$route.params.id);
                 this.$message({
                     type: 'success',
                     showClose: true,
@@ -1251,8 +1251,11 @@ export default {
                     id: ids
                 }
             }).then(res => {
+                this.employeeImages = [];
                 this.employeeImages = res.data.employeeImages;
                 this.employeePersonID = res.data.id;
+                this.imgIds = [];
+                // console.log(this.employeeImages);
                 if (this.employeeImages.length > 0) {
                     this.employeeImages.forEach(item => {
                         this.getLogo(item.id);

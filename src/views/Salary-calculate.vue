@@ -157,7 +157,7 @@
                         <el-col :span="4" :offset="2">{{formatPrice(formDetail.projectSalary)}}</el-col>
                         <el-col :span="4">{{formatPrice(formDetail.benchSalary)}}</el-col>
                         <el-col :span="4">{{formatPrice(formDetail.overtimeSalary)}}</el-col>
-                        <el-col :span="4">{{formatPrice(form.travelFare)}}</el-col>
+                        <el-col :span="4">{{formatPrice(formDetail.travelFare)}}</el-col>
                         <el-col :span="6">{{formatPrice(allowance)}}</el-col>
                     </el-row>
                 </div>
@@ -266,9 +266,11 @@ export default {
         meter() {
             const {
                 hireInsurance = 0,
+                healthInsurance = 0,
+                endowInsurance = 0,
                 incomeTax = 0
             } = this.formDetail;
-            return Number(hireInsurance) + Number(incomeTax);
+            return Number(hireInsurance) + Number(healthInsurance) + Number(endowInsurance) + Number(incomeTax);
         }
     },
     methods: {
