@@ -17,7 +17,7 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="12" v-if='isEmplooe'>
+                        <el-col :span="12" v-if='form.employeeTypeID===4'>
                             <el-form-item label="パートナー" prop="vendorID">
                                 <el-select v-model="form.vendorID">
                                     <el-option v-for="item in vendorsArr" :key="item.id" :value="item.id" :label="item.title"></el-option>
@@ -321,6 +321,10 @@
                     <li>
                         <span>就職タイプ</span>
                         <span>{{getContent(form.employeeTypeID, employeeTypes, 'id', 'title')}}</span>
+                    </li>
+                    <li v-if='form.employeeTypeID===4'>
+                        <span>パートナー</span>
+                        <span>{{getContent(form.vendorID, vendorsArr, 'id', 'title')}}</span>
                     </li>
                     <li>
                         <span>常住都市</span>
@@ -902,6 +906,9 @@ export default {
         formatResultData(data) {
             const formatTime = time => moment(time).format('YYYY-MM-DD');
             const form = { ...data };
+            if (form.vendorID === 0) {
+                form.vendorID = '';
+            }
             form.onBoardDate = data.onBoardDate && formatTime(data.onBoardDate);
             form.birthday = data.birthday && formatTime(data.birthday);
             form.startWorkDate = data.startWorkDate && formatTime(data.startWorkDate);
@@ -935,7 +942,7 @@ export default {
                         this.isEmplooe = true;
                     } else {
                         this.isEmplooe = false;
-                        this.form.vendorID = 0;
+                        this.form.vendorID = '';
                     }
                 }
             });
