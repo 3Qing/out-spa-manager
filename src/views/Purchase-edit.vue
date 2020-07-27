@@ -394,7 +394,7 @@
                     </el-table>
                     <div class="textaread">
                         <span>备注</span>
-                        <el-input type='textarea' rows='6' v-model="forms.comment" size="mini"></el-input>
+                        <el-input type='textarea' rows='6' :readonly='clearFale?true:false' v-model="forms.comment" size="mini"></el-input>
                     </div>
                     <!-- <li class="widths" style="width:850px;">
                             <span>备注</span>
@@ -486,6 +486,7 @@ export default {
     },
     data() {
         return {
+            inputFalse: false,
             defluatFalse: true,
             loading: false,
             forms: {
