@@ -49,6 +49,7 @@ import EmployeeTypeManage from '@views/EmployeeTypeManage-list';
 import RouteManage from '@views/RouteManage-list';
 import VendorInvoice from '@views/VendorInvoice-list';
 import VendorInvoiceList from '@views/VendorInvoiceList-list';
+import TimesheetManage from '@views/TimesheetManage-list';
 Vue.use(Router);
 
 // 复写push方法 修复导航错误
@@ -267,6 +268,10 @@ const router = new Router({
         path: '/vendorInvoiceList',
         name: 'VendorInvoiceList',
         component: VendorInvoiceList
+    }, {
+        path: '/timesheetManage',
+        name: 'TimesheetManage',
+        component: TimesheetManage
     }
     ]
 });

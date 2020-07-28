@@ -1,0 +1,523 @@
+<template>
+    <main-wrapper class="timesheet-list">
+        <el-form class="main-header header-form" slot="header" size="mini" inline>
+            <el-date-picker
+                v-model="form.period"
+                type="month"
+                size="mini"
+                placeholder="期間"
+                value-format="yyyyMM"
+                format="yyyyMM"
+                clearable>
+            </el-date-picker>
+            <el-form-item>
+                <el-select v-model="form.employeetype" placeholder="社員" @change="changeHandle" clearable>
+                    <el-option v-for="item in employeeTypes" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div class="table-wrapper">
+            <el-table size="small" :data="tableData" border>
+                <el-table-column fixed label="社員番号" prop="employeeNo" width="100px"></el-table-column>
+                <el-table-column fixed label="氏名" prop="name" show-overflow-tooltip></el-table-column>
+                <el-table-column label="就職タイプ" prop="title" show-overflow-tooltip></el-table-column>
+                <el-table-column label="開始日" prop="fromDate"></el-table-column>
+                <el-table-column label="終了日" prop="toDate"></el-table-column>
+                <el-table-column label="カレンダー日数" prop="calendarWorkDays"></el-table-column>
+                <el-table-column label="実際出勤日数" prop="totalWorkDays"></el-table-column>
+                <el-table-column label="実際作業時間" prop="totalHours" show-overflow-tooltip></el-table-column>
+                <el-table-column label="実際作業時間" prop="totalMinutes" show-overflow-tooltip></el-table-column>
+                <el-table-column label="ﾀｲﾑｼｰﾄ提出日" prop="updateTime" show-overflow-tooltip></el-table-column>
+                <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="approved"></el-table-column>
+                <el-table-column label="アクション" width="160px" fixed="right">
+                    <template slot-scope="scope">
+                        <!-- <el-tooltip effect="dark" content="显示" placement="top-start">
+                            <i class="el-icon-view oper-icon" color="success" @click="toDetail(scope.row)"></i>
+                        </el-tooltip> -->
+                        <el-tooltip
+                            v-for="(item, i) in (scope.row.actions || [])"
+                            :key="i"
+                            effect="dark"
+                            :content="item.text"
+                            placement="top-start">
+                            <i :class="[getClass(item), 'oper-icon']"
+                                :color="getColor(item)"
+                                @click="clickHandle(scope, item)"></i>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <el-pagination
+            :page-size="ps"
+            :current-page="pn"
+            :page-sizes="pageSizes"
+            @size-change="changePs"
+            @current-change="changePn"
+            :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
+            :total="total"></el-pagination>
+        <el-dialog :visible.sync="vislble" title="退職">
+            <el-form size="mini">
+                <el-form-item label="离职日期">
+                    <el-date-picker
+                        v-model="leavedate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmLeave">确定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog :visible.sync="visilble2" title="昇給">
+            <el-form size="mini" label-width="100px">
+                <el-form-item label="昇給開始日">
+                    <el-date-picker
+                        v-model="salary.FromDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="稼働賃金">
+                    <el-input v-model.number="salary.PJSalary"></el-input>
+                </el-form-item>
+                <el-form-item label="待機代">
+                    <el-input v-model.number="salary.BaseSalary"></el-input>
+                </el-form-item>
+                <el-form-item label="コメント">
+                    <el-input type="textarea" v-model="salary.Comment" :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmSalary">确定</el-button>
+            </div>
+        </el-dialog>
+        <!-- 異動 -->
+        <el-dialog :visible.sync="visilbleBoole" title="異動">
+            <el-form size="mini" label-width="100px">
+                <el-form-item>
+                    <el-radio-group v-model="avaiable" @change="changeRadio">
+                        <el-radio :label="true">異動</el-radio>
+                        <el-radio :label="false">退職</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="現在部門">
+                    <el-date-picker
+                        style="width:200px;"
+                        :disabled=dis
+                        v-model="jobObj.teamFromDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                    <el-input :disabled=dis style="width:200px;margin-left:20px;" v-model="jobObj.teamName"></el-input>
+                    <el-input :disabled=dis style="width:200px;margin-left:20px;" v-model="jobObj.teamLeader"></el-input>
+                </el-form-item>
+                <el-form-item label="異動部門" v-if="avaiable">
+                    <el-date-picker
+                        style="width:200px;"
+                        v-model="teamFromdate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                    <el-select style="width:200px;margin-left:20px;" v-model="teamFromid" placeholder="部門" clearable>
+                        <el-option v-for="item in TEAMS" :key="item.id" :label="item.teamName" :value="item.id">
+                    </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="退職日付" v-if="!avaiable">
+                    <el-date-picker
+                        style="width:200px;"
+                        v-model="teamTodate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        format="yyyy-MM-dd"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="異動理由" v-if="avaiable">
+                    <el-input type="textarea" v-model="teamFromReason" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="退職理由" v-if="!avaiable">
+                    <el-input type="textarea" v-model="teamToReason" :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="confirmSubmit">确定</el-button>
+            </div>
+        </el-dialog>
+    </main-wrapper>
+</template>
+
+<script>
+import MainWrapper from '@components/main-wrapper';
+import { mapGetters } from 'vuex';
+import moment from 'moment';
+
+export default {
+    components: {
+        MainWrapper
+    },
+    data() {
+        return {
+            selectLabs: [{
+                id: false,
+                title: '全部'
+            },{
+                id: true,
+                title: '在职'
+            }],
+            teamFromdate: '',
+            teamFromid: '',
+            teamTodate: '',
+            teamToReason: '',
+            teamFromReason: '',
+            dis: true,
+            avaiable: true,
+            form: {
+                teamid: '',
+                employeetype: '',
+                module: '',
+                positions: [],
+                name: '',
+                onjob: ''
+            },
+            teams: [],
+            employeeTypes: [],
+            positions: [],
+            total: 0,
+            ps: 10,
+            pn: 1,
+            pageSizes: [10, 20, 30, 50],
+            tableData: [],
+            operWidth: 140,
+            leavedate: '',
+            vislble: false,
+            visilble2: false,
+            visilbleBoole: false,
+            salary: {
+                empeeid: '',
+                FromDate: '',
+                PJSalary: '',
+                BaseSalary: '',
+                Comment: ''
+            },
+            jobObj: {}
+        };
+    },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.getTeams();
+            vm.getEmployeeTypes();
+            vm.getPositions();
+            vm.getData();
+        });
+    },
+    computed: {
+        ...mapGetters(['IS_H5', 'TEAMS'])
+    },
+    methods: {
+        // 千分位字符格式化
+        thousandFormat(num) {
+            var reg = /\d{1,3}(?=(\d{3})+$)/g;
+            return (num + '').replace(reg, '$&,');
+        },
+        getData() {
+            const loading = this.$loading({ lock: true, text: '社員一覧データ取得中...' });
+            let url = '/api/Timesheet/api_gettimesheetlist';
+            this.$axios({
+                method: 'GET',
+                url,
+                params: {
+                    period: '202006',
+                    empeeid: 0,
+                    page: this.pn,
+                    pagesize: this.ps
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    let actionLen = 0;
+                    const data = res.data || {};
+                    (data || []).forEach(item => {
+                        if (item.actions) {
+                            if (item.actions.length > actionLen) {
+                                actionLen = item.actions.length;
+                            }
+                        }
+                    });
+                    this.operWidth = actionLen * 80 + 80;
+                    this.tableData = data || [];
+                    this.total = data.total;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        showClose: true,
+                        message: res ? res.message : 'インタフェース異常、データ取得できません！'
+                    });
+                }
+            });
+        },
+        getTeams() {
+            this.$axios({
+                url: '/api/Team/api_teamsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.teams = res.data || [];
+                }
+            });
+        },
+        getEmployeeTypes() {
+            this.$axios({
+                url: '/api/Employee/api_employeetypesforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.employeeTypes = res.data || [];
+                }
+            });
+        },
+        getPositions() {
+            this.$axios({
+                url: '/api/Position/api_positionsforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.positions = res.data || [];
+                }
+            });
+        },
+        changePn(pn) {
+            this.pn = pn;
+            this.getData();
+        },
+        changePs(ps) {
+            this.ps = ps;
+            this.getData();
+        },
+        visibleChange(value) {
+            if (!value) {
+                this.pn = 1;
+                this.getData();
+            }
+        },
+        changeHandle() {
+            this.pn = 1;
+            this.getData();
+        },
+        toDetail(row) {
+            this.$router.push({
+                name: 'EmployeeEdit',
+                params: {
+                    id: row.id,
+                    news: 'new'
+                },
+                query: {
+                    display: 1
+                }
+            });
+        },
+        clickHandle(scope, item) {
+            if (item.action === 'act_employeeupdate') {
+                this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.id } });
+            } else if (item.action === 'act_employeeleave') {
+                this.vislble = true;
+                this.curData = scope.row;
+            } else if (item.action === 'act_revisesalary') {
+                this.salary = {
+                    empeeid: scope.row.id,
+                    FromDate: '',
+                    PJSalary: this.thousandFormat(Number(scope.row.projectSalary)) || 0,
+                    BaseSalary: Number(scope.row.baseSalary) || 0,
+                    Comment: ''
+                };
+                this.visilble2 = true;
+            } else {
+                this.jobObj = scope.row;
+                this.teamFromdate = moment(new Date()).format('YYYY-MM-01');
+                this.teamFromid = '';
+                this.teamFromReason = '';
+                this.teamTodate = moment(new Date()).format('YYYY-MM-01');
+                this.teamToReason = '';
+                this.visilbleBoole = true;
+            }
+        },
+        getClass(item) {
+            if (item.action === 'act_employeeupdate') {
+                return 'el-icon-edit-outline';
+            } else if (item.action === 'act_employeeleave') {
+                return 'el-icon-user';
+            } else if (item.action === 'act_revisesalary') {
+                return 'el-icon-money';
+            } else {
+                return 'el-icon-user';
+            }
+        },
+        getColor(item) {
+            if (item.action === 'act_employeeupdate') {
+                return 'warning';
+            } else if (item.action === 'act_employeeleave') {
+                return 'primary';
+            } else if (item.action === 'act_revisesalary') {
+                return 'danger';
+            } else {
+                return 'primary';
+            }
+        },
+        // changeRadio
+        changeRadio() {
+            const _this = this;
+            _this.avaiable = !!_this.avaiable;
+            _this.teamFromdate = moment(new Date()).format('YYYY-MM-01');
+            _this.teamFromid = '';
+            _this.teamFromReason = '';
+            _this.teamTodate = moment(new Date()).format('YYYY-MM-01');
+            _this.teamToReason = '';
+        },
+        // 異動提交
+        confirmSubmit() {
+            // teamFromdate: '',
+            // teamFromid: '',
+            // teamTodate: '',
+            // teamToReason: '',
+            // teamFromReason: '',
+            const _this = this;
+            const loading = _this.$loading({ lock: true, text: '正在提交数据中' });
+            if (_this.avaiable) {
+                _this.$axios({
+                    url: '/api/employee/api_transferemployee',
+                    params: {
+                        empeeid: _this.jobObj.id,
+                        teamid: _this.teamFromid,
+                        fromdate: _this.teamFromdate,
+                        comment: _this.teamFromReason
+                    }
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        _this.$message({
+                            type: 'success',
+                            message: '提交成功'
+                        });
+                        _this.visilbleBoole = false;
+                        _this.getData();
+                    } else {
+                        _this.$message({
+                            type: 'error',
+                            message: res ? res.message : '接口开小差了，没有返回信息'
+                        });
+                    }
+                });
+            } else {
+                _this.$axios({
+                    url: '/api/Employee/api_employeeleave',
+                    params: {
+                        empeeid: _this.jobObj.id,
+                        leavedate: _this.teamTodate,
+                        comment: _this.teamToReason
+                    }
+                }).then(res => {
+                    loading.close();
+                    if (res && res.code === 0) {
+                        _this.$message({
+                            type: 'success',
+                            message: '提交成功'
+                        });
+                        _this.visilbleBoole = false;
+                        _this.getData();
+                    } else {
+                        _this.$message({
+                            type: 'error',
+                            message: res ? res.message : '接口开小差了，没有返回信息'
+                        });
+                    }
+                });
+            }
+        },
+        confirmLeave() {
+            if (!this.leavedate) {
+                this.$message({
+                    type: 'warning',
+                    message: '请选择离职日期'
+                });
+                return;
+            }
+            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            this.$axios({
+                url: '/api/Employee/api_employeeleave',
+                params: {
+                    empeeid: this.curData.id,
+                    leavedate: this.leavedate
+                }
+            }).then(res => {
+                loading.close();
+                if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '提交成功'
+                    });
+                    this.vislble = false;
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
+                    });
+                }
+            });
+        },
+        confirmSalary() {
+            if (!this.salary.FromDate) {
+                this.$message({
+                    type: 'warning',
+                    message: '请选择昇給開始日'
+                });
+                return;
+            }
+            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
+            this.$axios({
+                method: 'POST',
+                url: '/api/Employee/api_revisesalary',
+                params: {
+                    EmployeeID: this.salary.empeeid,
+                    FromDate: this.salary.FromDate,
+                    PJSalary: Number(this.salary.PJSalary) || 0,
+                    BaseSalary: Number(this.salary.BaseSalary) || 0,
+                    Comment: this.salary.Comment || ''
+                },
+                custom: {
+                    loading,
+                    vm: this
+                },
+                formData: true
+            }).then(res => {
+                loading.close();
+                if (res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '提交成功'
+                    });
+                    this.visilble2 = false;
+                    this.getData();
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: res ? res.message : '接口开小差了，没有返回信息'
+                    });
+                }
+            });
+        }
+    }
+};
+</script>
+
+<style lang="less">
+.timesheet-list {
+    .table-wrapper {
+        padding: 0 20px;
+    }
+    .el-pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .oper-icon {
+        font-size: 18px !important;
+    }
+}
+</style>
