@@ -1,41 +1,79 @@
 <template>
     <main-wrapper class="timesheet-list">
         <el-form class="main-header header-form" slot="header" size="mini" inline>
-            <el-date-picker
-                v-model="form.period"
-                type="month"
-                size="mini"
-                placeholder="期間"
-                value-format="yyyyMM"
-                format="yyyyMM"
-                clearable>
-            </el-date-picker>
+            <el-form-item>
+                <el-date-picker
+                    v-model="form.period"
+                    type="month"
+                    size="mini"
+                    placeholder="期間"
+                    value-format="yyyyMM"
+                    format="yyyyMM"
+                    clearable
+                    @change="changeHandle">
+                </el-date-picker>
+            </el-form-item>
             <el-form-item>
                 <el-select v-model="form.employeetype" placeholder="社員" @change="changeHandle" clearable>
-                    <el-option v-for="item in employeeTypes" :key="item.id" :label="item.title" :value="item.id"></el-option>
+                    <el-option v-for="item in employeeTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
         </el-form>
         <div class="table-wrapper">
-            <el-table size="small" :data="tableData" border>
+            <el-table size="small" :data="tableData" border :cell-class-name="cellClassName">
                 <el-table-column fixed label="社員番号" prop="employeeNo" width="100px"></el-table-column>
                 <el-table-column fixed label="氏名" prop="name" show-overflow-tooltip></el-table-column>
                 <el-table-column label="就職タイプ" prop="title" show-overflow-tooltip></el-table-column>
-                <el-table-column label="開始日" prop="fromDate"></el-table-column>
-                <el-table-column label="終了日" prop="toDate"></el-table-column>
-                <el-table-column label="カレンダー日数" prop="calendarWorkDays"></el-table-column>
-                <el-table-column label="実際出勤日数" prop="totalWorkDays"></el-table-column>
-                <el-table-column label="実際作業時間" prop="totalHours" show-overflow-tooltip></el-table-column>
-                <el-table-column label="実際作業時間" prop="totalMinutes" show-overflow-tooltip></el-table-column>
-                <el-table-column label="ﾀｲﾑｼｰﾄ提出日" prop="updateTime" show-overflow-tooltip></el-table-column>
-                <el-table-column label="ﾀｲﾑｼｰﾄ承認" prop="approved"></el-table-column>
-                <el-table-column label="アクション" width="160px" fixed="right">
+                <el-table-column label="開始日">
                     <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0'>{{formatTime(scope.row.cashflows[0].fromDate)}}</span>
+                    </template>    
+                </el-table-column>
+                <el-table-column label="終了日">
+                    <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0'>{{formatTime(scope.row.cashflows[0].toDate)}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="カレンダー日数">
+                    <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0'>{{scope.row.cashflows[0].calendarWorkDays}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="実際出勤日数">
+                    <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0&&scope.row.cashflows[0].timesheetID!==0'>{{scope.row.cashflows[0].totalWorkDays}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="実際作業時間" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0&&scope.row.cashflows[0].totalMinutes>0&&scope.row.cashflows[0].timesheetID!==0'>{{scope.row.cashflows[0].totalHours}}時間{{scope.row.cashflows[0].totalMinutes}}分</span>
+                        <span v-if='scope.row.cashflows.length>0&&scope.row.cashflows[0].totalMinutes<=0&&scope.row.cashflows[0].timesheetID!==0'>{{scope.row.cashflows[0].totalHours}}時間</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="ﾀｲﾑｼｰﾄ提出日" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0&&scope.row.cashflows[0].timesheetID!==0'>{{formatTime(scope.row.cashflows[0].updateTime)}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="ﾀｲﾑｼｰﾄ承認">
+                    <template slot-scope="scope">
+                        <span v-if='scope.row.cashflows.length>0&&scope.row.cashflows[0].approved&&scope.row.cashflows[0].timesheetID!==0'>承認済</span>
+                        <span v-if='scope.row.cashflows.length>0&&!scope.row.cashflows[0].approved&&scope.row.cashflows[0].timesheetID!==0'>未承認</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="アクション" width="100px" fixed="right">
+                    <template slot-scope="scope" v-if='scope.row.cashflows.length>0'>
+                        <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.cashflows[0].actions"
+                            :key="item.action" :content="item.text">
+                            <i v-if="item.action==='act_displaytimesheet'" class="icon-approve iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                            <i v-if="item.action==='act_canceltimesheet'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                            <i v-if="item.action==='act_confirmtimesheet'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
+                        </el-tooltip>
                         <!-- <el-tooltip effect="dark" content="显示" placement="top-start">
                             <i class="el-icon-view oper-icon" color="success" @click="toDetail(scope.row)"></i>
                         </el-tooltip> -->
-                        <el-tooltip
-                            v-for="(item, i) in (scope.row.actions || [])"
+                        <!-- <el-tooltip
+                            v-for="(item, i) in (scope.row.cashflows.actions || [])"
                             :key="i"
                             effect="dark"
                             :content="item.text"
@@ -43,107 +81,17 @@
                             <i :class="[getClass(item), 'oper-icon']"
                                 :color="getColor(item)"
                                 @click="clickHandle(scope, item)"></i>
-                        </el-tooltip>
+                        </el-tooltip> -->
                     </template>
                 </el-table-column>
             </el-table>
         </div>
         <el-pagination
-            :page-size="ps"
-            :current-page="pn"
-            :page-sizes="pageSizes"
-            @size-change="changePs"
+            :current-page="page"
+            :page-size="pageSize"
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
-        <el-dialog :visible.sync="vislble" title="退職">
-            <el-form size="mini">
-                <el-form-item label="离职日期">
-                    <el-date-picker
-                        v-model="leavedate"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"></el-date-picker>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button type="primary" size="mini" @click="confirmLeave">确定</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog :visible.sync="visilble2" title="昇給">
-            <el-form size="mini" label-width="100px">
-                <el-form-item label="昇給開始日">
-                    <el-date-picker
-                        v-model="salary.FromDate"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="稼働賃金">
-                    <el-input v-model.number="salary.PJSalary"></el-input>
-                </el-form-item>
-                <el-form-item label="待機代">
-                    <el-input v-model.number="salary.BaseSalary"></el-input>
-                </el-form-item>
-                <el-form-item label="コメント">
-                    <el-input type="textarea" v-model="salary.Comment" :rows="3"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button type="primary" size="mini" @click="confirmSalary">确定</el-button>
-            </div>
-        </el-dialog>
-        <!-- 異動 -->
-        <el-dialog :visible.sync="visilbleBoole" title="異動">
-            <el-form size="mini" label-width="100px">
-                <el-form-item>
-                    <el-radio-group v-model="avaiable" @change="changeRadio">
-                        <el-radio :label="true">異動</el-radio>
-                        <el-radio :label="false">退職</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="現在部門">
-                    <el-date-picker
-                        style="width:200px;"
-                        :disabled=dis
-                        v-model="jobObj.teamFromDate"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"></el-date-picker>
-                    <el-input :disabled=dis style="width:200px;margin-left:20px;" v-model="jobObj.teamName"></el-input>
-                    <el-input :disabled=dis style="width:200px;margin-left:20px;" v-model="jobObj.teamLeader"></el-input>
-                </el-form-item>
-                <el-form-item label="異動部門" v-if="avaiable">
-                    <el-date-picker
-                        style="width:200px;"
-                        v-model="teamFromdate"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"></el-date-picker>
-                    <el-select style="width:200px;margin-left:20px;" v-model="teamFromid" placeholder="部門" clearable>
-                        <el-option v-for="item in TEAMS" :key="item.id" :label="item.teamName" :value="item.id">
-                    </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="退職日付" v-if="!avaiable">
-                    <el-date-picker
-                        style="width:200px;"
-                        v-model="teamTodate"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="異動理由" v-if="avaiable">
-                    <el-input type="textarea" v-model="teamFromReason" :rows="3"></el-input>
-                </el-form-item>
-                <el-form-item label="退職理由" v-if="!avaiable">
-                    <el-input type="textarea" v-model="teamToReason" :rows="3"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button type="primary" size="mini" @click="confirmSubmit">确定</el-button>
-            </div>
-        </el-dialog>
     </main-wrapper>
 </template>
 
@@ -151,6 +99,7 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import moment from 'moment';
+import { formatTime } from '@_public/utils';
 
 export default {
     components: {
@@ -158,56 +107,22 @@ export default {
     },
     data() {
         return {
-            selectLabs: [{
-                id: false,
-                title: '全部'
-            },{
-                id: true,
-                title: '在职'
-            }],
-            teamFromdate: '',
-            teamFromid: '',
-            teamTodate: '',
-            teamToReason: '',
-            teamFromReason: '',
-            dis: true,
-            avaiable: true,
             form: {
-                teamid: '',
-                employeetype: '',
-                module: '',
-                positions: [],
-                name: '',
-                onjob: ''
+                period: '',
+                employeetype: ''
             },
             teams: [],
             employeeTypes: [],
-            positions: [],
+            page: 1,
+            pageSize: 15,
             total: 0,
-            ps: 10,
-            pn: 1,
-            pageSizes: [10, 20, 30, 50],
-            tableData: [],
-            operWidth: 140,
-            leavedate: '',
-            vislble: false,
-            visilble2: false,
-            visilbleBoole: false,
-            salary: {
-                empeeid: '',
-                FromDate: '',
-                PJSalary: '',
-                BaseSalary: '',
-                Comment: ''
-            },
-            jobObj: {}
+            tableData: []
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            vm.getTeams();
+            vm.form.period = moment(new Date()).format('YYYYMM');
             vm.getEmployeeTypes();
-            vm.getPositions();
             vm.getData();
         });
     },
@@ -220,24 +135,43 @@ export default {
             var reg = /\d{1,3}(?=(\d{3})+$)/g;
             return (num + '').replace(reg, '$&,');
         },
+        // 列表颜色
+        cellClassName({ row, columnIndex }) {
+            // console.log(row);
+            if (columnIndex === 9) {
+                if (row.cashflows.length > 0) {
+                    if (row.cashflows[0].timesheetID!==0) {
+                        if (row.cashflows[0].approved) {
+                            return 'bg-success';
+                        } else {
+                            return 'bg-warning';
+                        }
+                    }
+                }
+            }
+        },
+        formatTime: formatTime,
         getData() {
             const loading = this.$loading({ lock: true, text: '社員一覧データ取得中...' });
             let url = '/api/Timesheet/api_gettimesheetlist';
+            if (this.form.employeetype === '') {
+                this.form.employeetype = 0;
+            }
             this.$axios({
                 method: 'GET',
                 url,
                 params: {
-                    period: '202006',
-                    empeeid: 0,
-                    page: this.pn,
-                    pagesize: this.ps
+                    period: this.form.period,
+                    empeeid: this.form.employeetype,
+                    page: this.page,
+                    pagesize: this.pageSize
                 }
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
                     let actionLen = 0;
                     const data = res.data || {};
-                    (data || []).forEach(item => {
+                    (data.data || []).forEach(item => {
                         if (item.actions) {
                             if (item.actions.length > actionLen) {
                                 actionLen = item.actions.length;
@@ -245,8 +179,11 @@ export default {
                         }
                     });
                     this.operWidth = actionLen * 80 + 80;
-                    this.tableData = data || [];
+                    this.tableData = data.data || [];
                     this.total = data.total;
+                    if (this.form.employeetype === 0) {
+                        this.form.employeetype = '';
+                    }
                 } else {
                     this.$message({
                         type: 'error',
@@ -267,28 +204,15 @@ export default {
         },
         getEmployeeTypes() {
             this.$axios({
-                url: '/api/Employee/api_employeetypesforselect'
+                url: '/api/Employee/api_employeesforselect'
             }).then(res => {
                 if (res && res.code === 0) {
                     this.employeeTypes = res.data || [];
                 }
             });
         },
-        getPositions() {
-            this.$axios({
-                url: '/api/Position/api_positionsforselect'
-            }).then(res => {
-                if (res && res.code === 0) {
-                    this.positions = res.data || [];
-                }
-            });
-        },
-        changePn(pn) {
-            this.pn = pn;
-            this.getData();
-        },
-        changePs(ps) {
-            this.ps = ps;
+        changePn(page) {
+            this.page = page;
             this.getData();
         },
         visibleChange(value) {
@@ -301,17 +225,27 @@ export default {
             this.pn = 1;
             this.getData();
         },
-        toDetail(row) {
-            this.$router.push({
-                name: 'EmployeeEdit',
-                params: {
-                    id: row.id,
-                    news: 'new'
-                },
-                query: {
-                    display: 1
-                }
-            });
+        actionHandler(item, row) {
+            if (item.id === 'act_confirmtimesheet') {
+                this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
+                    id: row.cfid,
+                    type: 'confirm',
+                    callback: () => {
+                        this.getList();
+                    }
+                });
+            } else if (item.id === 'act_canceltimesheet') {
+                this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
+                    id: row.cfid,
+                    type: 'cancel',
+                    callback: () => {
+                        this.getList();
+                    }
+                });
+            } else if (item.id === 'act_displaytimesheet') {
+                this.curRow = { ...row };
+                this.show = true;
+            }
         },
         clickHandle(scope, item) {
             if (item.action === 'act_employeeupdate') {
@@ -337,171 +271,6 @@ export default {
                 this.teamToReason = '';
                 this.visilbleBoole = true;
             }
-        },
-        getClass(item) {
-            if (item.action === 'act_employeeupdate') {
-                return 'el-icon-edit-outline';
-            } else if (item.action === 'act_employeeleave') {
-                return 'el-icon-user';
-            } else if (item.action === 'act_revisesalary') {
-                return 'el-icon-money';
-            } else {
-                return 'el-icon-user';
-            }
-        },
-        getColor(item) {
-            if (item.action === 'act_employeeupdate') {
-                return 'warning';
-            } else if (item.action === 'act_employeeleave') {
-                return 'primary';
-            } else if (item.action === 'act_revisesalary') {
-                return 'danger';
-            } else {
-                return 'primary';
-            }
-        },
-        // changeRadio
-        changeRadio() {
-            const _this = this;
-            _this.avaiable = !!_this.avaiable;
-            _this.teamFromdate = moment(new Date()).format('YYYY-MM-01');
-            _this.teamFromid = '';
-            _this.teamFromReason = '';
-            _this.teamTodate = moment(new Date()).format('YYYY-MM-01');
-            _this.teamToReason = '';
-        },
-        // 異動提交
-        confirmSubmit() {
-            // teamFromdate: '',
-            // teamFromid: '',
-            // teamTodate: '',
-            // teamToReason: '',
-            // teamFromReason: '',
-            const _this = this;
-            const loading = _this.$loading({ lock: true, text: '正在提交数据中' });
-            if (_this.avaiable) {
-                _this.$axios({
-                    url: '/api/employee/api_transferemployee',
-                    params: {
-                        empeeid: _this.jobObj.id,
-                        teamid: _this.teamFromid,
-                        fromdate: _this.teamFromdate,
-                        comment: _this.teamFromReason
-                    }
-                }).then(res => {
-                    loading.close();
-                    if (res && res.code === 0) {
-                        _this.$message({
-                            type: 'success',
-                            message: '提交成功'
-                        });
-                        _this.visilbleBoole = false;
-                        _this.getData();
-                    } else {
-                        _this.$message({
-                            type: 'error',
-                            message: res ? res.message : '接口开小差了，没有返回信息'
-                        });
-                    }
-                });
-            } else {
-                _this.$axios({
-                    url: '/api/Employee/api_employeeleave',
-                    params: {
-                        empeeid: _this.jobObj.id,
-                        leavedate: _this.teamTodate,
-                        comment: _this.teamToReason
-                    }
-                }).then(res => {
-                    loading.close();
-                    if (res && res.code === 0) {
-                        _this.$message({
-                            type: 'success',
-                            message: '提交成功'
-                        });
-                        _this.visilbleBoole = false;
-                        _this.getData();
-                    } else {
-                        _this.$message({
-                            type: 'error',
-                            message: res ? res.message : '接口开小差了，没有返回信息'
-                        });
-                    }
-                });
-            }
-        },
-        confirmLeave() {
-            if (!this.leavedate) {
-                this.$message({
-                    type: 'warning',
-                    message: '请选择离职日期'
-                });
-                return;
-            }
-            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
-            this.$axios({
-                url: '/api/Employee/api_employeeleave',
-                params: {
-                    empeeid: this.curData.id,
-                    leavedate: this.leavedate
-                }
-            }).then(res => {
-                loading.close();
-                if (res && res.code === 0) {
-                    this.$message({
-                        type: 'success',
-                        message: '提交成功'
-                    });
-                    this.vislble = false;
-                    this.getData();
-                } else {
-                    this.$message({
-                        type: 'error',
-                        message: res ? res.message : '接口开小差了，没有返回信息'
-                    });
-                }
-            });
-        },
-        confirmSalary() {
-            if (!this.salary.FromDate) {
-                this.$message({
-                    type: 'warning',
-                    message: '请选择昇給開始日'
-                });
-                return;
-            }
-            const loading = this.$loading({ lock: true, text: '正在提交数据中' });
-            this.$axios({
-                method: 'POST',
-                url: '/api/Employee/api_revisesalary',
-                params: {
-                    EmployeeID: this.salary.empeeid,
-                    FromDate: this.salary.FromDate,
-                    PJSalary: Number(this.salary.PJSalary) || 0,
-                    BaseSalary: Number(this.salary.BaseSalary) || 0,
-                    Comment: this.salary.Comment || ''
-                },
-                custom: {
-                    loading,
-                    vm: this
-                },
-                formData: true
-            }).then(res => {
-                loading.close();
-                if (res.code === 0) {
-                    this.$message({
-                        type: 'success',
-                        message: '提交成功'
-                    });
-                    this.visilble2 = false;
-                    this.getData();
-                } else {
-                    this.$message({
-                        type: 'error',
-                        message: res ? res.message : '接口开小差了，没有返回信息'
-                    });
-                }
-            });
         }
     }
 };
@@ -518,6 +287,22 @@ export default {
     }
     .oper-icon {
         font-size: 18px !important;
+    }
+    td.bg-danger {
+        color: #fff;
+        background-color: rgba(219, 65, 78, 0.78) !important;
+    }
+    td.bg-success {
+        color: #fff;
+        background-color: rgba(69, 190, 135, 0.78) !important;
+    }
+    td.bg-warning {
+        color: #fff;
+        background-color: rgba(230, 162, 60, 0.78) !important;
+    }
+    td.bg-info {
+        color: #fff;
+        background-color: #438fc5 !important;
     }
 }
 </style>
