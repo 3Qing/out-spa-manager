@@ -123,6 +123,7 @@
             </el-table-column>
         </el-table>
         <el-pagination
+            v-if='isGame'
             :current-page="form.page"
             :page-size="form.pageSize"
             @current-change="changePn"
@@ -190,7 +191,7 @@ export default {
                 salespersonid: '',
                 paperreceived: '',
                 page: 1,
-                pagesize: 10
+                pagesize: 15
             },
             visible: false,
             total: 0,
@@ -214,18 +215,22 @@ export default {
             },{
                 id: 2,
                 name: '原本未受領'
-            }]
+            }],
+            isGame: false
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
             if (to.params.formid) {
                 vm.form = to.params.formid;
+                vm.form.page = to.params.formid.page;
+                console.log(vm.form);
             }
             vm.getData();
             vm.getCustomerList();
             vm.getEmployees();
             vm.getSalespersonforselect();
+            vm.isGame = true;
         });
     },
     computed: {
