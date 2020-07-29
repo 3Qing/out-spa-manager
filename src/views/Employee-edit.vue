@@ -459,19 +459,19 @@
                 <el-button v-if='!isDisplay' type="primary" size="small" @click="addMessage">新规登录</el-button>
             </div>
             <el-table :data="forms" size="small" border>
-                <el-table-column label="氏名（カタカナ）" prop="dependantFurigana">
+                <el-table-column label="氏名（カタカナ）" prop="dependantFurigana" width='120'>
                     <template slot-scope="scope">
                         <el-input v-if='!isDisplay' v-model="scope.row.dependantFurigana" :maxlength="20"></el-input>
                         <span v-else>{{scope.row.dependantFurigana}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="氏名（漢字）" prop="dependantName">
+                <el-table-column label="氏名（漢字）" prop="dependantName" width='120'>
                     <template slot-scope="scope">
                         <el-input v-if='!isDisplay' v-model="scope.row.dependantName" :maxlength="20"></el-input>
                         <span v-else>{{scope.row.dependantName}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="関係" prop="relation">
+                <el-table-column label="関係" prop="relation" width='100'>
                     <template slot-scope="scope">
                         <el-select v-if='!isDisplay' v-model="scope.row.relation" filterable allow-create default-first-option @change="selectBlur(scope.row, scope.$index)">
                             <el-option v-for="item in selation" :key="item.id" :value="item.id" :label="item.text"></el-option>
@@ -499,7 +499,7 @@
                         <span v-else>{{getContent(scope.row.dependantSex, sexs, 'value', 'label')}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="住所" prop="dependantAddress">
+                <el-table-column label="住所" prop="dependantAddress" width='300'>
                     <template slot-scope="scope">
                         <el-input v-if='!isDisplay' v-model="scope.row.dependantAddress" :maxlength="100"></el-input>
                         <span v-else>{{scope.row.dependantAddress}}</span>

@@ -38,7 +38,7 @@ import Upload from '@components/upload';
 import { mapGetters } from 'vuex';
 import pdf from 'vue-pdf';
 // import moment from 'moment';
-import { fileToBase64 } from '@_public/utils';
+import { fileToBase64, priceToString } from '@_public/utils';
 
 export default {
     name: 'Pdf',
@@ -81,9 +81,6 @@ export default {
                 }],
                 invoiceAmount: [{
                     required: true, message: '请输入合計金額！'
-                }],
-                comment: [{
-                    required: true, message: '请输入備考！'
                 }]
             },
             errors: {},
@@ -96,6 +93,7 @@ export default {
         ...mapGetters([ 'POST_LOADING' ])
     },
     methods: {
+        priceToString: priceToString,
         upload({ file }) {
             const loading = this.$loading({ lock: true, text: this.POST_LOADING });
             this.$axios({
@@ -127,6 +125,7 @@ export default {
                         planCollectTax: item.PlanCollectTax
                     }));
                     this.form = res.data;
+                    this.form.invoiceAmount = priceToString(this.form.invoiceAmount);
                     if (this.form.vendorID === 0) {
                         this.form.vendorID = '';
                     }

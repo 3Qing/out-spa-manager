@@ -179,7 +179,7 @@
                         </el-table-column>
                     </el-table>
                 </el-col>
-                <el-col :span="12" v-if="forms.paperReceived === true">
+                <el-col :span="12" v-if="forms.paperReceived === true&&!$route.params.updates">
                     <img :src=urls>
                 </el-col>
             </el-row>
@@ -362,7 +362,7 @@
                     </el-table>
                 </div>
             </div>
-            <div class="cl2" v-if="isDisplay&&forms.paperReceived === true">
+            <div class="cl2" v-if="isDisplay&&forms.paperReceived === true&&!$route.params.updates">
                 <img :src=urls>
             </div>
         </div>

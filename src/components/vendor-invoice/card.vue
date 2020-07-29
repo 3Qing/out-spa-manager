@@ -34,7 +34,7 @@
                         value="yyyy-MM-dd"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="合計金額" prop="invoiceAmount">
-                    <el-input v-model="form.invoiceAmount"></el-input>
+                    <el-input @input="changeInput" v-model="form.invoiceAmount"></el-input>
                 </el-form-item>
                 <el-form-item label="備考" prop="comment">
                     <el-input type='textarea' :rows='4' v-model="form.comment"></el-input>
@@ -43,19 +43,19 @@
         </div>
         <el-button type="primary" size="mini" v-if="temshow" @click="addRow" style="margin-bottom: 10px;">請求明細選択</el-button>
         <el-table size="mini" v-if="cashshow" :data="tabels" border>
-            <el-table-column label="番号">
+            <el-table-column label="番号" width='50'>
                 <template slot-scope="scope">
                     <!-- <el-input v-if='!show' v-model="scope.row.ids" size="mini"></el-input> -->
                     <span >{{scope.$index+1}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="受注書番号" prop="contractNo" >
+            <el-table-column label="受注書番号" prop="contractNo" width='140'>
                 <template slot-scope="scope">
                     <el-input v-if='!show' v-model="scope.row.contractNo" size="mini"></el-input>
                     <span v-else>{{scope.row.contractNo}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="担当者" prop="employeeID" >
+            <el-table-column label="担当者" prop="employeeID" width='155'>
                 <template slot-scope="scope">
                     <el-select
                         v-model="scope.row.employeeID"
@@ -64,12 +64,12 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column label="摘要" prop="invoiceComment" >
+            <el-table-column label="摘要" prop="invoiceComment" width='140'>
                 <template slot-scope="scope">
                     <el-input v-model="scope.row.invoiceComment" size="mini" :maxlength="100"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="開始日" >
+            <el-table-column label="開始日" width='150'>
                 <template slot-scope="scope">
                     <el-date-picker
                         size="mini"
@@ -79,7 +79,7 @@
                         value="yyyy-MM-dd"></el-date-picker>
                 </template>
             </el-table-column>
-            <el-table-column label="終了日" >
+            <el-table-column label="終了日" width='150'>
                 <template slot-scope="scope">
                     <el-date-picker
                         size="mini"
@@ -89,12 +89,12 @@
                         value="yyyy-MM-dd"></el-date-picker>
                 </template>
             </el-table-column>
-            <el-table-column label="人月" >
+            <el-table-column label="人月" width='60'>
                 <template slot-scope="scope">
                     <el-input v-model="scope.row.ningetsu" size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="支払期日" >
+            <el-table-column label="支払期日" width='150'>
                 <template slot-scope="scope">
                     <el-date-picker
                         size="mini"
@@ -104,17 +104,17 @@
                         value="yyyy-MM-dd"></el-date-picker>
                 </template>
             </el-table-column>
-            <el-table-column label="契約単価" >
+            <el-table-column label="契約単価" width='100'>
                 <template slot-scope="scope">
                     <el-input @input="changeInput" v-model="scope.row.planCollectSales" size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="精算額" >
+            <el-table-column label="精算額" width='100'>
                 <template slot-scope="scope">
                     <el-input @input="changeInput" v-model="scope.row.planCollectAddSales" size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="消費税" >
+            <el-table-column label="消費税" width='100'>
                 <template slot-scope="scope">
                     <el-input @input="changeInput" v-model="scope.row.planCollectTax" size="mini"></el-input>
                 </template>
@@ -231,6 +231,7 @@ export default {
             }
         },
         changeInput() {
+            this.form.invoiceAmount = priceToString(priceToNumber(this.form.invoiceAmount));
             this.tabels.forEach(item => {
                 if (item.planCollectSales !== 0) {
                     item.planCollectSales = priceToString(priceToNumber(item.planCollectSales));
@@ -259,7 +260,7 @@ export default {
                         cashflows: this.tabels,
                         InvoiceNo: this.form.invoiceNo,
                         InvoiceTitle: this.form.invoiceTitle,
-                        InvoiceAmount: this.form.invoiceAmount,
+                        InvoiceAmount: priceToNumber(this.form.invoiceAmount),
                         InvoiceDate: this.form.invoiceDate,
                         PlanCollectDate: this.form.planCollectDate,
                         CreateDate: moment(new Date()).format('YYYY-MM-DD'),

@@ -1351,11 +1351,11 @@ export default {
         },
         changeCustomer() {
             // console.log(this.customerList);
-            for (let item of this.customerList) {
-                if (item.id === this.forms['vendorID']) {
-                    this.forms['paymentTermID'] = item.paymentTermID;
-                }
-            }
+            // for (let item of this.customerList) {
+            //     if (item.id === this.forms['vendorID']) {
+            //         this.forms['paymentTermID'] = item.paymentTermID;
+            //     }
+            // }
             this.vendorIdArr();
         }
     }
