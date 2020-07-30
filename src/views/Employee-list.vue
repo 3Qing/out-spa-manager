@@ -71,9 +71,9 @@
             </el-table>
         </div>
         <el-pagination
-            :page-size="ps"
-            :current-page="pn"
-            :page-sizes="pageSizes"
+            v-if='isGame'
+            :page-size="form.pagesize"
+            :current-page="form.page"
             @size-change="changePs"
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
@@ -200,15 +200,14 @@ export default {
                 module: '',
                 positions: [],
                 name: '',
-                onjob: ''
+                onjob: '',
+                page: 1,
+                pagesize: 15
             },
             teams: [],
             employeeTypes: [],
             positions: [],
             total: 0,
-            ps: 10,
-            pn: 1,
-            pageSizes: [10, 20, 30, 50],
             tableData: [],
             operWidth: 140,
             leavedate: '',
@@ -222,15 +221,21 @@ export default {
                 BaseSalary: '',
                 Comment: ''
             },
-            jobObj: {}
+            jobObj: {},
+            isGame: false
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            if (to.params.formid) {
+                vm.form = to.params.formid;
+                vm.form.page = to.params.formid.page;
+            }
             vm.getTeams();
             vm.getEmployeeTypes();
             vm.getPositions();
             vm.getData();
+            vm.isGame = true;
         });
     },
     computed: {
@@ -258,8 +263,8 @@ export default {
                     masterskill: this.form.module,
                     name: this.form.name,
                     onjob: this.form.onjob,
-                    page: this.pn,
-                    pagesize: this.ps
+                    page: this.form.page,
+                    pagesize: this.form.pagesize
                 },
                 formData: true
             }).then(res => {
@@ -314,21 +319,21 @@ export default {
             });
         },
         changePn(pn) {
-            this.pn = pn;
+            this.form.page = pn;
             this.getData();
         },
         changePs(ps) {
-            this.ps = ps;
+            this.form.pagesize = ps;
             this.getData();
         },
         visibleChange(value) {
             if (!value) {
-                this.pn = 1;
+                this.form.page = 1;
                 this.getData();
             }
         },
         changeHandle() {
-            this.pn = 1;
+            this.form.page = 1;
             this.getData();
         },
         toDetail(row) {
@@ -336,6 +341,7 @@ export default {
                 name: 'EmployeeEdit',
                 params: {
                     id: row.id,
+                    formsId: this.form,
                     news: 'new'
                 },
                 query: {
@@ -345,7 +351,7 @@ export default {
         },
         clickHandle(scope, item) {
             if (item.action === 'act_employeeupdate') {
-                this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.id } });
+                this.$router.push({ name: 'EmployeeEdit', params: { id: scope.row.id, formsId: this.form } });
             } else if (item.action === 'act_employeeleave') {
                 this.vislble = true;
                 this.curData = scope.row;

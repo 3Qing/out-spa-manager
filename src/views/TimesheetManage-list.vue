@@ -92,18 +92,31 @@
             @current-change="changePn"
             :layout="IS_H5 ? 'prev, pager, next' : 'total, prev, pager, next, jumper'"
             :total="total"></el-pagination>
+        <ess-dialog :visible="visible"></ess-dialog>
+        <el-dialog :visible.sync="show" custom-class="ess-edit-dialog">
+            <div style="max-height: 500px;overflow-y: auto;">
+                <ess-edit :id="curRow.cfid" v-if="show"></ess-edit>
+            </div>
+            <div slot="footer">
+                <el-button type="primary" size="mini" @click="show = false">確定</el-button>
+            </div>
+        </el-dialog>
     </main-wrapper>
 </template>
 
 <script>
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
+import EssDialog from '@components/timeSheet/dialog';
+import EssEdit from '@views/ESS-edit';
 import moment from 'moment';
 import { formatTime } from '@_public/utils';
 
 export default {
     components: {
-        MainWrapper
+        MainWrapper,
+        EssDialog,
+        EssEdit
     },
     data() {
         return {
@@ -116,7 +129,10 @@ export default {
             page: 1,
             pageSize: 15,
             total: 0,
-            tableData: []
+            tableData: [],
+            visible: false,
+            show: false,
+            curRow: {}
         };
     },
     beforeRouteEnter(to, from, next) {
@@ -215,34 +231,29 @@ export default {
             this.page = page;
             this.getData();
         },
-        visibleChange(value) {
-            if (!value) {
-                this.pn = 1;
-                this.getData();
-            }
-        },
         changeHandle() {
-            this.pn = 1;
+            this.page = 1;
             this.getData();
         },
         actionHandler(item, row) {
-            if (item.id === 'act_confirmtimesheet') {
+            console.log(item, row);
+            if (item.action === 'act_confirmtimesheet') {
                 this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                    id: row.cfid,
+                    id: row.id,
                     type: 'confirm',
                     callback: () => {
-                        this.getList();
+                        this.getData();
                     }
                 });
-            } else if (item.id === 'act_canceltimesheet') {
+            } else if (item.action === 'act_canceltimesheet') {
                 this.$root.$emit('SHOW_ESSEDIT_DAILOG', {
-                    id: row.cfid,
+                    id: row.id,
                     type: 'cancel',
                     callback: () => {
-                        this.getList();
+                        this.getData();
                     }
                 });
-            } else if (item.id === 'act_displaytimesheet') {
+            } else if (item.action === 'act_displaytimesheet') {
                 this.curRow = { ...row };
                 this.show = true;
             }

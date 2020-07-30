@@ -118,6 +118,7 @@
             </el-table-column>
         </el-table>
         <el-pagination
+            v-if='isGame'
             :current-page="form.page"
             :page-size="form.pageSize"
             @current-change="changePn"
@@ -182,10 +183,10 @@ export default {
                 vendorid: '',
                 empeeid: '',
                 salespersonid: '',
-                papersended: ''
+                papersended: '',
+                page: 1,
+                pageSize: 15,
             },
-            page: 1,
-            pageSize: 15,
             total: 0,
             employees: [],
             vendors: [],
@@ -196,15 +197,21 @@ export default {
             dialogPresonMonth: false,
             dialogLoading: false,
             datetime: null,
-            personMonthArr: []
+            personMonthArr: [],
+            isGame: false
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            if (to.params.formid) {
+                vm.form = to.params.formid;
+                vm.form.page = to.params.formid.page;
+            }
             vm.getData();
             vm.getVendors();
             vm.getEmployees();
             vm.getSalespersonforselect();
+            vm.isGame = true;
         });
     },
     computed: {
@@ -218,13 +225,13 @@ export default {
         },
         getData() {
             const loading = this.$loading({ lock: true, text: '正在获取数据中' });
-            const params = Object.assign({
-                page: this.page,
-                pagesize: this.pageSize
-            }, this.form);
+            // const params = Object.assign({
+            //     page: this.page,
+            //     pagesize: this.pageSize
+            // }, this.form);
             this.$axios({
                 url: '/api/POContract/api_getcontractlist',
-                params
+                params: this.form
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
@@ -277,11 +284,11 @@ export default {
                         message: '请先取消结束时间'
                     });
                 } else {
-                    this.page = 1;
+                    this.form.page = 1;
                     this.getData();
                 }
             } else {
-                this.page = 1;
+                this.form.page = 1;
                 this.getData();
             }
         },
@@ -297,11 +304,11 @@ export default {
                         });
                         this.form.periodto = '';
                     } else {
-                        this.page = 1;
+                        this.form.page = 1;
                         this.getData();
                     }
                 } else {
-                    this.page = 1;
+                    this.form.page = 1;
                     this.getData();
                 }
             } else {
@@ -423,7 +430,8 @@ export default {
                 name: 'PurchaseEdit',
                 params: {
                     id: row.contractID,
-                    updates : false
+                    updates : false,
+                    formsId: this.form
                 }
             };
             if (type === 'display') {

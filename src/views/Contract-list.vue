@@ -224,7 +224,6 @@ export default {
             if (to.params.formid) {
                 vm.form = to.params.formid;
                 vm.form.page = to.params.formid.page;
-                console.log(vm.form);
             }
             vm.getData();
             vm.getCustomerList();

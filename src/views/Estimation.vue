@@ -41,7 +41,7 @@
                     :value="item.id"></el-option>
             </el-select>
             <el-button type="primary" size="mini" @click="clickSave">{{texts}}</el-button>
-            <el-button size="mini" @click="$router.back()">リターン</el-button>
+            <el-button size="mini" @click="backInit">リターン</el-button>
         </div>
         <el-row v-if="show">
             <el-col :span="14">
@@ -255,7 +255,6 @@ export default {
                 vm.isSave = true;
                 vm.texts = '見積書保存';
                 if (to.params.arritem) {
-                    console.log(111111);
                     const data = to.params.arritem || {};
                     data.amount = priceToString(priceToNumber(data.amount));
                     vm.totals = priceToString(priceToNumber(data.amount));
@@ -305,6 +304,16 @@ export default {
             } else {
                 this.beforeSubmit();
             }
+        },
+        // 返回初始化页面
+        backInit() {
+            const params = {
+                name: "EstimationList",
+                params: {
+                    formid: this.$route.params.formsId
+                }
+            };
+            this.$router.push(params);
         },
         // 初始化报价单
         getInitEstimation() {
@@ -572,7 +581,11 @@ export default {
                         type: 'success',
                         message: '見積書作成完了！'
                     });
-                    this.$router.push({ name: 'EstimationList' });
+                    if (this.$route.params.formsId) {
+                        this.backInit();
+                    } else {
+                        this.$router.push({ name: 'EstimationList' });    
+                    }
                     // if (Number(this.$route.params.id)) {
                     //     this.getData();
                     // } else {

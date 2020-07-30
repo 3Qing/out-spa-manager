@@ -4,9 +4,9 @@
             <el-button v-if="!isDisplay" type="primary" @click="submitForm('forms')" size="small">确认</el-button>
             <el-button v-if="btnfalse" type="primary" @click="submitSave" size="small">保存</el-button>
             <el-button v-if="!isDisplay&&!$route.params.id" @click="resetForm('forms')" size="small" type="danger">重置</el-button>
-            <el-button v-if="!isDisplay&&!$route.params.id" size="small" @click="$router.back()">返回</el-button>
-            <el-button v-if="$route.params.id" size="small" @click="$router.back()">返回</el-button>
-            <el-button v-if="clearFale&&!$route.params.id" size="small" @click="$router.back()">返回</el-button>
+            <el-button v-if="!isDisplay&&!$route.params.id" size="small" @click="backInit">返回</el-button>
+            <el-button v-if="$route.params.id" size="small" @click="backInit">返回</el-button>
+            <el-button v-if="clearFale&&!$route.params.id" size="small" @click="backInit">返回</el-button>
             <el-button v-if="isDisplay&&!$route.params.id&&!clearFale" size="small" @click="fanhuis">返回</el-button>
         </div>
         <div class="content cool">
@@ -654,6 +654,16 @@ export default {
         //         callback(new Error('请选择结束时间'));
         //     }
         // },
+        // 返回初始化页面
+        backInit() {
+            const params = {
+                name: "PurchaseOrder",
+                params: {
+                    formid: this.$route.params.formsId
+                }
+            };
+            this.$router.push(params);
+        },
         // 部门
         getVendors() {
             this.$axios({

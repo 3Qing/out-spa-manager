@@ -4,7 +4,7 @@
             <el-button type="primary" size="small" @click="beforeSubmit" v-if="!isDisplay">保存</el-button>
             <el-button type="danger" size="small" @click="resetForm" v-if='$route.params.id&&!$route.params.news'>扶養情報更新</el-button>
             <el-button type="danger" size="small" @click="resetForm" v-if='$route.params.id&&$route.params.news'>扶養情報照会</el-button>
-            <el-button size="small" @click="$router.back()">リターン</el-button>
+            <el-button size="small" @click="backInit">リターン</el-button>
         </div>
         <el-row class="minwidth" v-if="!isDisplay">
             <el-col :span="14">
@@ -773,6 +773,16 @@ export default {
                 }
             });
         },
+        // 返回初始化页面
+        backInit() {
+            const params = {
+                name: "EmployeeList",
+                params: {
+                    formid: this.$route.params.formsId
+                }
+            };
+            this.$router.push(params);
+        },
         close() {
             this.visible = false;
             this.getFuyang();
@@ -1152,7 +1162,6 @@ export default {
             return params;
         },
         submit(formData, api) {
-            console.log(formData, api);
             const loading = this.$loading({ lock: true, text: '正在提交入职资料中...' });
             this.$axios({
                 method: 'POST',
@@ -1170,7 +1179,11 @@ export default {
                         showClose: true,
                         message: '保存成功'
                     });
-                    this.$router.push({ name: 'EmployeeList' });
+                    if (this.$route.params.formsId) {
+                        this.backInit();
+                    } else {
+                        this.$router.push({ name: 'EmployeeList' });    
+                    }
                 } else {
                     this.$message({
                         type: 'error',

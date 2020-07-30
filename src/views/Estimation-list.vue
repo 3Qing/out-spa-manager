@@ -47,6 +47,7 @@
             </el-table-column>
         </el-table>
         <el-pagination
+            v-if='isGame'
             :page-size="pageSize"
             :current-page="page"
             @current-change="changePage"
@@ -91,13 +92,21 @@ export default {
             total: 0,
             visible: false,
             datetime: null,
-            curData: {}
+            curData: {},
+            isGame: false
         };
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
+            if (to.params.formid) {
+                vm.pageSize = to.params.formid.pageSize;
+                vm.page = to.params.formid.page;
+                vm.customerid = to.params.formid.customerid;
+                console.log(vm.form);
+            }
             vm.getData();
             vm.getCustomer();
+            vm.isGame = true;
         });
     },
     computed: {
@@ -117,7 +126,6 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
-                    console.log(res.data);
                     const data = res.data || {};
                     this.tableData = data.data || [];
                     this.total = data.total || 0;
@@ -138,10 +146,16 @@ export default {
             this.getData();
         },
         handleEdit(row) {
+            let form = {
+                page: this.page,
+                pageSize: this.pageSize,
+                customerid: this.customerid
+            };
             this.$router.push({
                 name: 'Estimation',
                 params: {
-                    id: row.id || 'new'
+                    id: row.id || 'new',
+                    formsId: form
                 }
             });
         },
