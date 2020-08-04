@@ -215,15 +215,15 @@
                         <el-col :span="12">
                             <el-form-item label="绩效工资" prop="PJSalary" :class="[emptyTip && 'error-input']">
                                 <!-- <p v-if="isDisplay">{{priceToString(form.PJSalary)}}</p> -->
-                                <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')" @blur="validSalePrice('PJSalary')"></el-input>
-                                <p color="danger" v-if="emptyTip">绩效工资不低于基本工资</p>
+                                <el-input v-model="form.PJSalary" @input="formatPrice('PJSalary')" ></el-input>
+                                <!-- <p color="danger" v-if="emptyTip">绩效工资不低于基本工资</p> -->
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="基本工资" prop="BaseSalary" :class="[emptyTip && 'error-input']">
                                 <!-- <p v-if="isDisplay">{{priceToString(form.BaseSalary)}}</p> -->
-                                <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')" @blur="validSalePrice('BaseSalary')" ></el-input>
-                                <p color="danger" v-if="emptyTip">绩效工资不低于基本工资</p>
+                                <el-input v-model="form.BaseSalary" @input="formatPrice('BaseSalary')"  ></el-input>
+                                <!-- <p color="danger" v-if="emptyTip">绩效工资不低于基本工资</p> -->
                             </el-form-item>
                         </el-col>
                     </el-row>

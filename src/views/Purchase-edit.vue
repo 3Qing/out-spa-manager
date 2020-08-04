@@ -32,15 +32,27 @@
                         </el-form-item>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="契約期間" prop="fromDate">
-                                    <!-- <p v-if="isDisplay">{{form.fromDate}}</p> -->
-                                    <el-date-picker placeholder="开始时间" v-model="forms.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                <el-form-item label="契約期間">
+                                    <el-date-picker
+                                        size="mini"
+                                        v-model="datadate"
+                                        type="daterange"
+                                        value-format="yyyy-MM-dd"
+                                        value="yyyy-MM-dd"
+                                        range-separator="~"
+                                        start-placeholder="开始时间"
+                                        end-placeholder="结束时间">
+                                        </el-date-picker>
                                 </el-form-item>
+                                <!-- <el-form-item label="契約期間" prop="fromDate">
+                                    <el-date-picker placeholder="开始时间" v-model="forms.fromDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                </el-form-item> -->
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="" prop="toDate">
-                                    <!-- <p v-if="isDisplay">{{form.toDate}}</p> -->
-                                    <el-date-picker placeholder="结束时间" v-model="forms.toDate" type="date" size="small" value-format="yyyy-MM-dd" format="yyyy-MM-dd"></el-date-picker>
+                                <el-form-item label="支払サイト" prop="paymentTermID">
+                                    <el-select v-model="forms['paymentTermID']" size="small">
+                                        <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
+                                    </el-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -60,19 +72,22 @@
                         </el-row>
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item label="仕入先" prop="vendorID" >
+                                <el-form-item label="仕入先" prop="isFreeID" v-if='forms.isFreelancer'>
+                                    <p v-if='$route.params.id'>{{getContent(forms['isFreeID'], freeArr, 'id', 'name')}}</p>
+                                    <el-select v-else v-model="forms['isFreeID']" size="small" @change="changeCustomer1">
+                                        <el-option v-for="item in freeArr" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="仕入先" prop="vendorID" v-else>
                                     <p v-if='$route.params.id'>{{getContent(forms['vendorID'], vendorsArr, 'id', 'title')}}</p>
                                     <el-select v-else v-model="forms['vendorID']" size="small" @change="changeCustomer">
                                         <el-option v-for="item in vendorsArr" :key="item.id" :value="item.id" :label="item.title"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="支払サイト" prop="paymentTermID">
-                                    <!-- <p v-if="isDisplay">{{form['paymenttermId']}}</p> -->
-                                    <el-select v-model="forms['paymentTermID']" size="small">
-                                        <el-option v-for="item in paymenttermsforselect" :key="item.id" :value="item.id" :label="item.title"></el-option>
-                                    </el-select>
+                            <el-col :span="12" v-if="!isDisplay&&!$route.params.id">
+                                <el-form-item label="個人事業主" prop="isFreelancer">
+                                    <el-checkbox @change="getChangeIsFree" v-model="forms.isFreelancer"></el-checkbox>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -149,12 +164,13 @@
                             <span>{{scope.$index + 1}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="员工" >
+                    <el-table-column label="员工">
                         <template slot-scope="scope">
-                            <el-select v-if="scope.row.isFalse === true" v-model="scope.row.employeeID" size="mini">
+                            <el-select v-if="scope.row.isFalse === true&&scope.row.isFreelancer===false" v-model="scope.row.employeeID" size="mini">
                                 <el-option v-for="item in vendorData" :key="item.id" :label="item.name" :value="item.id"></el-option>
                             </el-select>
-                            <span v-else>{{getContent(scope.row.employeeID, vendorData, 'id', 'name')}}</span>
+                            <span v-if="scope.row.isFalse === false&&scope.row.isFreelancer===false">{{getContent(scope.row.employeeID, vendorData, 'id', 'name')}}</span>
+                            <span v-if="scope.row.isFalse === true&&scope.row.isFreelancer===true">{{getContent(forms['isFreeID'], freeArr, 'id', 'name')}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="単価" >
@@ -486,10 +502,16 @@ export default {
     },
     data() {
         return {
+            trues: false,
+            isFreeName: '',
+            isId: '',
             inputFalse: false,
             defluatFalse: true,
             loading: false,
+            datadate: '',
             forms: {
+                isFreeID: '',
+                isFreelancer: false,
                 calculateUnit: '',
                 contractCategory: 0,
                 title: '',
@@ -556,11 +578,15 @@ export default {
                 vendorID: [
                     { required: true, message: '请选择仕入先', trigger: 'blur' }
                 ],
+                isFreeID: [
+                    { required: true, message: '请选择仕入先', trigger: 'blur' }
+                ],
                 paymentTermID: [
                     { required: true, message: '请选择支払サイト', trigger: 'blur' }
                 ],
             },
             tableData: [{
+                isFreelancer: false,
                 isFalse: true,
                 employeeID: '',
                 unitPrice: '',
@@ -586,6 +612,7 @@ export default {
             clearFale: false,
             urls: '',
             vendorsArr: [],
+            freeArr: [],
             vendorData: []
         };
     },
@@ -595,6 +622,7 @@ export default {
                 vm.isDisplay = true;
             }
             vm.getVendors();
+            vm.getFreeArr();
             vm.getContracts(); // 下拉列表
             vm.getWorkList(); // 员工列表
             vm.getCustomerList(); // 客户列表
@@ -612,6 +640,12 @@ export default {
     },
     watch: {
         tableData:{
+            handler:function(newVal) {
+                console.log(newVal);
+            },
+            deep: true
+        },
+        isFreeName:{
             handler:function(newVal) {
                 console.log(newVal);
             },
@@ -664,6 +698,17 @@ export default {
             };
             this.$router.push(params);
         },
+        // 是否个人
+        getChangeIsFree(e) {
+            this.tableData.forEach(item => {
+                item.isFreelancer = e;
+            });
+            if (e) {
+                this.forms.vendorID = '';
+            } else {
+                this.forms.isFreeID = '';
+            }
+        },
         // 部门
         getVendors() {
             this.$axios({
@@ -671,6 +716,16 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.vendorsArr = res.data || [];
+                }
+            });
+        },
+        // 部门2
+        getFreeArr() {
+            this.$axios({
+                url: '/api/Employee/api_freelancersforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.freeArr = res.data || [];
                 }
             });
         },
@@ -826,6 +881,7 @@ export default {
             // tmp.splice(scope.$index + 1, 0, {});
             // this.tableData = [ ...tmp ];
             this.tableData.push({
+                isFreelancer: this.forms.isFreelancer,
                 isFalse: true,
                 employeeID: '',
                 unitPrice: '',
@@ -924,10 +980,12 @@ export default {
                         this.forms.toDate = this.$route.params.todate;
                         this.tableData.forEach((item) => {
                             item.isFalse = false;
+                            item.isFreelancer = false;
                         });
                     } else {
                         this.tableData.forEach((item) => {
                             item.isFalse = true;
+                            item.isFreelancer = false;
                         });
                     }
                 } else {
@@ -1060,6 +1118,7 @@ export default {
         resetForm(formName) {
             this.$refs[formName].resetFields();
             this.tableData = [{
+                isFreelancer: this.forms.isFreelancer,
                 isFalse: true,
                 employeeID: '',
                 unitPrice: '',
@@ -1367,6 +1426,12 @@ export default {
             //     }
             // }
             this.vendorIdArr();
+        },
+        changeCustomer1(e) {
+            // this.getFreeArr();
+            this.isId = e;
+            this.isFreeName = this.getContent(e, this.freeArr, 'id', 'name');
+            console.log(this.isFreeName);
         }
     }
 };

@@ -40,6 +40,13 @@
                     :label="item.name"
                     :value="item.id"></el-option>
             </el-select>
+            <el-select v-model="employeesSaleid" size="mini" clearable :disabled="isSave">
+                <el-option
+                    v-for="item in employeesSale"
+                    :key="item.employeeID"
+                    :label="item.name"
+                    :value="item.employeeID"></el-option>
+            </el-select>
             <el-button type="primary" size="mini" @click="clickSave">{{texts}}</el-button>
             <el-button size="mini" @click="backInit">リターン</el-button>
         </div>
@@ -144,7 +151,7 @@
                     <span>{{scope.$index + 1}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="社員" width="160px">
+            <el-table-column label="社員" >
                 <template slot-scope="scope">
                     <el-select v-model="scope.row.employeeID" size="mini">
                         <el-option v-for="item in employees" :key="item.id" :label="item.name" :value="item.id"></el-option>
@@ -156,12 +163,12 @@
                     <el-input-number v-model.number="scope.row.ningetsu" size="mini" :precision="2" :max="10" :min="0" @change="handleChange(scope)"></el-input-number>
                 </template>
             </el-table-column>
-            <el-table-column label="単価" width="140px">
+            <el-table-column label="単価" >
                 <template slot-scope="scope">
                     <el-input v-model="scope.row.unitPrice" size="mini" @input="handleInput(scope)"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="金額" width="100px">
+            <el-table-column label="金額" >
                 <template slot-scope="scope">
                     <span>{{priceToString(priceToNumber(scope.row.amount))}}</span>
                 </template>
@@ -171,7 +178,7 @@
                     <el-input v-model="scope.row.comment" size="mini"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="アクション" width="80px">
+            <el-table-column label="アクション" width="90px">
                 <template slot-scope="scope">
                     <i class="el-icon-plus link" color="primary" @click="handleAdd(scope)"></i>
                     <i class="el-icon-delete link" color="danger" @click="handleDel(scope)"></i>
@@ -210,6 +217,8 @@ export default {
             employeeids: [],
             customers: [],
             employees: [],
+            employeesSale: [],
+            employeesSaleid: '',
             opports: [],
             pays: [],
             data: {},
@@ -271,6 +280,11 @@ export default {
                     } else {
                         vm.opportunityid = data.opportunityID;
                     }
+                    if(data.salesPersonID === 0){
+                        vm.employeesSaleid = '';
+                    } else {
+                        vm.employeesSaleid = data.salesPersonID;
+                    }
                     if (data.items && data.items.length) {
                         vm.tableData = data.items.map(item => {
                             const tmp = { ...item };
@@ -290,6 +304,7 @@ export default {
             vm.getCustomer();
             vm.getOpport();
             vm.getEmployee();
+            vm.getSaleEmployee();
             vm.getPay();
         });
     },
@@ -317,11 +332,13 @@ export default {
         },
         // 初始化报价单
         getInitEstimation() {
+            console.log(!this.customerid && !this.opportunityid && !this.employeesSaleid);
             if (this.dates.length !== 2
                 || !this.fromhours
                 || !this.tohours
                 || (!this.customerid && !this.opportunityid)
-                || !this.employeeids.length) {
+                || !this.employeeids.length
+                || !this.employeesSaleid) {
                 this.$message({
                     type: 'warning',
                     message: '見積条件を指定してください！'
@@ -346,7 +363,8 @@ export default {
                     tohours: this.tohours,
                     customerid: this.customerid,
                     opportunityid: this.opportunityid,
-                    employeeids: this.employeeids
+                    employeeids: this.employeeids,
+                    SalesPersonID: this.employeesSaleid
                 },
                 formData: true
             }).then(res => {
@@ -437,6 +455,16 @@ export default {
             }).then(res => {
                 if (res && res.code === 0) {
                     this.employees = res.data || [];
+                }
+            });
+        },
+        // 销售担当
+        getSaleEmployee() {
+            this.$axios({
+                url: '/api/Employee/api_salespersonforselect'
+            }).then(res => {
+                if (res && res.code === 0) {
+                    this.employeesSale = res.data || [];
                 }
             });
         },
