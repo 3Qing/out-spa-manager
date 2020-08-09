@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import EssEdit from '@views/ESS-edit';
+import EssEdit from '@views/TimeSheet-edit';
 export default {
     components: {
         EssEdit

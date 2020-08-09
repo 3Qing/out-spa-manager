@@ -319,6 +319,10 @@ export default {
             }).then(res => {
                 loading.close();
                 if (res && res.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: res
+                    });
                     this.getData();
                 } else {
                     this.$message({

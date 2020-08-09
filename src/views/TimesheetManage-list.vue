@@ -61,10 +61,10 @@
                         <span v-if='scope.row.cashflows.length>0&&!scope.row.cashflows[0].approved&&scope.row.cashflows[0].timesheetID!==0'>未承認</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="アクション" width="100px" fixed="right">
+                <el-table-column label="アクション" width="130px" fixed="right">
                     <template slot-scope="scope" v-if='scope.row.cashflows.length>0'>
-                        <el-tooltip effect="dark" placement="top-start" v-for="item in scope.row.cashflows[0].actions"
-                            :key="item.action" :content="item.text">
+                        <el-tooltip effect="dark" placement="top-start" v-for="(item, index) in scope.row.cashflows[0].actions"
+                            :key="index" :content="item.text">
                             <i v-if="item.action==='act_displaytimesheet'" class="icon-approve iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
                             <i v-if="item.action==='act_canceltimesheet'" class="icon-cancel iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
                             <i v-if="item.action==='act_confirmtimesheet'" class="el-icon-edit-outline iconfont oper-icon" color="warning" @click="actionHandler(item, scope.row)"></i>
@@ -95,7 +95,7 @@
         <ess-dialog :visible="visible"></ess-dialog>
         <el-dialog :visible.sync="show" custom-class="ess-edit-dialog">
             <div style="max-height: 500px;overflow-y: auto;">
-                <ess-edit :id="curRow.cfid" v-if="show"></ess-edit>
+                <ess-edit :id="curRow.id" v-if="show"></ess-edit>
             </div>
             <div slot="footer">
                 <el-button type="primary" size="mini" @click="show = false">確定</el-button>
@@ -108,7 +108,7 @@
 import MainWrapper from '@components/main-wrapper';
 import { mapGetters } from 'vuex';
 import EssDialog from '@components/timeSheet/dialog';
-import EssEdit from '@views/ESS-edit';
+import EssEdit from '@views/TimeSheet-edit';
 import moment from 'moment';
 import { formatTime } from '@_public/utils';
 
@@ -235,6 +235,7 @@ export default {
             this.page = 1;
             this.getData();
         },
+
         actionHandler(item, row) {
             console.log(item, row);
             if (item.action === 'act_confirmtimesheet') {
@@ -255,6 +256,7 @@ export default {
                 });
             } else if (item.action === 'act_displaytimesheet') {
                 this.curRow = { ...row };
+                console.log(this.curRow);
                 this.show = true;
             }
         },
