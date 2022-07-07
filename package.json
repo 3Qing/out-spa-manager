@@ -12,7 +12,7 @@
     "core-js": "^3.6.4",
     "echarts": "^4.7.0",
     "element-ui": "^2.13.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "sortablejs": "^1.10.2",
     "vue": "^2.6.11",
     "vue-calendar-component": "^2.8.2",
